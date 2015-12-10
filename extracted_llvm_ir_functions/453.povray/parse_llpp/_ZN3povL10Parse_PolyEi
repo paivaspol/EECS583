@@ -1,0 +1,42 @@
+define internal fastcc %"struct.pov::Object_Struct"* @_ZN3povL10Parse_PolyEi(i32 %order) #0 {
+  tail call void @llvm.dbg.value(metadata i32 %order, i64 0, metadata !3550, metadata !4736), !dbg !9762
+  tail call void @_ZN3pov11Parse_BeginEv() #9, !dbg !9763
+  %1 = tail call fastcc %"struct.pov::Object_Struct"* @_ZN3povL15Parse_Object_IdEv() #9, !dbg !9764
+  %2 = icmp eq %"struct.pov::Object_Struct"* %1, null, !dbg !9766
+  br i1 %2, label %3, label %18, !dbg !9767
+
+; <label>:3                                       ; preds = %0
+  %4 = icmp eq i32 %order, 0, !dbg !9768
+  br i1 %4, label %5, label %11, !dbg !9770
+
+; <label>:5                                       ; preds = %3
+  %6 = tail call double @_ZN3pov11Parse_FloatEv() #9, !dbg !9771
+  %7 = fptosi double %6 to i32, !dbg !9771
+  tail call void @llvm.dbg.value(metadata i32 %7, i64 0, metadata !3550, metadata !4736), !dbg !9762
+  tail call void @_ZN3pov11Parse_CommaEv() #9, !dbg !9773
+  %.off = add i32 %7, -2, !dbg !9774
+  %8 = icmp ugt i32 %.off, 13, !dbg !9774
+  br i1 %8, label %9, label %11, !dbg !9774
+
+; <label>:9                                       ; preds = %5
+  %10 = tail call i32 (i8*, ...)* @_ZN3pov5ErrorEPKcz(i8* getelementptr inbounds ([31 x i8]* @.str81, i64 0, i64 0)) #9, !dbg !9776
+  br label %11, !dbg !9776
+
+; <label>:11                                      ; preds = %9, %5, %3
+  %.0 = phi i32 [ %7, %9 ], [ %7, %5 ], [ %order, %3 ]
+  %12 = tail call %"struct.pov::Poly_Struct"* @_ZN3pov11Create_PolyEi(i32 %.0) #9, !dbg !9777
+  tail call void @llvm.dbg.value(metadata %"struct.pov::Poly_Struct"* %12, i64 0, metadata !3551, metadata !4736), !dbg !9778
+  %13 = getelementptr inbounds %"struct.pov::Poly_Struct"* %12, i64 0, i32 14, !dbg !9779
+  %14 = load i32* %13, align 4, !dbg !9779, !tbaa !9780
+  %15 = getelementptr inbounds %"struct.pov::Poly_Struct"* %12, i64 0, i32 15, !dbg !9782
+  %16 = load double** %15, align 8, !dbg !9782, !tbaa !9783
+  tail call void @_ZN3pov12Parse_CoeffsEiPd(i32 %14, double* %16) #9, !dbg !9784
+  tail call void @_ZN3pov17Compute_Poly_BBoxEPNS_11Poly_StructE(%"struct.pov::Poly_Struct"* %12) #9, !dbg !9785
+  %17 = bitcast %"struct.pov::Poly_Struct"* %12 to %"struct.pov::Object_Struct"*, !dbg !9786
+  tail call void @_ZN3pov17Parse_Object_ModsEPNS_13Object_StructE(%"struct.pov::Object_Struct"* %17) #9, !dbg !9787
+  br label %18, !dbg !9788
+
+; <label>:18                                      ; preds = %0, %11
+  %.02 = phi %"struct.pov::Object_Struct"* [ %17, %11 ], [ %1, %0 ]
+  ret %"struct.pov::Object_Struct"* %.02, !dbg !9789
+}

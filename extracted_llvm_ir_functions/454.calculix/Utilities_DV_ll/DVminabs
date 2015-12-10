@@ -1,65 +1,74 @@
 define double @DVminabs(i32 %size, double* %y, i32* %ploc) #0 {
-entry:
-  %cmp = icmp sgt i32 %size, 0
-  br i1 %cmp, label %if.then, label %if.end21
+  tail call void @llvm.dbg.value(metadata i32 %size, i64 0, metadata !301, metadata !696), !dbg !1244
+  tail call void @llvm.dbg.value(metadata double* %y, i64 0, metadata !302, metadata !696), !dbg !1245
+  tail call void @llvm.dbg.value(metadata i32* %ploc, i64 0, metadata !303, metadata !696), !dbg !1246
+  tail call void @llvm.dbg.value(metadata double 0.000000e+00, i64 0, metadata !304, metadata !696), !dbg !1247
+  tail call void @llvm.dbg.value(metadata i32 -1, i64 0, metadata !305, metadata !696), !dbg !1248
+  %1 = icmp sgt i32 %size, 0, !dbg !1249
+  br i1 %1, label %2, label %24, !dbg !1250
 
-if.then:                                          ; preds = %entry
-  %cmp1 = icmp eq double* %y, null
-  br i1 %cmp1, label %if.then2, label %if.else
+; <label>:2                                       ; preds = %0
+  %3 = icmp eq double* %y, null, !dbg !1251
+  br i1 %3, label %4, label %7, !dbg !1252
 
-if.then2:                                         ; preds = %if.then
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([71 x i8]* @.str23, i64 0, i64 0), i32 %size, double* null, i32* %ploc) #5
-  tail call void @exit(i32 -1) #6
-  unreachable
+; <label>:4                                       ; preds = %2
+  %5 = load %struct.__sFILE** @__stderrp, align 8, !dbg !1253, !tbaa !709
+  %6 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %5, i8* getelementptr inbounds ([71 x i8]* @.str23, i64 0, i64 0), i32 %size, double* null, i32* %ploc) #7, !dbg !1255
+  tail call void @exit(i32 -1) #8, !dbg !1256
+  unreachable, !dbg !1256
 
-if.else:                                          ; preds = %if.then
-  %1 = load double* %y, align 8, !tbaa !3
-  %cmp3 = fcmp ult double %1, 0.000000e+00
-  br i1 %cmp3, label %cond.false, label %for.cond.preheader
+; <label>:7                                       ; preds = %2
+  %8 = load double* %y, align 8, !dbg !1257, !tbaa !718
+  %9 = fcmp ult double %8, 0.000000e+00, !dbg !1258
+  br i1 %9, label %10, label %.preheader, !dbg !1259
 
-cond.false:                                       ; preds = %if.else
-  %sub = fsub double -0.000000e+00, %1
-  br label %for.cond.preheader
+; <label>:10                                      ; preds = %7
+  %11 = fsub double -0.000000e+00, %8, !dbg !1260
+  br label %.preheader, !dbg !1259
 
-for.cond.preheader:                               ; preds = %if.else, %cond.false
-  %minval.0.ph = phi double [ %sub, %cond.false ], [ %1, %if.else ]
-  %cmp638 = icmp sgt i32 %size, 1
-  br i1 %cmp638, label %for.body, label %for.end
+.preheader:                                       ; preds = %7, %10
+  %minval.0.ph = phi double [ %11, %10 ], [ %8, %7 ]
+  %12 = icmp sgt i32 %size, 1, !dbg !1261
+  br i1 %12, label %.lr.ph, label %._crit_edge, !dbg !1264
 
-for.body:                                         ; preds = %for.cond.preheader, %cond.end16
-  %indvars.iv = phi i64 [ %indvars.iv.next, %cond.end16 ], [ 1, %for.cond.preheader ]
-  %minval.041 = phi double [ %minval.1, %cond.end16 ], [ %minval.0.ph, %for.cond.preheader ]
-  %loc.039 = phi i32 [ %loc.1, %cond.end16 ], [ 0, %for.cond.preheader ]
-  %arrayidx7 = getelementptr inbounds double* %y, i64 %indvars.iv
-  %2 = load double* %arrayidx7, align 8, !tbaa !3
-  %cmp8 = fcmp ult double %2, 0.000000e+00
-  br i1 %cmp8, label %cond.false12, label %cond.end16
+.lr.ph:                                           ; preds = %.preheader
+  %13 = add i32 %size, -1, !dbg !1264
+  br label %14, !dbg !1264
 
-cond.false12:                                     ; preds = %for.body
-  %sub15 = fsub double -0.000000e+00, %2
-  br label %cond.end16
+; <label>:14                                      ; preds = %20, %.lr.ph
+  %indvars.iv = phi i64 [ 1, %.lr.ph ], [ %indvars.iv.next, %20 ]
+  %minval.03 = phi double [ %minval.0.ph, %.lr.ph ], [ %minval.1, %20 ]
+  %loc.01 = phi i32 [ 0, %.lr.ph ], [ %loc.1, %20 ]
+  %15 = getelementptr inbounds double* %y, i64 %indvars.iv, !dbg !1265
+  %16 = load double* %15, align 8, !dbg !1265, !tbaa !718
+  %17 = fcmp ult double %16, 0.000000e+00, !dbg !1267
+  br i1 %17, label %18, label %20, !dbg !1268
 
-cond.end16:                                       ; preds = %for.body, %cond.false12
-  %cond17 = phi double [ %sub15, %cond.false12 ], [ %2, %for.body ]
-  %cmp18 = fcmp ogt double %minval.041, %cond17
-  %3 = trunc i64 %indvars.iv to i32
-  %loc.1 = select i1 %cmp18, i32 %3, i32 %loc.039
-  %minval.1 = select i1 %cmp18, double %cond17, double %minval.041
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %size
-  br i1 %exitcond, label %for.end, label %for.body
+; <label>:18                                      ; preds = %14
+  %19 = fsub double -0.000000e+00, %16, !dbg !1269
+  br label %20, !dbg !1268
 
-for.end:                                          ; preds = %cond.end16, %for.cond.preheader
-  %minval.0.lcssa = phi double [ %minval.0.ph, %for.cond.preheader ], [ %minval.1, %cond.end16 ]
-  %loc.0.lcssa = phi i32 [ 0, %for.cond.preheader ], [ %loc.1, %cond.end16 ]
-  store i32 %loc.0.lcssa, i32* %ploc, align 4, !tbaa !4
-  br label %if.end21
+; <label>:20                                      ; preds = %14, %18
+  %21 = phi double [ %19, %18 ], [ %16, %14 ], !dbg !1268
+  tail call void @llvm.dbg.value(metadata double %21, i64 0, metadata !311, metadata !696), !dbg !1270
+  %22 = fcmp ogt double %minval.03, %21, !dbg !1271
+  tail call void @llvm.dbg.value(metadata double %21, i64 0, metadata !304, metadata !696), !dbg !1247
+  %23 = trunc i64 %indvars.iv to i32, !dbg !1273
+  %loc.1 = select i1 %22, i32 %23, i32 %loc.01, !dbg !1273
+  %minval.1 = select i1 %22, double %21, double %minval.03, !dbg !1273
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !1264
+  %exitcond = icmp eq i32 %23, %13, !dbg !1264
+  br i1 %exitcond, label %._crit_edge, label %14, !dbg !1264
 
-if.end21:                                         ; preds = %for.end, %entry
-  %loc.2 = phi i32 [ %loc.0.lcssa, %for.end ], [ -1, %entry ]
-  %minval.2 = phi double [ %minval.0.lcssa, %for.end ], [ 0.000000e+00, %entry ]
-  store i32 %loc.2, i32* %ploc, align 4, !tbaa !4
-  ret double %minval.2
+._crit_edge:                                      ; preds = %20, %.preheader
+  %minval.0.lcssa = phi double [ %minval.0.ph, %.preheader ], [ %minval.1, %20 ]
+  %loc.0.lcssa = phi i32 [ 0, %.preheader ], [ %loc.1, %20 ]
+  store i32 %loc.0.lcssa, i32* %ploc, align 4, !dbg !1274, !tbaa !771
+  br label %24, !dbg !1275
+
+; <label>:24                                      ; preds = %._crit_edge, %0
+  %loc.2 = phi i32 [ %loc.0.lcssa, %._crit_edge ], [ -1, %0 ]
+  %minval.2 = phi double [ %minval.0.lcssa, %._crit_edge ], [ 0.000000e+00, %0 ]
+  store i32 %loc.2, i32* %ploc, align 4, !dbg !1276, !tbaa !771
+  ret double %minval.2, !dbg !1277
 }

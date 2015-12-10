@@ -1,47 +1,43 @@
 define void @InitSceneInformation() #0 {
-entry:
-  store i32 1, i32* @seiHasSceneInformation, align 4, !tbaa !1
-  store i32 0, i32* getelementptr inbounds (%struct.scene_information_struct* @seiSceneInformation, i64 0, i32 0), align 8, !tbaa !3
-  store i32 0, i32* getelementptr inbounds (%struct.scene_information_struct* @seiSceneInformation, i64 0, i32 1), align 4, !tbaa !3
-  store i32 -1, i32* getelementptr inbounds (%struct.scene_information_struct* @seiSceneInformation, i64 0, i32 2), align 8, !tbaa !3
-  %call = tail call noalias i8* @malloc(i64 48) #6
-  %0 = bitcast i8* %call to %struct.Bitstream*
-  store %struct.Bitstream* %0, %struct.Bitstream** getelementptr inbounds (%struct.scene_information_struct* @seiSceneInformation, i64 0, i32 3), align 8, !tbaa !0
-  %cmp = icmp eq i8* %call, null
-  br i1 %cmp, label %if.then, label %if.end
+  store i32 1, i32* @seiHasSceneInformation, align 4, !dbg !1931, !tbaa !977
+  store i32 0, i32* getelementptr inbounds (%struct.scene_information_struct* @seiSceneInformation, i64 0, i32 0), align 8, !dbg !1932, !tbaa !1933
+  store i32 0, i32* getelementptr inbounds (%struct.scene_information_struct* @seiSceneInformation, i64 0, i32 1), align 4, !dbg !1935, !tbaa !1936
+  store i32 -1, i32* getelementptr inbounds (%struct.scene_information_struct* @seiSceneInformation, i64 0, i32 2), align 8, !dbg !1937, !tbaa !1938
+  %1 = tail call i8* @malloc(i64 48) #8, !dbg !1939
+  store i8* %1, i8** bitcast (%struct.Bitstream** getelementptr inbounds (%struct.scene_information_struct* @seiSceneInformation, i64 0, i32 3) to i8**), align 8, !dbg !1940, !tbaa !1941
+  %2 = icmp eq i8* %1, null, !dbg !1942
+  %3 = bitcast i8* %1 to %struct.Bitstream*
+  br i1 %2, label %4, label %5, !dbg !1944
 
-if.then:                                          ; preds = %entry
-  tail call void @no_mem_exit(i8* getelementptr inbounds ([47 x i8]* @.str9, i64 0, i64 0)) #6
-  %.pre = load %struct.Bitstream** getelementptr inbounds (%struct.scene_information_struct* @seiSceneInformation, i64 0, i32 3), align 8, !tbaa !0
-  br label %if.end
+; <label>:4                                       ; preds = %0
+  tail call void @no_mem_exit(i8* getelementptr inbounds ([47 x i8]* @.str11, i64 0, i64 0)) #8, !dbg !1945
+  %.pre = load %struct.Bitstream** getelementptr inbounds (%struct.scene_information_struct* @seiSceneInformation, i64 0, i32 3), align 8, !dbg !1946, !tbaa !1941
+  br label %5, !dbg !1945
 
-if.end:                                           ; preds = %if.then, %entry
-  %1 = phi %struct.Bitstream* [ %.pre, %if.then ], [ %0, %entry ]
-  %call1 = tail call noalias i8* @malloc(i64 65496) #6
-  %streamBuffer = getelementptr inbounds %struct.Bitstream* %1, i64 0, i32 9
-  store i8* %call1, i8** %streamBuffer, align 8, !tbaa !0
-  %2 = load %struct.Bitstream** getelementptr inbounds (%struct.scene_information_struct* @seiSceneInformation, i64 0, i32 3), align 8, !tbaa !0
-  %streamBuffer2 = getelementptr inbounds %struct.Bitstream* %2, i64 0, i32 9
-  %3 = load i8** %streamBuffer2, align 8, !tbaa !0
-  %cmp3 = icmp eq i8* %3, null
-  br i1 %cmp3, label %if.then4, label %if.end5
+; <label>:5                                       ; preds = %4, %0
+  %6 = phi %struct.Bitstream* [ %.pre, %4 ], [ %3, %0 ]
+  %7 = tail call i8* @malloc(i64 65496) #8, !dbg !1947
+  %8 = getelementptr inbounds %struct.Bitstream* %6, i64 0, i32 9, !dbg !1948
+  store i8* %7, i8** %8, align 8, !dbg !1949, !tbaa !1130
+  %9 = icmp eq i8* %7, null, !dbg !1950
+  br i1 %9, label %10, label %11, !dbg !1952
 
-if.then4:                                         ; preds = %if.end
-  tail call void @no_mem_exit(i8* getelementptr inbounds ([61 x i8]* @.str10, i64 0, i64 0)) #6
-  %.pre7 = load %struct.Bitstream** getelementptr inbounds (%struct.scene_information_struct* @seiSceneInformation, i64 0, i32 3), align 8, !tbaa !0
-  br label %if.end5
+; <label>:10                                      ; preds = %5
+  tail call void @no_mem_exit(i8* getelementptr inbounds ([61 x i8]* @.str12, i64 0, i64 0)) #8, !dbg !1953
+  %.pre1 = load %struct.Bitstream** getelementptr inbounds (%struct.scene_information_struct* @seiSceneInformation, i64 0, i32 3), align 8, !dbg !1954, !tbaa !1941
+  br label %11, !dbg !1953
 
-if.end5:                                          ; preds = %if.then4, %if.end
-  %4 = phi %struct.Bitstream* [ %.pre7, %if.then4 ], [ %2, %if.end ]
-  %bits_to_go = getelementptr inbounds %struct.Bitstream* %4, i64 0, i32 1
-  store i32 8, i32* %bits_to_go, align 4, !tbaa !3
-  %byte_pos = getelementptr inbounds %struct.Bitstream* %4, i64 0, i32 0
-  store i32 0, i32* %byte_pos, align 4, !tbaa !3
-  %byte_buf = getelementptr inbounds %struct.Bitstream* %4, i64 0, i32 2
-  store i8 0, i8* %byte_buf, align 1, !tbaa !1
-  %5 = load %struct.Bitstream** getelementptr inbounds (%struct.scene_information_struct* @seiSceneInformation, i64 0, i32 3), align 8, !tbaa !0
-  %streamBuffer6 = getelementptr inbounds %struct.Bitstream* %5, i64 0, i32 9
-  %6 = load i8** %streamBuffer6, align 8, !tbaa !0
-  tail call void @llvm.memset.p0i8.i64(i8* %6, i8 0, i64 65496, i32 1, i1 false)
-  ret void
+; <label>:11                                      ; preds = %10, %5
+  %12 = phi %struct.Bitstream* [ %.pre1, %10 ], [ %6, %5 ]
+  %13 = getelementptr inbounds %struct.Bitstream* %12, i64 0, i32 1, !dbg !1955
+  store i32 8, i32* %13, align 4, !dbg !1956, !tbaa !1138
+  %14 = getelementptr inbounds %struct.Bitstream* %12, i64 0, i32 0, !dbg !1957
+  store i32 0, i32* %14, align 4, !dbg !1958, !tbaa !1111
+  %15 = getelementptr inbounds %struct.Bitstream* %12, i64 0, i32 2, !dbg !1959
+  store i8 0, i8* %15, align 1, !dbg !1960, !tbaa !1128
+  %16 = getelementptr inbounds %struct.Bitstream* %12, i64 0, i32 9, !dbg !1961
+  %17 = load i8** %16, align 8, !dbg !1961, !tbaa !1130
+  %18 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %17, i1 false), !dbg !1961
+  %19 = tail call i8* @__memset_chk(i8* %17, i32 0, i64 65496, i64 %18) #8, !dbg !1961
+  ret void, !dbg !1962
 }

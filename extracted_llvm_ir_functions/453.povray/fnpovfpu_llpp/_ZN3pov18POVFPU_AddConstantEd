@@ -1,0 +1,71 @@
+define i32 @_ZN3pov18POVFPU_AddConstantEd(double %v) #2 {
+  tail call void @llvm.dbg.value(metadata double %v, i64 0, metadata !535, metadata !1171), !dbg !1220
+  %1 = load double** @_ZN3pov13POVFPU_ConstsE, align 8, !dbg !1221, !tbaa !1183
+  %2 = icmp eq double* %1, null, !dbg !1223
+  %3 = bitcast double* %1 to i8*
+  br i1 %2, label %7, label %.preheader, !dbg !1224
+
+.preheader:                                       ; preds = %0
+  %4 = load i32* @_ZN3pov15POVFPU_ConstCntE, align 4, !dbg !1225, !tbaa !1189
+  %5 = icmp eq i32 %4, 0, !dbg !1228
+  br i1 %5, label %.thread, label %.lr.ph, !dbg !1229
+
+.lr.ph:                                           ; preds = %.preheader
+  %6 = zext i32 %4 to i64, !dbg !1229
+  br label %10, !dbg !1229
+
+; <label>:7                                       ; preds = %0
+  %8 = tail call i8* @_ZN3pov10pov_mallocEmPKciS1_(i64 8, i8* getelementptr inbounds ([69 x i8]* @.str51, i64 0, i64 0), i32 1030, i8* getelementptr inbounds ([20 x i8]* @.str55, i64 0, i64 0)) #8, !dbg !1230
+  %9 = bitcast i8* %8 to double*, !dbg !1232
+  store i8* %8, i8** bitcast (double** @_ZN3pov13POVFPU_ConstsE to i8**), align 8, !dbg !1233, !tbaa !1183
+  store double %v, double* %9, align 8, !dbg !1234, !tbaa !1235
+  store i32 1, i32* @_ZN3pov15POVFPU_ConstCntE, align 4, !dbg !1237, !tbaa !1189
+  br label %31, !dbg !1238
+
+; <label>:10                                      ; preds = %.lr.ph, %14
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %14 ]
+  %11 = getelementptr inbounds double* %1, i64 %indvars.iv, !dbg !1239
+  %12 = load double* %11, align 8, !dbg !1239, !tbaa !1235
+  %13 = fcmp oeq double %12, %v, !dbg !1242
+  br i1 %13, label %.loopexit, label %14, !dbg !1243
+
+; <label>:14                                      ; preds = %10
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !1229
+  %15 = icmp ult i64 %indvars.iv.next, %6, !dbg !1228
+  br i1 %15, label %10, label %16, !dbg !1229
+
+; <label>:16                                      ; preds = %14
+  %phitmp = icmp eq i32 %4, 1048575, !dbg !1229
+  br i1 %phitmp, label %17, label %.thread, !dbg !1244
+
+; <label>:17                                      ; preds = %16
+  %18 = tail call i32 (i8*, ...)* @_ZN3pov5ErrorEPKcz(i8* getelementptr inbounds ([59 x i8]* @.str56, i64 0, i64 0), i32 1048575) #8, !dbg !1245
+  %.pre = load i32* @_ZN3pov15POVFPU_ConstCntE, align 4, !dbg !1247, !tbaa !1189
+  %.pre5 = load i8** bitcast (double** @_ZN3pov13POVFPU_ConstsE to i8**), align 8, !dbg !1248, !tbaa !1183
+  br label %.thread, !dbg !1245
+
+.thread:                                          ; preds = %.preheader, %17, %16
+  %19 = phi i8* [ %.pre5, %17 ], [ %3, %16 ], [ %3, %.preheader ]
+  %20 = phi i32 [ %.pre, %17 ], [ %4, %16 ], [ 0, %.preheader ]
+  %21 = add i32 %20, 1, !dbg !1247
+  store i32 %21, i32* @_ZN3pov15POVFPU_ConstCntE, align 4, !dbg !1247, !tbaa !1189
+  %22 = zext i32 %21 to i64, !dbg !1248
+  %23 = shl nuw nsw i64 %22, 3, !dbg !1248
+  %24 = tail call i8* @_ZN3pov11pov_reallocEPvmPKciS2_(i8* %19, i64 %23, i8* getelementptr inbounds ([69 x i8]* @.str51, i64 0, i64 0), i32 1046, i8* getelementptr inbounds ([20 x i8]* @.str55, i64 0, i64 0)) #8, !dbg !1248
+  %25 = bitcast i8* %24 to double*, !dbg !1249
+  store i8* %24, i8** bitcast (double** @_ZN3pov13POVFPU_ConstsE to i8**), align 8, !dbg !1250, !tbaa !1183
+  %26 = load i32* @_ZN3pov15POVFPU_ConstCntE, align 4, !dbg !1251, !tbaa !1189
+  %27 = add i32 %26, -1, !dbg !1252
+  %28 = zext i32 %27 to i64, !dbg !1253
+  %29 = getelementptr inbounds double* %25, i64 %28, !dbg !1253
+  store double %v, double* %29, align 8, !dbg !1254, !tbaa !1235
+  br label %31, !dbg !1255
+
+.loopexit:                                        ; preds = %10
+  %30 = trunc i64 %indvars.iv to i32
+  br label %31
+
+; <label>:31                                      ; preds = %.loopexit, %.thread, %7
+  %.0 = phi i32 [ 0, %7 ], [ %27, %.thread ], [ %30, %.loopexit ]
+  ret i32 %.0, !dbg !1256
+}

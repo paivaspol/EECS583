@@ -1,24 +1,31 @@
 define i8* @FileSameDirectory(i8* %file1, i8* %file2) #0 {
-entry:
-  %call = tail call i8* @FileDirname(i8* %file1) #7
-  %call1 = tail call i8* @FileTail(i8* %file2, i32 0) #7
-  %call2 = tail call i32 @strcmp(i8* %file2, i8* %call1) #5
-  %cmp = icmp eq i32 %call2, 0
-  %call3 = tail call i8* @FileConcat(i8* %call, i8* %call1) #7
-  br i1 %cmp, label %if.end7, label %land.lhs.true
+  tail call void @llvm.dbg.value(metadata i8* %file1, i64 0, metadata !30, metadata !131), !dbg !184
+  tail call void @llvm.dbg.value(metadata i8* %file2, i64 0, metadata !31, metadata !131), !dbg !185
+  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !35, metadata !131), !dbg !186
+  %1 = tail call i8* @FileDirname(i8* %file1) #7, !dbg !187
+  tail call void @llvm.dbg.value(metadata i8* %1, i64 0, metadata !32, metadata !131), !dbg !188
+  %2 = tail call i8* @FileTail(i8* %file2, i32 0) #7, !dbg !189
+  tail call void @llvm.dbg.value(metadata i8* %2, i64 0, metadata !33, metadata !131), !dbg !190
+  %3 = tail call i32 @strcmp(i8* %file2, i8* %2) #6, !dbg !191
+  %4 = icmp eq i32 %3, 0, !dbg !193
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !35, metadata !131), !dbg !186
+  %5 = tail call i8* @FileConcat(i8* %1, i8* %2) #7, !dbg !194
+  tail call void @llvm.dbg.value(metadata i8* %5, i64 0, metadata !34, metadata !131), !dbg !195
+  br i1 %4, label %10, label %6, !dbg !196
 
-land.lhs.true:                                    ; preds = %entry
-  %call4 = tail call i32 @strcmp(i8* %call3, i8* %file2) #5
-  %cmp5 = icmp eq i32 %call4, 0
-  br i1 %cmp5, label %if.end7, label %if.then6
+; <label>:6                                       ; preds = %0
+  %7 = tail call i32 @strcmp(i8* %5, i8* %file2) #6, !dbg !198
+  %8 = icmp eq i32 %7, 0, !dbg !199
+  br i1 %8, label %10, label %9, !dbg !200
 
-if.then6:                                         ; preds = %land.lhs.true
-  tail call void @free(i8* %call3) #6
-  br label %if.end7
+; <label>:9                                       ; preds = %6
+  tail call void @free(i8* %5) #7, !dbg !201
+  tail call void @llvm.dbg.value(metadata i8* null, i64 0, metadata !34, metadata !131), !dbg !195
+  br label %10, !dbg !203
 
-if.end7:                                          ; preds = %land.lhs.true, %if.then6, %entry
-  %result.0 = phi i8* [ %call3, %entry ], [ null, %if.then6 ], [ %call3, %land.lhs.true ]
-  tail call void @free(i8* %call) #6
-  tail call void @free(i8* %call1) #6
-  ret i8* %result.0
+; <label>:10                                      ; preds = %6, %9, %0
+  %result.0 = phi i8* [ %5, %0 ], [ null, %9 ], [ %5, %6 ]
+  tail call void @free(i8* %1) #7, !dbg !204
+  tail call void @free(i8* %2) #7, !dbg !205
+  ret i8* %result.0, !dbg !206
 }

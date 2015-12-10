@@ -1,14 +1,15 @@
-define i32 @get_moveXY(%struct.SGFProperty_t* nocapture %property, i32* nocapture %i, i32* nocapture %j, i32 %boardsize) #0 {
-entry:
-  %call = tail call i32 @get_moveX(%struct.SGFProperty_t* %property, i32 %boardsize) #7
-  store i32 %call, i32* %i, align 4, !tbaa !3
-  %call1 = tail call i32 @get_moveY(%struct.SGFProperty_t* %property, i32 %boardsize) #7
-  store i32 %call1, i32* %j, align 4, !tbaa !3
-  %0 = load i32* %i, align 4, !tbaa !3
-  %cmp = icmp eq i32 %0, -1
-  %cmp2 = icmp eq i32 %call1, -1
-  %or.cond = and i1 %cmp, %cmp2
-  %1 = zext i1 %or.cond to i32
-  %retval.0 = xor i32 %1, 1
-  ret i32 %retval.0
+define i32 @get_moveXY(%struct.SGFProperty_t* nocapture readonly %property, i32* nocapture %i, i32* nocapture %j, i32 %boardsize) #0 {
+  tail call void @llvm.dbg.value(metadata %struct.SGFProperty_t* %property, i64 0, metadata !35, metadata !90), !dbg !134
+  tail call void @llvm.dbg.value(metadata i32* %i, i64 0, metadata !36, metadata !90), !dbg !135
+  tail call void @llvm.dbg.value(metadata i32* %j, i64 0, metadata !37, metadata !90), !dbg !136
+  tail call void @llvm.dbg.value(metadata i32 %boardsize, i64 0, metadata !38, metadata !90), !dbg !137
+  %1 = tail call i32 @get_moveX(%struct.SGFProperty_t* %property, i32 %boardsize) #8, !dbg !138
+  store i32 %1, i32* %i, align 4, !dbg !139, !tbaa !140
+  %2 = tail call i32 @get_moveY(%struct.SGFProperty_t* %property, i32 %boardsize) #8, !dbg !142
+  store i32 %2, i32* %j, align 4, !dbg !143, !tbaa !140
+  %3 = load i32* %i, align 4, !dbg !144, !tbaa !140
+  %4 = and i32 %3, %2, !dbg !146
+  %not. = icmp ne i32 %4, -1, !dbg !146
+  %.0 = zext i1 %not. to i32, !dbg !146
+  ret i32 %.0, !dbg !147
 }

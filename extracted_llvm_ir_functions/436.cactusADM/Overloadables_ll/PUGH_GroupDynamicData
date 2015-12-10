@@ -1,79 +1,87 @@
 define i32 @PUGH_GroupDynamicData(%struct.cGH* %GH, i32 %group, %struct.GROUPDYNAMICDATA* %data) #1 {
-  %1 = icmp eq %struct.GROUPDYNAMICDATA* %data, null
-  br i1 %1, label %60, label %2
+  tail call void @llvm.dbg.value(metadata %struct.cGH* %GH, i64 0, metadata !140, metadata !186), !dbg !187
+  tail call void @llvm.dbg.value(metadata i32 %group, i64 0, metadata !141, metadata !186), !dbg !188
+  tail call void @llvm.dbg.value(metadata %struct.GROUPDYNAMICDATA* %data, i64 0, metadata !142, metadata !186), !dbg !189
+  %1 = icmp eq %struct.GROUPDYNAMICDATA* %data, null, !dbg !190
+  br i1 %1, label %60, label %2, !dbg !192
 
 ; <label>:2                                       ; preds = %0
-  %3 = tail call i32 @CCTK_GroupTypeI(i32 %group) #3
-  %4 = and i32 %3, -2
-  %5 = icmp eq i32 %4, 2
-  br i1 %5, label %6, label %60
+  %3 = tail call i32 @CCTK_GroupTypeI(i32 %group) #4, !dbg !193
+  tail call void @llvm.dbg.value(metadata i32 %3, i64 0, metadata !143, metadata !186), !dbg !195
+  %4 = and i32 %3, -2, !dbg !196
+  %5 = icmp eq i32 %4, 2, !dbg !196
+  br i1 %5, label %6, label %60, !dbg !196
 
 ; <label>:6                                       ; preds = %2
-  %7 = tail call i32 @CCTK_FirstVarIndexI(i32 %group) #3
-  %8 = tail call %struct.PGH* @PUGH_pGH(%struct.cGH* %GH) #3
-  %9 = icmp eq %struct.PGH* %8, null
-  br i1 %9, label %60, label %10
+  %7 = tail call i32 @CCTK_FirstVarIndexI(i32 %group) #4, !dbg !198
+  tail call void @llvm.dbg.value(metadata i32 %7, i64 0, metadata !144, metadata !186), !dbg !200
+  %8 = tail call %struct.PGH* @PUGH_pGH(%struct.cGH* %GH) #4, !dbg !201
+  tail call void @llvm.dbg.value(metadata %struct.PGH* %8, i64 0, metadata !145, metadata !186), !dbg !202
+  %9 = icmp eq %struct.PGH* %8, null, !dbg !203
+  br i1 %9, label %60, label %10, !dbg !205
 
 ; <label>:10                                      ; preds = %6
-  %11 = sext i32 %7 to i64
-  %12 = getelementptr inbounds %struct.PGH* %8, i64 0, i32 7
-  %13 = bitcast i8**** %12 to %struct.PGA****
-  %14 = load %struct.PGA**** %13, align 8, !tbaa !2
-  %15 = getelementptr inbounds %struct.PGA*** %14, i64 %11
-  %16 = load %struct.PGA*** %15, align 8, !tbaa !9
-  %17 = load %struct.PGA** %16, align 8, !tbaa !9
-  %18 = getelementptr inbounds %struct.PGA* %17, i64 0, i32 10
-  %19 = load %struct.PGExtras** %18, align 8, !tbaa !10
-  %20 = getelementptr inbounds %struct.PGExtras* %19, i64 0, i32 0
-  %21 = load i32* %20, align 4, !tbaa !12
-  %22 = getelementptr inbounds %struct.GROUPDYNAMICDATA* %data, i64 0, i32 0
-  store i32 %21, i32* %22, align 4, !tbaa !14
-  %23 = getelementptr inbounds %struct.PGExtras* %19, i64 0, i32 6
-  %24 = bitcast i32** %23 to i64*
-  %25 = load i64* %24, align 8, !tbaa !16
-  %26 = getelementptr inbounds %struct.GROUPDYNAMICDATA* %data, i64 0, i32 2
-  %27 = bitcast i32** %26 to i64*
-  store i64 %25, i64* %27, align 8, !tbaa !17
-  %28 = getelementptr inbounds %struct.PGExtras* %19, i64 0, i32 1
-  %29 = bitcast i32** %28 to i64*
-  %30 = load i64* %29, align 8, !tbaa !18
-  %31 = getelementptr inbounds %struct.GROUPDYNAMICDATA* %data, i64 0, i32 1
-  %32 = bitcast i32** %31 to i64*
-  store i64 %30, i64* %32, align 8, !tbaa !19
-  %33 = getelementptr inbounds %struct.PGH* %8, i64 0, i32 3
-  %34 = load i32* %33, align 4, !tbaa !20
-  %35 = sext i32 %34 to i64
-  %36 = getelementptr inbounds %struct.PGExtras* %19, i64 0, i32 3
-  %37 = load i32*** %36, align 8, !tbaa !21
-  %38 = getelementptr inbounds i32** %37, i64 %35
-  %39 = bitcast i32** %38 to i64*
-  %40 = load i64* %39, align 8, !tbaa !9
-  %41 = getelementptr inbounds %struct.GROUPDYNAMICDATA* %data, i64 0, i32 3
-  %42 = bitcast i32** %41 to i64*
-  store i64 %40, i64* %42, align 8, !tbaa !22
-  %43 = getelementptr inbounds %struct.PGExtras* %19, i64 0, i32 4
-  %44 = load i32*** %43, align 8, !tbaa !23
-  %45 = getelementptr inbounds i32** %44, i64 %35
-  %46 = bitcast i32** %45 to i64*
-  %47 = load i64* %46, align 8, !tbaa !9
-  %48 = getelementptr inbounds %struct.GROUPDYNAMICDATA* %data, i64 0, i32 4
-  %49 = bitcast i32** %48 to i64*
-  store i64 %47, i64* %49, align 8, !tbaa !24
-  %50 = getelementptr inbounds %struct.PGExtras* %19, i64 0, i32 12
-  %51 = bitcast i32** %50 to i64*
-  %52 = load i64* %51, align 8, !tbaa !25
-  %53 = getelementptr inbounds %struct.GROUPDYNAMICDATA* %data, i64 0, i32 6
-  %54 = bitcast i32** %53 to i64*
-  store i64 %52, i64* %54, align 8, !tbaa !26
-  %55 = getelementptr inbounds %struct.PGExtras* %19, i64 0, i32 5
-  %56 = bitcast i32** %55 to i64*
-  %57 = load i64* %56, align 8, !tbaa !27
-  %58 = getelementptr inbounds %struct.GROUPDYNAMICDATA* %data, i64 0, i32 5
-  %59 = bitcast i32** %58 to i64*
-  store i64 %57, i64* %59, align 8, !tbaa !28
-  br label %60
+  %11 = sext i32 %7 to i64, !dbg !206
+  %12 = getelementptr inbounds %struct.PGH* %8, i64 0, i32 7, !dbg !208
+  %13 = bitcast i8**** %12 to %struct.PGA****, !dbg !208
+  %14 = load %struct.PGA**** %13, align 8, !dbg !208, !tbaa !209
+  %15 = getelementptr inbounds %struct.PGA*** %14, i64 %11, !dbg !206
+  %16 = load %struct.PGA*** %15, align 8, !dbg !206, !tbaa !216
+  %17 = load %struct.PGA** %16, align 8, !dbg !206, !tbaa !216
+  %18 = getelementptr inbounds %struct.PGA* %17, i64 0, i32 10, !dbg !217
+  %19 = load %struct.PGExtras** %18, align 8, !dbg !217, !tbaa !218
+  tail call void @llvm.dbg.value(metadata %struct.PGExtras* %19, i64 0, metadata !177, metadata !186), !dbg !220
+  %20 = getelementptr inbounds %struct.PGExtras* %19, i64 0, i32 0, !dbg !221
+  %21 = load i32* %20, align 4, !dbg !221, !tbaa !222
+  %22 = getelementptr inbounds %struct.GROUPDYNAMICDATA* %data, i64 0, i32 0, !dbg !224
+  store i32 %21, i32* %22, align 4, !dbg !225, !tbaa !226
+  %23 = getelementptr inbounds %struct.PGExtras* %19, i64 0, i32 6, !dbg !228
+  %24 = bitcast i32** %23 to i64*, !dbg !228
+  %25 = load i64* %24, align 8, !dbg !228, !tbaa !229
+  %26 = getelementptr inbounds %struct.GROUPDYNAMICDATA* %data, i64 0, i32 2, !dbg !230
+  %27 = bitcast i32** %26 to i64*, !dbg !231
+  store i64 %25, i64* %27, align 8, !dbg !231, !tbaa !232
+  %28 = getelementptr inbounds %struct.PGExtras* %19, i64 0, i32 1, !dbg !233
+  %29 = bitcast i32** %28 to i64*, !dbg !233
+  %30 = load i64* %29, align 8, !dbg !233, !tbaa !234
+  %31 = getelementptr inbounds %struct.GROUPDYNAMICDATA* %data, i64 0, i32 1, !dbg !235
+  %32 = bitcast i32** %31 to i64*, !dbg !236
+  store i64 %30, i64* %32, align 8, !dbg !236, !tbaa !237
+  %33 = getelementptr inbounds %struct.PGH* %8, i64 0, i32 3, !dbg !238
+  %34 = load i32* %33, align 4, !dbg !238, !tbaa !239
+  %35 = sext i32 %34 to i64, !dbg !240
+  %36 = getelementptr inbounds %struct.PGExtras* %19, i64 0, i32 3, !dbg !241
+  %37 = load i32*** %36, align 8, !dbg !241, !tbaa !242
+  %38 = getelementptr inbounds i32** %37, i64 %35, !dbg !240
+  %39 = bitcast i32** %38 to i64*, !dbg !240
+  %40 = load i64* %39, align 8, !dbg !240, !tbaa !216
+  %41 = getelementptr inbounds %struct.GROUPDYNAMICDATA* %data, i64 0, i32 3, !dbg !243
+  %42 = bitcast i32** %41 to i64*, !dbg !244
+  store i64 %40, i64* %42, align 8, !dbg !244, !tbaa !245
+  %43 = getelementptr inbounds %struct.PGExtras* %19, i64 0, i32 4, !dbg !246
+  %44 = load i32*** %43, align 8, !dbg !246, !tbaa !247
+  %45 = getelementptr inbounds i32** %44, i64 %35, !dbg !248
+  %46 = bitcast i32** %45 to i64*, !dbg !248
+  %47 = load i64* %46, align 8, !dbg !248, !tbaa !216
+  %48 = getelementptr inbounds %struct.GROUPDYNAMICDATA* %data, i64 0, i32 4, !dbg !249
+  %49 = bitcast i32** %48 to i64*, !dbg !250
+  store i64 %47, i64* %49, align 8, !dbg !250, !tbaa !251
+  %50 = getelementptr inbounds %struct.PGExtras* %19, i64 0, i32 12, !dbg !252
+  %51 = bitcast i32** %50 to i64*, !dbg !252
+  %52 = load i64* %51, align 8, !dbg !252, !tbaa !253
+  %53 = getelementptr inbounds %struct.GROUPDYNAMICDATA* %data, i64 0, i32 6, !dbg !254
+  %54 = bitcast i32** %53 to i64*, !dbg !255
+  store i64 %52, i64* %54, align 8, !dbg !255, !tbaa !256
+  %55 = getelementptr inbounds %struct.PGExtras* %19, i64 0, i32 5, !dbg !257
+  %56 = bitcast i32** %55 to i64*, !dbg !257
+  %57 = load i64* %56, align 8, !dbg !257, !tbaa !258
+  %58 = getelementptr inbounds %struct.GROUPDYNAMICDATA* %data, i64 0, i32 5, !dbg !259
+  %59 = bitcast i32** %58 to i64*, !dbg !260
+  store i64 %57, i64* %59, align 8, !dbg !260, !tbaa !261
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !178, metadata !186), !dbg !262
+  br label %60, !dbg !263
 
 ; <label>:60                                      ; preds = %0, %2, %6, %10
   %retval.0 = phi i32 [ 0, %10 ], [ -3, %6 ], [ -2, %2 ], [ -1, %0 ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !264
 }

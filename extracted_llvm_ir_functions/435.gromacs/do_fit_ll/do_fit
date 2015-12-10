@@ -2,56 +2,64 @@ define void @do_fit(i32 %natoms, float* nocapture readonly %w_rls, [3 x float]* 
   %R = alloca [3 x [3 x float]], align 16
   %x_old = alloca [3 x float], align 4
   %x_old6 = bitcast [3 x float]* %x_old to i8*
-  %1 = bitcast [3 x [3 x float]]* %R to i8*
-  call void @llvm.lifetime.start(i64 36, i8* %1) #7
-  %2 = getelementptr inbounds [3 x [3 x float]]* %R, i64 0, i64 0
-  call void @calc_fit_R(i32 %natoms, float* %w_rls, [3 x float]* %xp, [3 x float]* %x, [3 x float]* %2) #11
-  %3 = icmp sgt i32 %natoms, 0
-  br i1 %3, label %.preheader1.lr.ph, label %._crit_edge
+  tail call void @llvm.dbg.value(metadata i32 %natoms, i64 0, metadata !291, metadata !360), !dbg !824
+  tail call void @llvm.dbg.value(metadata float* %w_rls, i64 0, metadata !292, metadata !360), !dbg !825
+  tail call void @llvm.dbg.value(metadata [3 x float]* %xp, i64 0, metadata !293, metadata !360), !dbg !826
+  tail call void @llvm.dbg.value(metadata [3 x float]* %x, i64 0, metadata !294, metadata !360), !dbg !827
+  %1 = bitcast [3 x [3 x float]]* %R to i8*, !dbg !828
+  call void @llvm.lifetime.start(i64 36, i8* %1) #7, !dbg !828
+  tail call void @llvm.dbg.declare(metadata [3 x [3 x float]]* %R, metadata !300, metadata !360), !dbg !829
+  tail call void @llvm.dbg.declare(metadata [3 x float]* %x_old, metadata !301, metadata !360), !dbg !830
+  %2 = getelementptr inbounds [3 x [3 x float]]* %R, i64 0, i64 0, !dbg !831
+  call void @calc_fit_R(i32 %natoms, float* %w_rls, [3 x float]* %xp, [3 x float]* %x, [3 x float]* %2) #11, !dbg !832
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !296, metadata !360), !dbg !833
+  %3 = icmp sgt i32 %natoms, 0, !dbg !834
+  br i1 %3, label %.preheader1.lr.ph, label %._crit_edge, !dbg !837
 
 .preheader1.lr.ph:                                ; preds = %0
-  %4 = add i32 %natoms, -1
-  br label %.preheader1
+  %4 = add i32 %natoms, -1, !dbg !837
+  br label %.preheader1, !dbg !837
 
 .preheader1:                                      ; preds = %16, %.preheader1.lr.ph
   %indvars.iv13 = phi i64 [ 0, %.preheader1.lr.ph ], [ %indvars.iv.next14, %16 ]
   %scevgep = getelementptr [3 x float]* %x, i64 %indvars.iv13, i64 0
   %scevgep7 = bitcast float* %scevgep to i8*
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %x_old6, i8* %scevgep7, i64 12, i32 4, i1 false)
-  br label %5
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %x_old6, i8* %scevgep7, i64 12, i32 4, i1 false), !dbg !838
+  br label %5, !dbg !842
 
 ; <label>:5                                       ; preds = %15, %.preheader1
   %indvars.iv8 = phi i64 [ 0, %.preheader1 ], [ %indvars.iv.next9, %15 ]
-  %6 = getelementptr inbounds [3 x float]* %x, i64 %indvars.iv13, i64 %indvars.iv8
-  store float 0.000000e+00, float* %6, align 4, !tbaa !2
-  br label %7
+  %6 = getelementptr inbounds [3 x float]* %x, i64 %indvars.iv13, i64 %indvars.iv8, !dbg !844
+  store float 0.000000e+00, float* %6, align 4, !dbg !847, !tbaa !450
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !299, metadata !360), !dbg !848
+  br label %7, !dbg !849
 
 ; <label>:7                                       ; preds = %7, %5
   %indvars.iv = phi i64 [ 0, %5 ], [ %indvars.iv.next, %7 ]
-  %8 = phi float [ 0.000000e+00, %5 ], [ %14, %7 ]
-  %9 = getelementptr inbounds [3 x [3 x float]]* %R, i64 0, i64 %indvars.iv8, i64 %indvars.iv
-  %10 = load float* %9, align 4, !tbaa !2
-  %11 = getelementptr inbounds [3 x float]* %x_old, i64 0, i64 %indvars.iv
-  %12 = load float* %11, align 4, !tbaa !2
-  %13 = fmul float %10, %12
-  %14 = fadd float %8, %13
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %exitcond = icmp eq i64 %indvars.iv.next, 3
-  br i1 %exitcond, label %15, label %7
+  %8 = phi float [ 0.000000e+00, %5 ], [ %14, %7 ], !dbg !851
+  %9 = getelementptr inbounds [3 x [3 x float]]* %R, i64 0, i64 %indvars.iv8, i64 %indvars.iv, !dbg !851
+  %10 = load float* %9, align 4, !dbg !851, !tbaa !450
+  %11 = getelementptr inbounds [3 x float]* %x_old, i64 0, i64 %indvars.iv, !dbg !853
+  %12 = load float* %11, align 4, !dbg !853, !tbaa !450
+  %13 = fmul float %10, %12, !dbg !854
+  %14 = fadd float %8, %13, !dbg !855
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !849
+  %exitcond = icmp eq i64 %indvars.iv.next, 3, !dbg !849
+  br i1 %exitcond, label %15, label %7, !dbg !849
 
 ; <label>:15                                      ; preds = %7
-  store float %14, float* %6, align 4, !tbaa !2
-  %indvars.iv.next9 = add nuw nsw i64 %indvars.iv8, 1
-  %exitcond10 = icmp eq i64 %indvars.iv.next9, 3
-  br i1 %exitcond10, label %16, label %5
+  store float %14, float* %6, align 4, !dbg !855, !tbaa !450
+  %indvars.iv.next9 = add nuw nsw i64 %indvars.iv8, 1, !dbg !842
+  %exitcond10 = icmp eq i64 %indvars.iv.next9, 3, !dbg !842
+  br i1 %exitcond10, label %16, label %5, !dbg !842
 
 ; <label>:16                                      ; preds = %15
-  %indvars.iv.next14 = add nuw nsw i64 %indvars.iv13, 1
-  %lftr.wideiv = trunc i64 %indvars.iv13 to i32
-  %exitcond15 = icmp eq i32 %lftr.wideiv, %4
-  br i1 %exitcond15, label %._crit_edge, label %.preheader1
+  %indvars.iv.next14 = add nuw nsw i64 %indvars.iv13, 1, !dbg !837
+  %lftr.wideiv = trunc i64 %indvars.iv13 to i32, !dbg !837
+  %exitcond15 = icmp eq i32 %lftr.wideiv, %4, !dbg !837
+  br i1 %exitcond15, label %._crit_edge, label %.preheader1, !dbg !837
 
 ._crit_edge:                                      ; preds = %16, %0
-  call void @llvm.lifetime.end(i64 36, i8* %1) #7
-  ret void
+  call void @llvm.lifetime.end(i64 36, i8* %1) #7, !dbg !856
+  ret void, !dbg !856
 }

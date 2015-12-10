@@ -1,18 +1,20 @@
-define internal fastcc i32 @read_i32(%struct._IO_FILE* nocapture %fp, i32* nocapture %ret_result) #0 {
-entry:
+define internal fastcc i32 @read_i32(%struct.__sFILE* nocapture %fp, i32* nocapture %ret_result) #0 {
   %result = alloca i32, align 4
-  %0 = bitcast i32* %result to i8*
-  %call = call i64 @fread(i8* %0, i64 4, i64 1, %struct._IO_FILE* %fp) #8
-  %cmp = icmp eq i64 %call, 1
-  br i1 %cmp, label %if.end, label %return
+  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %fp, i64 0, metadata !434, metadata !535), !dbg !1125
+  tail call void @llvm.dbg.value(metadata i32* %ret_result, i64 0, metadata !435, metadata !535), !dbg !1126
+  %1 = bitcast i32* %result to i8*, !dbg !1127
+  %2 = call i64 @fread(i8* %1, i64 4, i64 1, %struct.__sFILE* %fp) #9, !dbg !1129
+  %3 = icmp eq i64 %2, 1, !dbg !1130
+  br i1 %3, label %4, label %7, !dbg !1131
 
-if.end:                                           ; preds = %entry
-  %1 = load i32* %result, align 4, !tbaa !4
-  %call1 = call i32 @sre_ntoh32(i32 %1) #8
-  store i32 %call1, i32* %ret_result, align 4, !tbaa !4
-  br label %return
+; <label>:4                                       ; preds = %0
+  tail call void @llvm.dbg.value(metadata i32* %result, i64 0, metadata !436, metadata !535), !dbg !1132
+  %5 = load i32* %result, align 4, !dbg !1133, !tbaa !578
+  %6 = tail call i32 @sre_ntoh32(i32 %5) #9, !dbg !1134
+  store i32 %6, i32* %ret_result, align 4, !dbg !1135, !tbaa !578
+  br label %7, !dbg !1136
 
-return:                                           ; preds = %entry, %if.end
-  %retval.0 = phi i32 [ 1, %if.end ], [ 0, %entry ]
-  ret i32 %retval.0
+; <label>:7                                       ; preds = %0, %4
+  %.0 = phi i32 [ 1, %4 ], [ 0, %0 ]
+  ret i32 %.0, !dbg !1137
 }

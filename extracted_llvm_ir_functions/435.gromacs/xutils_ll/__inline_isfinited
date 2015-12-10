@@ -1,14 +1,15 @@
-define i32 @__inline_isfinited(double %__x) #2 {
-  %1 = fcmp ord double %__x, 0.000000e+00
-  br i1 %1, label %2, label %5
+define i32 @__inline_isfinited(double %__x) #3 {
+  tail call void @llvm.dbg.value(metadata double %__x, i64 0, metadata !159, metadata !899), !dbg !944
+  %1 = fcmp ord double %__x, 0.000000e+00, !dbg !945
+  br i1 %1, label %2, label %5, !dbg !946
 
 ; <label>:2                                       ; preds = %0
-  %3 = tail call double @llvm.fabs.f64(double %__x) #11
-  %4 = fcmp une double %3, 0x7FF0000000000000
+  %3 = tail call double @llvm.fabs.f64(double %__x) #11, !dbg !947
+  %4 = fcmp une double %3, 0x7FF0000000000000, !dbg !948
   br label %5
 
 ; <label>:5                                       ; preds = %2, %0
   %6 = phi i1 [ false, %0 ], [ %4, %2 ]
-  %7 = zext i1 %6 to i32
-  ret i32 %7
+  %7 = zext i1 %6 to i32, !dbg !946
+  ret i32 %7, !dbg !949
 }

@@ -1,192 +1,351 @@
-define void @FrontMtx_solve(%struct._FrontMtx* %frontmtx, %struct._DenseMtx* %solmtx, %struct._DenseMtx* %rhsmtx, %struct._SubMtxManager* %mtxmanager, double* %cpus, i32 %msglvl, %struct._IO_FILE* %msgFile) #0 {
-entry:
-  %cmp = icmp eq %struct._FrontMtx* %frontmtx, null
-  %cmp1 = icmp eq %struct._DenseMtx* %solmtx, null
-  %or.cond = or i1 %cmp, %cmp1
-  %cmp3 = icmp eq %struct._DenseMtx* %rhsmtx, null
-  %or.cond238 = or i1 %or.cond, %cmp3
-  %cmp5 = icmp eq %struct._SubMtxManager* %mtxmanager, null
-  %or.cond239 = or i1 %or.cond238, %cmp5
-  %cmp7 = icmp eq double* %cpus, null
-  %or.cond240 = or i1 %or.cond239, %cmp7
-  br i1 %or.cond240, label %if.then, label %lor.lhs.false8
+define void @FrontMtx_solve(%struct._FrontMtx* %frontmtx, %struct._DenseMtx* %solmtx, %struct._DenseMtx* %rhsmtx, %struct._SubMtxManager* %mtxmanager, double* %cpus, i32 %msglvl, %struct.__sFILE* %msgFile) #0 {
+  tail call void @llvm.dbg.value(metadata %struct._FrontMtx* %frontmtx, i64 0, metadata !259, metadata !307), !dbg !308
+  tail call void @llvm.dbg.value(metadata %struct._DenseMtx* %solmtx, i64 0, metadata !260, metadata !307), !dbg !309
+  tail call void @llvm.dbg.value(metadata %struct._DenseMtx* %rhsmtx, i64 0, metadata !261, metadata !307), !dbg !310
+  tail call void @llvm.dbg.value(metadata %struct._SubMtxManager* %mtxmanager, i64 0, metadata !262, metadata !307), !dbg !311
+  tail call void @llvm.dbg.value(metadata double* %cpus, i64 0, metadata !263, metadata !307), !dbg !312
+  tail call void @llvm.dbg.value(metadata i32 %msglvl, i64 0, metadata !264, metadata !307), !dbg !313
+  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %msgFile, i64 0, metadata !265, metadata !307), !dbg !314
+  %1 = tail call i32 @gettimeofday(%struct.timeval* @TV, i8* bitcast (%struct.timezone* @TZ to i8*)) #6, !dbg !315
+  %2 = load i64* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 0), align 8, !dbg !315, !tbaa !316
+  %3 = sitofp i64 %2 to double, !dbg !315
+  %4 = load i32* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 1), align 8, !dbg !315, !tbaa !322
+  %5 = sitofp i32 %4 to double, !dbg !315
+  %6 = fmul double %5, 1.000000e-06, !dbg !315
+  %7 = fadd double %3, %6, !dbg !315
+  tail call void @llvm.dbg.value(metadata double %7, i64 0, metadata !269, metadata !307), !dbg !323
+  %8 = icmp eq %struct._FrontMtx* %frontmtx, null, !dbg !324
+  %9 = icmp eq %struct._DenseMtx* %solmtx, null, !dbg !326
+  %or.cond = or i1 %8, %9, !dbg !327
+  %10 = icmp eq %struct._DenseMtx* %rhsmtx, null, !dbg !328
+  %or.cond3 = or i1 %or.cond, %10, !dbg !327
+  %11 = icmp eq %struct._SubMtxManager* %mtxmanager, null, !dbg !329
+  %or.cond5 = or i1 %or.cond3, %11, !dbg !327
+  %12 = icmp eq double* %cpus, null, !dbg !330
+  %or.cond7 = or i1 %or.cond5, %12, !dbg !327
+  br i1 %or.cond7, label %16, label %13, !dbg !327
 
-lor.lhs.false8:                                   ; preds = %entry
-  %cmp9 = icmp sgt i32 %msglvl, 0
-  %cmp10 = icmp eq %struct._IO_FILE* %msgFile, null
-  %or.cond241 = and i1 %cmp9, %cmp10
-  br i1 %or.cond241, label %if.then, label %if.end
+; <label>:13                                      ; preds = %0
+  %14 = icmp sgt i32 %msglvl, 0, !dbg !331
+  %15 = icmp eq %struct.__sFILE* %msgFile, null, !dbg !332
+  %or.cond9 = and i1 %14, %15, !dbg !333
+  br i1 %or.cond9, label %16, label %19, !dbg !333
 
-if.then:                                          ; preds = %lor.lhs.false8, %entry
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([153 x i8]* @.str, i64 0, i64 0), %struct._FrontMtx* %frontmtx, %struct._DenseMtx* %solmtx, %struct._DenseMtx* %rhsmtx, %struct._SubMtxManager* %mtxmanager, double* %cpus, i32 %msglvl, %struct._IO_FILE* %msgFile) #5
-  tail call void @exit(i32 -1) #6
-  unreachable
+; <label>:16                                      ; preds = %13, %0
+  %17 = load %struct.__sFILE** @__stderrp, align 8, !dbg !334, !tbaa !336
+  %18 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %17, i8* getelementptr inbounds ([153 x i8]* @.str, i64 0, i64 0), %struct._FrontMtx* %frontmtx, %struct._DenseMtx* %solmtx, %struct._DenseMtx* %rhsmtx, %struct._SubMtxManager* %mtxmanager, double* %cpus, i32 %msglvl, %struct.__sFILE* %msgFile) #6, !dbg !338
+  tail call void @exit(i32 -1) #7, !dbg !339
+  unreachable, !dbg !339
 
-if.end:                                           ; preds = %lor.lhs.false8
-  %call11 = tail call i32 @FrontMtx_nfront(%struct._FrontMtx* %frontmtx) #5
-  %call12 = tail call %struct._Tree* @FrontMtx_frontTree(%struct._FrontMtx* %frontmtx) #5
-  %ncol = getelementptr inbounds %struct._DenseMtx* %rhsmtx, i64 0, i32 4
-  %1 = load i32* %ncol, align 4, !tbaa !3
-  %call13 = tail call %struct._IP** @FrontMtx_forwardSetup(%struct._FrontMtx* %frontmtx, i32 %msglvl, %struct._IO_FILE* %msgFile) #5
-  %call14 = tail call i8* @CVinit(i32 %call11, i8 signext 78) #5
-  %call15 = tail call i8* @CVinit(i32 %call11, i8 signext 87) #5
-  store double 0.000000e+00, double* %cpus, align 8, !tbaa !4
-  %call16 = tail call %struct._SubMtx** @FrontMtx_loadRightHandSide(%struct._FrontMtx* %frontmtx, %struct._DenseMtx* %rhsmtx, i32* null, i32 0, %struct._SubMtxManager* %mtxmanager, i32 %msglvl, %struct._IO_FILE* %msgFile) #5
-  %arrayidx18 = getelementptr inbounds double* %cpus, i64 1
-  store double 0.000000e+00, double* %arrayidx18, align 8, !tbaa !4
-  %cmp19 = icmp sgt i32 %msglvl, 1
-  br i1 %cmp19, label %if.then20, label %if.end28
+; <label>:19                                      ; preds = %13
+  %20 = tail call i32 @FrontMtx_nfront(%struct._FrontMtx* %frontmtx) #6, !dbg !340
+  tail call void @llvm.dbg.value(metadata i32 %20, i64 0, metadata !273, metadata !307), !dbg !341
+  %21 = tail call %struct._Tree* @FrontMtx_frontTree(%struct._FrontMtx* %frontmtx) #6, !dbg !342
+  tail call void @llvm.dbg.value(metadata %struct._Tree* %21, i64 0, metadata !284, metadata !307), !dbg !343
+  %22 = getelementptr inbounds %struct._DenseMtx* %rhsmtx, i64 0, i32 4, !dbg !344
+  %23 = load i32* %22, align 4, !dbg !344, !tbaa !345
+  tail call void @llvm.dbg.value(metadata i32 %23, i64 0, metadata !274, metadata !307), !dbg !348
+  %24 = tail call i32 @gettimeofday(%struct.timeval* @TV, i8* bitcast (%struct.timezone* @TZ to i8*)) #6, !dbg !349
+  %25 = load i64* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 0), align 8, !dbg !349, !tbaa !316
+  %26 = sitofp i64 %25 to double, !dbg !349
+  %27 = load i32* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 1), align 8, !dbg !349, !tbaa !322
+  %28 = sitofp i32 %27 to double, !dbg !349
+  %29 = fmul double %28, 1.000000e-06, !dbg !349
+  %30 = fadd double %26, %29, !dbg !349
+  tail call void @llvm.dbg.value(metadata double %30, i64 0, metadata !270, metadata !307), !dbg !350
+  %31 = tail call %struct._IP** @FrontMtx_forwardSetup(%struct._FrontMtx* %frontmtx, i32 %msglvl, %struct.__sFILE* %msgFile) #6, !dbg !351
+  tail call void @llvm.dbg.value(metadata %struct._IP** %31, i64 0, metadata !275, metadata !307), !dbg !352
+  %32 = tail call i8* @CVinit(i32 %20, i8 signext 78) #6, !dbg !353
+  tail call void @llvm.dbg.value(metadata i8* %32, i64 0, metadata !266, metadata !307), !dbg !354
+  %33 = tail call i8* @CVinit(i32 %20, i8 signext 87) #6, !dbg !355
+  tail call void @llvm.dbg.value(metadata i8* %33, i64 0, metadata !267, metadata !307), !dbg !356
+  %34 = tail call i32 @gettimeofday(%struct.timeval* @TV, i8* bitcast (%struct.timezone* @TZ to i8*)) #6, !dbg !357
+  %35 = load i64* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 0), align 8, !dbg !357, !tbaa !316
+  %36 = sitofp i64 %35 to double, !dbg !357
+  %37 = load i32* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 1), align 8, !dbg !357, !tbaa !322
+  %38 = sitofp i32 %37 to double, !dbg !357
+  %39 = fmul double %38, 1.000000e-06, !dbg !357
+  %40 = fadd double %36, %39, !dbg !357
+  tail call void @llvm.dbg.value(metadata double %40, i64 0, metadata !271, metadata !307), !dbg !358
+  %41 = fsub double %40, %30, !dbg !359
+  store double %41, double* %cpus, align 8, !dbg !360, !tbaa !361
+  %42 = tail call i32 @gettimeofday(%struct.timeval* @TV, i8* bitcast (%struct.timezone* @TZ to i8*)) #6, !dbg !363
+  %43 = load i64* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 0), align 8, !dbg !363, !tbaa !316
+  %44 = sitofp i64 %43 to double, !dbg !363
+  %45 = load i32* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 1), align 8, !dbg !363, !tbaa !322
+  %46 = sitofp i32 %45 to double, !dbg !363
+  %47 = fmul double %46, 1.000000e-06, !dbg !363
+  %48 = fadd double %44, %47, !dbg !363
+  tail call void @llvm.dbg.value(metadata double %48, i64 0, metadata !270, metadata !307), !dbg !350
+  %49 = tail call %struct._SubMtx** @FrontMtx_loadRightHandSide(%struct._FrontMtx* %frontmtx, %struct._DenseMtx* %rhsmtx, i32* null, i32 0, %struct._SubMtxManager* %mtxmanager, i32 %msglvl, %struct.__sFILE* %msgFile) #6, !dbg !364
+  tail call void @llvm.dbg.value(metadata %struct._SubMtx** %49, i64 0, metadata !268, metadata !307), !dbg !365
+  %50 = tail call i32 @gettimeofday(%struct.timeval* @TV, i8* bitcast (%struct.timezone* @TZ to i8*)) #6, !dbg !366
+  %51 = load i64* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 0), align 8, !dbg !366, !tbaa !316
+  %52 = sitofp i64 %51 to double, !dbg !366
+  %53 = load i32* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 1), align 8, !dbg !366, !tbaa !322
+  %54 = sitofp i32 %53 to double, !dbg !366
+  %55 = fmul double %54, 1.000000e-06, !dbg !366
+  %56 = fadd double %52, %55, !dbg !366
+  tail call void @llvm.dbg.value(metadata double %56, i64 0, metadata !271, metadata !307), !dbg !358
+  %57 = fsub double %56, %48, !dbg !367
+  %58 = getelementptr inbounds double* %cpus, i64 1, !dbg !368
+  store double %57, double* %58, align 8, !dbg !369, !tbaa !361
+  %59 = icmp sgt i32 %msglvl, 1, !dbg !370
+  br i1 %59, label %60, label %.critedge, !dbg !372
 
-if.then20:                                        ; preds = %if.end
-  %call22 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %msgFile, i8* getelementptr inbounds ([25 x i8]* @.str1, i64 0, i64 0), double 0.000000e+00) #5
-  %2 = tail call i64 @fwrite(i8* getelementptr inbounds ([34 x i8]* @.str2, i64 0, i64 0), i64 33, i64 1, %struct._IO_FILE* %msgFile)
-  %call27 = tail call i32 @fflush(%struct._IO_FILE* %msgFile) #5
-  br label %if.end28
+; <label>:60                                      ; preds = %19
+  %61 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %msgFile, i8* getelementptr inbounds ([25 x i8]* @.str1, i64 0, i64 0), double %57) #6, !dbg !373
+  %62 = tail call i64 @fwrite(i8* getelementptr inbounds ([34 x i8]* @.str2, i64 0, i64 0), i64 33, i64 1, %struct.__sFILE* %msgFile), !dbg !375
+  %63 = tail call i32 @fflush(%struct.__sFILE* %msgFile) #6, !dbg !378
+  br label %.critedge, !dbg !379
 
-if.end28:                                         ; preds = %if.end, %if.then20
-  %call29 = tail call i32 @Tree_postOTfirst(%struct._Tree* %call12) #5
-  %cmp30246 = icmp eq i32 %call29, -1
-  br i1 %cmp30246, label %for.end, label %for.body
+.critedge:                                        ; preds = %19, %60
+  %64 = tail call i32 @gettimeofday(%struct.timeval* @TV, i8* bitcast (%struct.timezone* @TZ to i8*)) #6, !dbg !380
+  %65 = load i64* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 0), align 8, !dbg !380, !tbaa !316
+  %66 = sitofp i64 %65 to double, !dbg !380
+  %67 = load i32* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 1), align 8, !dbg !380, !tbaa !322
+  %68 = sitofp i32 %67 to double, !dbg !380
+  %69 = fmul double %68, 1.000000e-06, !dbg !380
+  %70 = fadd double %66, %69, !dbg !380
+  tail call void @llvm.dbg.value(metadata double %70, i64 0, metadata !270, metadata !307), !dbg !350
+  %71 = tail call i32 @Tree_postOTfirst(%struct._Tree* %21) #6, !dbg !381
+  tail call void @llvm.dbg.value(metadata i32 %71, i64 0, metadata !272, metadata !307), !dbg !383
+  %72 = icmp eq i32 %71, -1, !dbg !384
+  br i1 %72, label %._crit_edge17, label %.lr.ph16, !dbg !386
 
-for.body:                                         ; preds = %if.end28, %if.end35
-  %J.0247 = phi i32 [ %call36, %if.end35 ], [ %call29, %if.end28 ]
-  br i1 %cmp19, label %if.then32, label %if.end35
+.lr.ph16:                                         ; preds = %.critedge, %76
+  %J.015 = phi i32 [ %77, %76 ], [ %71, %.critedge ]
+  br i1 %59, label %73, label %76, !dbg !387
 
-if.then32:                                        ; preds = %for.body
-  %call33 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %msgFile, i8* getelementptr inbounds ([29 x i8]* @.str3, i64 0, i64 0), i32 %J.0247) #5
-  %call34 = tail call i32 @fflush(%struct._IO_FILE* %msgFile) #5
-  br label %if.end35
+; <label>:73                                      ; preds = %.lr.ph16
+  %74 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %msgFile, i8* getelementptr inbounds ([29 x i8]* @.str3, i64 0, i64 0), i32 %J.015) #6, !dbg !389
+  %75 = tail call i32 @fflush(%struct.__sFILE* %msgFile) #6, !dbg !392
+  br label %76, !dbg !393
 
-if.end35:                                         ; preds = %if.then32, %for.body
-  tail call void @FrontMtx_forwardVisit(%struct._FrontMtx* %frontmtx, i32 %J.0247, i32 %1, i32* null, i32 0, %struct._SubMtxManager* %mtxmanager, %struct._SubMtxList* null, %struct._SubMtx** %call16, i8* %call14, %struct._IP** %call13, %struct._SubMtx** %call16, i8* %call15, i32 %msglvl, %struct._IO_FILE* %msgFile) #5
-  %call36 = tail call i32 @Tree_postOTnext(%struct._Tree* %call12, i32 %J.0247) #5
-  %cmp30 = icmp eq i32 %call36, -1
-  br i1 %cmp30, label %for.end, label %for.body
+; <label>:76                                      ; preds = %73, %.lr.ph16
+  tail call void @FrontMtx_forwardVisit(%struct._FrontMtx* %frontmtx, i32 %J.015, i32 %23, i32* null, i32 0, %struct._SubMtxManager* %mtxmanager, %struct._SubMtxList* null, %struct._SubMtx** %49, i8* %32, %struct._IP** %31, %struct._SubMtx** %49, i8* %33, i32 %msglvl, %struct.__sFILE* %msgFile) #6, !dbg !394
+  %77 = tail call i32 @Tree_postOTnext(%struct._Tree* %21, i32 %J.015) #6, !dbg !395
+  tail call void @llvm.dbg.value(metadata i32 %77, i64 0, metadata !272, metadata !307), !dbg !383
+  %78 = icmp eq i32 %77, -1, !dbg !384
+  br i1 %78, label %._crit_edge17, label %.lr.ph16, !dbg !386
 
-for.end:                                          ; preds = %if.end35, %if.end28
-  %add = add nsw i32 %call11, 1
-  %idxprom = sext i32 %add to i64
-  %arrayidx37 = getelementptr inbounds %struct._IP** %call13, i64 %idxprom
-  %3 = load %struct._IP** %arrayidx37, align 8, !tbaa !0
-  tail call void @IP_free(%struct._IP* %3) #5
-  %cmp38 = icmp eq %struct._IP** %call13, null
-  br i1 %cmp38, label %if.end40, label %if.then39
+._crit_edge17:                                    ; preds = %76, %.critedge
+  %79 = add nsw i32 %20, 1, !dbg !396
+  %80 = sext i32 %79 to i64, !dbg !397
+  %81 = getelementptr inbounds %struct._IP** %31, i64 %80, !dbg !397
+  %82 = load %struct._IP** %81, align 8, !dbg !397, !tbaa !336
+  tail call void @IP_free(%struct._IP* %82) #6, !dbg !398
+  %83 = icmp eq %struct._IP** %31, null, !dbg !399
+  br i1 %83, label %86, label %84, !dbg !401
 
-if.then39:                                        ; preds = %for.end
-  %4 = bitcast %struct._IP** %call13 to i8*
-  tail call void @free(i8* %4) #5
-  br label %if.end40
+; <label>:84                                      ; preds = %._crit_edge17
+  %85 = bitcast %struct._IP** %31 to i8*, !dbg !402
+  tail call void @free(i8* %85) #8, !dbg !402
+  tail call void @llvm.dbg.value(metadata %struct._IP** null, i64 0, metadata !275, metadata !307), !dbg !352
+  br label %86, !dbg !402
 
-if.end40:                                         ; preds = %for.end, %if.then39
-  %arrayidx42 = getelementptr inbounds double* %cpus, i64 2
-  store double 0.000000e+00, double* %arrayidx42, align 8, !tbaa !4
-  br i1 %cmp19, label %if.then44, label %if.end47
+; <label>:86                                      ; preds = %._crit_edge17, %84
+  %87 = tail call i32 @gettimeofday(%struct.timeval* @TV, i8* bitcast (%struct.timezone* @TZ to i8*)) #6, !dbg !404
+  %88 = load i64* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 0), align 8, !dbg !404, !tbaa !316
+  %89 = sitofp i64 %88 to double, !dbg !404
+  %90 = load i32* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 1), align 8, !dbg !404, !tbaa !322
+  %91 = sitofp i32 %90 to double, !dbg !404
+  %92 = fmul double %91, 1.000000e-06, !dbg !404
+  %93 = fadd double %89, %92, !dbg !404
+  tail call void @llvm.dbg.value(metadata double %93, i64 0, metadata !271, metadata !307), !dbg !358
+  %94 = fsub double %93, %70, !dbg !405
+  %95 = getelementptr inbounds double* %cpus, i64 2, !dbg !406
+  store double %94, double* %95, align 8, !dbg !407, !tbaa !361
+  br i1 %59, label %96, label %99, !dbg !408
 
-if.then44:                                        ; preds = %if.end40
-  %5 = tail call i64 @fwrite(i8* getelementptr inbounds ([35 x i8]* @.str4, i64 0, i64 0), i64 34, i64 1, %struct._IO_FILE* %msgFile)
-  %call46 = tail call i32 @fflush(%struct._IO_FILE* %msgFile) #5
-  br label %if.end47
+; <label>:96                                      ; preds = %86
+  %97 = tail call i64 @fwrite(i8* getelementptr inbounds ([35 x i8]* @.str4, i64 0, i64 0), i64 34, i64 1, %struct.__sFILE* %msgFile), !dbg !409
+  %98 = tail call i32 @fflush(%struct.__sFILE* %msgFile) #6, !dbg !412
+  br label %99, !dbg !413
 
-if.end47:                                         ; preds = %if.then44, %if.end40
-  tail call void @CVfill(i32 %call11, i8* %call14, i8 signext 78) #5
-  %call48 = tail call i32 @Tree_postOTfirst(%struct._Tree* %call12) #5
-  %cmp50244 = icmp eq i32 %call48, -1
-  br i1 %cmp50244, label %for.end61, label %for.body51
+; <label>:99                                      ; preds = %96, %86
+  %100 = tail call i32 @gettimeofday(%struct.timeval* @TV, i8* bitcast (%struct.timezone* @TZ to i8*)) #6, !dbg !414
+  %101 = load i64* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 0), align 8, !dbg !414, !tbaa !316
+  %102 = sitofp i64 %101 to double, !dbg !414
+  %103 = load i32* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 1), align 8, !dbg !414, !tbaa !322
+  %104 = sitofp i32 %103 to double, !dbg !414
+  %105 = fmul double %104, 1.000000e-06, !dbg !414
+  %106 = fadd double %102, %105, !dbg !414
+  tail call void @llvm.dbg.value(metadata double %106, i64 0, metadata !270, metadata !307), !dbg !350
+  tail call void @CVfill(i32 %20, i8* %32, i8 signext 78) #6, !dbg !415
+  %107 = tail call i32 @Tree_postOTfirst(%struct._Tree* %21) #6, !dbg !416
+  tail call void @llvm.dbg.value(metadata i32 %107, i64 0, metadata !272, metadata !307), !dbg !383
+  %108 = icmp eq i32 %107, -1, !dbg !418
+  br i1 %108, label %._crit_edge14, label %.lr.ph13, !dbg !420
 
-for.body51:                                       ; preds = %if.end47, %if.end56
-  %J.1245 = phi i32 [ %call60, %if.end56 ], [ %call48, %if.end47 ]
-  br i1 %cmp19, label %if.then53, label %if.end56
+.lr.ph13:                                         ; preds = %99, %112
+  %J.111 = phi i32 [ %115, %112 ], [ %107, %99 ]
+  br i1 %59, label %109, label %112, !dbg !421
 
-if.then53:                                        ; preds = %for.body51
-  %call54 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %msgFile, i8* getelementptr inbounds ([30 x i8]* @.str5, i64 0, i64 0), i32 %J.1245) #5
-  %call55 = tail call i32 @fflush(%struct._IO_FILE* %msgFile) #5
-  br label %if.end56
+; <label>:109                                     ; preds = %.lr.ph13
+  %110 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %msgFile, i8* getelementptr inbounds ([30 x i8]* @.str5, i64 0, i64 0), i32 %J.111) #6, !dbg !423
+  %111 = tail call i32 @fflush(%struct.__sFILE* %msgFile) #6, !dbg !426
+  br label %112, !dbg !427
 
-if.end56:                                         ; preds = %if.then53, %for.body51
-  tail call void @FrontMtx_diagonalVisit(%struct._FrontMtx* %frontmtx, i32 %J.1245, i32* null, i32 0, %struct._SubMtx** %call16, i8* %call14, %struct._SubMtx** %call16, i32 %msglvl, %struct._IO_FILE* %msgFile) #5
-  %idxprom57 = sext i32 %J.1245 to i64
-  %arrayidx58 = getelementptr inbounds i8* %call14, i64 %idxprom57
-  store i8 68, i8* %arrayidx58, align 1, !tbaa !1
-  %call60 = tail call i32 @Tree_postOTnext(%struct._Tree* %call12, i32 %J.1245) #5
-  %cmp50 = icmp eq i32 %call60, -1
-  br i1 %cmp50, label %for.end61, label %for.body51
+; <label>:112                                     ; preds = %109, %.lr.ph13
+  tail call void @FrontMtx_diagonalVisit(%struct._FrontMtx* %frontmtx, i32 %J.111, i32* null, i32 0, %struct._SubMtx** %49, i8* %32, %struct._SubMtx** %49, i32 %msglvl, %struct.__sFILE* %msgFile) #6, !dbg !428
+  %113 = sext i32 %J.111 to i64, !dbg !429
+  %114 = getelementptr inbounds i8* %32, i64 %113, !dbg !429
+  store i8 68, i8* %114, align 1, !dbg !430, !tbaa !431
+  %115 = tail call i32 @Tree_postOTnext(%struct._Tree* %21, i32 %J.111) #6, !dbg !432
+  tail call void @llvm.dbg.value(metadata i32 %115, i64 0, metadata !272, metadata !307), !dbg !383
+  %116 = icmp eq i32 %115, -1, !dbg !418
+  br i1 %116, label %._crit_edge14, label %.lr.ph13, !dbg !420
 
-for.end61:                                        ; preds = %if.end56, %if.end47
-  %arrayidx63 = getelementptr inbounds double* %cpus, i64 3
-  store double 0.000000e+00, double* %arrayidx63, align 8, !tbaa !4
-  %call64 = tail call %struct._IP** @FrontMtx_backwardSetup(%struct._FrontMtx* %frontmtx, i32 %msglvl, %struct._IO_FILE* %msgFile) #5
-  tail call void @CVfill(i32 %call11, i8* %call15, i8 signext 87) #5
-  tail call void @CVfill(i32 %call11, i8* %call14, i8 signext 78) #5
-  %6 = load double* %cpus, align 8, !tbaa !4
-  %add67 = fadd double %6, 0.000000e+00
-  store double %add67, double* %cpus, align 8, !tbaa !4
-  br i1 %cmp19, label %if.then69, label %if.end72
+._crit_edge14:                                    ; preds = %112, %99
+  %117 = tail call i32 @gettimeofday(%struct.timeval* @TV, i8* bitcast (%struct.timezone* @TZ to i8*)) #6, !dbg !433
+  %118 = load i64* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 0), align 8, !dbg !433, !tbaa !316
+  %119 = sitofp i64 %118 to double, !dbg !433
+  %120 = load i32* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 1), align 8, !dbg !433, !tbaa !322
+  %121 = sitofp i32 %120 to double, !dbg !433
+  %122 = fmul double %121, 1.000000e-06, !dbg !433
+  %123 = fadd double %119, %122, !dbg !433
+  tail call void @llvm.dbg.value(metadata double %123, i64 0, metadata !271, metadata !307), !dbg !358
+  %124 = fsub double %123, %106, !dbg !434
+  %125 = getelementptr inbounds double* %cpus, i64 3, !dbg !435
+  store double %124, double* %125, align 8, !dbg !436, !tbaa !361
+  %126 = tail call i32 @gettimeofday(%struct.timeval* @TV, i8* bitcast (%struct.timezone* @TZ to i8*)) #6, !dbg !437
+  %127 = load i64* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 0), align 8, !dbg !437, !tbaa !316
+  %128 = sitofp i64 %127 to double, !dbg !437
+  %129 = load i32* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 1), align 8, !dbg !437, !tbaa !322
+  %130 = sitofp i32 %129 to double, !dbg !437
+  %131 = fmul double %130, 1.000000e-06, !dbg !437
+  %132 = fadd double %128, %131, !dbg !437
+  tail call void @llvm.dbg.value(metadata double %132, i64 0, metadata !270, metadata !307), !dbg !350
+  %133 = tail call %struct._IP** @FrontMtx_backwardSetup(%struct._FrontMtx* %frontmtx, i32 %msglvl, %struct.__sFILE* %msgFile) #6, !dbg !438
+  tail call void @llvm.dbg.value(metadata %struct._IP** %133, i64 0, metadata !275, metadata !307), !dbg !352
+  tail call void @CVfill(i32 %20, i8* %33, i8 signext 87) #6, !dbg !439
+  tail call void @CVfill(i32 %20, i8* %32, i8 signext 78) #6, !dbg !440
+  %134 = tail call i32 @gettimeofday(%struct.timeval* @TV, i8* bitcast (%struct.timezone* @TZ to i8*)) #6, !dbg !441
+  %135 = load i64* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 0), align 8, !dbg !441, !tbaa !316
+  %136 = sitofp i64 %135 to double, !dbg !441
+  %137 = load i32* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 1), align 8, !dbg !441, !tbaa !322
+  %138 = sitofp i32 %137 to double, !dbg !441
+  %139 = fmul double %138, 1.000000e-06, !dbg !441
+  %140 = fadd double %136, %139, !dbg !441
+  tail call void @llvm.dbg.value(metadata double %140, i64 0, metadata !271, metadata !307), !dbg !358
+  %141 = fsub double %140, %132, !dbg !442
+  %142 = load double* %cpus, align 8, !dbg !443, !tbaa !361
+  %143 = fadd double %142, %141, !dbg !443
+  store double %143, double* %cpus, align 8, !dbg !443, !tbaa !361
+  br i1 %59, label %144, label %147, !dbg !444
 
-if.then69:                                        ; preds = %for.end61
-  %7 = tail call i64 @fwrite(i8* getelementptr inbounds ([35 x i8]* @.str6, i64 0, i64 0), i64 34, i64 1, %struct._IO_FILE* %msgFile)
-  %call71 = tail call i32 @fflush(%struct._IO_FILE* %msgFile) #5
-  br label %if.end72
+; <label>:144                                     ; preds = %._crit_edge14
+  %145 = tail call i64 @fwrite(i8* getelementptr inbounds ([35 x i8]* @.str6, i64 0, i64 0), i64 34, i64 1, %struct.__sFILE* %msgFile), !dbg !445
+  %146 = tail call i32 @fflush(%struct.__sFILE* %msgFile) #6, !dbg !448
+  br label %147, !dbg !449
 
-if.end72:                                         ; preds = %if.then69, %for.end61
-  %call73 = tail call i32 @Tree_preOTfirst(%struct._Tree* %call12) #5
-  %cmp75242 = icmp eq i32 %call73, -1
-  br i1 %cmp75242, label %for.end84, label %for.body76
+; <label>:147                                     ; preds = %144, %._crit_edge14
+  %148 = tail call i32 @gettimeofday(%struct.timeval* @TV, i8* bitcast (%struct.timezone* @TZ to i8*)) #6, !dbg !450
+  %149 = load i64* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 0), align 8, !dbg !450, !tbaa !316
+  %150 = sitofp i64 %149 to double, !dbg !450
+  %151 = load i32* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 1), align 8, !dbg !450, !tbaa !322
+  %152 = sitofp i32 %151 to double, !dbg !450
+  %153 = fmul double %152, 1.000000e-06, !dbg !450
+  %154 = fadd double %150, %153, !dbg !450
+  tail call void @llvm.dbg.value(metadata double %154, i64 0, metadata !270, metadata !307), !dbg !350
+  %155 = tail call i32 @Tree_preOTfirst(%struct._Tree* %21) #6, !dbg !451
+  tail call void @llvm.dbg.value(metadata i32 %155, i64 0, metadata !272, metadata !307), !dbg !383
+  %156 = icmp eq i32 %155, -1, !dbg !453
+  br i1 %156, label %._crit_edge, label %.lr.ph, !dbg !455
 
-for.body76:                                       ; preds = %if.end72, %if.end81
-  %J.2243 = phi i32 [ %call83, %if.end81 ], [ %call73, %if.end72 ]
-  br i1 %cmp19, label %if.then78, label %if.end81
+.lr.ph:                                           ; preds = %147, %160
+  %J.210 = phi i32 [ %161, %160 ], [ %155, %147 ]
+  br i1 %59, label %157, label %160, !dbg !456
 
-if.then78:                                        ; preds = %for.body76
-  %call79 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %msgFile, i8* getelementptr inbounds ([30 x i8]* @.str7, i64 0, i64 0), i32 %J.2243) #5
-  %call80 = tail call i32 @fflush(%struct._IO_FILE* %msgFile) #5
-  br label %if.end81
+; <label>:157                                     ; preds = %.lr.ph
+  %158 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %msgFile, i8* getelementptr inbounds ([30 x i8]* @.str7, i64 0, i64 0), i32 %J.210) #6, !dbg !458
+  %159 = tail call i32 @fflush(%struct.__sFILE* %msgFile) #6, !dbg !461
+  br label %160, !dbg !462
 
-if.end81:                                         ; preds = %if.then78, %for.body76
-  tail call void @FrontMtx_backwardVisit(%struct._FrontMtx* %frontmtx, i32 %J.2243, i32 %1, i32* null, i32 0, %struct._SubMtxManager* %mtxmanager, %struct._SubMtxList* null, %struct._SubMtx** %call16, i8* %call14, %struct._IP** %call64, %struct._SubMtx** %call16, i8* %call15, i32 %msglvl, %struct._IO_FILE* %msgFile) #5
-  %call83 = tail call i32 @Tree_preOTnext(%struct._Tree* %call12, i32 %J.2243) #5
-  %cmp75 = icmp eq i32 %call83, -1
-  br i1 %cmp75, label %for.end84, label %for.body76
+; <label>:160                                     ; preds = %157, %.lr.ph
+  tail call void @FrontMtx_backwardVisit(%struct._FrontMtx* %frontmtx, i32 %J.210, i32 %23, i32* null, i32 0, %struct._SubMtxManager* %mtxmanager, %struct._SubMtxList* null, %struct._SubMtx** %49, i8* %32, %struct._IP** %133, %struct._SubMtx** %49, i8* %33, i32 %msglvl, %struct.__sFILE* %msgFile) #6, !dbg !463
+  %161 = tail call i32 @Tree_preOTnext(%struct._Tree* %21, i32 %J.210) #6, !dbg !464
+  tail call void @llvm.dbg.value(metadata i32 %161, i64 0, metadata !272, metadata !307), !dbg !383
+  %162 = icmp eq i32 %161, -1, !dbg !453
+  br i1 %162, label %._crit_edge, label %.lr.ph, !dbg !455
 
-for.end84:                                        ; preds = %if.end81, %if.end72
-  %arrayidx86 = getelementptr inbounds double* %cpus, i64 4
-  store double 0.000000e+00, double* %arrayidx86, align 8, !tbaa !4
-  tail call void @FrontMtx_storeSolution(%struct._FrontMtx* %frontmtx, i32* null, i32 0, %struct._SubMtxManager* %mtxmanager, %struct._SubMtx** %call16, %struct._DenseMtx* %solmtx, i32 %msglvl, %struct._IO_FILE* %msgFile) #5
-  %8 = load double* %arrayidx18, align 8, !tbaa !4
-  %add89 = fadd double %8, 0.000000e+00
-  store double %add89, double* %arrayidx18, align 8, !tbaa !4
-  %cmp90 = icmp sgt i32 %msglvl, 2
-  br i1 %cmp90, label %if.then91, label %if.end94
+._crit_edge:                                      ; preds = %160, %147
+  %163 = tail call i32 @gettimeofday(%struct.timeval* @TV, i8* bitcast (%struct.timezone* @TZ to i8*)) #6, !dbg !465
+  %164 = load i64* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 0), align 8, !dbg !465, !tbaa !316
+  %165 = sitofp i64 %164 to double, !dbg !465
+  %166 = load i32* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 1), align 8, !dbg !465, !tbaa !322
+  %167 = sitofp i32 %166 to double, !dbg !465
+  %168 = fmul double %167, 1.000000e-06, !dbg !465
+  %169 = fadd double %165, %168, !dbg !465
+  tail call void @llvm.dbg.value(metadata double %169, i64 0, metadata !271, metadata !307), !dbg !358
+  %170 = fsub double %169, %154, !dbg !466
+  %171 = getelementptr inbounds double* %cpus, i64 4, !dbg !467
+  store double %170, double* %171, align 8, !dbg !468, !tbaa !361
+  %172 = tail call i32 @gettimeofday(%struct.timeval* @TV, i8* bitcast (%struct.timezone* @TZ to i8*)) #6, !dbg !469
+  %173 = load i64* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 0), align 8, !dbg !469, !tbaa !316
+  %174 = sitofp i64 %173 to double, !dbg !469
+  %175 = load i32* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 1), align 8, !dbg !469, !tbaa !322
+  %176 = sitofp i32 %175 to double, !dbg !469
+  %177 = fmul double %176, 1.000000e-06, !dbg !469
+  %178 = fadd double %174, %177, !dbg !469
+  tail call void @llvm.dbg.value(metadata double %178, i64 0, metadata !270, metadata !307), !dbg !350
+  tail call void @FrontMtx_storeSolution(%struct._FrontMtx* %frontmtx, i32* null, i32 0, %struct._SubMtxManager* %mtxmanager, %struct._SubMtx** %49, %struct._DenseMtx* %solmtx, i32 %msglvl, %struct.__sFILE* %msgFile) #6, !dbg !470
+  %179 = tail call i32 @gettimeofday(%struct.timeval* @TV, i8* bitcast (%struct.timezone* @TZ to i8*)) #6, !dbg !471
+  %180 = load i64* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 0), align 8, !dbg !471, !tbaa !316
+  %181 = sitofp i64 %180 to double, !dbg !471
+  %182 = load i32* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 1), align 8, !dbg !471, !tbaa !322
+  %183 = sitofp i32 %182 to double, !dbg !471
+  %184 = fmul double %183, 1.000000e-06, !dbg !471
+  %185 = fadd double %181, %184, !dbg !471
+  tail call void @llvm.dbg.value(metadata double %185, i64 0, metadata !271, metadata !307), !dbg !358
+  %186 = fsub double %185, %178, !dbg !472
+  %187 = load double* %58, align 8, !dbg !473, !tbaa !361
+  %188 = fadd double %187, %186, !dbg !473
+  store double %188, double* %58, align 8, !dbg !473, !tbaa !361
+  %189 = icmp sgt i32 %msglvl, 2, !dbg !474
+  br i1 %189, label %190, label %192, !dbg !476
 
-if.then91:                                        ; preds = %for.end84
-  %call93 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %msgFile, i8* getelementptr inbounds ([31 x i8]* @.str8, i64 0, i64 0), double 0.000000e+00) #5
-  br label %if.end94
+; <label>:190                                     ; preds = %._crit_edge
+  %191 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %msgFile, i8* getelementptr inbounds ([31 x i8]* @.str8, i64 0, i64 0), double %186) #6, !dbg !477
+  br label %192, !dbg !479
 
-if.end94:                                         ; preds = %if.then91, %for.end84
-  %arrayidx97 = getelementptr inbounds %struct._IP** %call64, i64 %idxprom
-  %9 = load %struct._IP** %arrayidx97, align 8, !tbaa !0
-  tail call void @IP_free(%struct._IP* %9) #5
-  %cmp98 = icmp eq %struct._IP** %call64, null
-  br i1 %cmp98, label %if.end100, label %if.then99
+; <label>:192                                     ; preds = %190, %._crit_edge
+  %193 = getelementptr inbounds %struct._IP** %133, i64 %80, !dbg !480
+  %194 = load %struct._IP** %193, align 8, !dbg !480, !tbaa !336
+  tail call void @IP_free(%struct._IP* %194) #6, !dbg !481
+  %195 = icmp eq %struct._IP** %133, null, !dbg !482
+  br i1 %195, label %198, label %196, !dbg !484
 
-if.then99:                                        ; preds = %if.end94
-  %10 = bitcast %struct._IP** %call64 to i8*
-  tail call void @free(i8* %10) #5
-  br label %if.end100
+; <label>:196                                     ; preds = %192
+  %197 = bitcast %struct._IP** %133 to i8*, !dbg !485
+  tail call void @free(i8* %197) #8, !dbg !485
+  tail call void @llvm.dbg.value(metadata %struct._IP** null, i64 0, metadata !275, metadata !307), !dbg !352
+  br label %198, !dbg !485
 
-if.end100:                                        ; preds = %if.end94, %if.then99
-  %cmp101 = icmp eq %struct._SubMtx** %call16, null
-  br i1 %cmp101, label %if.end103, label %if.then102
+; <label>:198                                     ; preds = %192, %196
+  %199 = icmp eq %struct._SubMtx** %49, null, !dbg !487
+  br i1 %199, label %202, label %200, !dbg !489
 
-if.then102:                                       ; preds = %if.end100
-  %11 = bitcast %struct._SubMtx** %call16 to i8*
-  tail call void @free(i8* %11) #5
-  br label %if.end103
+; <label>:200                                     ; preds = %198
+  %201 = bitcast %struct._SubMtx** %49 to i8*, !dbg !490
+  tail call void @free(i8* %201) #8, !dbg !490
+  tail call void @llvm.dbg.value(metadata %struct._SubMtx** null, i64 0, metadata !268, metadata !307), !dbg !365
+  br label %202, !dbg !490
 
-if.end103:                                        ; preds = %if.end100, %if.then102
-  tail call void @CVfree(i8* %call14) #5
-  tail call void @CVfree(i8* %call15) #5
-  %arrayidx105 = getelementptr inbounds double* %cpus, i64 5
-  store double 0.000000e+00, double* %arrayidx105, align 8, !tbaa !4
-  ret void
+; <label>:202                                     ; preds = %198, %200
+  tail call void @CVfree(i8* %32) #6, !dbg !492
+  tail call void @CVfree(i8* %33) #6, !dbg !493
+  %203 = tail call i32 @gettimeofday(%struct.timeval* @TV, i8* bitcast (%struct.timezone* @TZ to i8*)) #6, !dbg !494
+  %204 = load i64* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 0), align 8, !dbg !494, !tbaa !316
+  %205 = sitofp i64 %204 to double, !dbg !494
+  %206 = load i32* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 1), align 8, !dbg !494, !tbaa !322
+  %207 = sitofp i32 %206 to double, !dbg !494
+  %208 = fmul double %207, 1.000000e-06, !dbg !494
+  %209 = fadd double %205, %208, !dbg !494
+  tail call void @llvm.dbg.value(metadata double %209, i64 0, metadata !271, metadata !307), !dbg !358
+  %210 = fsub double %209, %7, !dbg !495
+  %211 = getelementptr inbounds double* %cpus, i64 5, !dbg !496
+  store double %210, double* %211, align 8, !dbg !497, !tbaa !361
+  ret void, !dbg !498
 }

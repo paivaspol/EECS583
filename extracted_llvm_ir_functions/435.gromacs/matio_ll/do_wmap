@@ -1,54 +1,70 @@
-define void @do_wmap(%struct.__sFILE* nocapture %out, i32 %i0, i32 %imax, i32 %nlevels, <2 x float> %rlo.coerce0, float %rlo.coerce1, <2 x float> %rhi.coerce0, float %rhi.coerce1, float %lo, float %hi) #3 {
-  %1 = icmp sgt i32 %imax, 0
-  br i1 %1, label %.lr.ph, label %._crit_edge
+define void @do_wmap(%struct.__sFILE* nocapture %out, i32 %i0, i32 %imax, i32 %nlevels, <2 x float> %rlo.coerce0, float %rlo.coerce1, <2 x float> %rhi.coerce0, float %rhi.coerce1, float %lo, float %hi) #4 {
+  tail call void @llvm.dbg.value(metadata <2 x float> %rlo.coerce0, i64 0, metadata !200, metadata !699), !dbg !700
+  tail call void @llvm.dbg.value(metadata float %rlo.coerce1, i64 0, metadata !200, metadata !701), !dbg !700
+  tail call void @llvm.dbg.value(metadata <2 x float> %rhi.coerce0, i64 0, metadata !201, metadata !699), !dbg !702
+  tail call void @llvm.dbg.value(metadata float %rhi.coerce1, i64 0, metadata !201, metadata !701), !dbg !702
+  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %out, i64 0, metadata !196, metadata !477), !dbg !703
+  tail call void @llvm.dbg.value(metadata i32 %i0, i64 0, metadata !197, metadata !477), !dbg !704
+  tail call void @llvm.dbg.value(metadata i32 %imax, i64 0, metadata !198, metadata !477), !dbg !705
+  tail call void @llvm.dbg.value(metadata i32 %nlevels, i64 0, metadata !199, metadata !477), !dbg !706
+  tail call void @llvm.dbg.declare(metadata %struct.t_rgb* undef, metadata !200, metadata !477), !dbg !700
+  tail call void @llvm.dbg.declare(metadata %struct.t_rgb* undef, metadata !201, metadata !477), !dbg !702
+  tail call void @llvm.dbg.value(metadata float %lo, i64 0, metadata !202, metadata !477), !dbg !707
+  tail call void @llvm.dbg.value(metadata float %hi, i64 0, metadata !203, metadata !477), !dbg !708
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !204, metadata !477), !dbg !709
+  %1 = icmp sgt i32 %imax, 0, !dbg !710
+  br i1 %1, label %.lr.ph, label %._crit_edge, !dbg !713
 
 .lr.ph:                                           ; preds = %0
-  %2 = extractelement <2 x float> %rlo.coerce0, i32 0
-  %3 = extractelement <2 x float> %rhi.coerce0, i32 0
-  %4 = sitofp i32 %nlevels to float
-  %5 = extractelement <2 x float> %rlo.coerce0, i32 1
-  %6 = extractelement <2 x float> %rhi.coerce0, i32 1
-  %7 = sext i32 %i0 to i64
-  %8 = zext i32 %nlevels to i64
-  %9 = add i32 %imax, -1
-  br label %10
+  %2 = extractelement <2 x float> %rlo.coerce0, i32 0, !dbg !714
+  %3 = extractelement <2 x float> %rhi.coerce0, i32 0, !dbg !716
+  %4 = sitofp i32 %nlevels to float, !dbg !717
+  %5 = extractelement <2 x float> %rlo.coerce0, i32 1, !dbg !718
+  %6 = extractelement <2 x float> %rhi.coerce0, i32 1, !dbg !719
+  %7 = sext i32 %i0 to i64, !dbg !713
+  %8 = zext i32 %nlevels to i64, !dbg !713
+  %9 = add i32 %imax, -1, !dbg !713
+  br label %10, !dbg !713
 
 ; <label>:10                                      ; preds = %10, %.lr.ph
   %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %10 ]
-  %11 = sub i64 %8, %indvars.iv
-  %12 = trunc i64 %11 to i32
-  %13 = sitofp i32 %12 to float
-  %14 = fmul float %2, %13
-  %15 = trunc i64 %indvars.iv to i32
-  %16 = sitofp i32 %15 to float
-  %17 = fmul float %3, %16
-  %18 = fadd float %17, %14
-  %19 = fdiv float %18, %4
-  %20 = fmul float %5, %13
-  %21 = fmul float %6, %16
-  %22 = fadd float %21, %20
-  %23 = fdiv float %22, %4
-  %24 = fmul float %13, %rlo.coerce1
-  %25 = fmul float %16, %rhi.coerce1
-  %26 = fadd float %25, %24
-  %27 = fdiv float %26, %4
-  %28 = add nsw i64 %indvars.iv, %7
-  %29 = getelementptr inbounds [89 x i8]* @mapper, i64 0, i64 %28
-  %30 = load i8* %29, align 1, !tbaa !13
-  %31 = sext i8 %30 to i32
-  %32 = fmul float %13, %lo
-  %33 = fmul float %16, %hi
-  %34 = fadd float %33, %32
-  %35 = fdiv float %34, %4
-  %36 = fpext float %35 to double
-  %37 = fpext float %19 to double
-  %38 = fpext float %23 to double
-  %39 = fpext float %27 to double
-  %40 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %out, i8* getelementptr inbounds ([28 x i8]* @.str13, i64 0, i64 0), i32 %31, double %36, double %37, double %38, double %39) #10
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %exitcond = icmp eq i32 %15, %9
-  br i1 %exitcond, label %._crit_edge, label %10
+  %11 = sub i64 %8, %indvars.iv, !dbg !720
+  %12 = trunc i64 %11 to i32, !dbg !721
+  %13 = sitofp i32 %12 to float, !dbg !721
+  %14 = fmul float %2, %13, !dbg !722
+  %15 = trunc i64 %indvars.iv to i32, !dbg !723
+  %16 = sitofp i32 %15 to float, !dbg !723
+  %17 = fmul float %3, %16, !dbg !724
+  %18 = fadd float %17, %14, !dbg !725
+  %19 = fdiv float %18, %4, !dbg !726
+  tail call void @llvm.dbg.value(metadata float %19, i64 0, metadata !206, metadata !477), !dbg !727
+  %20 = fmul float %5, %13, !dbg !728
+  %21 = fmul float %6, %16, !dbg !729
+  %22 = fadd float %21, %20, !dbg !730
+  %23 = fdiv float %22, %4, !dbg !731
+  tail call void @llvm.dbg.value(metadata float %23, i64 0, metadata !207, metadata !477), !dbg !732
+  %24 = fmul float %13, %rlo.coerce1, !dbg !733
+  %25 = fmul float %16, %rhi.coerce1, !dbg !734
+  %26 = fadd float %25, %24, !dbg !735
+  %27 = fdiv float %26, %4, !dbg !736
+  tail call void @llvm.dbg.value(metadata float %27, i64 0, metadata !208, metadata !477), !dbg !737
+  %28 = add nsw i64 %indvars.iv, %7, !dbg !738
+  %29 = getelementptr inbounds [89 x i8]* @mapper, i64 0, i64 %28, !dbg !739
+  %30 = load i8* %29, align 1, !dbg !739, !tbaa !505
+  %31 = sext i8 %30 to i32, !dbg !739
+  %32 = fmul float %13, %lo, !dbg !740
+  %33 = fmul float %16, %hi, !dbg !741
+  %34 = fadd float %33, %32, !dbg !742
+  %35 = fdiv float %34, %4, !dbg !743
+  %36 = fpext float %35 to double, !dbg !744
+  %37 = fpext float %19 to double, !dbg !745
+  %38 = fpext float %23 to double, !dbg !746
+  %39 = fpext float %27 to double, !dbg !747
+  %40 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %out, i8* getelementptr inbounds ([28 x i8]* @.str13, i64 0, i64 0), i32 %31, double %36, double %37, double %38, double %39) #10, !dbg !748
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !713
+  %exitcond = icmp eq i32 %15, %9, !dbg !713
+  br i1 %exitcond, label %._crit_edge, label %10, !dbg !713
 
 ._crit_edge:                                      ; preds = %10, %0
-  ret void
+  ret void, !dbg !749
 }

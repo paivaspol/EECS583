@@ -1,20 +1,23 @@
 define internal i32 @xdrstdio_putbytes(%struct.XDR* nocapture readonly %xdrs, i8* %addr, i32 %len) #0 {
-  %1 = icmp eq i32 %len, 0
-  br i1 %1, label %9, label %2
+  tail call void @llvm.dbg.value(metadata %struct.XDR* %xdrs, i64 0, metadata !320, metadata !360), !dbg !809
+  tail call void @llvm.dbg.value(metadata i8* %addr, i64 0, metadata !321, metadata !360), !dbg !810
+  tail call void @llvm.dbg.value(metadata i32 %len, i64 0, metadata !322, metadata !360), !dbg !811
+  %1 = icmp eq i32 %len, 0, !dbg !812
+  br i1 %1, label %9, label %2, !dbg !814
 
 ; <label>:2                                       ; preds = %0
-  %3 = sext i32 %len to i64
-  %4 = getelementptr inbounds %struct.XDR* %xdrs, i64 0, i32 3
-  %5 = bitcast i8** %4 to %struct.__sFILE**
-  %6 = load %struct.__sFILE** %5, align 8, !tbaa !21
-  %7 = tail call i64 @"\01_fwrite"(i8* %addr, i64 %3, i64 1, %struct.__sFILE* %6) #6
-  %8 = icmp eq i64 %7, 1
-  br i1 %8, label %9, label %10
+  %3 = sext i32 %len to i64, !dbg !815
+  %4 = getelementptr inbounds %struct.XDR* %xdrs, i64 0, i32 3, !dbg !816
+  %5 = bitcast i8** %4 to %struct.__sFILE**, !dbg !816
+  %6 = load %struct.__sFILE** %5, align 8, !dbg !816, !tbaa !720
+  %7 = tail call i64 @"\01_fwrite"(i8* %addr, i64 %3, i64 1, %struct.__sFILE* %6) #7, !dbg !817
+  %8 = icmp eq i64 %7, 1, !dbg !818
+  br i1 %8, label %9, label %10, !dbg !819
 
 ; <label>:9                                       ; preds = %2, %0
-  br label %10
+  br label %10, !dbg !820
 
 ; <label>:10                                      ; preds = %2, %9
   %.0 = phi i32 [ 1, %9 ], [ 0, %2 ]
-  ret i32 %.0
+  ret i32 %.0, !dbg !821
 }

@@ -1,18 +1,22 @@
 define i8* @fgets2(i8* %line, i32 %n, %struct.__sFILE* nocapture %stream) #3 {
-  %1 = tail call i8* @fgets(i8* %line, i32 %n, %struct.__sFILE* %stream) #10
-  %2 = icmp eq i8* %1, null
-  br i1 %2, label %7, label %3
+  tail call void @llvm.dbg.value(metadata i8* %line, i64 0, metadata !182, metadata !281), !dbg !463
+  tail call void @llvm.dbg.value(metadata i32 %n, i64 0, metadata !183, metadata !281), !dbg !464
+  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %stream, i64 0, metadata !184, metadata !281), !dbg !465
+  %1 = tail call i8* @fgets(i8* %line, i32 %n, %struct.__sFILE* %stream) #10, !dbg !466
+  %2 = icmp eq i8* %1, null, !dbg !468
+  br i1 %2, label %7, label %3, !dbg !469
 
 ; <label>:3                                       ; preds = %0
-  %4 = tail call i8* @strchr(i8* %line, i32 10) #10
-  %5 = icmp eq i8* %4, null
-  br i1 %5, label %7, label %6
+  %4 = tail call i8* @strchr(i8* %line, i32 10) #10, !dbg !470
+  tail call void @llvm.dbg.value(metadata i8* %4, i64 0, metadata !185, metadata !281), !dbg !472
+  %5 = icmp eq i8* %4, null, !dbg !473
+  br i1 %5, label %7, label %6, !dbg !474
 
 ; <label>:6                                       ; preds = %3
-  store i8 0, i8* %4, align 1, !tbaa !13
-  br label %7
+  store i8 0, i8* %4, align 1, !dbg !475, !tbaa !309
+  br label %7, !dbg !476
 
 ; <label>:7                                       ; preds = %6, %3, %0
   %.0 = phi i8* [ null, %0 ], [ %line, %3 ], [ %line, %6 ]
-  ret i8* %.0
+  ret i8* %.0, !dbg !477
 }

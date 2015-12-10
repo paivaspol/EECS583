@@ -1,24 +1,30 @@
-define %struct.__sFILE* @low_libopen(i8* %file, i32 %bFatal) #1 {
-  %1 = tail call i32 @fexist(i8* %file) #8
-  %2 = icmp eq i32 %1, 0
-  %3 = icmp eq i8* %file, null
-  %4 = or i1 %3, %2
-  br i1 %4, label %12, label %5
+define %struct.__sFILE* @low_libopen(i8* %file, i32 %bFatal) #2 {
+  tail call void @llvm.dbg.value(metadata i8* %file, i64 0, metadata !200, metadata !235), !dbg !463
+  tail call void @llvm.dbg.value(metadata i32 %bFatal, i64 0, metadata !201, metadata !235), !dbg !464
+  tail call void @llvm.dbg.value(metadata i8* %file, i64 0, metadata !185, metadata !235) #6, !dbg !465
+  tail call void @llvm.dbg.value(metadata i32 undef, i64 0, metadata !186, metadata !235) #6, !dbg !467
+  tail call void @llvm.dbg.value(metadata i8* null, i64 0, metadata !187, metadata !235) #6, !dbg !468
+  %1 = tail call i32 @fexist(i8* %file) #8, !dbg !469
+  %2 = icmp eq i32 %1, 0, !dbg !469
+  %3 = icmp eq i8* %file, null, !dbg !470
+  %4 = or i1 %3, %2, !dbg !470
+  br i1 %4, label %12, label %5, !dbg !472
 
 ; <label>:5                                       ; preds = %0
-  %6 = icmp eq i32 %bFatal, 0
-  br i1 %6, label %10, label %7
+  %6 = icmp eq i32 %bFatal, 0, !dbg !473
+  br i1 %6, label %10, label %7, !dbg !476
 
 ; <label>:7                                       ; preds = %5
-  %8 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !8
-  %9 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %8, i8* getelementptr inbounds ([25 x i8]* @.str24, i64 0, i64 0), i8* %file) #8
-  br label %10
+  %8 = load %struct.__sFILE** @__stderrp, align 8, !dbg !477, !tbaa !275
+  %9 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %8, i8* getelementptr inbounds ([25 x i8]* @.str24, i64 0, i64 0), i8* %file) #8, !dbg !478
+  br label %10, !dbg !478
 
 ; <label>:10                                      ; preds = %5, %7
-  %11 = tail call %struct.__sFILE* @"\01_fopen"(i8* %file, i8* getelementptr inbounds ([2 x i8]* @.str8, i64 0, i64 0)) #8
+  %11 = tail call %struct.__sFILE* @"\01_fopen"(i8* %file, i8* getelementptr inbounds ([2 x i8]* @.str8, i64 0, i64 0)) #8, !dbg !479
+  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %11, i64 0, metadata !202, metadata !235), !dbg !480
   br label %12
 
 ; <label>:12                                      ; preds = %0, %10
   %ff.0 = phi %struct.__sFILE* [ %11, %10 ], [ null, %0 ]
-  ret %struct.__sFILE* %ff.0
+  ret %struct.__sFILE* %ff.0, !dbg !481
 }

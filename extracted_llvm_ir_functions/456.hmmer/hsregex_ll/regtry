@@ -1,36 +1,47 @@
 define internal fastcc i32 @regtry(%struct.exec* %ep, %struct.sqd_regexp* %prog, i8* %string) #0 {
-entry:
-  %reginput = getelementptr inbounds %struct.exec* %ep, i64 0, i32 0
-  store i8* %string, i8** %reginput, align 8, !tbaa !0
-  %arraydecay = getelementptr inbounds %struct.sqd_regexp* %prog, i64 0, i32 0, i64 0
-  %arraydecay1 = getelementptr inbounds %struct.sqd_regexp* %prog, i64 0, i32 1, i64 0
-  br label %for.body
+  tail call void @llvm.dbg.value(metadata %struct.exec* %ep, i64 0, metadata !204, metadata !274), !dbg !688
+  tail call void @llvm.dbg.value(metadata %struct.sqd_regexp* %prog, i64 0, metadata !205, metadata !274), !dbg !689
+  tail call void @llvm.dbg.value(metadata i8* %string, i64 0, metadata !206, metadata !274), !dbg !690
+  %1 = getelementptr inbounds %struct.exec* %ep, i64 0, i32 0, !dbg !691
+  store i8* %string, i8** %1, align 8, !dbg !692, !tbaa !693
+  %2 = getelementptr inbounds %struct.sqd_regexp* %prog, i64 0, i32 0, i64 0, !dbg !694
+  tail call void @llvm.dbg.value(metadata i8** %2, i64 0, metadata !208, metadata !274), !dbg !695
+  %3 = getelementptr inbounds %struct.sqd_regexp* %prog, i64 0, i32 1, !dbg !696
+  %4 = getelementptr inbounds [10 x i8*]* %3, i64 0, i64 0, !dbg !697
+  tail call void @llvm.dbg.value(metadata i8** %4, i64 0, metadata !209, metadata !274), !dbg !698
+  tail call void @llvm.dbg.value(metadata i32 10, i64 0, metadata !207, metadata !274), !dbg !699
+  br label %5, !dbg !700
 
-for.body:                                         ; preds = %entry, %for.body
-  %enp.018 = phi i8** [ %arraydecay1, %entry ], [ %incdec.ptr2, %for.body ]
-  %stp.017 = phi i8** [ %arraydecay, %entry ], [ %incdec.ptr, %for.body ]
-  %i.016 = phi i32 [ 10, %entry ], [ %dec, %for.body ]
-  %incdec.ptr = getelementptr inbounds i8** %stp.017, i64 1
-  store i8* null, i8** %stp.017, align 8, !tbaa !0
-  %incdec.ptr2 = getelementptr inbounds i8** %enp.018, i64 1
-  store i8* null, i8** %enp.018, align 8, !tbaa !0
-  %dec = add nsw i32 %i.016, -1
-  %cmp = icmp sgt i32 %dec, 0
-  br i1 %cmp, label %for.body, label %for.end
+; <label>:5                                       ; preds = %0, %5
+  %enp.03 = phi i8** [ %4, %0 ], [ %7, %5 ]
+  %stp.02 = phi i8** [ %2, %0 ], [ %6, %5 ]
+  %i.01 = phi i32 [ 10, %0 ], [ %8, %5 ]
+  %6 = getelementptr inbounds i8** %stp.02, i64 1, !dbg !702
+  tail call void @llvm.dbg.value(metadata i8** %6, i64 0, metadata !208, metadata !274), !dbg !695
+  store i8* null, i8** %stp.02, align 8, !dbg !705, !tbaa !288
+  %7 = getelementptr inbounds i8** %enp.03, i64 1, !dbg !706
+  tail call void @llvm.dbg.value(metadata i8** %7, i64 0, metadata !209, metadata !274), !dbg !698
+  store i8* null, i8** %enp.03, align 8, !dbg !707, !tbaa !288
+  %8 = add nsw i32 %i.01, -1, !dbg !708
+  tail call void @llvm.dbg.value(metadata i32 %8, i64 0, metadata !207, metadata !274), !dbg !699
+  %9 = icmp sgt i32 %i.01, 1, !dbg !709
+  br i1 %9, label %5, label %10, !dbg !700
 
-for.end:                                          ; preds = %for.body
-  %add.ptr = getelementptr inbounds %struct.sqd_regexp* %prog, i64 0, i32 6, i64 1
-  %call = tail call fastcc i32 @regmatch(%struct.exec* %ep, i8* %add.ptr) #10
-  %tobool = icmp eq i32 %call, 0
-  br i1 %tobool, label %return, label %if.then
+; <label>:10                                      ; preds = %5
+  %11 = getelementptr inbounds %struct.sqd_regexp* %prog, i64 0, i32 6, i64 1, !dbg !710
+  %12 = tail call fastcc i32 @regmatch(%struct.exec* %ep, i8* %11) #9, !dbg !712
+  %13 = icmp eq i32 %12, 0, !dbg !712
+  br i1 %13, label %18, label %14, !dbg !713
 
-if.then:                                          ; preds = %for.end
-  store i8* %string, i8** %arraydecay, align 8, !tbaa !0
-  %0 = load i8** %reginput, align 8, !tbaa !0
-  store i8* %0, i8** %arraydecay1, align 8, !tbaa !0
-  br label %return
+; <label>:14                                      ; preds = %10
+  store i8* %string, i8** %2, align 8, !dbg !714, !tbaa !288
+  %15 = bitcast %struct.exec* %ep to i64*, !dbg !716
+  %16 = load i64* %15, align 8, !dbg !716, !tbaa !693
+  %17 = bitcast [10 x i8*]* %3 to i64*, !dbg !717
+  store i64 %16, i64* %17, align 8, !dbg !717, !tbaa !288
+  br label %18, !dbg !718
 
-return:                                           ; preds = %for.end, %if.then
-  %retval.0 = phi i32 [ 1, %if.then ], [ 0, %for.end ]
-  ret i32 %retval.0
+; <label>:18                                      ; preds = %10, %14
+  %.0 = phi i32 [ 1, %14 ], [ 0, %10 ]
+  ret i32 %.0, !dbg !719
 }

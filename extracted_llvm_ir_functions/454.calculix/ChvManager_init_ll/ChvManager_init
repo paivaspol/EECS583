@@ -1,32 +1,34 @@
 define void @ChvManager_init(%struct._ChvManager* %manager, i32 %lockflag, i32 %mode) #0 {
-entry:
-  %cmp = icmp eq %struct._ChvManager* %manager, null
-  %0 = icmp ugt i32 %lockflag, 2
-  %or.cond = or i1 %cmp, %0
-  %1 = icmp ugt i32 %mode, 1
-  %or.cond27 = or i1 %or.cond, %1
-  br i1 %or.cond27, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata %struct._ChvManager* %manager, i64 0, metadata !62, metadata !69), !dbg !70
+  tail call void @llvm.dbg.value(metadata i32 %lockflag, i64 0, metadata !63, metadata !69), !dbg !71
+  tail call void @llvm.dbg.value(metadata i32 %mode, i64 0, metadata !64, metadata !69), !dbg !72
+  %1 = icmp eq %struct._ChvManager* %manager, null, !dbg !73
+  %2 = icmp ugt i32 %lockflag, 2, !dbg !75
+  %3 = or i1 %1, %2, !dbg !75
+  %4 = icmp ugt i32 %mode, 1, !dbg !75
+  %5 = or i1 %4, %3, !dbg !75
+  br i1 %5, label %6, label %9, !dbg !75
 
-if.then:                                          ; preds = %entry
-  %2 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([55 x i8]* @.str, i64 0, i64 0), %struct._ChvManager* %manager, i32 %lockflag, i32 %mode) #4
-  tail call void @exit(i32 -1) #5
-  unreachable
+; <label>:6                                       ; preds = %0
+  %7 = load %struct.__sFILE** @__stderrp, align 8, !dbg !76, !tbaa !78
+  %8 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %7, i8* getelementptr inbounds ([55 x i8]* @.str, i64 0, i64 0), %struct._ChvManager* %manager, i32 %lockflag, i32 %mode) #5, !dbg !82
+  tail call void @exit(i32 -1) #6, !dbg !83
+  unreachable, !dbg !83
 
-if.end:                                           ; preds = %entry
-  tail call void @ChvManager_clearData(%struct._ChvManager* %manager) #4
-  %cmp8 = icmp sgt i32 %lockflag, 0
-  br i1 %cmp8, label %if.then9, label %if.end12
+; <label>:9                                       ; preds = %0
+  tail call void @ChvManager_clearData(%struct._ChvManager* %manager) #5, !dbg !84
+  %10 = icmp sgt i32 %lockflag, 0, !dbg !85
+  br i1 %10, label %11, label %14, !dbg !87
 
-if.then9:                                         ; preds = %if.end
-  %call10 = tail call %struct._Lock* @Lock_new() #4
-  %lock = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 1
-  store %struct._Lock* %call10, %struct._Lock** %lock, align 8, !tbaa !0
-  tail call void @Lock_init(%struct._Lock* %call10, i32 %lockflag) #4
-  br label %if.end12
+; <label>:11                                      ; preds = %9
+  %12 = tail call %struct._Lock* @Lock_new() #5, !dbg !88
+  %13 = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 1, !dbg !90
+  store %struct._Lock* %12, %struct._Lock** %13, align 8, !dbg !91, !tbaa !92
+  tail call void @Lock_init(%struct._Lock* %12, i32 %lockflag) #5, !dbg !95
+  br label %14, !dbg !96
 
-if.end12:                                         ; preds = %if.then9, %if.end
-  %mode13 = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 2
-  store i32 %mode, i32* %mode13, align 4, !tbaa !3
-  ret void
+; <label>:14                                      ; preds = %11, %9
+  %15 = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 2, !dbg !97
+  store i32 %mode, i32* %15, align 4, !dbg !98, !tbaa !99
+  ret void, !dbg !100
 }

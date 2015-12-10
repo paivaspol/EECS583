@@ -1,37 +1,46 @@
 define void @DVscatterZero(i32 %size, double* %y, i32* %index, double* %x) #0 {
-entry:
-  %cmp = icmp sgt i32 %size, 0
-  br i1 %cmp, label %if.then, label %if.end13
+  tail call void @llvm.dbg.value(metadata i32 %size, i64 0, metadata !394, metadata !696), !dbg !1436
+  tail call void @llvm.dbg.value(metadata double* %y, i64 0, metadata !395, metadata !696), !dbg !1437
+  tail call void @llvm.dbg.value(metadata i32* %index, i64 0, metadata !396, metadata !696), !dbg !1438
+  tail call void @llvm.dbg.value(metadata double* %x, i64 0, metadata !397, metadata !696), !dbg !1439
+  %1 = icmp sgt i32 %size, 0, !dbg !1440
+  br i1 %1, label %2, label %.loopexit, !dbg !1441
 
-if.then:                                          ; preds = %entry
-  %cmp1 = icmp eq double* %y, null
-  %cmp2 = icmp eq double* %x, null
-  %or.cond = or i1 %cmp1, %cmp2
-  %cmp4 = icmp eq i32* %index, null
-  %or.cond27 = or i1 %or.cond, %cmp4
-  br i1 %or.cond27, label %if.then5, label %for.body
+; <label>:2                                       ; preds = %0
+  %3 = icmp eq double* %y, null, !dbg !1442
+  %4 = icmp eq double* %x, null, !dbg !1443
+  %or.cond = or i1 %3, %4, !dbg !1444
+  %5 = icmp eq i32* %index, null, !dbg !1445
+  %or.cond3 = or i1 %5, %or.cond, !dbg !1444
+  br i1 %or.cond3, label %7, label %.lr.ph, !dbg !1444
 
-if.then5:                                         ; preds = %if.then
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([85 x i8]* @.str31, i64 0, i64 0), i32 %size, double* %y, i32* %index, double* %x) #5
-  tail call void @exit(i32 -1) #6
-  unreachable
+.lr.ph:                                           ; preds = %2
+  %6 = add i32 %size, -1, !dbg !1446
+  br label %10, !dbg !1446
 
-for.body:                                         ; preds = %if.then, %for.body
-  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %if.then ]
-  %arrayidx = getelementptr inbounds double* %x, i64 %indvars.iv
-  %1 = load double* %arrayidx, align 8, !tbaa !3
-  %arrayidx8 = getelementptr inbounds i32* %index, i64 %indvars.iv
-  %2 = load i32* %arrayidx8, align 4, !tbaa !4
-  %idxprom9 = sext i32 %2 to i64
-  %arrayidx10 = getelementptr inbounds double* %y, i64 %idxprom9
-  store double %1, double* %arrayidx10, align 8, !tbaa !3
-  store double 0.000000e+00, double* %arrayidx, align 8, !tbaa !3
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %size
-  br i1 %exitcond, label %if.end13, label %for.body
+; <label>:7                                       ; preds = %2
+  %8 = load %struct.__sFILE** @__stderrp, align 8, !dbg !1448, !tbaa !709
+  %9 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %8, i8* getelementptr inbounds ([85 x i8]* @.str31, i64 0, i64 0), i32 %size, double* %y, i32* %index, double* %x) #7, !dbg !1450
+  tail call void @exit(i32 -1) #8, !dbg !1451
+  unreachable, !dbg !1451
 
-if.end13:                                         ; preds = %for.body, %entry
-  ret void
+; <label>:10                                      ; preds = %10, %.lr.ph
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %10 ]
+  %11 = getelementptr inbounds double* %x, i64 %indvars.iv, !dbg !1452
+  %12 = bitcast double* %11 to i64*, !dbg !1452
+  %13 = load i64* %12, align 8, !dbg !1452, !tbaa !718
+  %14 = getelementptr inbounds i32* %index, i64 %indvars.iv, !dbg !1455
+  %15 = load i32* %14, align 4, !dbg !1455, !tbaa !771
+  %16 = sext i32 %15 to i64, !dbg !1456
+  %17 = getelementptr inbounds double* %y, i64 %16, !dbg !1456
+  %18 = bitcast double* %17 to i64*, !dbg !1457
+  store i64 %13, i64* %18, align 8, !dbg !1457, !tbaa !718
+  store double 0.000000e+00, double* %11, align 8, !dbg !1458, !tbaa !718
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !1446
+  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !1446
+  %exitcond = icmp eq i32 %lftr.wideiv, %6, !dbg !1446
+  br i1 %exitcond, label %.loopexit, label %10, !dbg !1446
+
+.loopexit:                                        ; preds = %10, %0
+  ret void, !dbg !1459
 }

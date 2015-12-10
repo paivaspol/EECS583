@@ -1,70 +1,90 @@
-define void @img2buf(i16** nocapture %imgX, i8* nocapture %buf, i32 %size_x, i32 %size_y, i32 %symbol_size_in_bytes, i32 %crop_left, i32 %crop_right, i32 %crop_top, i32 %crop_bottom) #1 {
-entry:
-  %sub = sub nsw i32 %size_x, %crop_left
-  %sub1 = sub i32 %sub, %crop_right
-  %cmp88 = icmp ugt i32 %symbol_size_in_bytes, 2
-  br i1 %cmp88, label %if.then90, label %if.else94
+define void @img2buf(i16** nocapture readonly %imgX, i8* %buf, i32 %size_x, i32 %size_y, i32 %symbol_size_in_bytes, i32 %crop_left, i32 %crop_right, i32 %crop_top, i32 %crop_bottom) #2 {
+  tail call void @llvm.dbg.value(metadata i16** %imgX, i64 0, metadata !38, metadata !724), !dbg !730
+  tail call void @llvm.dbg.value(metadata i8* %buf, i64 0, metadata !39, metadata !724), !dbg !731
+  tail call void @llvm.dbg.value(metadata i32 %size_x, i64 0, metadata !40, metadata !724), !dbg !732
+  tail call void @llvm.dbg.value(metadata i32 %size_y, i64 0, metadata !41, metadata !724), !dbg !733
+  tail call void @llvm.dbg.value(metadata i32 %symbol_size_in_bytes, i64 0, metadata !42, metadata !724), !dbg !734
+  tail call void @llvm.dbg.value(metadata i32 %crop_left, i64 0, metadata !43, metadata !724), !dbg !735
+  tail call void @llvm.dbg.value(metadata i32 %crop_right, i64 0, metadata !44, metadata !724), !dbg !736
+  tail call void @llvm.dbg.value(metadata i32 %crop_top, i64 0, metadata !45, metadata !724), !dbg !737
+  tail call void @llvm.dbg.value(metadata i32 %crop_bottom, i64 0, metadata !46, metadata !724), !dbg !738
+  %1 = sub nsw i32 %size_x, %crop_left, !dbg !739
+  %2 = sub i32 %1, %crop_right, !dbg !740
+  tail call void @llvm.dbg.value(metadata i32 %2, i64 0, metadata !49, metadata !724), !dbg !741
+  tail call void @llvm.dbg.value(metadata i32 %6, i64 0, metadata !50, metadata !724), !dbg !742
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !51, metadata !724), !dbg !743
+  %3 = icmp ugt i32 %symbol_size_in_bytes, 2, !dbg !744
+  br i1 %3, label %4, label %12, !dbg !750
 
-if.then90:                                        ; preds = %entry
-  %sub2 = sub i32 %size_y, %crop_top
-  %sub3 = sub i32 %sub2, %crop_bottom
-  %mul91 = mul i32 %sub1, %symbol_size_in_bytes
-  %mul92 = mul i32 %mul91, %sub3
-  %conv93 = sext i32 %mul92 to i64
-  tail call void @llvm.memset.p0i8.i64(i8* %buf, i8 0, i64 %conv93, i32 1, i1 false)
-  br label %if.end
+; <label>:4                                       ; preds = %0
+  %5 = sub i32 %size_y, %crop_top, !dbg !751
+  %6 = sub i32 %5, %crop_bottom, !dbg !752
+  tail call void @llvm.dbg.value(metadata i32 2, i64 0, metadata !51, metadata !724), !dbg !743
+  %7 = mul i32 %2, %symbol_size_in_bytes, !dbg !753
+  %8 = mul i32 %7, %6, !dbg !753
+  %9 = sext i32 %8 to i64, !dbg !753
+  %10 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %buf, i1 false), !dbg !753
+  %11 = tail call i8* @__memset_chk(i8* %buf, i32 0, i64 %9, i64 %10) #6, !dbg !753
+  br label %13, !dbg !755
 
-if.else94:                                        ; preds = %entry
+; <label>:12                                      ; preds = %0
+  tail call void @llvm.dbg.value(metadata i32 %symbol_size_in_bytes, i64 0, metadata !51, metadata !724), !dbg !743
   %phitmp = sext i32 %symbol_size_in_bytes to i64
-  br label %if.end
+  br label %13
 
-if.end:                                           ; preds = %if.else94, %if.then90
-  %size.0 = phi i64 [ 2, %if.then90 ], [ %phitmp, %if.else94 ]
-  %sub96 = sub nsw i32 %size_y, %crop_bottom
-  %cmp97206 = icmp sgt i32 %sub96, %crop_top
-  br i1 %cmp97206, label %for.cond100.preheader.lr.ph, label %if.end123
+; <label>:13                                      ; preds = %12, %4
+  %size.0 = phi i64 [ 2, %4 ], [ %phitmp, %12 ]
+  tail call void @llvm.dbg.value(metadata i32 %crop_top, i64 0, metadata !47, metadata !724), !dbg !756
+  %14 = sub nsw i32 %size_y, %crop_bottom, !dbg !757
+  %15 = icmp sgt i32 %14, %crop_top, !dbg !760
+  br i1 %15, label %.preheader.lr.ph, label %._crit_edge3, !dbg !761
 
-for.cond100.preheader.lr.ph:                      ; preds = %if.end
-  %sub101 = sub nsw i32 %size_x, %crop_right
-  %cmp102204 = icmp sgt i32 %sub101, %crop_left
-  %0 = sext i32 %crop_left to i64
-  %1 = sext i32 %crop_top to i64
-  br label %for.cond100.preheader
+.preheader.lr.ph:                                 ; preds = %13
+  %16 = sub nsw i32 %size_x, %crop_right, !dbg !762
+  %17 = icmp sgt i32 %16, %crop_left, !dbg !765
+  %18 = sext i32 %crop_left to i64
+  %19 = add i32 %size_x, -1, !dbg !761
+  %20 = sub i32 %19, %crop_right, !dbg !761
+  %21 = sext i32 %crop_top to i64
+  %22 = sext i32 %2 to i64, !dbg !761
+  %23 = add i32 %size_y, -1, !dbg !761
+  %24 = sub i32 %23, %crop_bottom, !dbg !761
+  br label %.preheader, !dbg !761
 
-for.cond100.preheader:                            ; preds = %for.cond100.preheader.lr.ph, %for.inc120
-  %indvars.iv208 = phi i64 [ %1, %for.cond100.preheader.lr.ph ], [ %indvars.iv.next209, %for.inc120 ]
-  br i1 %cmp102204, label %for.body104.lr.ph, label %for.inc120
+.preheader:                                       ; preds = %._crit_edge, %.preheader.lr.ph
+  %indvars.iv4 = phi i64 [ %21, %.preheader.lr.ph ], [ %indvars.iv.next5, %._crit_edge ]
+  br i1 %17, label %.lr.ph, label %._crit_edge, !dbg !766
 
-for.body104.lr.ph:                                ; preds = %for.cond100.preheader
-  %2 = trunc i64 %indvars.iv208 to i32
-  %sub106 = sub nsw i32 %2, %crop_top
-  %mul107 = mul nsw i32 %sub106, %sub1
-  %sub105 = sub i32 %mul107, %crop_left
-  %arrayidx114 = getelementptr inbounds i16** %imgX, i64 %indvars.iv208
-  br label %for.body104
+.lr.ph:                                           ; preds = %.preheader
+  %25 = sub nsw i64 %indvars.iv4, %21, !dbg !767
+  %26 = mul nsw i64 %25, %22, !dbg !767
+  %27 = trunc i64 %26 to i32, !dbg !767
+  %28 = sub i32 %27, %crop_left, !dbg !767
+  %29 = getelementptr inbounds i16** %imgX, i64 %indvars.iv4, !dbg !767
+  br label %30, !dbg !766
 
-for.body104:                                      ; preds = %for.body104.lr.ph, %for.body104
-  %indvars.iv = phi i64 [ %0, %for.body104.lr.ph ], [ %indvars.iv.next, %for.body104 ]
-  %3 = trunc i64 %indvars.iv to i32
-  %add108 = add i32 %sub105, %3
-  %mul109 = mul nsw i32 %add108, %symbol_size_in_bytes
-  %idx.ext110 = sext i32 %mul109 to i64
-  %add.ptr111 = getelementptr inbounds i8* %buf, i64 %idx.ext110
-  %4 = load i16** %arrayidx114, align 8, !tbaa !0
-  %arrayidx115 = getelementptr inbounds i16* %4, i64 %indvars.iv
-  %5 = bitcast i16* %arrayidx115 to i8*
-  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %add.ptr111, i8* %5, i64 %size.0, i32 1, i1 false)
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %6 = trunc i64 %indvars.iv.next to i32
-  %cmp102 = icmp slt i32 %6, %sub101
-  br i1 %cmp102, label %for.body104, label %for.inc120
+; <label>:30                                      ; preds = %30, %.lr.ph
+  %indvars.iv = phi i64 [ %18, %.lr.ph ], [ %indvars.iv.next, %30 ]
+  %31 = trunc i64 %indvars.iv to i32, !dbg !767
+  %32 = add i32 %28, %31, !dbg !767
+  %33 = mul nsw i32 %32, %symbol_size_in_bytes, !dbg !767
+  %34 = sext i32 %33 to i64, !dbg !767
+  %35 = getelementptr inbounds i8* %buf, i64 %34, !dbg !767
+  %36 = load i16** %29, align 8, !dbg !767, !tbaa !769
+  %37 = getelementptr inbounds i16* %36, i64 %indvars.iv, !dbg !767
+  %38 = bitcast i16* %37 to i8*, !dbg !767
+  %39 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %35, i1 false), !dbg !767
+  %40 = tail call i8* @__memcpy_chk(i8* %35, i8* %38, i64 %size.0, i64 %39) #6, !dbg !767
+  %indvars.iv.next = add nsw i64 %indvars.iv, 1, !dbg !766
+  %exitcond = icmp eq i32 %31, %20, !dbg !766
+  br i1 %exitcond, label %._crit_edge, label %30, !dbg !766
 
-for.inc120:                                       ; preds = %for.body104, %for.cond100.preheader
-  %indvars.iv.next209 = add i64 %indvars.iv208, 1
-  %7 = trunc i64 %indvars.iv.next209 to i32
-  %cmp97 = icmp slt i32 %7, %sub96
-  br i1 %cmp97, label %for.cond100.preheader, label %if.end123
+._crit_edge:                                      ; preds = %30, %.preheader
+  %indvars.iv.next5 = add nsw i64 %indvars.iv4, 1, !dbg !761
+  %lftr.wideiv6 = trunc i64 %indvars.iv4 to i32, !dbg !761
+  %exitcond7 = icmp eq i32 %lftr.wideiv6, %24, !dbg !761
+  br i1 %exitcond7, label %._crit_edge3, label %.preheader, !dbg !761
 
-if.end123:                                        ; preds = %for.inc120, %if.end
-  ret void
+._crit_edge3:                                     ; preds = %._crit_edge, %13
+  ret void, !dbg !773
 }

@@ -1,28 +1,31 @@
 define i32 @have_interaction(%struct.t_idef* nocapture readonly %idef, i32 %ftype) #4 {
-  %1 = getelementptr inbounds %struct.t_idef* %idef, i64 0, i32 0
-  %2 = load i32* %1, align 4, !tbaa !18
-  %3 = icmp sgt i32 %2, 0
-  br i1 %3, label %.lr.ph, label %._crit_edge
+  tail call void @llvm.dbg.value(metadata %struct.t_idef* %idef, i64 0, metadata !344, metadata !580), !dbg !743
+  tail call void @llvm.dbg.value(metadata i32 %ftype, i64 0, metadata !345, metadata !580), !dbg !744
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !346, metadata !580), !dbg !745
+  %1 = getelementptr inbounds %struct.t_idef* %idef, i64 0, i32 0, !dbg !746
+  %2 = load i32* %1, align 4, !dbg !746, !tbaa !749
+  %3 = icmp sgt i32 %2, 0, !dbg !751
+  br i1 %3, label %.lr.ph, label %._crit_edge, !dbg !752
 
 .lr.ph:                                           ; preds = %0
-  %4 = getelementptr inbounds %struct.t_idef* %idef, i64 0, i32 3
-  %5 = load i32** %4, align 8, !tbaa !20
-  %6 = sext i32 %2 to i64
-  br label %9
+  %4 = getelementptr inbounds %struct.t_idef* %idef, i64 0, i32 3, !dbg !753
+  %5 = load i32** %4, align 8, !dbg !753, !tbaa !755
+  %6 = sext i32 %2 to i64, !dbg !751
+  br label %9, !dbg !752
 
 ; <label>:7                                       ; preds = %9
-  %8 = icmp slt i64 %indvars.iv.next, %6
-  br i1 %8, label %9, label %._crit_edge
+  %8 = icmp slt i64 %indvars.iv.next, %6, !dbg !751
+  br i1 %8, label %9, label %._crit_edge, !dbg !752
 
 ; <label>:9                                       ; preds = %.lr.ph, %7
   %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %7 ]
-  %10 = getelementptr inbounds i32* %5, i64 %indvars.iv
-  %11 = load i32* %10, align 4, !tbaa !21
-  %12 = icmp eq i32 %11, %ftype
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  br i1 %12, label %._crit_edge, label %7
+  %10 = getelementptr inbounds i32* %5, i64 %indvars.iv, !dbg !756
+  %11 = load i32* %10, align 4, !dbg !756, !tbaa !757
+  %12 = icmp eq i32 %11, %ftype, !dbg !758
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !752
+  br i1 %12, label %._crit_edge, label %7, !dbg !759
 
 ._crit_edge:                                      ; preds = %9, %7, %0
   %.0 = phi i32 [ 0, %0 ], [ 1, %9 ], [ 0, %7 ]
-  ret i32 %.0
+  ret i32 %.0, !dbg !760
 }

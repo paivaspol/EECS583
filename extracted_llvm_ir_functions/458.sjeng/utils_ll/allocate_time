@@ -1,179 +1,192 @@
 define i32 @allocate_time() #0 {
-entry:
-  %0 = load i32* @moves_to_tc, align 4, !tbaa !0
-  %tobool = icmp eq i32 %0, 0
-  %1 = load i32* @min_per_game, align 4, !tbaa !0
-  br i1 %tobool, label %if.then, label %if.else110
+  tail call void @llvm.dbg.value(metadata double 0.000000e+00, i64 0, metadata !19, metadata !388), !dbg !389
+  tail call void @llvm.dbg.value(metadata double 2.000000e+01, i64 0, metadata !20, metadata !388), !dbg !390
+  %1 = load i32* @moves_to_tc, align 4, !dbg !391, !tbaa !393
+  %2 = icmp eq i32 %1, 0, !dbg !391
+  %3 = load i32* @min_per_game, align 4, !dbg !397, !tbaa !393
+  br i1 %2, label %4, label %74, !dbg !399
 
-if.then:                                          ; preds = %entry
-  %cmp = icmp sgt i32 %1, 5
-  %2 = load i32* @inc, align 4, !tbaa !0
-  %tobool1 = icmp ne i32 %2, 0
-  %or.cond = or i1 %cmp, %tobool1
-  %3 = load i32* @time_left, align 4, !tbaa !0
-  br i1 %or.cond, label %lor.lhs.false, label %if.then7
+; <label>:4                                       ; preds = %0
+  %5 = icmp sgt i32 %3, 5, !dbg !400
+  %6 = load i32* @inc, align 4
+  %7 = icmp ne i32 %6, 0, !dbg !403
+  %or.cond = or i1 %5, %7, !dbg !404
+  %8 = load i32* @time_left, align 4, !dbg !405, !tbaa !393
+  br i1 %or.cond, label %9, label %._crit_edge, !dbg !404
 
-lor.lhs.false:                                    ; preds = %if.then
-  %conv = sitofp i32 %3 to double
-  %mul = mul nsw i32 %1, 6000
-  %4 = load i32* @sec_per_game, align 4, !tbaa !0
-  %mul2 = mul nsw i32 %4, 100
-  %add = add nsw i32 %mul2, %mul
-  %conv3 = sitofp i32 %add to double
-  %mul4 = fmul double %conv3, 4.000000e+00
-  %div = fdiv double %mul4, 5.000000e+00
-  %cmp5 = fcmp olt double %conv, %div
-  br i1 %cmp5, label %if.then7, label %if.end37
+; <label>:9                                       ; preds = %4
+  %10 = sitofp i32 %8 to double, !dbg !405
+  %11 = mul nsw i32 %3, 6000, !dbg !406
+  %12 = load i32* @sec_per_game, align 4, !dbg !407, !tbaa !393
+  %13 = mul nsw i32 %12, 100, !dbg !408
+  %14 = add nsw i32 %13, %11, !dbg !409
+  %15 = sitofp i32 %14 to double, !dbg !410
+  %16 = fmul double %15, 4.000000e+00, !dbg !411
+  %17 = fdiv double %16, 5.000000e+00, !dbg !412
+  %18 = fcmp olt double %10, %17, !dbg !413
+  br i1 %18, label %._crit_edge, label %33, !dbg !414
 
-if.then7:                                         ; preds = %if.then, %lor.lhs.false
-  %5 = load i32* @opp_time, align 4, !tbaa !0
-  %sub = sub nsw i32 %5, %3
-  %conv8 = sitofp i32 %sub to double
-  %conv9 = sitofp i32 %5 to double
-  %div10 = fdiv double %conv9, 5.000000e+00
-  %cmp11 = fcmp ogt double %conv8, %div10
-  %6 = load i32* @xb_mode, align 4, !tbaa !0
-  %tobool14 = icmp ne i32 %6, 0
-  %or.cond149 = and i1 %cmp11, %tobool14
-  br i1 %or.cond149, label %if.end37, label %if.else
+._crit_edge:                                      ; preds = %4, %9
+  %19 = load i32* @opp_time, align 4, !dbg !415, !tbaa !393
+  %20 = sub nsw i32 %19, %8, !dbg !418
+  %21 = sitofp i32 %20 to double, !dbg !419
+  %22 = sitofp i32 %19 to double, !dbg !420
+  %23 = fdiv double %22, 5.000000e+00, !dbg !421
+  %24 = fcmp ogt double %21, %23, !dbg !422
+  %25 = load i32* @xb_mode, align 4
+  %26 = icmp ne i32 %25, 0, !dbg !423
+  %or.cond3 = and i1 %24, %26, !dbg !424
+  br i1 %or.cond3, label %33, label %27, !dbg !424
 
-if.else:                                          ; preds = %if.then7
-  %div19 = fdiv double %conv9, 1.000000e+01
-  %cmp20 = fcmp ogt double %conv8, %div19
-  %or.cond150 = and i1 %cmp20, %tobool14
-  br i1 %or.cond150, label %if.end37, label %if.else25
+; <label>:27                                      ; preds = %._crit_edge
+  %28 = fdiv double %22, 1.000000e+01, !dbg !425
+  %29 = fcmp ogt double %21, %28, !dbg !427
+  %or.cond5 = and i1 %26, %29, !dbg !428
+  br i1 %or.cond5, label %33, label %30, !dbg !428
 
-if.else25:                                        ; preds = %if.else
-  %div29 = fdiv double %conv9, 2.000000e+01
-  %cmp30 = fcmp ogt double %conv8, %div29
-  %or.cond151 = and i1 %cmp30, %tobool14
-  %. = select i1 %or.cond151, double 2.500000e+01, double 2.000000e+01
-  br label %if.end37
+; <label>:30                                      ; preds = %27
+  %31 = fdiv double %22, 2.000000e+01, !dbg !429
+  %32 = fcmp ogt double %21, %31, !dbg !431
+  %or.cond7 = and i1 %26, %32, !dbg !432
+  tail call void @llvm.dbg.value(metadata double 2.500000e+01, i64 0, metadata !20, metadata !388), !dbg !390
+  %. = select i1 %or.cond7, double 2.500000e+01, double 2.000000e+01, !dbg !432
+  br label %33, !dbg !432
 
-if.end37:                                         ; preds = %if.else25, %if.else, %if.then7, %lor.lhs.false
-  %move_speed.0 = phi double [ 2.000000e+01, %lor.lhs.false ], [ 4.000000e+01, %if.then7 ], [ 3.000000e+01, %if.else ], [ %., %if.else25 ]
-  %7 = load i32* @Variant, align 4, !tbaa !0
-  %.off = add i32 %7, -3
-  %8 = icmp ugt i32 %.off, 1
-  br i1 %8, label %if.then43, label %if.else67
+; <label>:33                                      ; preds = %30, %27, %._crit_edge, %9
+  %move_speed.0 = phi double [ 2.000000e+01, %9 ], [ 4.000000e+01, %._crit_edge ], [ 3.000000e+01, %27 ], [ %., %30 ]
+  %34 = load i32* @Variant, align 4, !dbg !433, !tbaa !393
+  %.off = add i32 %34, -3, !dbg !435
+  %.cmp = icmp ugt i32 %.off, 1, !dbg !435
+  br i1 %.cmp, label %35, label %51, !dbg !435
 
-if.then43:                                        ; preds = %if.end37
-  %9 = load i32* @opp_time, align 4, !tbaa !0
-  %sub44 = sub nsw i32 %3, %9
-  %conv45 = sitofp i32 %sub44 to double
-  %conv46 = sitofp i32 %3 to double
-  %div47 = fdiv double %conv46, 5.000000e+00
-  %cmp48 = fcmp ogt double %conv45, %div47
-  %10 = load i32* @xb_mode, align 4, !tbaa !0
-  %tobool51 = icmp ne i32 %10, 0
-  %or.cond153 = and i1 %cmp48, %tobool51
-  br i1 %or.cond153, label %if.then52, label %if.else54
+; <label>:35                                      ; preds = %33
+  %36 = load i32* @opp_time, align 4, !dbg !436, !tbaa !393
+  %37 = sub nsw i32 %8, %36, !dbg !439
+  %38 = sitofp i32 %37 to double, !dbg !440
+  %39 = sitofp i32 %8 to double, !dbg !441
+  %40 = fdiv double %39, 5.000000e+00, !dbg !442
+  %41 = fcmp ogt double %38, %40, !dbg !443
+  %42 = load i32* @xb_mode, align 4
+  %43 = icmp ne i32 %42, 0, !dbg !444
+  %or.cond11 = and i1 %41, %43, !dbg !445
+  br i1 %or.cond11, label %44, label %46, !dbg !445
 
-if.then52:                                        ; preds = %if.then43
-  %sub53 = fadd double %move_speed.0, -1.000000e+01
-  br label %if.end79
+; <label>:44                                      ; preds = %35
+  %45 = fadd double %move_speed.0, -1.000000e+01, !dbg !446
+  tail call void @llvm.dbg.value(metadata double %45, i64 0, metadata !20, metadata !388), !dbg !390
+  br label %56, !dbg !447
 
-if.else54:                                        ; preds = %if.then43
-  %div58 = fdiv double %conv46, 1.000000e+01
-  %cmp59 = fcmp ogt double %conv45, %div58
-  %or.cond154 = and i1 %cmp59, %tobool51
-  br i1 %or.cond154, label %if.then63, label %if.end79
+; <label>:46                                      ; preds = %35
+  %47 = fdiv double %39, 1.000000e+01, !dbg !448
+  %48 = fcmp ogt double %38, %47, !dbg !450
+  %or.cond13 = and i1 %43, %48, !dbg !451
+  br i1 %or.cond13, label %49, label %56, !dbg !451
 
-if.then63:                                        ; preds = %if.else54
-  %sub64 = fadd double %move_speed.0, -5.000000e+00
-  br label %if.end79
+; <label>:49                                      ; preds = %46
+  %50 = fadd double %move_speed.0, -5.000000e+00, !dbg !452
+  tail call void @llvm.dbg.value(metadata double %50, i64 0, metadata !20, metadata !388), !dbg !390
+  br label %56, !dbg !453
 
-if.else67:                                        ; preds = %if.end37
-  switch i32 %7, label %if.end79 [
-    i32 3, label %if.then70
-    i32 4, label %if.then75
-  ]
+; <label>:51                                      ; preds = %33
+  switch i32 %34, label %56 [
+    i32 3, label %52
+    i32 4, label %54
+  ], !dbg !454
 
-if.then70:                                        ; preds = %if.else67
-  %sub71 = fadd double %move_speed.0, -1.000000e+01
-  br label %if.end79
+; <label>:52                                      ; preds = %51
+  %53 = fadd double %move_speed.0, -1.000000e+01, !dbg !455
+  tail call void @llvm.dbg.value(metadata double %53, i64 0, metadata !20, metadata !388), !dbg !390
+  br label %56, !dbg !458
 
-if.then75:                                        ; preds = %if.else67
-  %sub76 = fadd double %move_speed.0, -5.000000e+00
-  br label %if.end79
+; <label>:54                                      ; preds = %51
+  %55 = fadd double %move_speed.0, -5.000000e+00, !dbg !459
+  tail call void @llvm.dbg.value(metadata double %55, i64 0, metadata !20, metadata !388), !dbg !390
+  br label %56, !dbg !462
 
-if.end79:                                         ; preds = %if.else67, %if.then70, %if.then75, %if.then52, %if.then63, %if.else54
-  %move_speed.1 = phi double [ %sub53, %if.then52 ], [ %sub64, %if.then63 ], [ %move_speed.0, %if.else54 ], [ %sub71, %if.then70 ], [ %sub76, %if.then75 ], [ %move_speed.0, %if.else67 ]
-  %conv80 = sitofp i32 %3 to double
-  %div81 = fdiv double %conv80, %move_speed.1
-  %tobool82 = icmp eq i32 %2, 0
-  br i1 %tobool82, label %if.end134, label %if.then83
+; <label>:56                                      ; preds = %51, %52, %54, %44, %49, %46
+  %move_speed.1 = phi double [ %45, %44 ], [ %50, %49 ], [ %move_speed.0, %46 ], [ %53, %52 ], [ %55, %54 ], [ %move_speed.0, %51 ]
+  %57 = sitofp i32 %8 to double, !dbg !463
+  %58 = fdiv double %57, %move_speed.1, !dbg !464
+  tail call void @llvm.dbg.value(metadata double %58, i64 0, metadata !19, metadata !388), !dbg !389
+  %59 = icmp eq i32 %6, 0, !dbg !465
+  br i1 %59, label %96, label %60, !dbg !467
 
-if.then83:                                        ; preds = %if.end79
-  %sub85 = fsub double %conv80, %div81
-  %conv86 = sitofp i32 %2 to double
-  %sub87 = fsub double %sub85, %conv86
-  %cmp88 = fcmp ogt double %sub87, 5.000000e+02
-  br i1 %cmp88, label %if.then90, label %if.else93
+; <label>:60                                      ; preds = %56
+  %61 = fsub double %57, %58, !dbg !468
+  %62 = sitofp i32 %6 to double, !dbg !471
+  %63 = fsub double %61, %62, !dbg !472
+  %64 = fcmp ogt double %63, 5.000000e+02, !dbg !473
+  br i1 %64, label %65, label %67, !dbg !474
 
-if.then90:                                        ; preds = %if.then83
-  %add92 = fadd double %div81, %conv86
-  br label %if.end134
+; <label>:65                                      ; preds = %60
+  %66 = fadd double %58, %62, !dbg !475
+  tail call void @llvm.dbg.value(metadata double %66, i64 0, metadata !19, metadata !388), !dbg !389
+  br label %96, !dbg !477
 
-if.else93:                                        ; preds = %if.then83
-  %mul97 = fmul double %conv86, 2.000000e+00
-  %div98 = fdiv double %mul97, 3.000000e+00
-  %sub99 = fsub double %sub85, %div98
-  %cmp100 = fcmp ogt double %sub99, 1.000000e+02
-  br i1 %cmp100, label %if.then102, label %if.end134
+; <label>:67                                      ; preds = %60
+  %68 = fmul double %62, 2.000000e+00, !dbg !478
+  %69 = fdiv double %68, 3.000000e+00, !dbg !480
+  %70 = fsub double %61, %69, !dbg !481
+  %71 = fcmp ogt double %70, 1.000000e+02, !dbg !482
+  br i1 %71, label %72, label %96, !dbg !483
 
-if.then102:                                       ; preds = %if.else93
-  %add106 = fadd double %div81, %div98
-  br label %if.end134
+; <label>:72                                      ; preds = %67
+  %73 = fadd double %58, %69, !dbg !484
+  tail call void @llvm.dbg.value(metadata double %73, i64 0, metadata !19, metadata !388), !dbg !389
+  br label %96, !dbg !486
 
-if.else110:                                       ; preds = %entry
-  %conv111 = sitofp i32 %1 to float
-  %conv112 = fpext float %conv111 to double
-  %mul113 = fmul double %conv112, 6.000000e+03
-  %11 = load i32* @sec_per_game, align 4, !tbaa !0
-  %conv114 = sitofp i32 %11 to float
-  %conv115 = fpext float %conv114 to double
-  %mul116 = fmul double %conv115, 1.000000e+02
-  %add117 = fadd double %mul113, %mul116
-  %conv118 = sitofp i32 %0 to float
-  %conv119 = fpext float %conv118 to double
-  %div120 = fdiv double %add117, %conv119
-  %sub121 = fadd double %div120, -1.000000e+02
-  %12 = load i32* @time_cushion, align 4, !tbaa !0
-  %tobool122 = icmp eq i32 %12, 0
-  br i1 %tobool122, label %if.end134, label %if.then123
+; <label>:74                                      ; preds = %0
+  %75 = sitofp i32 %3 to float, !dbg !487
+  %76 = fpext float %75 to double, !dbg !487
+  %77 = fmul double %76, 6.000000e+03, !dbg !488
+  %78 = load i32* @sec_per_game, align 4, !dbg !489, !tbaa !393
+  %79 = sitofp i32 %78 to float, !dbg !490
+  %80 = fpext float %79 to double, !dbg !490
+  %81 = fmul double %80, 1.000000e+02, !dbg !491
+  %82 = fadd double %77, %81, !dbg !492
+  %83 = sitofp i32 %1 to float, !dbg !493
+  %84 = fpext float %83 to double, !dbg !493
+  %85 = fdiv double %82, %84, !dbg !494
+  %86 = fadd double %85, -1.000000e+02, !dbg !495
+  tail call void @llvm.dbg.value(metadata double %86, i64 0, metadata !19, metadata !388), !dbg !389
+  %87 = load i32* @time_cushion, align 4, !dbg !496, !tbaa !393
+  %88 = icmp eq i32 %87, 0, !dbg !496
+  br i1 %88, label %96, label %89, !dbg !498
 
-if.then123:                                       ; preds = %if.else110
-  %conv124 = sitofp i32 %12 to double
-  %mul125 = fmul double %conv124, 2.100000e+00
-  %div126 = fdiv double %mul125, 3.000000e+00
-  %add127 = fadd double %sub121, %div126
-  %conv131 = fptosi double %div126 to i32
-  %sub132 = sub nsw i32 %12, %conv131
-  store i32 %sub132, i32* @time_cushion, align 4, !tbaa !0
-  br label %if.end134
+; <label>:89                                      ; preds = %74
+  %90 = sitofp i32 %87 to double, !dbg !499
+  %91 = fmul double %90, 2.100000e+00, !dbg !501
+  %92 = fdiv double %91, 3.000000e+00, !dbg !502
+  %93 = fadd double %86, %92, !dbg !503
+  tail call void @llvm.dbg.value(metadata double %93, i64 0, metadata !19, metadata !388), !dbg !389
+  %94 = fptosi double %92 to i32, !dbg !504
+  %95 = sub nsw i32 %87, %94, !dbg !505
+  store i32 %95, i32* @time_cushion, align 4, !dbg !505, !tbaa !393
+  br label %96, !dbg !506
 
-if.end134:                                        ; preds = %if.else110, %if.end79, %if.then123, %if.else93, %if.then102, %if.then90
-  %allocated_time.0 = phi double [ %add127, %if.then123 ], [ %add92, %if.then90 ], [ %add106, %if.then102 ], [ %div81, %if.else93 ], [ %div81, %if.end79 ], [ %sub121, %if.else110 ]
-  %13 = load i32* @Variant, align 4, !tbaa !0
-  %cmp135 = icmp eq i32 %13, 1
-  br i1 %cmp135, label %if.then137, label %if.end147
+; <label>:96                                      ; preds = %74, %56, %89, %67, %72, %65
+  %allocated_time.0 = phi double [ %93, %89 ], [ %86, %74 ], [ %66, %65 ], [ %73, %72 ], [ %58, %67 ], [ %58, %56 ]
+  %97 = load i32* @Variant, align 4, !dbg !507, !tbaa !393
+  %98 = icmp eq i32 %97, 1, !dbg !509
+  br i1 %98, label %99, label %107, !dbg !510
 
-if.then137:                                       ; preds = %if.end134
-  %mul138 = fmul double %allocated_time.0, 2.500000e-01
-  %14 = load i32* @opp_time, align 4, !tbaa !0
-  %15 = load i32* @time_left, align 4, !tbaa !0
-  %cmp139 = icmp sgt i32 %14, %15
-  %cmp142 = icmp slt i32 %14, 1500
-  %or.cond155 = or i1 %cmp139, %cmp142
-  br i1 %or.cond155, label %if.then144, label %if.end147
+; <label>:99                                      ; preds = %96
+  %100 = fmul double %allocated_time.0, 2.500000e-01, !dbg !511
+  tail call void @llvm.dbg.value(metadata double %100, i64 0, metadata !19, metadata !388), !dbg !389
+  %101 = load i32* @opp_time, align 4, !dbg !513, !tbaa !393
+  %102 = load i32* @time_left, align 4, !dbg !515, !tbaa !393
+  %103 = icmp sgt i32 %101, %102, !dbg !516
+  %104 = icmp slt i32 %101, 1500, !dbg !517
+  %or.cond15 = or i1 %104, %103, !dbg !518
+  br i1 %or.cond15, label %105, label %107, !dbg !518
 
-if.then144:                                       ; preds = %if.then137
-  %mul145 = fmul double %mul138, 5.000000e-01
-  br label %if.end147
+; <label>:105                                     ; preds = %99
+  %106 = fmul double %100, 5.000000e-01, !dbg !519
+  tail call void @llvm.dbg.value(metadata double %106, i64 0, metadata !19, metadata !388), !dbg !389
+  br label %107, !dbg !521
 
-if.end147:                                        ; preds = %if.then144, %if.then137, %if.end134
-  %allocated_time.1 = phi double [ %mul145, %if.then144 ], [ %mul138, %if.then137 ], [ %allocated_time.0, %if.end134 ]
-  %conv148 = fptosi double %allocated_time.1 to i32
-  ret i32 %conv148
+; <label>:107                                     ; preds = %105, %99, %96
+  %allocated_time.1 = phi double [ %106, %105 ], [ %100, %99 ], [ %allocated_time.0, %96 ]
+  %108 = fptosi double %allocated_time.1 to i32, !dbg !522
+  ret i32 %108, !dbg !523
 }

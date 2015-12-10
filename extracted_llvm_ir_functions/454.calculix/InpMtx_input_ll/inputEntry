@@ -1,96 +1,105 @@
 define internal fastcc void @inputEntry(%struct._InpMtx* %inpmtx, i32 %row, i32 %col, double %real, double %imag) #0 {
-entry:
-  tail call fastcc void @prepareToAddNewEntries(%struct._InpMtx* %inpmtx, i32 1) #6
-  %nent1 = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 4
-  %0 = load i32* %nent1, align 4, !tbaa !3
-  %ivec1IV = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 6
-  %call = tail call i32* @IV_entries(%struct._IV* %ivec1IV) #4
-  %ivec2IV = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 7
-  %call2 = tail call i32* @IV_entries(%struct._IV* %ivec2IV) #4
-  %coordType = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 0
-  %1 = load i32* %coordType, align 4, !tbaa !3
-  switch i32 %1, label %if.end30 [
-    i32 1, label %if.then
-    i32 2, label %if.then7
-    i32 3, label %if.then15
-  ]
+  tail call void @llvm.dbg.value(metadata %struct._InpMtx* %inpmtx, i64 0, metadata !192, metadata !320), !dbg !358
+  tail call void @llvm.dbg.value(metadata i32 %row, i64 0, metadata !193, metadata !320), !dbg !359
+  tail call void @llvm.dbg.value(metadata i32 %col, i64 0, metadata !194, metadata !320), !dbg !360
+  tail call void @llvm.dbg.value(metadata double %real, i64 0, metadata !195, metadata !320), !dbg !361
+  tail call void @llvm.dbg.value(metadata double %imag, i64 0, metadata !196, metadata !320), !dbg !362
+  tail call fastcc void @prepareToAddNewEntries(%struct._InpMtx* %inpmtx, i32 1) #7, !dbg !363
+  %1 = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 4, !dbg !364
+  %2 = load i32* %1, align 4, !dbg !364, !tbaa !365
+  tail call void @llvm.dbg.value(metadata i32 %2, i64 0, metadata !197, metadata !320), !dbg !366
+  %3 = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 6, !dbg !367
+  %4 = tail call i32* @IV_entries(%struct._IV* %3) #5, !dbg !368
+  tail call void @llvm.dbg.value(metadata i32* %4, i64 0, metadata !198, metadata !320), !dbg !369
+  %5 = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 7, !dbg !370
+  %6 = tail call i32* @IV_entries(%struct._IV* %5) #5, !dbg !371
+  tail call void @llvm.dbg.value(metadata i32* %6, i64 0, metadata !199, metadata !320), !dbg !372
+  %7 = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 0, !dbg !373
+  %8 = load i32* %7, align 4, !dbg !373, !tbaa !337
+  switch i32 %8, label %27 [
+    i32 1, label %9
+    i32 2, label %13
+    i32 3, label %17
+  ], !dbg !375
 
-if.then:                                          ; preds = %entry
-  %idxprom = sext i32 %0 to i64
-  %arrayidx = getelementptr inbounds i32* %call, i64 %idxprom
-  store i32 %row, i32* %arrayidx, align 4, !tbaa !3
-  %arrayidx4 = getelementptr inbounds i32* %call2, i64 %idxprom
-  store i32 %col, i32* %arrayidx4, align 4, !tbaa !3
-  br label %if.end30
+; <label>:9                                       ; preds = %0
+  %10 = sext i32 %2 to i64, !dbg !376
+  %11 = getelementptr inbounds i32* %4, i64 %10, !dbg !376
+  store i32 %row, i32* %11, align 4, !dbg !378, !tbaa !379
+  %12 = getelementptr inbounds i32* %6, i64 %10, !dbg !380
+  store i32 %col, i32* %12, align 4, !dbg !381, !tbaa !379
+  br label %27, !dbg !382
 
-if.then7:                                         ; preds = %entry
-  %idxprom8 = sext i32 %0 to i64
-  %arrayidx9 = getelementptr inbounds i32* %call, i64 %idxprom8
-  store i32 %col, i32* %arrayidx9, align 4, !tbaa !3
-  %arrayidx11 = getelementptr inbounds i32* %call2, i64 %idxprom8
-  store i32 %row, i32* %arrayidx11, align 4, !tbaa !3
-  br label %if.end30
+; <label>:13                                      ; preds = %0
+  %14 = sext i32 %2 to i64, !dbg !383
+  %15 = getelementptr inbounds i32* %4, i64 %14, !dbg !383
+  store i32 %col, i32* %15, align 4, !dbg !386, !tbaa !379
+  %16 = getelementptr inbounds i32* %6, i64 %14, !dbg !387
+  store i32 %row, i32* %16, align 4, !dbg !388, !tbaa !379
+  br label %27, !dbg !389
 
-if.then15:                                        ; preds = %entry
-  %cmp16 = icmp sgt i32 %row, %col
-  %idxprom23 = sext i32 %0 to i64
-  %arrayidx24 = getelementptr inbounds i32* %call, i64 %idxprom23
-  br i1 %cmp16, label %if.else22, label %if.then17
+; <label>:17                                      ; preds = %0
+  %18 = icmp slt i32 %col, %row, !dbg !390
+  %19 = sext i32 %2 to i64, !dbg !394
+  %20 = getelementptr inbounds i32* %4, i64 %19, !dbg !394
+  br i1 %18, label %24, label %21, !dbg !396
 
-if.then17:                                        ; preds = %if.then15
-  store i32 %row, i32* %arrayidx24, align 4, !tbaa !3
-  %sub = sub nsw i32 %col, %row
-  %arrayidx21 = getelementptr inbounds i32* %call2, i64 %idxprom23
-  store i32 %sub, i32* %arrayidx21, align 4, !tbaa !3
-  br label %if.end30
+; <label>:21                                      ; preds = %17
+  store i32 %row, i32* %20, align 4, !dbg !397, !tbaa !379
+  %22 = sub nsw i32 %col, %row, !dbg !399
+  %23 = getelementptr inbounds i32* %6, i64 %19, !dbg !400
+  store i32 %22, i32* %23, align 4, !dbg !401, !tbaa !379
+  br label %27, !dbg !402
 
-if.else22:                                        ; preds = %if.then15
-  store i32 %col, i32* %arrayidx24, align 4, !tbaa !3
-  %sub25 = sub nsw i32 %col, %row
-  %arrayidx27 = getelementptr inbounds i32* %call2, i64 %idxprom23
-  store i32 %sub25, i32* %arrayidx27, align 4, !tbaa !3
-  br label %if.end30
+; <label>:24                                      ; preds = %17
+  store i32 %col, i32* %20, align 4, !dbg !403, !tbaa !379
+  %25 = sub nsw i32 %col, %row, !dbg !404
+  %26 = getelementptr inbounds i32* %6, i64 %19, !dbg !405
+  store i32 %25, i32* %26, align 4, !dbg !406, !tbaa !379
+  br label %27
 
-if.end30:                                         ; preds = %entry, %if.then7, %if.then17, %if.else22, %if.then
-  %add = add nsw i32 %0, 1
-  tail call void @IV_setSize(%struct._IV* %ivec1IV, i32 %add) #4
-  tail call void @IV_setSize(%struct._IV* %ivec2IV, i32 %add) #4
-  %inputMode = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 2
-  %2 = load i32* %inputMode, align 4, !tbaa !3
-  switch i32 %2, label %if.end58 [
-    i32 1, label %if.then35
-    i32 2, label %if.then44
-  ]
+; <label>:27                                      ; preds = %0, %13, %21, %24, %9
+  %28 = add nsw i32 %2, 1, !dbg !407
+  tail call void @IV_setSize(%struct._IV* %3, i32 %28) #5, !dbg !408
+  tail call void @IV_setSize(%struct._IV* %5, i32 %28) #5, !dbg !409
+  %29 = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 2, !dbg !410
+  %30 = load i32* %29, align 4, !dbg !410, !tbaa !350
+  switch i32 %30, label %46 [
+    i32 1, label %31
+    i32 2, label %36
+  ], !dbg !411
 
-if.then35:                                        ; preds = %if.end30
-  %dvecDV = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 8
-  %call36 = tail call double* @DV_entries(%struct._DV* %dvecDV) #4
-  %idxprom37 = sext i32 %0 to i64
-  %arrayidx38 = getelementptr inbounds double* %call36, i64 %idxprom37
-  store double %real, double* %arrayidx38, align 8, !tbaa !4
-  tail call void @DV_setSize(%struct._DV* %dvecDV, i32 %add) #4
-  br label %if.end58
+; <label>:31                                      ; preds = %27
+  %32 = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 8, !dbg !412
+  %33 = tail call double* @DV_entries(%struct._DV* %32) #5, !dbg !413
+  tail call void @llvm.dbg.value(metadata double* %33, i64 0, metadata !200, metadata !320), !dbg !414
+  %34 = sext i32 %2 to i64, !dbg !415
+  %35 = getelementptr inbounds double* %33, i64 %34, !dbg !415
+  store double %real, double* %35, align 8, !dbg !416, !tbaa !417
+  tail call void @DV_setSize(%struct._DV* %32, i32 %28) #5, !dbg !418
+  br label %46, !dbg !419
 
-if.then44:                                        ; preds = %if.end30
-  %dvecDV46 = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 8
-  %call47 = tail call double* @DV_entries(%struct._DV* %dvecDV46) #4
-  %mul = shl nsw i32 %0, 1
-  %idxprom48 = sext i32 %mul to i64
-  %arrayidx49 = getelementptr inbounds double* %call47, i64 %idxprom48
-  store double %real, double* %arrayidx49, align 8, !tbaa !4
-  %add51107 = or i32 %mul, 1
-  %idxprom52 = sext i32 %add51107 to i64
-  %arrayidx53 = getelementptr inbounds double* %call47, i64 %idxprom52
-  store double %imag, double* %arrayidx53, align 8, !tbaa !4
-  %mul56 = shl nsw i32 %add, 1
-  tail call void @DV_setSize(%struct._DV* %dvecDV46, i32 %mul56) #4
-  br label %if.end58
+; <label>:36                                      ; preds = %27
+  %37 = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 8, !dbg !420
+  %38 = tail call double* @DV_entries(%struct._DV* %37) #5, !dbg !421
+  tail call void @llvm.dbg.value(metadata double* %38, i64 0, metadata !203, metadata !320), !dbg !422
+  %39 = shl nsw i32 %2, 1, !dbg !423
+  %40 = sext i32 %39 to i64, !dbg !424
+  %41 = getelementptr inbounds double* %38, i64 %40, !dbg !424
+  store double %real, double* %41, align 8, !dbg !425, !tbaa !417
+  %42 = or i32 %39, 1, !dbg !426
+  %43 = sext i32 %42 to i64, !dbg !427
+  %44 = getelementptr inbounds double* %38, i64 %43, !dbg !427
+  store double %imag, double* %44, align 8, !dbg !428, !tbaa !417
+  %45 = shl nsw i32 %28, 1, !dbg !429
+  tail call void @DV_setSize(%struct._DV* %37, i32 %45) #5, !dbg !430
+  br label %46, !dbg !431
 
-if.end58:                                         ; preds = %if.end30, %if.then44, %if.then35
-  %3 = load i32* %nent1, align 4, !tbaa !3
-  %inc = add nsw i32 %3, 1
-  store i32 %inc, i32* %nent1, align 4, !tbaa !3
-  %storageMode = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 1
-  store i32 1, i32* %storageMode, align 4, !tbaa !3
-  ret void
+; <label>:46                                      ; preds = %27, %36, %31
+  %47 = load i32* %1, align 4, !dbg !432, !tbaa !365
+  %48 = add nsw i32 %47, 1, !dbg !432
+  store i32 %48, i32* %1, align 4, !dbg !432, !tbaa !365
+  %49 = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 1, !dbg !433
+  store i32 1, i32* %49, align 4, !dbg !434, !tbaa !435
+  ret void, !dbg !436
 }

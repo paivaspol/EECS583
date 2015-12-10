@@ -1,27 +1,39 @@
 define i32 @BndRadiativeDirVN(%struct.cGH* %GH, i32 %stencil_size, i32 %dir, double %var0, double %speed, i8* %vname_to, i8* %vname_from) #1 {
-  %1 = tail call i32 @CCTK_VarIndex(i8* %vname_to) #5
-  %2 = tail call i32 @CCTK_VarIndex(i8* %vname_from) #5
-  %3 = tail call i32 @CCTK_NumVars() #5
-  %4 = icmp sgt i32 %1, -1
-  br i1 %4, label %5, label %11
+  tail call void @llvm.dbg.value(metadata %struct.cGH* %GH, i64 0, metadata !225, metadata !1855), !dbg !2894
+  tail call void @llvm.dbg.value(metadata i32 %stencil_size, i64 0, metadata !226, metadata !1855), !dbg !2895
+  tail call void @llvm.dbg.value(metadata i32 %dir, i64 0, metadata !227, metadata !1855), !dbg !2896
+  tail call void @llvm.dbg.value(metadata double %var0, i64 0, metadata !228, metadata !1855), !dbg !2897
+  tail call void @llvm.dbg.value(metadata double %speed, i64 0, metadata !229, metadata !1855), !dbg !2898
+  tail call void @llvm.dbg.value(metadata i8* %vname_to, i64 0, metadata !230, metadata !1855), !dbg !2899
+  tail call void @llvm.dbg.value(metadata i8* %vname_from, i64 0, metadata !231, metadata !1855), !dbg !2900
+  %1 = tail call i32 @CCTK_VarIndex(i8* %vname_to) #6, !dbg !2901
+  tail call void @llvm.dbg.value(metadata i32 %1, i64 0, metadata !232, metadata !1855), !dbg !2902
+  %2 = tail call i32 @CCTK_VarIndex(i8* %vname_from) #6, !dbg !2903
+  tail call void @llvm.dbg.value(metadata i32 %2, i64 0, metadata !233, metadata !1855), !dbg !2904
+  %3 = tail call i32 @CCTK_NumVars() #6, !dbg !2905
+  tail call void @llvm.dbg.value(metadata i32 %3, i64 0, metadata !234, metadata !1855), !dbg !2906
+  %4 = icmp sgt i32 %1, -1, !dbg !2907
+  br i1 %4, label %5, label %11, !dbg !2909
 
 ; <label>:5                                       ; preds = %0
-  %6 = icmp slt i32 %1, %3
-  %7 = icmp sgt i32 %2, -1
-  %or.cond = and i1 %7, %6
-  %8 = icmp slt i32 %2, %3
-  %or.cond2 = and i1 %8, %or.cond
-  br i1 %or.cond2, label %9, label %11
+  %6 = icmp slt i32 %1, %3, !dbg !2910
+  %7 = icmp sgt i32 %2, -1, !dbg !2911
+  %or.cond = and i1 %7, %6, !dbg !2912
+  %8 = icmp slt i32 %2, %3, !dbg !2913
+  %or.cond2 = and i1 %8, %or.cond, !dbg !2912
+  br i1 %or.cond2, label %9, label %11, !dbg !2912
 
 ; <label>:9                                       ; preds = %5
-  %10 = tail call i32 @BndRadiativeDirVI(%struct.cGH* %GH, i32 %stencil_size, i32 %dir, double %var0, double %speed, i32 %1, i32 %2) #6
-  br label %13
+  %10 = tail call i32 @BndRadiativeDirVI(%struct.cGH* %GH, i32 %stencil_size, i32 %dir, double %var0, double %speed, i32 %1, i32 %2) #7, !dbg !2914
+  tail call void @llvm.dbg.value(metadata i32 %10, i64 0, metadata !235, metadata !1855), !dbg !2916
+  br label %13, !dbg !2917
 
 ; <label>:11                                      ; preds = %5, %0
-  %12 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 2, i32 801, i8* getelementptr inbounds ([88 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([61 x i8]* @.str8, i64 0, i64 0), i8* %vname_to, i8* %vname_from) #5
+  %12 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 2, i32 801, i8* getelementptr inbounds ([88 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([61 x i8]* @.str8, i64 0, i64 0), i8* %vname_to, i8* %vname_from) #6, !dbg !2918
+  tail call void @llvm.dbg.value(metadata i32 -1, i64 0, metadata !235, metadata !1855), !dbg !2916
   br label %13
 
 ; <label>:13                                      ; preds = %11, %9
   %retval.0 = phi i32 [ %10, %9 ], [ -1, %11 ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !2920
 }

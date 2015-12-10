@@ -1,21 +1,14 @@
 define i8* @AlphabetType2String(i32 %type) #0 {
-entry:
-  switch i32 %type, label %sw.default [
-    i32 3, label %return
-    i32 2, label %sw.bb1
-    i32 0, label %sw.bb2
-  ]
+  tail call void @llvm.dbg.value(metadata i32 %type, i64 0, metadata !18, metadata !222), !dbg !227
+  %1 = icmp ult i32 %type, 4, !dbg !228
+  br i1 %1, label %switch.lookup, label %3, !dbg !228
 
-sw.bb1:                                           ; preds = %entry
-  br label %return
+switch.lookup:                                    ; preds = %0
+  %2 = sext i32 %type to i64, !dbg !228
+  %switch.gep = getelementptr inbounds [4 x i8*]* @switch.table36, i64 0, i64 %2, !dbg !228
+  %switch.load = load i8** %switch.gep, align 8, !dbg !228
+  ret i8* %switch.load, !dbg !228
 
-sw.bb2:                                           ; preds = %entry
-  br label %return
-
-sw.default:                                       ; preds = %entry
-  br label %return
-
-return:                                           ; preds = %entry, %sw.default, %sw.bb2, %sw.bb1
-  %retval.0 = phi i8* [ getelementptr inbounds ([6 x i8]* @.str10, i64 0, i64 0), %sw.default ], [ getelementptr inbounds ([8 x i8]* @.str13, i64 0, i64 0), %sw.bb2 ], [ getelementptr inbounds ([13 x i8]* @.str12, i64 0, i64 0), %sw.bb1 ], [ getelementptr inbounds ([8 x i8]* @.str11, i64 0, i64 0), %entry ]
-  ret i8* %retval.0
+; <label>:3                                       ; preds = %0
+  ret i8* getelementptr inbounds ([6 x i8]* @.str10, i64 0, i64 0), !dbg !229
 }

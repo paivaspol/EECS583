@@ -1,0 +1,35 @@
+define zeroext i1 @_ZN12POVMS_Object10ReadObjectEPhi(%class.POVMS_Object* %this, i8* %stream, i32 %objectsize) #5 align 2 {
+  %1 = alloca i32, align 4
+  tail call void @llvm.dbg.value(metadata %class.POVMS_Object* %this, i64 0, metadata !916, metadata !1380), !dbg !2584
+  tail call void @llvm.dbg.value(metadata i8* %stream, i64 0, metadata !917, metadata !1380), !dbg !2585
+  tail call void @llvm.dbg.value(metadata i32 %objectsize, i64 0, metadata !918, metadata !1380), !dbg !2586
+  store i32 %objectsize, i32* %1, align 4, !tbaa !1456
+  %2 = icmp eq i8* %stream, null, !dbg !2587
+  %3 = icmp eq i32 %objectsize, 0, !dbg !2589
+  %or.cond = or i1 %2, %3, !dbg !2591
+  br i1 %or.cond, label %14, label %4, !dbg !2591
+
+; <label>:4                                       ; preds = %0
+  %5 = getelementptr inbounds %class.POVMS_Object* %this, i64 0, i32 0, i32 1, !dbg !2592
+  %6 = tail call i32 @_Z18POVMSObject_DeleteP9POVMSData(%struct.POVMSData* %5) #13, !dbg !2593
+  tail call void @llvm.dbg.value(metadata i32 %6, i64 0, metadata !919, metadata !1380), !dbg !2594
+  %7 = icmp eq i32 %6, 0, !dbg !2595
+  br i1 %7, label %8, label %14, !dbg !2597
+
+; <label>:8                                       ; preds = %4
+  tail call void @llvm.dbg.value(metadata i32* %1, i64 0, metadata !918, metadata !1380), !dbg !2586
+  %9 = call i32 @_Z16POVMSStream_ReadP9POVMSDataPhPi(%struct.POVMSData* %5, i8* %stream, i32* %1) #13, !dbg !2598
+  call void @llvm.dbg.value(metadata i32 %9, i64 0, metadata !919, metadata !1380), !dbg !2594
+  %10 = icmp eq i32 %9, 0, !dbg !2599
+  br i1 %10, label %11, label %14, !dbg !2601
+
+; <label>:11                                      ; preds = %8
+  call void @llvm.dbg.value(metadata i32* %1, i64 0, metadata !918, metadata !1380), !dbg !2586
+  %12 = load i32* %1, align 4, !dbg !2602, !tbaa !1456
+  %13 = icmp eq i32 %12, 0, !dbg !2604
+  br label %14, !dbg !2605
+
+; <label>:14                                      ; preds = %11, %8, %4, %0
+  %.0 = phi i1 [ false, %0 ], [ false, %4 ], [ false, %8 ], [ %13, %11 ]
+  ret i1 %.0, !dbg !2606
+}

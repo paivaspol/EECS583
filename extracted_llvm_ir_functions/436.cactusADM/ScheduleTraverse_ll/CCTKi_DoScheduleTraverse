@@ -1,17 +1,27 @@
 define i32 @CCTKi_DoScheduleTraverse(i8* %group_name, i32 (i8*, i8*)* %item_entry, i32 (i8*, i8*)* %item_exit, i32 (i32, i8**, i8*, i8*, i32)* %while_check, i32 (i8*, i8*, i8*)* nocapture %function_process, i8* %data) #1 {
   %group = alloca %struct.t_sched_group*, align 8
-  %1 = tail call %struct.cHandledData* @CCTKi_DoScheduleGetGroups() #4
-  %2 = bitcast %struct.t_sched_group** %group to i8**
-  %3 = call i32 @Util_GetHandle(%struct.cHandledData* %1, i8* %group_name, i8** %2) #4
-  %4 = icmp sgt i32 %3, -1
-  br i1 %4, label %5, label %7
+  tail call void @llvm.dbg.value(metadata i8* %group_name, i64 0, metadata !73, metadata !139), !dbg !140
+  tail call void @llvm.dbg.value(metadata i32 (i8*, i8*)* %item_entry, i64 0, metadata !74, metadata !139), !dbg !141
+  tail call void @llvm.dbg.value(metadata i32 (i8*, i8*)* %item_exit, i64 0, metadata !75, metadata !139), !dbg !142
+  tail call void @llvm.dbg.value(metadata i32 (i32, i8**, i8*, i8*, i32)* %while_check, i64 0, metadata !76, metadata !139), !dbg !143
+  tail call void @llvm.dbg.value(metadata i32 (i8*, i8*, i8*)* %function_process, i64 0, metadata !77, metadata !139), !dbg !144
+  tail call void @llvm.dbg.value(metadata i8* %data, i64 0, metadata !78, metadata !139), !dbg !145
+  %1 = tail call %struct.cHandledData* @CCTKi_DoScheduleGetGroups() #5, !dbg !146
+  tail call void @llvm.dbg.value(metadata %struct.cHandledData* %1, i64 0, metadata !79, metadata !139), !dbg !147
+  %2 = bitcast %struct.t_sched_group** %group to i8**, !dbg !148
+  %3 = call i32 @Util_GetHandle(%struct.cHandledData* %1, i8* %group_name, i8** %2) #5, !dbg !149
+  call void @llvm.dbg.value(metadata i32 %3, i64 0, metadata !97, metadata !139), !dbg !150
+  %4 = icmp sgt i32 %3, -1, !dbg !151
+  br i1 %4, label %5, label %7, !dbg !153
 
 ; <label>:5                                       ; preds = %0
-  %6 = load %struct.t_sched_group** %group, align 8, !tbaa !2
-  call fastcc void @ScheduleTraverseGroup(%struct.cHandledData* %1, %struct.t_sched_group* %6, i8* null, i32 0, i8** null, i32 (i8*, i8*)* %item_entry, i32 (i8*, i8*)* %item_exit, i32 (i32, i8**, i8*, i8*, i32)* %while_check, i32 (i8*, i8*, i8*)* %function_process, i8* %data) #5
-  br label %7
+  call void @llvm.dbg.value(metadata %struct.t_sched_group** %group, i64 0, metadata !96, metadata !139), !dbg !154
+  %6 = load %struct.t_sched_group** %group, align 8, !dbg !155, !tbaa !157
+  call fastcc void @ScheduleTraverseGroup(%struct.cHandledData* %1, %struct.t_sched_group* %6, i8* null, i32 0, i8** null, i32 (i8*, i8*)* %item_entry, i32 (i8*, i8*)* %item_exit, i32 (i32, i8**, i8*, i8*, i32)* %while_check, i32 (i8*, i8*, i8*)* %function_process, i8* %data) #6, !dbg !161
+  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !98, metadata !139), !dbg !162
+  br label %7, !dbg !163
 
 ; <label>:7                                       ; preds = %0, %5
   %retcode.0 = phi i32 [ 0, %5 ], [ %3, %0 ]
-  ret i32 %retcode.0
+  ret i32 %retcode.0, !dbg !164
 }

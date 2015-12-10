@@ -1,60 +1,71 @@
-define i32 @MakeDealignedString(i8* nocapture %aseq, i32 %alen, i8* nocapture %ss, i8** nocapture %ret_s) #0 {
-entry:
-  %add = add nsw i32 %alen, 1
-  %conv = sext i32 %add to i64
-  %call = tail call i8* @sre_malloc(i8* getelementptr inbounds ([53 x i8]* @.str, i64 0, i64 0), i32 280, i64 %conv) #7
-  %cmp60 = icmp sgt i32 %alen, 0
-  br i1 %cmp60, label %for.body, label %for.end
+define i32 @MakeDealignedString(i8* nocapture readonly %aseq, i32 %alen, i8* nocapture readonly %ss, i8** nocapture %ret_s) #0 {
+  tail call void @llvm.dbg.value(metadata i8* %aseq, i64 0, metadata !121, metadata !300), !dbg !586
+  tail call void @llvm.dbg.value(metadata i32 %alen, i64 0, metadata !122, metadata !300), !dbg !587
+  tail call void @llvm.dbg.value(metadata i8* %ss, i64 0, metadata !123, metadata !300), !dbg !588
+  tail call void @llvm.dbg.value(metadata i8** %ret_s, i64 0, metadata !124, metadata !300), !dbg !589
+  %1 = add nsw i32 %alen, 1, !dbg !590
+  %2 = sext i32 %1 to i64, !dbg !590
+  %3 = tail call i8* @sre_malloc(i8* getelementptr inbounds ([65 x i8]* @.str, i64 0, i64 0), i32 280, i64 %2) #7, !dbg !590
+  tail call void @llvm.dbg.value(metadata i8* %3, i64 0, metadata !125, metadata !300), !dbg !591
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !127, metadata !300), !dbg !592
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !126, metadata !300), !dbg !593
+  %4 = icmp sgt i32 %alen, 0, !dbg !594
+  br i1 %4, label %.lr.ph, label %._crit_edge, !dbg !597
 
-for.body:                                         ; preds = %entry, %for.inc
-  %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc ], [ 0, %entry ]
-  %rpos.062 = phi i32 [ %rpos.1, %for.inc ], [ 0, %entry ]
-  %arrayidx = getelementptr inbounds i8* %aseq, i64 %indvars.iv
-  %0 = load i8* %arrayidx, align 1, !tbaa !1
-  switch i8 %0, label %if.then [
-    i8 32, label %for.inc
-    i8 46, label %for.inc
-    i8 95, label %for.inc
-    i8 45, label %for.inc
-    i8 126, label %for.inc
-  ]
+.lr.ph:                                           ; preds = %0
+  %5 = add i32 %alen, -1, !dbg !597
+  br label %6, !dbg !597
 
-if.then:                                          ; preds = %for.body
-  %arrayidx29 = getelementptr inbounds i8* %ss, i64 %indvars.iv
-  %1 = load i8* %arrayidx29, align 1, !tbaa !1
-  %idxprom30 = sext i32 %rpos.062 to i64
-  %arrayidx31 = getelementptr inbounds i8* %call, i64 %idxprom30
-  store i8 %1, i8* %arrayidx31, align 1, !tbaa !1
-  %inc = add nsw i32 %rpos.062, 1
-  br label %for.inc
+; <label>:6                                       ; preds = %15, %.lr.ph
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %15 ]
+  %rpos.02 = phi i32 [ 0, %.lr.ph ], [ %rpos.1, %15 ]
+  %7 = getelementptr inbounds i8* %aseq, i64 %indvars.iv, !dbg !598
+  %8 = load i8* %7, align 1, !dbg !598, !tbaa !450
+  switch i8 %8, label %9 [
+    i8 32, label %15
+    i8 46, label %15
+    i8 95, label %15
+    i8 45, label %15
+    i8 126, label %15
+  ], !dbg !598
 
-for.inc:                                          ; preds = %for.body, %for.body, %for.body, %for.body, %for.body, %if.then
-  %rpos.1 = phi i32 [ %rpos.062, %for.body ], [ %inc, %if.then ], [ %rpos.062, %for.body ], [ %rpos.062, %for.body ], [ %rpos.062, %for.body ], [ %rpos.062, %for.body ]
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %alen
-  br i1 %exitcond, label %for.end, label %for.body
+; <label>:9                                       ; preds = %6
+  %10 = getelementptr inbounds i8* %ss, i64 %indvars.iv, !dbg !600
+  %11 = load i8* %10, align 1, !dbg !600, !tbaa !450
+  %12 = sext i32 %rpos.02 to i64, !dbg !602
+  %13 = getelementptr inbounds i8* %3, i64 %12, !dbg !602
+  store i8 %11, i8* %13, align 1, !dbg !603, !tbaa !450
+  %14 = add nsw i32 %rpos.02, 1, !dbg !604
+  tail call void @llvm.dbg.value(metadata i32 %14, i64 0, metadata !127, metadata !300), !dbg !592
+  br label %15, !dbg !605
 
-for.end:                                          ; preds = %for.inc, %entry
-  %rpos.0.lcssa = phi i32 [ 0, %entry ], [ %rpos.1, %for.inc ]
-  %idxprom33 = sext i32 %rpos.0.lcssa to i64
-  %arrayidx34 = getelementptr inbounds i8* %call, i64 %idxprom33
-  store i8 0, i8* %arrayidx34, align 1, !tbaa !1
-  %conv35 = sext i32 %alen to i64
-  %call36 = tail call i64 @strlen(i8* %ss) #9
-  %cmp37 = icmp eq i64 %conv35, %call36
-  br i1 %cmp37, label %if.end40, label %if.then39
+; <label>:15                                      ; preds = %6, %6, %6, %6, %6, %9
+  %rpos.1 = phi i32 [ %rpos.02, %6 ], [ %14, %9 ], [ %rpos.02, %6 ], [ %rpos.02, %6 ], [ %rpos.02, %6 ], [ %rpos.02, %6 ]
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !597
+  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !597
+  %exitcond = icmp eq i32 %lftr.wideiv, %5, !dbg !597
+  br i1 %exitcond, label %._crit_edge, label %6, !dbg !597
 
-if.then39:                                        ; preds = %for.end
-  store i32 6, i32* @squid_errno, align 4, !tbaa !0
-  tail call void @free(i8* %call) #7
-  br label %return
+._crit_edge:                                      ; preds = %15, %0
+  %rpos.0.lcssa = phi i32 [ 0, %0 ], [ %rpos.1, %15 ]
+  %16 = sext i32 %rpos.0.lcssa to i64, !dbg !606
+  %17 = getelementptr inbounds i8* %3, i64 %16, !dbg !606
+  store i8 0, i8* %17, align 1, !dbg !607, !tbaa !450
+  %18 = sext i32 %alen to i64, !dbg !608
+  %19 = tail call i64 @strlen(i8* %ss) #7, !dbg !610
+  %20 = icmp eq i64 %18, %19, !dbg !611
+  br i1 %20, label %22, label %21, !dbg !612
 
-if.end40:                                         ; preds = %for.end
-  store i8* %call, i8** %ret_s, align 8, !tbaa !3
-  br label %return
+; <label>:21                                      ; preds = %._crit_edge
+  store i32 6, i32* @squid_errno, align 4, !dbg !613, !tbaa !459
+  tail call void @free(i8* %3) #8, !dbg !615
+  br label %23, !dbg !616
 
-return:                                           ; preds = %if.end40, %if.then39
-  %retval.0 = phi i32 [ 0, %if.then39 ], [ 1, %if.end40 ]
-  ret i32 %retval.0
+; <label>:22                                      ; preds = %._crit_edge
+  store i8* %3, i8** %ret_s, align 8, !dbg !617, !tbaa !332
+  br label %23, !dbg !618
+
+; <label>:23                                      ; preds = %22, %21
+  %.0 = phi i32 [ 0, %21 ], [ 1, %22 ]
+  ret i32 %.0, !dbg !619
 }

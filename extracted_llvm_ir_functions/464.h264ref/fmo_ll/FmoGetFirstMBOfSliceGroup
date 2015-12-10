@@ -1,34 +1,37 @@
-define i32 @FmoGetFirstMBOfSliceGroup(i32 %SliceGroupID) #2 {
-entry:
-  %0 = load %struct.ImageParameters** @img, align 8, !tbaa !3
-  %PicSizeInMbs7 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 110
-  %1 = load i32* %PicSizeInMbs7, align 4, !tbaa !0
-  %cmp8 = icmp sgt i32 %1, 0
-  br i1 %cmp8, label %land.rhs.lr.ph, label %while.end
+define i32 @FmoGetFirstMBOfSliceGroup(i32 %SliceGroupID) #0 {
+  tail call void @llvm.dbg.value(metadata i32 %SliceGroupID, i64 0, metadata !651, metadata !943), !dbg !1389
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !652, metadata !943), !dbg !1390
+  %1 = load %struct.ImageParameters** @img, align 8, !dbg !1391, !tbaa !984
+  %2 = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 110, !dbg !1392
+  %3 = load i32* %2, align 4, !dbg !1392, !tbaa !1299
+  %4 = icmp sgt i32 %3, 0, !dbg !1393
+  br i1 %4, label %.lr.ph, label %.critedge, !dbg !1394
 
-land.rhs.lr.ph:                                   ; preds = %entry
-  %2 = load i8** @MBAmap, align 8, !tbaa !3
-  br label %land.rhs
+.lr.ph:                                           ; preds = %0, %7
+  %i.01 = phi i32 [ %8, %7 ], [ 0, %0 ]
+  %5 = tail call i32 @FmoMB2SliceGroup(i32 %i.01) #10, !dbg !1395
+  %6 = icmp eq i32 %5, %SliceGroupID, !dbg !1396
+  br i1 %6, label %..critedge_crit_edge, label %7, !dbg !1397
 
-while.cond:                                       ; preds = %land.rhs
-  %3 = trunc i64 %indvars.iv.next to i32
-  %cmp = icmp slt i32 %3, %1
-  br i1 %cmp, label %land.rhs, label %while.end
+; <label>:7                                       ; preds = %.lr.ph
+  %8 = add nuw nsw i32 %i.01, 1, !dbg !1398
+  tail call void @llvm.dbg.value(metadata i32 %8, i64 0, metadata !652, metadata !943), !dbg !1390
+  %9 = load %struct.ImageParameters** @img, align 8, !dbg !1391, !tbaa !984
+  %10 = getelementptr inbounds %struct.ImageParameters* %9, i64 0, i32 110, !dbg !1392
+  %11 = load i32* %10, align 4, !dbg !1392, !tbaa !1299
+  %12 = icmp slt i32 %8, %11, !dbg !1393
+  br i1 %12, label %.lr.ph, label %.critedge, !dbg !1394
 
-land.rhs:                                         ; preds = %land.rhs.lr.ph, %while.cond
-  %indvars.iv = phi i64 [ 0, %land.rhs.lr.ph ], [ %indvars.iv.next, %while.cond ]
-  %i.09 = phi i32 [ 0, %land.rhs.lr.ph ], [ %inc, %while.cond ]
-  %arrayidx.i = getelementptr inbounds i8* %2, i64 %indvars.iv
-  %4 = load i8* %arrayidx.i, align 1, !tbaa !1
-  %conv.i = zext i8 %4 to i32
-  %cmp1 = icmp eq i32 %conv.i, %SliceGroupID
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %inc = add nsw i32 %i.09, 1
-  br i1 %cmp1, label %while.end, label %while.cond
+..critedge_crit_edge:                             ; preds = %.lr.ph
+  %.pre = load %struct.ImageParameters** @img, align 8, !dbg !1399, !tbaa !984
+  %.phi.trans.insert = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 110
+  %.pre5 = load i32* %.phi.trans.insert, align 4, !dbg !1401, !tbaa !1299
+  br label %.critedge, !dbg !1397
 
-while.end:                                        ; preds = %while.cond, %land.rhs, %entry
-  %i.0.lcssa = phi i32 [ 0, %entry ], [ %i.09, %land.rhs ], [ %inc, %while.cond ]
-  %cmp3 = icmp slt i32 %i.0.lcssa, %1
-  %i.0. = select i1 %cmp3, i32 %i.0.lcssa, i32 -1
-  ret i32 %i.0.
+.critedge:                                        ; preds = %7, %..critedge_crit_edge, %0
+  %13 = phi i32 [ %.pre5, %..critedge_crit_edge ], [ %3, %0 ], [ %11, %7 ]
+  %i.0.lcssa = phi i32 [ %i.01, %..critedge_crit_edge ], [ 0, %0 ], [ %8, %7 ]
+  %14 = icmp slt i32 %i.0.lcssa, %13, !dbg !1402
+  %i.0. = select i1 %14, i32 %i.0.lcssa, i32 -1, !dbg !1403
+  ret i32 %i.0., !dbg !1404
 }

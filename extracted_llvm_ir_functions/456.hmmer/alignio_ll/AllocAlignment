@@ -1,63 +1,78 @@
 define void @AllocAlignment(i32 %nseq, i32 %alen, i8*** nocapture %ret_aseq, %struct.aliinfo_s* nocapture %ainfo) #0 {
-entry:
-  %name.i = getelementptr inbounds %struct.aliinfo_s* %ainfo, i64 0, i32 7
-  %cs.i = getelementptr inbounds %struct.aliinfo_s* %ainfo, i64 0, i32 4
-  %flags.i = getelementptr inbounds %struct.aliinfo_s* %ainfo, i64 0, i32 0
-  store i32 0, i32* %flags.i, align 4, !tbaa !0
-  %0 = bitcast i8** %cs.i to i8*
-  tail call void @llvm.memset.p0i8.i64(i8* %0, i8 0, i64 16, i32 8, i1 false) #6
-  %1 = bitcast i8** %name.i to i8*
-  tail call void @llvm.memset.p0i8.i64(i8* %1, i8 0, i64 56, i32 8, i1 false) #6
-  %conv = sext i32 %nseq to i64
-  %mul = shl nsw i64 %conv, 3
-  %call = tail call i8* @sre_malloc(i8* getelementptr inbounds ([53 x i8]* @.str, i64 0, i64 0), i32 50, i64 %mul) #7
-  %2 = bitcast i8* %call to i8**
-  %cmp44 = icmp sgt i32 %nseq, 0
-  br i1 %cmp44, label %for.body.lr.ph, label %for.end
+  tail call void @llvm.dbg.value(metadata i32 %nseq, i64 0, metadata !66, metadata !300), !dbg !301
+  tail call void @llvm.dbg.value(metadata i32 %alen, i64 0, metadata !67, metadata !300), !dbg !302
+  tail call void @llvm.dbg.value(metadata i8*** %ret_aseq, i64 0, metadata !68, metadata !300), !dbg !303
+  tail call void @llvm.dbg.value(metadata %struct.aliinfo_s* %ainfo, i64 0, metadata !69, metadata !300), !dbg !304
+  tail call void @llvm.dbg.value(metadata %struct.aliinfo_s* %ainfo, i64 0, metadata !76, metadata !300) #6, !dbg !305
+  %1 = getelementptr inbounds %struct.aliinfo_s* %ainfo, i64 0, i32 7, !dbg !307
+  %2 = getelementptr inbounds %struct.aliinfo_s* %ainfo, i64 0, i32 4, !dbg !308
+  %3 = getelementptr inbounds %struct.aliinfo_s* %ainfo, i64 0, i32 0, !dbg !309
+  store i32 0, i32* %3, align 4, !dbg !310, !tbaa !311
+  %4 = bitcast i8** %2 to i8*, !dbg !318
+  tail call void @llvm.memset.p0i8.i64(i8* %4, i8 0, i64 16, i32 8, i1 false) #6, !dbg !319
+  %5 = bitcast i8** %1 to i8*, !dbg !318
+  tail call void @llvm.memset.p0i8.i64(i8* %5, i8 0, i64 56, i32 8, i1 false) #6, !dbg !320
+  %6 = sext i32 %nseq to i64, !dbg !321
+  %7 = shl nsw i64 %6, 3, !dbg !321
+  %8 = tail call i8* @sre_malloc(i8* getelementptr inbounds ([65 x i8]* @.str, i64 0, i64 0), i32 50, i64 %7) #7, !dbg !321
+  %9 = bitcast i8* %8 to i8**, !dbg !322
+  tail call void @llvm.dbg.value(metadata i8** %9, i64 0, metadata !70, metadata !300), !dbg !323
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !71, metadata !300), !dbg !324
+  %10 = icmp sgt i32 %nseq, 0, !dbg !325
+  br i1 %10, label %.lr.ph4, label %._crit_edge5, !dbg !328
 
-for.body.lr.ph:                                   ; preds = %entry
-  %add = add nsw i32 %alen, 1
-  %conv2 = sext i32 %add to i64
-  br label %for.body
+.lr.ph4:                                          ; preds = %0
+  %11 = add nsw i32 %alen, 1, !dbg !329
+  %12 = sext i32 %11 to i64, !dbg !329
+  %13 = add i32 %nseq, -1, !dbg !328
+  br label %14, !dbg !328
 
-for.body:                                         ; preds = %for.body, %for.body.lr.ph
-  %indvars.iv46 = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next47, %for.body ]
-  %call4 = tail call i8* @sre_malloc(i8* getelementptr inbounds ([53 x i8]* @.str, i64 0, i64 0), i32 52, i64 %conv2) #7
-  %arrayidx = getelementptr inbounds i8** %2, i64 %indvars.iv46
-  store i8* %call4, i8** %arrayidx, align 8, !tbaa !3
-  %indvars.iv.next47 = add i64 %indvars.iv46, 1
-  %lftr.wideiv48 = trunc i64 %indvars.iv.next47 to i32
-  %exitcond49 = icmp eq i32 %lftr.wideiv48, %nseq
-  br i1 %exitcond49, label %for.end, label %for.body
+; <label>:14                                      ; preds = %14, %.lr.ph4
+  %indvars.iv6 = phi i64 [ 0, %.lr.ph4 ], [ %indvars.iv.next7, %14 ]
+  %15 = tail call i8* @sre_malloc(i8* getelementptr inbounds ([65 x i8]* @.str, i64 0, i64 0), i32 52, i64 %12) #7, !dbg !329
+  %16 = getelementptr inbounds i8** %9, i64 %indvars.iv6, !dbg !330
+  store i8* %15, i8** %16, align 8, !dbg !331, !tbaa !332
+  %indvars.iv.next7 = add nuw nsw i64 %indvars.iv6, 1, !dbg !328
+  %lftr.wideiv8 = trunc i64 %indvars.iv6 to i32, !dbg !328
+  %exitcond9 = icmp eq i32 %lftr.wideiv8, %13, !dbg !328
+  br i1 %exitcond9, label %._crit_edge5, label %14, !dbg !328
 
-for.end:                                          ; preds = %for.body, %entry
-  %alen5 = getelementptr inbounds %struct.aliinfo_s* %ainfo, i64 0, i32 1
-  store i32 %alen, i32* %alen5, align 4, !tbaa !0
-  %nseq6 = getelementptr inbounds %struct.aliinfo_s* %ainfo, i64 0, i32 2
-  store i32 %nseq, i32* %nseq6, align 4, !tbaa !0
-  %mul8 = shl nsw i64 %conv, 2
-  %call9 = tail call i8* @sre_malloc(i8* getelementptr inbounds ([53 x i8]* @.str, i64 0, i64 0), i32 57, i64 %mul8) #7
-  %3 = bitcast i8* %call9 to float*
-  %wgt = getelementptr inbounds %struct.aliinfo_s* %ainfo, i64 0, i32 3
-  store float* %3, float** %wgt, align 8, !tbaa !3
-  tail call void @FSet(float* %3, i32 %nseq, float 1.000000e+00) #7
-  %mul12 = mul i64 %conv, 360
-  %call13 = tail call i8* @sre_malloc(i8* getelementptr inbounds ([53 x i8]* @.str, i64 0, i64 0), i32 60, i64 %mul12) #7
-  %4 = bitcast i8* %call13 to %struct.seqinfo_s*
-  %sqinfo = getelementptr inbounds %struct.aliinfo_s* %ainfo, i64 0, i32 6
-  store %struct.seqinfo_s* %4, %struct.seqinfo_s** %sqinfo, align 8, !tbaa !3
-  br i1 %cmp44, label %for.body17, label %for.end23
+._crit_edge5:                                     ; preds = %14, %0
+  %17 = getelementptr inbounds %struct.aliinfo_s* %ainfo, i64 0, i32 1, !dbg !333
+  store i32 %alen, i32* %17, align 4, !dbg !334, !tbaa !335
+  %18 = getelementptr inbounds %struct.aliinfo_s* %ainfo, i64 0, i32 2, !dbg !336
+  store i32 %nseq, i32* %18, align 4, !dbg !337, !tbaa !338
+  %19 = shl nsw i64 %6, 2, !dbg !339
+  %20 = tail call i8* @sre_malloc(i8* getelementptr inbounds ([65 x i8]* @.str, i64 0, i64 0), i32 57, i64 %19) #7, !dbg !339
+  %21 = bitcast i8* %20 to float*, !dbg !340
+  %22 = getelementptr inbounds %struct.aliinfo_s* %ainfo, i64 0, i32 3, !dbg !341
+  %23 = bitcast float** %22 to i8**, !dbg !342
+  store i8* %20, i8** %23, align 8, !dbg !342, !tbaa !343
+  tail call void @FSet(float* %21, i32 %nseq, float 1.000000e+00) #7, !dbg !344
+  %24 = mul nsw i64 %6, 360, !dbg !345
+  %25 = tail call i8* @sre_malloc(i8* getelementptr inbounds ([65 x i8]* @.str, i64 0, i64 0), i32 60, i64 %24) #7, !dbg !345
+  %26 = getelementptr inbounds %struct.aliinfo_s* %ainfo, i64 0, i32 6, !dbg !346
+  %27 = bitcast %struct.seqinfo_s** %26 to i8**, !dbg !347
+  store i8* %25, i8** %27, align 8, !dbg !347, !tbaa !348
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !71, metadata !300), !dbg !324
+  %28 = bitcast i8* %25 to %struct.seqinfo_s*
+  br i1 %10, label %.lr.ph, label %._crit_edge, !dbg !349
 
-for.body17:                                       ; preds = %for.end, %for.body17
-  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body17 ], [ 0, %for.end ]
-  %flags = getelementptr inbounds %struct.seqinfo_s* %4, i64 %indvars.iv, i32 0
-  store i32 0, i32* %flags, align 4, !tbaa !0
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %nseq
-  br i1 %exitcond, label %for.end23, label %for.body17
+.lr.ph:                                           ; preds = %._crit_edge5
+  %29 = add i32 %nseq, -1, !dbg !349
+  br label %30, !dbg !349
 
-for.end23:                                        ; preds = %for.body17, %for.end
-  store i8** %2, i8*** %ret_aseq, align 8, !tbaa !3
-  ret void
+; <label>:30                                      ; preds = %30, %.lr.ph
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %30 ]
+  %31 = getelementptr inbounds %struct.seqinfo_s* %28, i64 %indvars.iv, i32 0, !dbg !351
+  store i32 0, i32* %31, align 4, !dbg !353, !tbaa !354
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !349
+  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !349
+  %exitcond = icmp eq i32 %lftr.wideiv, %29, !dbg !349
+  br i1 %exitcond, label %._crit_edge, label %30, !dbg !349
+
+._crit_edge:                                      ; preds = %30, %._crit_edge5
+  %32 = bitcast i8*** %ret_aseq to i8**, !dbg !356
+  store i8* %8, i8** %32, align 8, !dbg !356, !tbaa !332
+  ret void, !dbg !357
 }

@@ -1,78 +1,86 @@
 define i32 @SetCartSymGI(%struct.cGH* nocapture readonly %GH, i32* nocapture readonly %sym, i32 %gi) #1 {
   %domainsym = alloca [6 x i32], align 16
-  %1 = tail call i32 @CCTK_GHExtensionHandle(i8* getelementptr inbounds ([9 x i8]* @.str, i64 0, i64 0)) #4
-  %2 = sext i32 %1 to i64
-  %3 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 18
-  %4 = load i8*** %3, align 8, !tbaa !2
-  %5 = getelementptr inbounds i8** %4, i64 %2
-  %6 = bitcast i8** %5 to %struct.Symmetry**
-  %7 = load %struct.Symmetry** %6, align 8, !tbaa !9
-  %8 = tail call i32 @CCTK_FirstVarIndexI(i32 %gi) #4
-  %9 = tail call i32 @CCTK_NumVarsInGroupI(i32 %gi) #4
-  %10 = icmp slt i32 %8, 0
-  br i1 %10, label %17, label %.preheader
+  tail call void @llvm.dbg.value(metadata %struct.cGH* %GH, i64 0, metadata !138, metadata !209), !dbg !284
+  tail call void @llvm.dbg.value(metadata i32* %sym, i64 0, metadata !139, metadata !209), !dbg !285
+  tail call void @llvm.dbg.value(metadata i32 %gi, i64 0, metadata !140, metadata !209), !dbg !286
+  tail call void @llvm.dbg.declare(metadata [6 x i32]* %domainsym, metadata !176, metadata !209), !dbg !287
+  %1 = tail call i32 @CCTK_GHExtensionHandle(i8* getelementptr inbounds ([9 x i8]* @.str, i64 0, i64 0)) #5, !dbg !288
+  %2 = sext i32 %1 to i64, !dbg !289
+  %3 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 18, !dbg !290
+  %4 = load i8*** %3, align 8, !dbg !290, !tbaa !217
+  %5 = getelementptr inbounds i8** %4, i64 %2, !dbg !289
+  %6 = bitcast i8** %5 to %struct.Symmetry**, !dbg !289
+  %7 = load %struct.Symmetry** %6, align 8, !dbg !289, !tbaa !224
+  tail call void @llvm.dbg.value(metadata %struct.Symmetry* %7, i64 0, metadata !177, metadata !209), !dbg !291
+  %8 = tail call i32 @CCTK_FirstVarIndexI(i32 %gi) #5, !dbg !292
+  tail call void @llvm.dbg.value(metadata i32 %8, i64 0, metadata !178, metadata !209), !dbg !293
+  %9 = tail call i32 @CCTK_NumVarsInGroupI(i32 %gi) #5, !dbg !294
+  tail call void @llvm.dbg.value(metadata i32 %9, i64 0, metadata !179, metadata !209), !dbg !295
+  %10 = icmp slt i32 %8, 0, !dbg !296
+  br i1 %10, label %17, label %.preheader, !dbg !298
 
 .preheader:                                       ; preds = %0
-  %11 = icmp sgt i32 %9, 0
-  br i1 %11, label %.lr.ph, label %.loopexit
+  %11 = icmp sgt i32 %9, 0, !dbg !299
+  br i1 %11, label %.lr.ph, label %.loopexit, !dbg !302
 
 .lr.ph:                                           ; preds = %.preheader
-  %12 = add nsw i32 %9, %8
-  %13 = getelementptr inbounds [6 x i32]* %domainsym, i64 0, i64 0
-  %14 = getelementptr inbounds %struct.Symmetry* %7, i64 0, i32 0
+  %12 = add nsw i32 %9, %8, !dbg !303
+  %13 = getelementptr inbounds [6 x i32]* %domainsym, i64 0, i64 0, !dbg !304
+  %14 = getelementptr inbounds %struct.Symmetry* %7, i64 0, i32 0, !dbg !306
   %15 = sext i32 %8 to i64
-  %16 = sext i32 %12 to i64
-  br label %20
+  %16 = sext i32 %12 to i64, !dbg !302
+  br label %20, !dbg !302
 
 ; <label>:17                                      ; preds = %0
-  %18 = tail call i8* @CCTK_GroupName(i32 %gi) #4
-  %19 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 200, i8* getelementptr inbounds ([84 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([11 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str4, i64 0, i64 0), i8* %18, i32 %8) #4
-  br label %.loopexit
+  %18 = tail call i8* @CCTK_GroupName(i32 %gi) #5, !dbg !312
+  %19 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 200, i8* getelementptr inbounds ([84 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([11 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str4, i64 0, i64 0), i8* %18, i32 %8) #5, !dbg !314
+  br label %.loopexit, !dbg !315
 
 ; <label>:20                                      ; preds = %.lr.ph, %41
   %indvars.iv3 = phi i64 [ %15, %.lr.ph ], [ %indvars.iv.next4, %41 ]
-  call void @DecodeSymParameters3D(i32* %13) #4
-  br label %21
+  call void @DecodeSymParameters3D(i32* %13) #5, !dbg !316
+  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !181, metadata !209), !dbg !317
+  br label %21, !dbg !318
 
 ; <label>:21                                      ; preds = %40, %20
   %indvars.iv = phi i64 [ 0, %20 ], [ %indvars.iv.next, %40 ]
-  %22 = getelementptr inbounds [6 x i32]* %domainsym, i64 0, i64 %indvars.iv
-  %23 = load i32* %22, align 4, !tbaa !10
-  %24 = icmp eq i32 %23, 0
-  br i1 %24, label %35, label %25
+  %22 = getelementptr inbounds [6 x i32]* %domainsym, i64 0, i64 %indvars.iv, !dbg !319
+  %23 = load i32* %22, align 4, !dbg !319, !tbaa !238
+  %24 = icmp eq i32 %23, 0, !dbg !319
+  br i1 %24, label %35, label %25, !dbg !320
 
 ; <label>:25                                      ; preds = %21
-  %26 = trunc i64 %indvars.iv to i32
-  %27 = sdiv i32 %26, 2
-  %28 = sext i32 %27 to i64
-  %29 = getelementptr inbounds i32* %sym, i64 %28
-  %30 = load i32* %29, align 4, !tbaa !10
-  %31 = load i32*** %14, align 8, !tbaa !11
-  %32 = getelementptr inbounds i32** %31, i64 %indvars.iv3
-  %33 = load i32** %32, align 8, !tbaa !9
-  %34 = getelementptr inbounds i32* %33, i64 %indvars.iv
-  store i32 %30, i32* %34, align 4, !tbaa !10
-  br label %40
+  %26 = trunc i64 %indvars.iv to i32, !dbg !321
+  %27 = sdiv i32 %26, 2, !dbg !321
+  %28 = sext i32 %27 to i64, !dbg !323
+  %29 = getelementptr inbounds i32* %sym, i64 %28, !dbg !323
+  %30 = load i32* %29, align 4, !dbg !323, !tbaa !238
+  %31 = load i32*** %14, align 8, !dbg !324, !tbaa !244
+  %32 = getelementptr inbounds i32** %31, i64 %indvars.iv3, !dbg !325
+  %33 = load i32** %32, align 8, !dbg !325, !tbaa !224
+  %34 = getelementptr inbounds i32* %33, i64 %indvars.iv, !dbg !325
+  store i32 %30, i32* %34, align 4, !dbg !326, !tbaa !238
+  br label %40, !dbg !327
 
 ; <label>:35                                      ; preds = %21
-  %36 = load i32*** %14, align 8, !tbaa !11
-  %37 = getelementptr inbounds i32** %36, i64 %indvars.iv3
-  %38 = load i32** %37, align 8, !tbaa !9
-  %39 = getelementptr inbounds i32* %38, i64 %indvars.iv
-  store i32 -41, i32* %39, align 4, !tbaa !10
+  %36 = load i32*** %14, align 8, !dbg !306, !tbaa !244
+  %37 = getelementptr inbounds i32** %36, i64 %indvars.iv3, !dbg !328
+  %38 = load i32** %37, align 8, !dbg !328, !tbaa !224
+  %39 = getelementptr inbounds i32* %38, i64 %indvars.iv, !dbg !328
+  store i32 -41, i32* %39, align 4, !dbg !329, !tbaa !238
   br label %40
 
 ; <label>:40                                      ; preds = %25, %35
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %exitcond = icmp eq i64 %indvars.iv.next, 6
-  br i1 %exitcond, label %41, label %21
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !318
+  %exitcond = icmp eq i64 %indvars.iv.next, 6, !dbg !318
+  br i1 %exitcond, label %41, label %21, !dbg !318
 
 ; <label>:41                                      ; preds = %40
-  %indvars.iv.next4 = add nsw i64 %indvars.iv3, 1
-  %42 = icmp slt i64 %indvars.iv.next4, %16
-  br i1 %42, label %20, label %.loopexit
+  %indvars.iv.next4 = add nsw i64 %indvars.iv3, 1, !dbg !302
+  %42 = icmp slt i64 %indvars.iv.next4, %16, !dbg !299
+  br i1 %42, label %20, label %.loopexit, !dbg !302
 
 .loopexit:                                        ; preds = %41, %.preheader, %17
   %.0 = phi i32 [ -1, %17 ], [ 0, %.preheader ], [ 0, %41 ]
-  ret i32 %.0
+  ret i32 %.0, !dbg !330
 }

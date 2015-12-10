@@ -1,37 +1,45 @@
-define void @maxwell_speed(float %tempi, i32 %nrdf, i32 %seed, %struct.t_atoms* nocapture readonly %atoms, [3 x float]* nocapture %v) #3 {
-  %1 = icmp eq i32 %seed, -1
-  br i1 %1, label %2, label %6
+define void @maxwell_speed(float %tempi, i32 %nrdf, i32 %seed, %struct.t_atoms* nocapture readonly %atoms, [3 x float]* nocapture %v) #4 {
+  tail call void @llvm.dbg.value(metadata float %tempi, i64 0, metadata !211, metadata !280), !dbg !470
+  tail call void @llvm.dbg.value(metadata i32 %nrdf, i64 0, metadata !212, metadata !280), !dbg !471
+  tail call void @llvm.dbg.value(metadata i32 %seed, i64 0, metadata !213, metadata !280), !dbg !472
+  tail call void @llvm.dbg.value(metadata %struct.t_atoms* %atoms, i64 0, metadata !214, metadata !280), !dbg !473
+  tail call void @llvm.dbg.value(metadata [3 x float]* %v, i64 0, metadata !215, metadata !280), !dbg !474
+  %1 = icmp eq i32 %seed, -1, !dbg !475
+  br i1 %1, label %2, label %6, !dbg !477
 
 ; <label>:2                                       ; preds = %0
-  %3 = tail call i32 @make_seed() #6
-  %4 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !22
-  %5 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %4, i8* getelementptr inbounds ([48 x i8]* @.str2, i64 0, i64 0), i32 %3) #6
-  br label %6
+  %3 = tail call i32 @make_seed() #7, !dbg !478
+  tail call void @llvm.dbg.value(metadata i32 %3, i64 0, metadata !213, metadata !280), !dbg !472
+  %4 = load %struct.__sFILE** @__stderrp, align 8, !dbg !480, !tbaa !432
+  %5 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %4, i8* getelementptr inbounds ([48 x i8]* @.str2, i64 0, i64 0), i32 %3) #7, !dbg !481
+  br label %6, !dbg !482
 
 ; <label>:6                                       ; preds = %2, %0
   %.0 = phi i32 [ %3, %2 ], [ %seed, %0 ]
-  %7 = getelementptr inbounds %struct.t_atoms* %atoms, i64 0, i32 0
-  %8 = load i32* %7, align 4, !tbaa !26
-  %9 = tail call i8* @save_calloc(i8* getelementptr inbounds ([6 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str4, i64 0, i64 0), i32 143, i32 %8, i32 4) #6
-  %10 = bitcast i8* %9 to i32*
-  %11 = load i32* %7, align 4, !tbaa !26
-  %12 = icmp sgt i32 %11, 0
-  br i1 %12, label %.lr.ph, label %._crit_edge
+  %7 = getelementptr inbounds %struct.t_atoms* %atoms, i64 0, i32 0, !dbg !483
+  %8 = load i32* %7, align 4, !dbg !483, !tbaa !484
+  %9 = tail call i8* @save_calloc(i8* getelementptr inbounds ([6 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str4, i64 0, i64 0), i32 143, i32 %8, i32 4) #7, !dbg !483
+  %10 = bitcast i8* %9 to i32*, !dbg !483
+  tail call void @llvm.dbg.value(metadata i32* %10, i64 0, metadata !216, metadata !280), !dbg !485
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !217, metadata !280), !dbg !486
+  %11 = load i32* %7, align 4, !dbg !487, !tbaa !484
+  %12 = icmp sgt i32 %11, 0, !dbg !490
+  br i1 %12, label %.lr.ph, label %._crit_edge, !dbg !491
 
 .lr.ph:                                           ; preds = %6, %.lr.ph
   %indvars.iv = phi i64 [ %indvars.iv.next, %.lr.ph ], [ 0, %6 ]
-  %13 = getelementptr inbounds i32* %10, i64 %indvars.iv
-  %14 = trunc i64 %indvars.iv to i32
-  store i32 %14, i32* %13, align 4, !tbaa !14
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %15 = load i32* %7, align 4, !tbaa !26
-  %16 = sext i32 %15 to i64
-  %17 = icmp slt i64 %indvars.iv.next, %16
-  br i1 %17, label %.lr.ph, label %._crit_edge
+  %13 = getelementptr inbounds i32* %10, i64 %indvars.iv, !dbg !492
+  %14 = trunc i64 %indvars.iv to i32, !dbg !493
+  store i32 %14, i32* %13, align 4, !dbg !493, !tbaa !348
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !491
+  %15 = load i32* %7, align 4, !dbg !487, !tbaa !484
+  %16 = sext i32 %15 to i64, !dbg !490
+  %17 = icmp slt i64 %indvars.iv.next, %16, !dbg !490
+  br i1 %17, label %.lr.ph, label %._crit_edge, !dbg !491
 
 ._crit_edge:                                      ; preds = %.lr.ph, %6
   %.lcssa = phi i32 [ %11, %6 ], [ %15, %.lr.ph ]
-  tail call void @low_mspeed(float %tempi, i32 %nrdf, i32 %.0, i32 %.lcssa, i32* %10, %struct.t_atoms* %atoms, [3 x float]* %v) #8
-  tail call void @save_free(i8* getelementptr inbounds ([6 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str4, i64 0, i64 0), i32 147, i8* %9) #6
-  ret void
+  tail call void @low_mspeed(float %tempi, i32 %nrdf, i32 %.0, i32 %.lcssa, i32* %10, %struct.t_atoms* %atoms, [3 x float]* %v) #9, !dbg !494
+  tail call void @save_free(i8* getelementptr inbounds ([6 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str4, i64 0, i64 0), i32 147, i8* %9) #7, !dbg !495
+  ret void, !dbg !496
 }

@@ -1,40 +1,42 @@
 define float @calc_radius(%struct.t_eigvec* nocapture %vec) #4 {
-  %1 = getelementptr inbounds %struct.t_eigvec* %vec, i64 0, i32 8
-  store float 0.000000e+00, float* %1, align 4, !tbaa !83
-  %2 = getelementptr inbounds %struct.t_eigvec* %vec, i64 0, i32 0
-  %3 = load i32* %2, align 4, !tbaa !79
-  %4 = icmp sgt i32 %3, 0
-  br i1 %4, label %.lr.ph, label %._crit_edge
+  tail call void @llvm.dbg.value(metadata %struct.t_eigvec* %vec, i64 0, metadata !788, metadata !1112), !dbg !2615
+  %1 = getelementptr inbounds %struct.t_eigvec* %vec, i64 0, i32 8, !dbg !2616
+  store float 0.000000e+00, float* %1, align 4, !dbg !2617, !tbaa !2173
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !789, metadata !1112), !dbg !2618
+  %2 = getelementptr inbounds %struct.t_eigvec* %vec, i64 0, i32 0, !dbg !2619
+  %3 = load i32* %2, align 4, !dbg !2619, !tbaa !2116
+  %4 = icmp sgt i32 %3, 0, !dbg !2622
+  br i1 %4, label %.lr.ph, label %._crit_edge, !dbg !2623
 
 .lr.ph:                                           ; preds = %0
-  %5 = getelementptr inbounds %struct.t_eigvec* %vec, i64 0, i32 7
-  %6 = load float** %5, align 8, !tbaa !80
-  %7 = getelementptr inbounds %struct.t_eigvec* %vec, i64 0, i32 4
-  %8 = load float** %7, align 8, !tbaa !81
-  %9 = sext i32 %3 to i64
-  br label %10
+  %5 = getelementptr inbounds %struct.t_eigvec* %vec, i64 0, i32 7, !dbg !2624
+  %6 = load float** %5, align 8, !dbg !2624, !tbaa !2121
+  %7 = getelementptr inbounds %struct.t_eigvec* %vec, i64 0, i32 4, !dbg !2625
+  %8 = load float** %7, align 8, !dbg !2625, !tbaa !2123
+  %9 = sext i32 %3 to i64, !dbg !2623
+  br label %10, !dbg !2623
 
 ; <label>:10                                      ; preds = %.lr.ph, %10
-  %11 = phi float [ 0.000000e+00, %.lr.ph ], [ %20, %10 ]
+  %11 = phi float [ 0.000000e+00, %.lr.ph ], [ %20, %10 ], !dbg !2626
   %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %10 ]
-  %12 = getelementptr inbounds float* %6, i64 %indvars.iv
-  %13 = load float* %12, align 4, !tbaa !2
-  %14 = getelementptr inbounds float* %8, i64 %indvars.iv
-  %15 = load float* %14, align 4, !tbaa !2
-  %16 = fsub float %13, %15
-  %17 = fpext float %16 to double
-  %pow2 = fmul double %17, %17
-  %18 = fpext float %11 to double
-  %19 = fadd double %18, %pow2
-  %20 = fptrunc double %19 to float
-  store float %20, float* %1, align 4, !tbaa !83
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %21 = icmp slt i64 %indvars.iv.next, %9
-  br i1 %21, label %10, label %._crit_edge
+  %12 = getelementptr inbounds float* %6, i64 %indvars.iv, !dbg !2626
+  %13 = load float* %12, align 4, !dbg !2626, !tbaa !1208
+  %14 = getelementptr inbounds float* %8, i64 %indvars.iv, !dbg !2627
+  %15 = load float* %14, align 4, !dbg !2627, !tbaa !1208
+  %16 = fsub float %13, %15, !dbg !2628
+  %17 = fpext float %16 to double, !dbg !2629
+  %pow2 = fmul double %17, %17, !dbg !2630
+  %18 = fpext float %11 to double, !dbg !2631
+  %19 = fadd double %18, %pow2, !dbg !2631
+  %20 = fptrunc double %19 to float, !dbg !2631
+  store float %20, float* %1, align 4, !dbg !2631, !tbaa !2173
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !2623
+  %21 = icmp slt i64 %indvars.iv.next, %9, !dbg !2622
+  br i1 %21, label %10, label %._crit_edge, !dbg !2623
 
 ._crit_edge:                                      ; preds = %10, %0
   %22 = phi float [ 0.000000e+00, %0 ], [ %20, %10 ]
-  %sqrtf = tail call float @sqrtf(float %22) #8
-  store float %sqrtf, float* %1, align 4, !tbaa !83
-  ret float %sqrtf
+  %sqrtf = tail call float @sqrtf(float %22) #8, !dbg !2632
+  store float %sqrtf, float* %1, align 4, !dbg !2633, !tbaa !2173
+  ret float %sqrtf, !dbg !2634
 }

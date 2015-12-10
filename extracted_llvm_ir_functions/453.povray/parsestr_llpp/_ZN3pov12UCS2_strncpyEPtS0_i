@@ -1,0 +1,33 @@
+define void @_ZN3pov12UCS2_strncpyEPtS0_i(i16* nocapture %s1, i16* nocapture readonly %s2, i32 %n) #6 {
+  tail call void @llvm.dbg.value(metadata i16* %s1, i64 0, metadata !807, metadata !1286), !dbg !1855
+  tail call void @llvm.dbg.value(metadata i16* %s2, i64 0, metadata !808, metadata !1286), !dbg !1856
+  tail call void @llvm.dbg.value(metadata i32 %n, i64 0, metadata !809, metadata !1286), !dbg !1857
+  %1 = load i16* %s2, align 2, !dbg !1858, !tbaa !1338
+  %2 = icmp ne i16 %1, 0, !dbg !1859
+  %3 = icmp sgt i32 %n, 0, !dbg !1860
+  %or.cond4 = and i1 %3, %2, !dbg !1861
+  br i1 %or.cond4, label %.lr.ph, label %.critedge, !dbg !1861
+
+.lr.ph:                                           ; preds = %0, %.lr.ph
+  %4 = phi i16 [ %8, %.lr.ph ], [ %1, %0 ]
+  %.07 = phi i32 [ %7, %.lr.ph ], [ %n, %0 ]
+  %.026 = phi i16* [ %6, %.lr.ph ], [ %s2, %0 ]
+  %.035 = phi i16* [ %5, %.lr.ph ], [ %s1, %0 ]
+  store i16 %4, i16* %.035, align 2, !dbg !1862, !tbaa !1338
+  %5 = getelementptr inbounds i16* %.035, i64 1, !dbg !1863
+  tail call void @llvm.dbg.value(metadata i16* %5, i64 0, metadata !807, metadata !1286), !dbg !1855
+  %6 = getelementptr inbounds i16* %.026, i64 1, !dbg !1864
+  tail call void @llvm.dbg.value(metadata i16* %6, i64 0, metadata !808, metadata !1286), !dbg !1856
+  %7 = add nsw i32 %.07, -1, !dbg !1865
+  tail call void @llvm.dbg.value(metadata i32 %7, i64 0, metadata !809, metadata !1286), !dbg !1857
+  %8 = load i16* %6, align 2, !dbg !1858, !tbaa !1338
+  %9 = icmp ne i16 %8, 0, !dbg !1859
+  %10 = icmp sgt i32 %.07, 1, !dbg !1860
+  %or.cond = and i1 %10, %9, !dbg !1861
+  br i1 %or.cond, label %.lr.ph, label %.critedge, !dbg !1861
+
+.critedge:                                        ; preds = %.lr.ph, %0
+  %.03.lcssa = phi i16* [ %s1, %0 ], [ %5, %.lr.ph ]
+  store i16 0, i16* %.03.lcssa, align 2, !dbg !1866, !tbaa !1338
+  ret void, !dbg !1867
+}

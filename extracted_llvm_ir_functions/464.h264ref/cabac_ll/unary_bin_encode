@@ -1,31 +1,38 @@
 define void @unary_bin_encode(%struct.EncodingEnvironment* %eep_dp, i32 %symbol, %struct.BiContextType* %ctx, i32 %ctx_offset) #0 {
-entry:
-  %cmp = icmp eq i32 %symbol, 0
-  br i1 %cmp, label %if.then, label %if.else
+  tail call void @llvm.dbg.value(metadata %struct.EncodingEnvironment* %eep_dp, i64 0, metadata !520, metadata !1011), !dbg !1862
+  tail call void @llvm.dbg.value(metadata i32 %symbol, i64 0, metadata !521, metadata !1011), !dbg !1863
+  tail call void @llvm.dbg.value(metadata %struct.BiContextType* %ctx, i64 0, metadata !522, metadata !1011), !dbg !1864
+  tail call void @llvm.dbg.value(metadata i32 %ctx_offset, i64 0, metadata !523, metadata !1011), !dbg !1865
+  %1 = icmp eq i32 %symbol, 0, !dbg !1866
+  br i1 %1, label %2, label %3, !dbg !1868
 
-if.then:                                          ; preds = %entry
-  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %ctx) #5
-  br label %return
+; <label>:2                                       ; preds = %0
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %ctx) #6, !dbg !1869
+  br label %11, !dbg !1871
 
-if.else:                                          ; preds = %entry
-  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %ctx) #5
-  %idx.ext = sext i32 %ctx_offset to i64
-  %add.ptr = getelementptr inbounds %struct.BiContextType* %ctx, i64 %idx.ext
-  %dec5 = add i32 %symbol, -1
-  %cmp16 = icmp eq i32 %dec5, 0
-  br i1 %cmp16, label %while.end, label %while.body
+; <label>:3                                       ; preds = %0
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %ctx) #6, !dbg !1872
+  tail call void @llvm.dbg.value(metadata i32 %symbol, i64 0, metadata !524, metadata !1011), !dbg !1874
+  %4 = sext i32 %ctx_offset to i64, !dbg !1875
+  %5 = getelementptr inbounds %struct.BiContextType* %ctx, i64 %4, !dbg !1875
+  tail call void @llvm.dbg.value(metadata %struct.BiContextType* %5, i64 0, metadata !525, metadata !1011), !dbg !1876
+  %6 = add i32 %symbol, -1, !dbg !1877
+  tail call void @llvm.dbg.value(metadata i32 %6, i64 0, metadata !524, metadata !1011), !dbg !1874
+  %7 = icmp eq i32 %6, 0, !dbg !1878
+  br i1 %7, label %._crit_edge, label %.lr.ph, !dbg !1879
 
-while.body:                                       ; preds = %if.else, %while.body
-  %dec7 = phi i32 [ %dec, %while.body ], [ %dec5, %if.else ]
-  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %add.ptr) #5
-  %dec = add i32 %dec7, -1
-  %cmp1 = icmp eq i32 %dec, 0
-  br i1 %cmp1, label %while.end, label %while.body
+.lr.ph:                                           ; preds = %3, %.lr.ph
+  %8 = phi i32 [ %9, %.lr.ph ], [ %6, %3 ]
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %5) #6, !dbg !1880
+  %9 = add i32 %8, -1, !dbg !1877
+  tail call void @llvm.dbg.value(metadata i32 %9, i64 0, metadata !524, metadata !1011), !dbg !1874
+  %10 = icmp eq i32 %9, 0, !dbg !1878
+  br i1 %10, label %._crit_edge, label %.lr.ph, !dbg !1879
 
-while.end:                                        ; preds = %while.body, %if.else
-  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %add.ptr) #5
-  br label %return
+._crit_edge:                                      ; preds = %.lr.ph, %3
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %5) #6, !dbg !1881
+  br label %11, !dbg !1882
 
-return:                                           ; preds = %while.end, %if.then
-  ret void
+; <label>:11                                      ; preds = %._crit_edge, %2
+  ret void, !dbg !1883
 }

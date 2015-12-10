@@ -1,0 +1,111 @@
+define internal fastcc i32 @_ZN3povL9bezier_01EiPdS0_bd(i32 %degree, double* %Coef, double* %Roots) #3 {
+  %d = alloca [11 x double], align 16
+  tail call void @llvm.dbg.value(metadata i1 true, i64 0, metadata !1288, metadata !1705), !dbg !3070
+  tail call void @llvm.dbg.value(metadata double 1.000000e-10, i64 0, metadata !1289, metadata !1705), !dbg !3071
+  %1 = bitcast [11 x double]* %d to i8*, !dbg !3072
+  call void @llvm.lifetime.start(i64 88, i8* %1) #4, !dbg !3072
+  tail call void @llvm.dbg.declare(metadata [11 x double]* %d, metadata !1290, metadata !1705), !dbg !3073
+  tail call void @llvm.dbg.value(metadata i8 1, i64 0, metadata !1291, metadata !1705), !dbg !3074
+  tail call void @llvm.dbg.value(metadata i8 1, i64 0, metadata !1292, metadata !1705), !dbg !3075
+  %2 = icmp eq i32 %degree, 6, !dbg !3076
+  %3 = select i1 %2, i64 0, i64 7, !dbg !3077
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !1293, metadata !1705), !dbg !3078
+  %4 = icmp slt i32 %degree, 0, !dbg !3079
+  br i1 %4, label %.loopexit, label %.lr.ph9, !dbg !3082
+
+.preheader1:                                      ; preds = %.lr.ph9
+  br i1 %4, label %.loopexit, label %.lr.ph6, !dbg !3083
+
+.lr.ph6:                                          ; preds = %.preheader1
+  %5 = sext i32 %degree to i64, !dbg !3083
+  br label %13, !dbg !3083
+
+.lr.ph9:                                          ; preds = %0, %.lr.ph9
+  %indvars.iv14 = phi i64 [ %indvars.iv.next15, %.lr.ph9 ], [ 0, %0 ]
+  %6 = getelementptr inbounds double* %Coef, i64 %indvars.iv14, !dbg !3085
+  %7 = load double* %6, align 8, !dbg !3085, !tbaa !1727
+  %.sum = add nsw i64 %indvars.iv14, %3, !dbg !3086
+  %8 = getelementptr inbounds [18 x i32]* @_ZN3povL13lcm_bezier_01E, i64 0, i64 %.sum, !dbg !3086
+  %9 = load i32* %8, align 4, !dbg !3086, !tbaa !3087
+  %10 = sitofp i32 %9 to double, !dbg !3086
+  %11 = fmul double %7, %10, !dbg !3088
+  %12 = getelementptr inbounds [11 x double]* %d, i64 0, i64 %indvars.iv14, !dbg !3089
+  store double %11, double* %12, align 8, !dbg !3090, !tbaa !1727
+  %indvars.iv.next15 = add nuw nsw i64 %indvars.iv14, 1, !dbg !3082
+  %lftr.wideiv16 = trunc i64 %indvars.iv14 to i32, !dbg !3082
+  %exitcond17 = icmp eq i32 %lftr.wideiv16, %degree, !dbg !3082
+  br i1 %exitcond17, label %.preheader1, label %.lr.ph9, !dbg !3082
+
+; <label>:13                                      ; preds = %._crit_edge, %.lr.ph6
+  %indvars.iv12 = phi i64 [ %indvars.iv.next13, %._crit_edge ], [ 0, %.lr.ph6 ]
+  %indvars.iv10.in = phi i32 [ %indvars.iv10, %._crit_edge ], [ %degree, %.lr.ph6 ]
+  %non_positive.04 = phi i8 [ %31, %._crit_edge ], [ 1, %.lr.ph6 ]
+  %non_negative.03 = phi i8 [ %22, %._crit_edge ], [ 1, %.lr.ph6 ]
+  %indvars.iv10 = add i32 %indvars.iv10.in, -1, !dbg !3083
+  %14 = icmp eq i8 %non_negative.03, 0, !dbg !3091
+  br i1 %14, label %20, label %15, !dbg !3094
+
+; <label>:15                                      ; preds = %13
+  %16 = sub nsw i64 %5, %indvars.iv12, !dbg !3095
+  %17 = getelementptr inbounds [11 x double]* %d, i64 0, i64 %16, !dbg !3096
+  %18 = load double* %17, align 8, !dbg !3096, !tbaa !1727
+  %19 = fcmp oge double %18, 0.000000e+00, !dbg !3097
+  br label %20
+
+; <label>:20                                      ; preds = %13, %15
+  %21 = phi i1 [ false, %13 ], [ %19, %15 ]
+  %22 = zext i1 %21 to i8, !dbg !3098
+  tail call void @llvm.dbg.value(metadata i8 %22, i64 0, metadata !1291, metadata !1705), !dbg !3074
+  %23 = icmp eq i8 %non_positive.04, 0, !dbg !3099
+  br i1 %23, label %29, label %24, !dbg !3100
+
+; <label>:24                                      ; preds = %20
+  %25 = sub nsw i64 %5, %indvars.iv12, !dbg !3101
+  %26 = getelementptr inbounds [11 x double]* %d, i64 0, i64 %25, !dbg !3102
+  %27 = load double* %26, align 8, !dbg !3102, !tbaa !1727
+  %28 = fcmp ole double %27, 0.000000e+00, !dbg !3103
+  br label %29
+
+; <label>:29                                      ; preds = %20, %24
+  %30 = phi i1 [ false, %20 ], [ %28, %24 ]
+  %31 = zext i1 %30 to i8, !dbg !3104
+  tail call void @llvm.dbg.value(metadata i8 %31, i64 0, metadata !1292, metadata !1705), !dbg !3075
+  %brmerge = or i1 %21, %30, !dbg !3105
+  br i1 %brmerge, label %.preheader, label %33, !dbg !3105
+
+.preheader:                                       ; preds = %29
+  %32 = icmp sgt i64 %5, %indvars.iv12, !dbg !3107
+  br i1 %32, label %.lr.ph, label %._crit_edge, !dbg !3110
+
+.lr.ph:                                           ; preds = %.preheader
+  %.phi.trans.insert = getelementptr inbounds [11 x double]* %d, i64 0, i64 0
+  %.pre = load double* %.phi.trans.insert, align 16, !dbg !3111, !tbaa !1727
+  br label %35, !dbg !3110
+
+; <label>:33                                      ; preds = %29
+  %34 = tail call i32 @_ZN3pov16Solve_PolynomialEiPdS0_id(i32 %degree, double* %Coef, double* %Roots, i32 1, double 1.000000e-10) #8, !dbg !3112
+  br label %.loopexit, !dbg !3113
+
+; <label>:35                                      ; preds = %35, %.lr.ph
+  %36 = phi double [ %.pre, %.lr.ph ], [ %38, %35 ], !dbg !3110
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %35 ]
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !3110
+  %37 = getelementptr inbounds [11 x double]* %d, i64 0, i64 %indvars.iv.next, !dbg !3114
+  %38 = load double* %37, align 8, !dbg !3114, !tbaa !1727
+  %39 = getelementptr inbounds [11 x double]* %d, i64 0, i64 %indvars.iv, !dbg !3115
+  %40 = fadd double %38, %36, !dbg !3111
+  store double %40, double* %39, align 8, !dbg !3111, !tbaa !1727
+  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !3110
+  %exitcond = icmp eq i32 %lftr.wideiv, %indvars.iv10, !dbg !3110
+  br i1 %exitcond, label %._crit_edge, label %35, !dbg !3110
+
+._crit_edge:                                      ; preds = %35, %.preheader
+  %indvars.iv.next13 = add nuw nsw i64 %indvars.iv12, 1, !dbg !3083
+  %41 = icmp sgt i64 %5, %indvars.iv12, !dbg !3116
+  br i1 %41, label %13, label %.loopexit, !dbg !3083
+
+.loopexit:                                        ; preds = %._crit_edge, %0, %.preheader1, %33
+  %.0 = phi i32 [ %34, %33 ], [ 0, %.preheader1 ], [ 0, %0 ], [ 0, %._crit_edge ]
+  call void @llvm.lifetime.end(i64 88, i8* %1) #4, !dbg !3117
+  ret i32 %.0, !dbg !3117
+}

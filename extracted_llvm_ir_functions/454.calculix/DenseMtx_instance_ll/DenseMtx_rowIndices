@@ -1,24 +1,28 @@
 define void @DenseMtx_rowIndices(%struct._DenseMtx* %mtx, i32* %pnrow, i32** %prowind) #0 {
-entry:
-  %cmp = icmp eq %struct._DenseMtx* %mtx, null
-  %cmp1 = icmp eq i32* %pnrow, null
-  %or.cond = or i1 %cmp, %cmp1
-  %cmp3 = icmp eq i32** %prowind, null
-  %or.cond11 = or i1 %or.cond, %cmp3
-  br i1 %or.cond11, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata %struct._DenseMtx* %mtx, i64 0, metadata !61, metadata !132), !dbg !204
+  tail call void @llvm.dbg.value(metadata i32* %pnrow, i64 0, metadata !62, metadata !132), !dbg !205
+  tail call void @llvm.dbg.value(metadata i32** %prowind, i64 0, metadata !63, metadata !132), !dbg !206
+  %1 = icmp eq %struct._DenseMtx* %mtx, null, !dbg !207
+  %2 = icmp eq i32* %pnrow, null, !dbg !209
+  %or.cond = or i1 %1, %2, !dbg !210
+  %3 = icmp eq i32** %prowind, null, !dbg !211
+  %or.cond3 = or i1 %or.cond, %3, !dbg !210
+  br i1 %or.cond3, label %4, label %7, !dbg !210
 
-if.then:                                          ; preds = %entry
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([59 x i8]* @.str5, i64 0, i64 0), %struct._DenseMtx* %mtx, i32* %pnrow, i32** %prowind) #5
-  tail call void @exit(i32 -1) #6
-  unreachable
+; <label>:4                                       ; preds = %0
+  %5 = load %struct.__sFILE** @__stderrp, align 8, !dbg !212, !tbaa !139
+  %6 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %5, i8* getelementptr inbounds ([59 x i8]* @.str5, i64 0, i64 0), %struct._DenseMtx* %mtx, i32* %pnrow, i32** %prowind) #6, !dbg !214
+  tail call void @exit(i32 -1) #7, !dbg !215
+  unreachable, !dbg !215
 
-if.end:                                           ; preds = %entry
-  %nrow = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 3
-  %1 = load i32* %nrow, align 4, !tbaa !3
-  store i32 %1, i32* %pnrow, align 4, !tbaa !3
-  %rowind = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 7
-  %2 = load i32** %rowind, align 8, !tbaa !0
-  store i32* %2, i32** %prowind, align 8, !tbaa !0
-  ret void
+; <label>:7                                       ; preds = %0
+  %8 = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 3, !dbg !216
+  %9 = load i32* %8, align 4, !dbg !216, !tbaa !175
+  store i32 %9, i32* %pnrow, align 4, !dbg !217, !tbaa !177
+  %10 = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 7, !dbg !218
+  %11 = bitcast i32** %10 to i64*, !dbg !218
+  %12 = load i64* %11, align 8, !dbg !218, !tbaa !219
+  %13 = bitcast i32** %prowind to i64*, !dbg !220
+  store i64 %12, i64* %13, align 8, !dbg !220, !tbaa !139
+  ret void, !dbg !221
 }

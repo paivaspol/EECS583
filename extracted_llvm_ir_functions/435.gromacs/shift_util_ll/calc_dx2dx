@@ -1,45 +1,55 @@
-define float @calc_dx2dx(float* nocapture readonly %xi, float* nocapture readonly %xj, float* nocapture readonly %box, float* nocapture %dx) #1 {
-  br label %1
+define float @calc_dx2dx(float* nocapture readonly %xi, float* nocapture readonly %xj, float* nocapture readonly %box, float* nocapture %dx) #2 {
+  tail call void @llvm.dbg.value(metadata float* %xi, i64 0, metadata !209, metadata !655), !dbg !870
+  tail call void @llvm.dbg.value(metadata float* %xj, i64 0, metadata !210, metadata !655), !dbg !871
+  tail call void @llvm.dbg.value(metadata float* %box, i64 0, metadata !211, metadata !655), !dbg !872
+  tail call void @llvm.dbg.value(metadata float* %dx, i64 0, metadata !212, metadata !655), !dbg !873
+  tail call void @llvm.dbg.value(metadata float 0.000000e+00, i64 0, metadata !215, metadata !655), !dbg !874
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !213, metadata !655), !dbg !875
+  br label %1, !dbg !876
 
 ; <label>:1                                       ; preds = %20, %0
   %indvars.iv = phi i64 [ 0, %0 ], [ %indvars.iv.next, %20 ]
   %dx2.02 = phi float [ 0.000000e+00, %0 ], [ %23, %20 ]
-  %2 = getelementptr inbounds float* %xj, i64 %indvars.iv
-  %3 = load float* %2, align 4, !tbaa !2
-  %4 = getelementptr inbounds float* %xi, i64 %indvars.iv
-  %5 = load float* %4, align 4, !tbaa !2
-  %6 = fsub float %3, %5
-  %7 = fpext float %6 to double
-  %8 = getelementptr inbounds float* %box, i64 %indvars.iv
-  %9 = load float* %8, align 4, !tbaa !2
-  %10 = fpext float %9 to double
-  %11 = fmul double %10, -5.000000e-01
-  %12 = fcmp olt double %7, %11
-  br i1 %12, label %13, label %15
+  %2 = getelementptr inbounds float* %xj, i64 %indvars.iv, !dbg !878
+  %3 = load float* %2, align 4, !dbg !878, !tbaa !679
+  %4 = getelementptr inbounds float* %xi, i64 %indvars.iv, !dbg !881
+  %5 = load float* %4, align 4, !dbg !881, !tbaa !679
+  %6 = fsub float %3, %5, !dbg !882
+  tail call void @llvm.dbg.value(metadata float %6, i64 0, metadata !214, metadata !655), !dbg !883
+  %7 = fpext float %6 to double, !dbg !884
+  %8 = getelementptr inbounds float* %box, i64 %indvars.iv, !dbg !886
+  %9 = load float* %8, align 4, !dbg !886, !tbaa !679
+  %10 = fpext float %9 to double, !dbg !886
+  %11 = fmul double %10, -5.000000e-01, !dbg !887
+  %12 = fcmp olt double %7, %11, !dbg !888
+  br i1 %12, label %13, label %15, !dbg !889
 
 ; <label>:13                                      ; preds = %1
-  %14 = fadd float %6, %9
-  br label %20
+  %14 = fadd float %6, %9, !dbg !890
+  tail call void @llvm.dbg.value(metadata float %14, i64 0, metadata !214, metadata !655), !dbg !883
+  br label %20, !dbg !891
 
 ; <label>:15                                      ; preds = %1
-  %16 = fmul double %10, 5.000000e-01
-  %17 = fcmp ult double %7, %16
-  br i1 %17, label %20, label %18
+  %16 = fmul double %10, 5.000000e-01, !dbg !892
+  %17 = fcmp ult double %7, %16, !dbg !894
+  br i1 %17, label %20, label %18, !dbg !895
 
 ; <label>:18                                      ; preds = %15
-  %19 = fsub float %6, %9
-  br label %20
+  %19 = fsub float %6, %9, !dbg !896
+  tail call void @llvm.dbg.value(metadata float %19, i64 0, metadata !214, metadata !655), !dbg !883
+  br label %20, !dbg !897
 
 ; <label>:20                                      ; preds = %15, %18, %13
   %ddx.0 = phi float [ %14, %13 ], [ %19, %18 ], [ %6, %15 ]
-  %21 = getelementptr inbounds float* %dx, i64 %indvars.iv
-  store float %ddx.0, float* %21, align 4, !tbaa !2
-  %22 = fmul float %ddx.0, %ddx.0
-  %23 = fadd float %dx2.02, %22
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %exitcond = icmp eq i64 %indvars.iv.next, 3
-  br i1 %exitcond, label %24, label %1
+  %21 = getelementptr inbounds float* %dx, i64 %indvars.iv, !dbg !898
+  store float %ddx.0, float* %21, align 4, !dbg !899, !tbaa !679
+  %22 = fmul float %ddx.0, %ddx.0, !dbg !900
+  %23 = fadd float %dx2.02, %22, !dbg !901
+  tail call void @llvm.dbg.value(metadata float %23, i64 0, metadata !215, metadata !655), !dbg !874
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !876
+  %exitcond = icmp eq i64 %indvars.iv.next, 3, !dbg !876
+  br i1 %exitcond, label %24, label %1, !dbg !876
 
 ; <label>:24                                      ; preds = %20
-  ret float %23
+  ret float %23, !dbg !902
 }

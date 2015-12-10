@@ -1,32 +1,33 @@
 define %struct._MSMD* @MSMD_new() #0 {
-entry:
-  %call = tail call noalias i8* @malloc(i64 96) #5
-  %cmp = icmp eq i8* %call, null
-  br i1 %cmp, label %if.then, label %if.end
+  %1 = tail call i8* @malloc(i64 96) #6, !dbg !88
+  tail call void @llvm.dbg.value(metadata %struct._MSMD* %7, i64 0, metadata !68, metadata !92), !dbg !93
+  %2 = icmp eq i8* %1, null, !dbg !88
+  br i1 %2, label %3, label %6, !dbg !94
 
-if.then:                                          ; preds = %entry
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call1 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i64 96, i32 21, i8* getelementptr inbounds ([77 x i8]* @.str1, i64 0, i64 0)) #5
-  tail call void @exit(i32 -1) #6
-  unreachable
+; <label>:3                                       ; preds = %0
+  %4 = load %struct.__sFILE** @__stderrp, align 8, !dbg !95, !tbaa !97
+  %5 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %4, i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i64 96, i32 21, i8* getelementptr inbounds ([89 x i8]* @.str1, i64 0, i64 0)) #6, !dbg !95
+  tail call void @exit(i32 -1) #7, !dbg !95
+  unreachable, !dbg !95
 
-if.end:                                           ; preds = %entry
-  %1 = bitcast i8* %call to %struct._MSMD*
-  %nvtx.i = bitcast i8* %call to i32*
-  store i32 0, i32* %nvtx.i, align 4, !tbaa !3
-  %heap.i = getelementptr inbounds i8* %call, i64 8
-  %2 = bitcast i8* %heap.i to %struct._IIheap**
-  store %struct._IIheap* null, %struct._IIheap** %2, align 8, !tbaa !0
-  %incrIP.i = getelementptr inbounds i8* %call, i64 16
-  %3 = bitcast i8* %incrIP.i to i32*
-  store i32 0, i32* %3, align 4, !tbaa !3
-  %baseIP.i = getelementptr inbounds i8* %call, i64 24
-  %ivtmpIV.i = getelementptr inbounds i8* %call, i64 48
-  %4 = bitcast i8* %ivtmpIV.i to %struct._IV*
-  tail call void @llvm.memset.p0i8.i64(i8* %baseIP.i, i8 0, i64 24, i32 8, i1 false) #4
-  tail call void @IV_setDefaultFields(%struct._IV* %4) #5
-  %reachIV.i = getelementptr inbounds i8* %call, i64 72
-  %5 = bitcast i8* %reachIV.i to %struct._IV*
-  tail call void @IV_setDefaultFields(%struct._IV* %5) #5
-  ret %struct._MSMD* %1
+; <label>:6                                       ; preds = %0
+  %7 = bitcast i8* %1 to %struct._MSMD*, !dbg !88
+  tail call void @llvm.dbg.value(metadata %struct._MSMD* %7, i64 0, metadata !73, metadata !92) #5, !dbg !101
+  %8 = bitcast i8* %1 to i32*, !dbg !103
+  store i32 0, i32* %8, align 4, !dbg !104, !tbaa !105
+  %9 = getelementptr inbounds i8* %1, i64 8, !dbg !109
+  %10 = bitcast i8* %9 to %struct._IIheap**, !dbg !109
+  store %struct._IIheap* null, %struct._IIheap** %10, align 8, !dbg !110, !tbaa !111
+  %11 = getelementptr inbounds i8* %1, i64 16, !dbg !112
+  %12 = bitcast i8* %11 to i32*, !dbg !112
+  store i32 0, i32* %12, align 4, !dbg !113, !tbaa !114
+  %13 = getelementptr inbounds i8* %1, i64 24, !dbg !115
+  %14 = getelementptr inbounds i8* %1, i64 48, !dbg !116
+  %15 = bitcast i8* %14 to %struct._IV*, !dbg !116
+  tail call void @llvm.memset.p0i8.i64(i8* %13, i8 0, i64 24, i32 8, i1 false) #5, !dbg !117
+  tail call void @IV_setDefaultFields(%struct._IV* %15) #6, !dbg !118
+  %16 = getelementptr inbounds i8* %1, i64 72, !dbg !119
+  %17 = bitcast i8* %16 to %struct._IV*, !dbg !119
+  tail call void @IV_setDefaultFields(%struct._IV* %17) #6, !dbg !120
+  ret %struct._MSMD* %7, !dbg !121
 }

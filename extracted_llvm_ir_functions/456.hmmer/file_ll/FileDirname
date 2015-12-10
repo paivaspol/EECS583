@@ -1,46 +1,52 @@
 define i8* @FileDirname(i8* %file) #0 {
-entry:
-  %call = tail call i8* @strrchr(i8* %file, i32 47) #5
-  %cmp = icmp eq i8* %call, null
-  br i1 %cmp, label %cond.end, label %cond.false
+  tail call void @llvm.dbg.value(metadata i8* %file, i64 0, metadata !13, metadata !131), !dbg !132
+  %1 = tail call i8* @strrchr(i8* %file, i32 47) #6, !dbg !133
+  tail call void @llvm.dbg.value(metadata i8* %1, i64 0, metadata !15, metadata !131), !dbg !134
+  %2 = icmp eq i8* %1, null, !dbg !135
+  br i1 %2, label %8, label %3, !dbg !136
 
-cond.false:                                       ; preds = %entry
-  %sub.ptr.lhs.cast = ptrtoint i8* %call to i64
-  %sub.ptr.rhs.cast = ptrtoint i8* %file to i64
-  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
-  %conv = trunc i64 %sub.ptr.sub to i32
-  br label %cond.end
+; <label>:3                                       ; preds = %0
+  %4 = ptrtoint i8* %1 to i64, !dbg !137
+  %5 = ptrtoint i8* %file to i64, !dbg !137
+  %6 = sub i64 %4, %5, !dbg !137
+  %7 = trunc i64 %6 to i32, !dbg !138
+  br label %8, !dbg !136
 
-cond.end:                                         ; preds = %entry, %cond.false
-  %cond = phi i32 [ %conv, %cond.false ], [ 0, %entry ]
-  %add = add nsw i32 %cond, 2
-  %conv1 = sext i32 %add to i64
-  %call2 = tail call i8* @sre_malloc(i8* getelementptr inbounds ([50 x i8]* @.str, i64 0, i64 0), i32 73, i64 %conv1) #6
-  %cmp3 = icmp sgt i32 %cond, 0
-  br i1 %cmp3, label %if.then, label %if.else
+; <label>:8                                       ; preds = %0, %3
+  %9 = phi i32 [ %7, %3 ], [ 0, %0 ], !dbg !136
+  tail call void @llvm.dbg.value(metadata i32 %9, i64 0, metadata !16, metadata !131), !dbg !139
+  %10 = add nsw i32 %9, 2, !dbg !140
+  %11 = sext i32 %10 to i64, !dbg !140
+  %12 = tail call i8* @sre_malloc(i8* getelementptr inbounds ([62 x i8]* @.str, i64 0, i64 0), i32 73, i64 %11) #6, !dbg !140
+  tail call void @llvm.dbg.value(metadata i8* %12, i64 0, metadata !14, metadata !131), !dbg !141
+  %13 = icmp sgt i32 %9, 0, !dbg !142
+  br i1 %13, label %14, label %18, !dbg !144
 
-if.then:                                          ; preds = %cond.end
-  %conv5 = sext i32 %cond to i64
-  %call6 = tail call i8* @strncpy(i8* %call2, i8* %file, i64 %conv5) #6
-  br label %if.end12
+; <label>:14                                      ; preds = %8
+  %15 = sext i32 %9 to i64, !dbg !145
+  %16 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %12, i1 false), !dbg !145
+  %17 = tail call i8* @__strncpy_chk(i8* %12, i8* %file, i64 %15, i64 %16) #6, !dbg !145
+  br label %23, !dbg !145
 
-if.else:                                          ; preds = %cond.end
-  %0 = load i8* %file, align 1, !tbaa !0
-  %cmp8 = icmp eq i8 %0, 47
-  br i1 %cmp8, label %if.else11, label %if.then10
+; <label>:18                                      ; preds = %8
+  %19 = load i8* %file, align 1, !dbg !146, !tbaa !148
+  %20 = icmp eq i8 %19, 47, !dbg !151
+  br i1 %20, label %22, label %21, !dbg !152
 
-if.then10:                                        ; preds = %if.else
-  store i8 46, i8* %call2, align 1, !tbaa !0
-  br label %if.end12
+; <label>:21                                      ; preds = %18
+  store i8 46, i8* %12, align 1, !dbg !153, !tbaa !148
+  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !16, metadata !131), !dbg !139
+  br label %23, !dbg !155
 
-if.else11:                                        ; preds = %if.else
-  store i8 47, i8* %call2, align 1, !tbaa !0
-  br label %if.end12
+; <label>:22                                      ; preds = %18
+  store i8 47, i8* %12, align 1, !dbg !156, !tbaa !148
+  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !16, metadata !131), !dbg !139
+  br label %23
 
-if.end12:                                         ; preds = %if.then10, %if.else11, %if.then
-  %len.0 = phi i32 [ %cond, %if.then ], [ 1, %if.then10 ], [ 1, %if.else11 ]
-  %idxprom = sext i32 %len.0 to i64
-  %arrayidx = getelementptr inbounds i8* %call2, i64 %idxprom
-  store i8 0, i8* %arrayidx, align 1, !tbaa !0
-  ret i8* %call2
+; <label>:23                                      ; preds = %21, %22, %14
+  %len.0 = phi i32 [ %9, %14 ], [ 1, %21 ], [ 1, %22 ]
+  %24 = sext i32 %len.0 to i64, !dbg !158
+  %25 = getelementptr inbounds i8* %12, i64 %24, !dbg !158
+  store i8 0, i8* %25, align 1, !dbg !159, !tbaa !148
+  ret i8* %12, !dbg !160
 }

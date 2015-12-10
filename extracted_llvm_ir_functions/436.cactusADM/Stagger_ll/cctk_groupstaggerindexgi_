@@ -1,12 +1,17 @@
 define void @cctk_groupstaggerindexgi_(i32* nocapture %stagcode, i32* nocapture readonly %gindex) #1 {
   %group.i = alloca %struct.cGroup, align 4
-  %1 = load i32* %gindex, align 4, !tbaa !7
-  %2 = bitcast %struct.cGroup* %group.i to i8*
-  call void @llvm.lifetime.start(i64 32, i8* %2)
-  %3 = call i32 @CCTK_GroupData(i32 %1, %struct.cGroup* %group.i) #6
-  %4 = getelementptr inbounds %struct.cGroup* %group.i, i64 0, i32 3
-  %5 = load i32* %4, align 4, !tbaa !2
-  call void @llvm.lifetime.end(i64 32, i8* %2)
-  store i32 %5, i32* %stagcode, align 4, !tbaa !7
-  ret void
+  tail call void @llvm.dbg.value(metadata i32* %stagcode, i64 0, metadata !36, metadata !169), !dbg !181
+  tail call void @llvm.dbg.value(metadata i32* %gindex, i64 0, metadata !37, metadata !169), !dbg !182
+  %1 = load i32* %gindex, align 4, !dbg !183, !tbaa !184
+  %2 = bitcast %struct.cGroup* %group.i to i8*, !dbg !185
+  call void @llvm.lifetime.start(i64 32, i8* %2), !dbg !185
+  tail call void @llvm.dbg.value(metadata i32 %1, i64 0, metadata !16, metadata !169) #6, !dbg !185
+  tail call void @llvm.dbg.value(metadata %struct.cGroup* %group.i, i64 0, metadata !17, metadata !169) #6, !dbg !187
+  %3 = call i32 @CCTK_GroupData(i32 %1, %struct.cGroup* %group.i) #7, !dbg !188
+  %4 = getelementptr inbounds %struct.cGroup* %group.i, i64 0, i32 3, !dbg !189
+  %5 = load i32* %4, align 4, !dbg !189, !tbaa !174
+  call void @llvm.dbg.value(metadata i32 %5, i64 0, metadata !30, metadata !169) #6, !dbg !190
+  call void @llvm.lifetime.end(i64 32, i8* %2), !dbg !191
+  store i32 %5, i32* %stagcode, align 4, !dbg !192, !tbaa !184
+  ret void, !dbg !193
 }

@@ -1,0 +1,33 @@
+define linkonce_odr void @_ZN6soplex9DataArrayINS_7SVector7ElementEE6reSizeEi(%"class.soplex::DataArray"* nocapture %this, i32 %newsize) #0 align 2 {
+  tail call void @llvm.dbg.value(metadata %"class.soplex::DataArray"* %this, i64 0, metadata !3042, metadata !3888), !dbg !5355
+  tail call void @llvm.dbg.value(metadata i32 %newsize, i64 0, metadata !3043, metadata !3888), !dbg !5356
+  %1 = getelementptr inbounds %"class.soplex::DataArray"* %this, i64 0, i32 1, !dbg !5357
+  %2 = load i32* %1, align 4, !dbg !5357, !tbaa !3907
+  %3 = icmp slt i32 %2, %newsize, !dbg !5359
+  br i1 %3, label %4, label %11, !dbg !5360
+
+; <label>:4                                       ; preds = %0
+  %5 = getelementptr inbounds %"class.soplex::DataArray"* %this, i64 0, i32 3, !dbg !5361
+  %6 = load double* %5, align 8, !dbg !5361, !tbaa !5362
+  %7 = sitofp i32 %newsize to double, !dbg !5363
+  %8 = fmul double %7, %6, !dbg !5364
+  %9 = fptosi double %8 to i32, !dbg !5361
+  %10 = tail call i64 @_ZN6soplex9DataArrayINS_7SVector7ElementEE5reMaxEii(%"class.soplex::DataArray"* %this, i32 %9, i32 %newsize) #8, !dbg !5365
+  br label %16, !dbg !5365
+
+; <label>:11                                      ; preds = %0
+  %12 = icmp slt i32 %newsize, 0, !dbg !5366
+  %13 = getelementptr inbounds %"class.soplex::DataArray"* %this, i64 0, i32 0, !dbg !5368
+  br i1 %12, label %14, label %15, !dbg !5369
+
+; <label>:14                                      ; preds = %11
+  store i32 0, i32* %13, align 4, !dbg !5370, !tbaa !3895
+  br label %16, !dbg !5368
+
+; <label>:15                                      ; preds = %11
+  store i32 %newsize, i32* %13, align 4, !dbg !5371, !tbaa !3895
+  br label %16
+
+; <label>:16                                      ; preds = %14, %15, %4
+  ret void, !dbg !5372
+}

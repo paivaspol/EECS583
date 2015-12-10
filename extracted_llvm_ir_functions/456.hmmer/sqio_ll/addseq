@@ -1,213 +1,256 @@
 define internal fastcc void @addseq(i8* %s, %struct.ReadSeqVars* nocapture %V) #0 {
-entry:
-  %ssimode = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 5
-  %0 = load i32* %ssimode, align 4, !tbaa !0
-  %cmp = icmp eq i32 %0, -1
-  br i1 %cmp, label %if.then, label %while.cond36.preheader
+  tail call void @llvm.dbg.value(metadata i8* %s, i64 0, metadata !530, metadata !624), !dbg !2922
+  tail call void @llvm.dbg.value(metadata %struct.ReadSeqVars* %V, i64 0, metadata !531, metadata !624), !dbg !2923
+  %1 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 5, !dbg !2924
+  %2 = load i32* %1, align 4, !dbg !2924, !tbaa !639
+  %3 = icmp eq i32 %2, -1, !dbg !2926
+  br i1 %3, label %6, label %.preheader, !dbg !2927
 
-while.cond36.preheader:                           ; preds = %entry
-  %1 = load i8* %s, align 1, !tbaa !1
-  %cmp38199 = icmp eq i8 %1, 0
-  br i1 %cmp38199, label %while.end59, label %while.body40.lr.ph
+.preheader:                                       ; preds = %0
+  %4 = load i8* %s, align 1, !dbg !2928, !tbaa !861
+  %5 = icmp eq i8 %4, 0, !dbg !2930
+  br i1 %5, label %._crit_edge16, label %.lr.ph15, !dbg !2931
 
-while.body40.lr.ph:                               ; preds = %while.cond36.preheader
-  %call43 = tail call i16** @__ctype_b_loc() #10
-  %2 = load i16** %call43, align 8, !tbaa !3
-  br label %while.body40
+; <label>:6                                       ; preds = %0
+  %7 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 18, !dbg !2932
+  %8 = load i32* %7, align 4, !dbg !2932, !tbaa !1302
+  %9 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 4, !dbg !2935
+  %10 = load i32* %9, align 4, !dbg !2935, !tbaa !762
+  %11 = add nsw i32 %10, %8, !dbg !2936
+  %12 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 19, !dbg !2937
+  %13 = load i32* %12, align 4, !dbg !2937, !tbaa !1888
+  %14 = icmp sgt i32 %11, %13, !dbg !2938
+  br i1 %14, label %15, label %._crit_edge20, !dbg !2939
 
-if.then:                                          ; preds = %entry
-  %seqlen = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 18
-  %3 = load i32* %seqlen, align 4, !tbaa !0
-  %buflen = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 4
-  %4 = load i32* %buflen, align 4, !tbaa !0
-  %add = add nsw i32 %4, %3
-  %maxseq = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 19
-  %5 = load i32* %maxseq, align 4, !tbaa !0
-  %cmp1 = icmp sgt i32 %add, %5
-  br i1 %cmp1, label %if.then2, label %if.then.if.end_crit_edge
+._crit_edge20:                                    ; preds = %6
+  %.pre21 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 15, !dbg !2940
+  br label %26, !dbg !2939
 
-if.then.if.end_crit_edge:                         ; preds = %if.then
-  %seq13.pre = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 15
-  br label %if.end
+; <label>:15                                      ; preds = %6
+  %16 = icmp sgt i32 %10, 500, !dbg !2941
+  %. = select i1 %16, i32 %10, i32 500, !dbg !2941
+  %17 = add nsw i32 %., %13, !dbg !2943
+  store i32 %17, i32* %12, align 4, !dbg !2943, !tbaa !1888
+  %18 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 15, !dbg !2944
+  %19 = load i8** %18, align 8, !dbg !2944, !tbaa !1298
+  %20 = add nsw i32 %17, 1, !dbg !2944
+  %21 = sext i32 %20 to i64, !dbg !2944
+  %22 = tail call i8* @sre_realloc(i8* getelementptr inbounds ([62 x i8]* @.str78, i64 0, i64 0), i32 524, i8* %19, i64 %21) #8, !dbg !2944
+  store i8* %22, i8** %18, align 8, !dbg !2945, !tbaa !1298
+  %23 = load i32* %12, align 4, !dbg !2946, !tbaa !1888
+  %24 = sext i32 %23 to i64, !dbg !2947
+  %25 = getelementptr inbounds i8* %22, i64 %24, !dbg !2947
+  store i8 0, i8* %25, align 1, !dbg !2948, !tbaa !861
+  %.pre = load i32* %7, align 4, !dbg !2949, !tbaa !1302
+  br label %26, !dbg !2950
 
-if.then2:                                         ; preds = %if.then
-  %cmp4 = icmp sgt i32 %4, 500
-  %. = select i1 %cmp4, i32 %4, i32 500
-  %add7 = add nsw i32 %., %5
-  store i32 %add7, i32* %maxseq, align 4, !tbaa !0
-  %seq = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 15
-  %6 = load i8** %seq, align 8, !tbaa !3
-  %add9 = add nsw i32 %add7, 1
-  %conv = sext i32 %add9 to i64
-  %call = tail call i8* @sre_realloc(i8* getelementptr inbounds ([50 x i8]* @.str78, i64 0, i64 0), i32 524, i8* %6, i64 %conv) #8
-  store i8* %call, i8** %seq, align 8, !tbaa !3
-  %7 = load i32* %maxseq, align 4, !tbaa !0
-  %idxprom = sext i32 %7 to i64
-  %arrayidx = getelementptr inbounds i8* %call, i64 %idxprom
-  store i8 0, i8* %arrayidx, align 1, !tbaa !1
-  %.pre = load i32* %seqlen, align 4, !tbaa !0
-  br label %if.end
+; <label>:26                                      ; preds = %._crit_edge20, %15
+  %.pre-phi = phi i8** [ %.pre21, %._crit_edge20 ], [ %18, %15 ], !dbg !2940
+  %27 = phi i32 [ %8, %._crit_edge20 ], [ %.pre, %15 ]
+  %28 = load i8** %.pre-phi, align 8, !dbg !2940, !tbaa !1298
+  %29 = sext i32 %27 to i64, !dbg !2951
+  %30 = getelementptr inbounds i8* %28, i64 %29, !dbg !2951
+  tail call void @llvm.dbg.value(metadata i8* %30, i64 0, metadata !533, metadata !624), !dbg !2952
+  %31 = load i8* %s, align 1, !dbg !2953, !tbaa !861
+  %32 = icmp eq i8 %31, 0, !dbg !2954
+  br i1 %32, label %50, label %.lr.ph, !dbg !2955
 
-if.end:                                           ; preds = %if.then.if.end_crit_edge, %if.then2
-  %seq13.pre-phi = phi i8** [ %seq13.pre, %if.then.if.end_crit_edge ], [ %seq, %if.then2 ]
-  %8 = phi i32 [ %3, %if.then.if.end_crit_edge ], [ %.pre, %if.then2 ]
-  %9 = load i8** %seq13.pre-phi, align 8, !tbaa !3
-  %idx.ext = sext i32 %8 to i64
-  %add.ptr = getelementptr inbounds i8* %9, i64 %idx.ext
-  %10 = load i8* %s, align 1, !tbaa !1
-  %cmp16196 = icmp eq i8 %10, 0
-  br i1 %cmp16196, label %while.end, label %while.body.lr.ph
+.lr.ph:                                           ; preds = %26, %46
+  %33 = phi i8 [ %48, %46 ], [ %31, %26 ]
+  %.011 = phi i8* [ %47, %46 ], [ %s, %26 ]
+  %sq.010 = phi i8* [ %sq.1, %46 ], [ %30, %26 ]
+  %34 = sext i8 %33 to i32, !dbg !2953
+  %isdigittmp1 = add nsw i32 %34, -48, !dbg !2956
+  %isdigit2 = icmp ult i32 %isdigittmp1, 10, !dbg !2956
+  br i1 %isdigit2, label %46, label %35, !dbg !2959
 
-while.body.lr.ph:                                 ; preds = %if.end
-  %call20 = tail call i16** @__ctype_b_loc() #10
-  br label %while.body
+; <label>:35                                      ; preds = %.lr.ph
+  tail call void @llvm.dbg.value(metadata i32 %34, i64 0, metadata !496, metadata !624) #5, !dbg !2960
+  tail call void @llvm.dbg.value(metadata i32 %34, i64 0, metadata !502, metadata !624) #5, !dbg !2962
+  tail call void @llvm.dbg.value(metadata i64 16384, i64 0, metadata !503, metadata !624) #5, !dbg !2964
+  %isascii.i.i9 = icmp sgt i8 %33, -1, !dbg !2965
+  br i1 %isascii.i.i9, label %36, label %41, !dbg !2965
 
-while.body:                                       ; preds = %if.end31, %while.body.lr.ph
-  %11 = phi i8 [ %10, %while.body.lr.ph ], [ %16, %if.end31 ]
-  %s.addr.0198 = phi i8* [ %s, %while.body.lr.ph ], [ %incdec.ptr32, %if.end31 ]
-  %sq.0197 = phi i8* [ %add.ptr, %while.body.lr.ph ], [ %sq.1, %if.end31 ]
-  %idxprom19 = sext i8 %11 to i64
-  %12 = load i16** %call20, align 8, !tbaa !3
-  %arrayidx21 = getelementptr inbounds i16* %12, i64 %idxprom19
-  %13 = load i16* %arrayidx21, align 2, !tbaa !4
-  %14 = and i16 %13, 10240
-  %15 = icmp eq i16 %14, 0
-  br i1 %15, label %if.then30, label %if.end31
+; <label>:36                                      ; preds = %35
+  %37 = sext i8 %33 to i64, !dbg !2966
+  %38 = getelementptr inbounds %struct._RuneLocale* @_DefaultRuneLocale, i64 0, i32 5, i64 %37, !dbg !2966
+  %39 = load i32* %38, align 4, !dbg !2966, !tbaa !897
+  %40 = and i32 %39, 16384, !dbg !2967
+  br label %isspace.exit, !dbg !2965
 
-if.then30:                                        ; preds = %while.body
-  store i8 %11, i8* %sq.0197, align 1, !tbaa !1
-  %incdec.ptr = getelementptr inbounds i8* %sq.0197, i64 1
-  br label %if.end31
+; <label>:41                                      ; preds = %35
+  %42 = tail call i32 @__maskrune(i32 %34, i64 16384) #8, !dbg !2968
+  br label %isspace.exit, !dbg !2965
 
-if.end31:                                         ; preds = %while.body, %if.then30
-  %sq.1 = phi i8* [ %sq.0197, %while.body ], [ %incdec.ptr, %if.then30 ]
-  %incdec.ptr32 = getelementptr inbounds i8* %s.addr.0198, i64 1
-  %16 = load i8* %incdec.ptr32, align 1, !tbaa !1
-  %cmp16 = icmp eq i8 %16, 0
-  br i1 %cmp16, label %while.cond.while.end_crit_edge, label %while.body
+isspace.exit:                                     ; preds = %36, %41
+  %.sink.i.in.i = phi i32 [ %40, %36 ], [ %42, %41 ], !dbg !2969
+  %.sink.i.i = icmp eq i32 %.sink.i.in.i, 0, !dbg !2970
+  br i1 %.sink.i.i, label %43, label %46, !dbg !2971
 
-while.cond.while.end_crit_edge:                   ; preds = %if.end31
-  %.pre204 = load i8** %seq13.pre-phi, align 8, !tbaa !3
-  br label %while.end
+; <label>:43                                      ; preds = %isspace.exit
+  %44 = load i8* %.011, align 1, !dbg !2972, !tbaa !861
+  store i8 %44, i8* %sq.010, align 1, !dbg !2974, !tbaa !861
+  %45 = getelementptr inbounds i8* %sq.010, i64 1, !dbg !2975
+  tail call void @llvm.dbg.value(metadata i8* %45, i64 0, metadata !533, metadata !624), !dbg !2952
+  br label %46, !dbg !2976
 
-while.end:                                        ; preds = %while.cond.while.end_crit_edge, %if.end
-  %17 = phi i8* [ %.pre204, %while.cond.while.end_crit_edge ], [ %9, %if.end ]
-  %sq.0.lcssa = phi i8* [ %sq.1, %while.cond.while.end_crit_edge ], [ %add.ptr, %if.end ]
-  %sub.ptr.lhs.cast = ptrtoint i8* %sq.0.lcssa to i64
-  %sub.ptr.rhs.cast = ptrtoint i8* %17 to i64
-  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
-  %conv34 = trunc i64 %sub.ptr.sub to i32
-  store i32 %conv34, i32* %seqlen, align 4, !tbaa !0
-  br label %if.end134
+; <label>:46                                      ; preds = %isspace.exit, %43, %.lr.ph
+  %sq.1 = phi i8* [ %sq.010, %.lr.ph ], [ %sq.010, %isspace.exit ], [ %45, %43 ]
+  %47 = getelementptr inbounds i8* %.011, i64 1, !dbg !2977
+  tail call void @llvm.dbg.value(metadata i8* %47, i64 0, metadata !530, metadata !624), !dbg !2922
+  %48 = load i8* %47, align 1, !dbg !2953, !tbaa !861
+  %49 = icmp eq i8 %48, 0, !dbg !2954
+  br i1 %49, label %._crit_edge, label %.lr.ph, !dbg !2955
 
-while.body40:                                     ; preds = %while.body40.lr.ph, %while.body40
-  %18 = phi i8 [ %1, %while.body40.lr.ph ], [ %22, %while.body40 ]
-  %s.addr.1201 = phi i8* [ %s, %while.body40.lr.ph ], [ %incdec.ptr58, %while.body40 ]
-  %rpl.0200 = phi i32 [ 0, %while.body40.lr.ph ], [ %rpl.1, %while.body40 ]
-  %idxprom42 = sext i8 %18 to i64
-  %arrayidx44 = getelementptr inbounds i16* %2, i64 %idxprom42
-  %19 = load i16* %arrayidx44, align 2, !tbaa !4
-  %20 = and i16 %19, 10240
-  %21 = icmp eq i16 %20, 0
-  %inc = zext i1 %21 to i32
-  %rpl.1 = add nsw i32 %inc, %rpl.0200
-  %incdec.ptr58 = getelementptr inbounds i8* %s.addr.1201, i64 1
-  %22 = load i8* %incdec.ptr58, align 1, !tbaa !1
-  %cmp38 = icmp eq i8 %22, 0
-  br i1 %cmp38, label %while.end59, label %while.body40
+._crit_edge:                                      ; preds = %46
+  %.pre19 = load i8** %.pre-phi, align 8, !dbg !2978, !tbaa !1298
+  br label %50, !dbg !2955
 
-while.end59:                                      ; preds = %while.body40, %while.cond36.preheader
-  %s.addr.1.lcssa = phi i8* [ %s, %while.cond36.preheader ], [ %incdec.ptr58, %while.body40 ]
-  %rpl.0.lcssa = phi i32 [ 0, %while.cond36.preheader ], [ %rpl.1, %while.body40 ]
-  %seqlen60 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 18
-  %23 = load i32* %seqlen60, align 4, !tbaa !0
-  %add61 = add nsw i32 %23, %rpl.0.lcssa
-  store i32 %add61, i32* %seqlen60, align 4, !tbaa !0
-  %sub.ptr.lhs.cast62 = ptrtoint i8* %s.addr.1.lcssa to i64
-  %sub.ptr.rhs.cast63 = ptrtoint i8* %s to i64
-  %sub.ptr.sub64 = sub i64 %sub.ptr.lhs.cast62, %sub.ptr.rhs.cast63
-  %conv65 = trunc i64 %sub.ptr.sub64 to i32
-  %rpl66 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 9
-  %24 = load i32* %rpl66, align 4, !tbaa !0
-  %cmp67 = icmp eq i32 %24, 0
-  br i1 %cmp67, label %if.end99, label %if.then69
+; <label>:50                                      ; preds = %._crit_edge, %26
+  %51 = phi i8* [ %.pre19, %._crit_edge ], [ %28, %26 ]
+  %sq.0.lcssa = phi i8* [ %sq.1, %._crit_edge ], [ %30, %26 ]
+  %52 = ptrtoint i8* %sq.0.lcssa to i64, !dbg !2979
+  %53 = ptrtoint i8* %51 to i64, !dbg !2979
+  %54 = sub i64 %52, %53, !dbg !2979
+  %55 = trunc i64 %54 to i32, !dbg !2980
+  store i32 %55, i32* %7, align 4, !dbg !2981, !tbaa !1302
+  br label %118, !dbg !2982
 
-if.then69:                                        ; preds = %while.end59
-  %lastrpl = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 10
-  %25 = load i32* %lastrpl, align 4, !tbaa !0
-  %cmp70 = icmp sgt i32 %25, 0
-  br i1 %cmp70, label %if.then72, label %if.end92
+.lr.ph15:                                         ; preds = %.preheader, %68
+  %56 = phi i8 [ %70, %68 ], [ %4, %.preheader ]
+  %.114 = phi i8* [ %69, %68 ], [ %s, %.preheader ]
+  %rpl.013 = phi i32 [ %rpl.1, %68 ], [ 0, %.preheader ]
+  %57 = sext i8 %56 to i32, !dbg !2928
+  %isdigittmp = add nsw i32 %57, -48, !dbg !2983
+  %isdigit = icmp ult i32 %isdigittmp, 10, !dbg !2983
+  br i1 %isdigit, label %68, label %58, !dbg !2986
 
-if.then72:                                        ; preds = %if.then69
-  %cmp74 = icmp slt i32 %24, 1
-  %cmp79 = icmp eq i32 %25, %24
-  %or.cond194 = or i1 %cmp74, %cmp79
-  br i1 %or.cond194, label %if.else83, label %if.then81
+; <label>:58                                      ; preds = %.lr.ph15
+  tail call void @llvm.dbg.value(metadata i32 %57, i64 0, metadata !496, metadata !624) #5, !dbg !2987
+  tail call void @llvm.dbg.value(metadata i32 %57, i64 0, metadata !502, metadata !624) #5, !dbg !2989
+  tail call void @llvm.dbg.value(metadata i64 16384, i64 0, metadata !503, metadata !624) #5, !dbg !2991
+  %isascii.i.i48 = icmp sgt i8 %56, -1, !dbg !2992
+  br i1 %isascii.i.i48, label %59, label %64, !dbg !2992
 
-if.then81:                                        ; preds = %if.then72
-  store i32 0, i32* %rpl66, align 4, !tbaa !0
-  br label %if.end92
+; <label>:59                                      ; preds = %58
+  %60 = sext i8 %56 to i64, !dbg !2993
+  %61 = getelementptr inbounds %struct._RuneLocale* @_DefaultRuneLocale, i64 0, i32 5, i64 %60, !dbg !2993
+  %62 = load i32* %61, align 4, !dbg !2993, !tbaa !897
+  %63 = and i32 %62, 16384, !dbg !2994
+  br label %isspace.exit7, !dbg !2992
 
-if.else83:                                        ; preds = %if.then72
-  %cmp85 = icmp eq i32 %24, -1
-  br i1 %cmp85, label %if.then87, label %if.end92
+; <label>:64                                      ; preds = %58
+  %65 = tail call i32 @__maskrune(i32 %57, i64 16384) #8, !dbg !2995
+  br label %isspace.exit7, !dbg !2992
 
-if.then87:                                        ; preds = %if.else83
-  store i32 %25, i32* %rpl66, align 4, !tbaa !0
-  br label %if.end92
+isspace.exit7:                                    ; preds = %59, %64
+  %.sink.i.in.i5 = phi i32 [ %63, %59 ], [ %65, %64 ], !dbg !2996
+  %66 = icmp eq i32 %.sink.i.in.i5, 0, !dbg !2996
+  %67 = zext i1 %66 to i32, !dbg !2997
+  %.rpl.0 = add nsw i32 %67, %rpl.013, !dbg !2997
+  br label %68, !dbg !2997
 
-if.end92:                                         ; preds = %if.then81, %if.then87, %if.else83, %if.then69
-  store i32 %rpl.0.lcssa, i32* %lastrpl, align 4, !tbaa !0
-  %maxrpl = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 11
-  %26 = load i32* %maxrpl, align 4, !tbaa !0
-  %cmp94 = icmp sgt i32 %rpl.0.lcssa, %26
-  br i1 %cmp94, label %if.then96, label %if.end99
+; <label>:68                                      ; preds = %isspace.exit7, %.lr.ph15
+  %rpl.1 = phi i32 [ %rpl.013, %.lr.ph15 ], [ %.rpl.0, %isspace.exit7 ]
+  %69 = getelementptr inbounds i8* %.114, i64 1, !dbg !2998
+  tail call void @llvm.dbg.value(metadata i8* %69, i64 0, metadata !530, metadata !624), !dbg !2922
+  %70 = load i8* %69, align 1, !dbg !2928, !tbaa !861
+  %71 = icmp eq i8 %70, 0, !dbg !2930
+  br i1 %71, label %._crit_edge16, label %.lr.ph15, !dbg !2931
 
-if.then96:                                        ; preds = %if.end92
-  store i32 %rpl.0.lcssa, i32* %maxrpl, align 4, !tbaa !0
-  br label %if.end99
+._crit_edge16:                                    ; preds = %68, %.preheader
+  %.1.lcssa = phi i8* [ %s, %.preheader ], [ %69, %68 ]
+  %rpl.0.lcssa = phi i32 [ 0, %.preheader ], [ %rpl.1, %68 ]
+  %72 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 18, !dbg !2999
+  %73 = load i32* %72, align 4, !dbg !3000, !tbaa !1302
+  %74 = add nsw i32 %73, %rpl.0.lcssa, !dbg !3000
+  store i32 %74, i32* %72, align 4, !dbg !3000, !tbaa !1302
+  %75 = ptrtoint i8* %.1.lcssa to i64, !dbg !3001
+  %76 = ptrtoint i8* %s to i64, !dbg !3001
+  %77 = sub i64 %75, %76, !dbg !3001
+  %78 = trunc i64 %77 to i32, !dbg !3002
+  tail call void @llvm.dbg.value(metadata i32 %78, i64 0, metadata !535, metadata !624), !dbg !3003
+  %79 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 9, !dbg !3004
+  %80 = load i32* %79, align 4, !dbg !3004, !tbaa !648
+  %81 = icmp eq i32 %80, 0, !dbg !3006
+  br i1 %81, label %98, label %82, !dbg !3007
 
-if.end99:                                         ; preds = %while.end59, %if.end92, %if.then96
-  %bpl100 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 12
-  %27 = load i32* %bpl100, align 4, !tbaa !0
-  %cmp101 = icmp eq i32 %27, 0
-  br i1 %cmp101, label %if.end134, label %if.then103
+; <label>:82                                      ; preds = %._crit_edge16
+  %83 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 10, !dbg !3008
+  %84 = load i32* %83, align 4, !dbg !3008, !tbaa !651
+  %85 = icmp sgt i32 %84, 0, !dbg !3011
+  br i1 %85, label %86, label %93, !dbg !3012
 
-if.then103:                                       ; preds = %if.end99
-  %lastbpl = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 13
-  %28 = load i32* %lastbpl, align 4, !tbaa !0
-  %cmp104 = icmp sgt i32 %28, 0
-  br i1 %cmp104, label %if.then106, label %if.end126
+; <label>:86                                      ; preds = %82
+  %87 = icmp slt i32 %80, 1, !dbg !3013
+  %88 = icmp eq i32 %84, %80, !dbg !3016
+  %or.cond = or i1 %87, %88, !dbg !3017
+  br i1 %or.cond, label %90, label %89, !dbg !3017
 
-if.then106:                                       ; preds = %if.then103
-  %cmp108 = icmp slt i32 %27, 1
-  %cmp113 = icmp eq i32 %28, %27
-  %or.cond195 = or i1 %cmp108, %cmp113
-  br i1 %or.cond195, label %if.else117, label %if.then115
+; <label>:89                                      ; preds = %86
+  store i32 0, i32* %79, align 4, !dbg !3018, !tbaa !648
+  br label %93, !dbg !3019
 
-if.then115:                                       ; preds = %if.then106
-  store i32 0, i32* %bpl100, align 4, !tbaa !0
-  br label %if.end126
+; <label>:90                                      ; preds = %86
+  %91 = icmp eq i32 %80, -1, !dbg !3020
+  br i1 %91, label %92, label %93, !dbg !3022
 
-if.else117:                                       ; preds = %if.then106
-  %cmp119 = icmp eq i32 %27, -1
-  br i1 %cmp119, label %if.then121, label %if.end126
+; <label>:92                                      ; preds = %90
+  store i32 %84, i32* %79, align 4, !dbg !3023, !tbaa !648
+  br label %93, !dbg !3024
 
-if.then121:                                       ; preds = %if.else117
-  store i32 %28, i32* %bpl100, align 4, !tbaa !0
-  br label %if.end126
+; <label>:93                                      ; preds = %89, %92, %90, %82
+  store i32 %rpl.0.lcssa, i32* %83, align 4, !dbg !3025, !tbaa !651
+  %94 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 11, !dbg !3026
+  %95 = load i32* %94, align 4, !dbg !3026, !tbaa !654
+  %96 = icmp sgt i32 %rpl.0.lcssa, %95, !dbg !3028
+  br i1 %96, label %97, label %98, !dbg !3029
 
-if.end126:                                        ; preds = %if.then115, %if.then121, %if.else117, %if.then103
-  store i32 %conv65, i32* %lastbpl, align 4, !tbaa !0
-  %maxbpl = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 14
-  %29 = load i32* %maxbpl, align 4, !tbaa !0
-  %cmp128 = icmp sgt i32 %conv65, %29
-  br i1 %cmp128, label %if.then130, label %if.end134
+; <label>:97                                      ; preds = %93
+  store i32 %rpl.0.lcssa, i32* %94, align 4, !dbg !3030, !tbaa !654
+  br label %98, !dbg !3031
 
-if.then130:                                       ; preds = %if.end126
-  store i32 %conv65, i32* %maxbpl, align 4, !tbaa !0
-  br label %if.end134
+; <label>:98                                      ; preds = %._crit_edge16, %93, %97
+  %99 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 12, !dbg !3032
+  %100 = load i32* %99, align 4, !dbg !3032, !tbaa !657
+  %101 = icmp eq i32 %100, 0, !dbg !3034
+  br i1 %101, label %118, label %102, !dbg !3035
 
-if.end134:                                        ; preds = %if.end99, %if.then130, %if.end126, %while.end
-  ret void
+; <label>:102                                     ; preds = %98
+  %103 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 13, !dbg !3036
+  %104 = load i32* %103, align 4, !dbg !3036, !tbaa !660
+  %105 = icmp sgt i32 %104, 0, !dbg !3039
+  br i1 %105, label %106, label %113, !dbg !3040
+
+; <label>:106                                     ; preds = %102
+  %107 = icmp slt i32 %100, 1, !dbg !3041
+  %108 = icmp eq i32 %104, %100, !dbg !3044
+  %or.cond3 = or i1 %107, %108, !dbg !3045
+  br i1 %or.cond3, label %110, label %109, !dbg !3045
+
+; <label>:109                                     ; preds = %106
+  store i32 0, i32* %99, align 4, !dbg !3046, !tbaa !657
+  br label %113, !dbg !3047
+
+; <label>:110                                     ; preds = %106
+  %111 = icmp eq i32 %100, -1, !dbg !3048
+  br i1 %111, label %112, label %113, !dbg !3050
+
+; <label>:112                                     ; preds = %110
+  store i32 %104, i32* %99, align 4, !dbg !3051, !tbaa !657
+  br label %113, !dbg !3052
+
+; <label>:113                                     ; preds = %109, %112, %110, %102
+  store i32 %78, i32* %103, align 4, !dbg !3053, !tbaa !660
+  %114 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 14, !dbg !3054
+  %115 = load i32* %114, align 4, !dbg !3054, !tbaa !663
+  %116 = icmp sgt i32 %78, %115, !dbg !3056
+  br i1 %116, label %117, label %118, !dbg !3057
+
+; <label>:117                                     ; preds = %113
+  store i32 %78, i32* %114, align 4, !dbg !3058, !tbaa !663
+  br label %118, !dbg !3059
+
+; <label>:118                                     ; preds = %98, %117, %113, %50
+  ret void, !dbg !3060
 }

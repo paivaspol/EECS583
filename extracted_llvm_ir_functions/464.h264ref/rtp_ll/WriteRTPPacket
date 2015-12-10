@@ -1,30 +1,48 @@
-define i32 @WriteRTPPacket(%struct.RTPpacket_t* nocapture %p, %struct._IO_FILE* nocapture %f) #0 {
-entry:
+define i32 @WriteRTPPacket(%struct.RTPpacket_t* %p, %struct.__sFILE* %f) #0 {
   %intime = alloca i32, align 4
-  store i32 -1, i32* %intime, align 4, !tbaa !0
-  %packlen = getelementptr inbounds %struct.RTPpacket_t* %p, i64 0, i32 12
-  %0 = bitcast i32* %packlen to i8*
-  %call = call i64 @fwrite(i8* %0, i64 4, i64 1, %struct._IO_FILE* %f) #5
-  %cmp = icmp eq i64 %call, 1
-  br i1 %cmp, label %if.end, label %return
+  tail call void @llvm.dbg.value(metadata %struct.RTPpacket_t* %p, i64 0, metadata !105, metadata !628), !dbg !687
+  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %f, i64 0, metadata !106, metadata !628), !dbg !688
+  tail call void @llvm.dbg.value(metadata i32 -1, i64 0, metadata !107, metadata !628), !dbg !689
+  store i32 -1, i32* %intime, align 4, !dbg !689, !tbaa !690
+  %1 = icmp eq %struct.__sFILE* %f, null, !dbg !691
+  br i1 %1, label %2, label %3, !dbg !691, !prof !646
 
-if.end:                                           ; preds = %entry
-  %1 = bitcast i32* %intime to i8*
-  %call1 = call i64 @fwrite(i8* %1, i64 4, i64 1, %struct._IO_FILE* %f) #5
-  %cmp2 = icmp eq i64 %call1, 1
-  br i1 %cmp2, label %if.end4, label %return
+; <label>:2                                       ; preds = %0
+  tail call void @__assert_rtn(i8* getelementptr inbounds ([15 x i8]* @__func__.WriteRTPPacket, i64 0, i64 0), i8* getelementptr inbounds ([63 x i8]* @.str, i64 0, i64 0), i32 135, i8* getelementptr inbounds ([10 x i8]* @.str11, i64 0, i64 0)) #5, !dbg !691
+  unreachable, !dbg !691
 
-if.end4:                                          ; preds = %if.end
-  %packet = getelementptr inbounds %struct.RTPpacket_t* %p, i64 0, i32 11
-  %2 = load i8** %packet, align 8, !tbaa !3
-  %3 = load i32* %packlen, align 4, !tbaa !0
-  %conv = zext i32 %3 to i64
-  %call6 = call i64 @fwrite(i8* %2, i64 %conv, i64 1, %struct._IO_FILE* %f) #5
-  %not.cmp7 = icmp ne i64 %call6, 1
-  %. = sext i1 %not.cmp7 to i32
-  br label %return
+; <label>:3                                       ; preds = %0
+  %4 = icmp eq %struct.RTPpacket_t* %p, null, !dbg !692
+  br i1 %4, label %5, label %6, !dbg !692, !prof !646
 
-return:                                           ; preds = %if.end4, %if.end, %entry
-  %retval.0 = phi i32 [ -1, %entry ], [ -1, %if.end ], [ %., %if.end4 ]
-  ret i32 %retval.0
+; <label>:5                                       ; preds = %3
+  tail call void @__assert_rtn(i8* getelementptr inbounds ([15 x i8]* @__func__.WriteRTPPacket, i64 0, i64 0), i8* getelementptr inbounds ([63 x i8]* @.str, i64 0, i64 0), i32 136, i8* getelementptr inbounds ([10 x i8]* @.str12, i64 0, i64 0)) #5, !dbg !692
+  unreachable, !dbg !692
+
+; <label>:6                                       ; preds = %3
+  %7 = getelementptr inbounds %struct.RTPpacket_t* %p, i64 0, i32 12, !dbg !693
+  %8 = bitcast i32* %7 to i8*, !dbg !695
+  %9 = tail call i64 @"\01_fwrite"(i8* %8, i64 4, i64 1, %struct.__sFILE* %f) #6, !dbg !696
+  %10 = icmp eq i64 %9, 1, !dbg !697
+  br i1 %10, label %11, label %21, !dbg !698
+
+; <label>:11                                      ; preds = %6
+  %12 = bitcast i32* %intime to i8*, !dbg !699
+  %13 = call i64 @"\01_fwrite"(i8* %12, i64 4, i64 1, %struct.__sFILE* %f) #6, !dbg !701
+  %14 = icmp eq i64 %13, 1, !dbg !702
+  br i1 %14, label %15, label %21, !dbg !703
+
+; <label>:15                                      ; preds = %11
+  %16 = getelementptr inbounds %struct.RTPpacket_t* %p, i64 0, i32 11, !dbg !704
+  %17 = load i8** %16, align 8, !dbg !704, !tbaa !656
+  %18 = load i32* %7, align 4, !dbg !706, !tbaa !685
+  %19 = zext i32 %18 to i64, !dbg !707
+  %20 = call i64 @"\01_fwrite"(i8* %17, i64 %19, i64 1, %struct.__sFILE* %f) #6, !dbg !708
+  %not. = icmp ne i64 %20, 1, !dbg !709
+  %. = sext i1 %not. to i32, !dbg !709
+  br label %21, !dbg !709
+
+; <label>:21                                      ; preds = %15, %11, %6
+  %.0 = phi i32 [ -1, %6 ], [ -1, %11 ], [ %., %15 ]
+  ret i32 %.0, !dbg !710
 }

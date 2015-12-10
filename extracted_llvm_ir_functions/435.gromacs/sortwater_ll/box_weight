@@ -1,33 +1,37 @@
 define internal fastcc float @box_weight(i32* nocapture readonly %nbox, [3 x float]* nocapture readonly %box) #5 {
   %lx = alloca [3 x float], align 4
-  br label %1
+  tail call void @llvm.dbg.value(metadata i32* %nbox, i64 0, metadata !388, metadata !405), !dbg !1260
+  tail call void @llvm.dbg.value(metadata [3 x float]* %box, i64 0, metadata !389, metadata !405), !dbg !1261
+  tail call void @llvm.dbg.declare(metadata [3 x float]* %lx, metadata !390, metadata !405), !dbg !1262
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !391, metadata !405), !dbg !1263
+  br label %1, !dbg !1264
 
 ; <label>:1                                       ; preds = %1, %0
   %indvars.iv = phi i64 [ 0, %0 ], [ %indvars.iv.next, %1 ]
-  %2 = getelementptr inbounds [3 x float]* %box, i64 %indvars.iv, i64 %indvars.iv
-  %3 = load float* %2, align 4, !tbaa !14
-  %4 = getelementptr inbounds i32* %nbox, i64 %indvars.iv
-  %5 = load i32* %4, align 4, !tbaa !18
-  %6 = sitofp i32 %5 to float
-  %7 = fdiv float %3, %6
-  %8 = getelementptr inbounds [3 x float]* %lx, i64 0, i64 %indvars.iv
-  store float %7, float* %8, align 4, !tbaa !14
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %exitcond = icmp eq i64 %indvars.iv.next, 3
-  br i1 %exitcond, label %9, label %1
+  %2 = getelementptr inbounds [3 x float]* %box, i64 %indvars.iv, i64 %indvars.iv, !dbg !1266
+  %3 = load float* %2, align 4, !dbg !1266, !tbaa !533
+  %4 = getelementptr inbounds i32* %nbox, i64 %indvars.iv, !dbg !1268
+  %5 = load i32* %4, align 4, !dbg !1268, !tbaa !596
+  %6 = sitofp i32 %5 to float, !dbg !1268
+  %7 = fdiv float %3, %6, !dbg !1269
+  %8 = getelementptr inbounds [3 x float]* %lx, i64 0, i64 %indvars.iv, !dbg !1270
+  store float %7, float* %8, align 4, !dbg !1271, !tbaa !533
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !1264
+  %exitcond = icmp eq i64 %indvars.iv.next, 3, !dbg !1264
+  br i1 %exitcond, label %9, label %1, !dbg !1264
 
 ; <label>:9                                       ; preds = %1
-  %10 = getelementptr inbounds [3 x float]* %lx, i64 0, i64 0
-  %11 = load float* %10, align 4, !tbaa !14
-  %12 = getelementptr inbounds [3 x float]* %lx, i64 0, i64 1
-  %13 = load float* %12, align 4, !tbaa !14
-  %14 = fmul float %11, %13
-  %15 = getelementptr inbounds [3 x float]* %lx, i64 0, i64 2
-  %16 = load float* %15, align 4, !tbaa !14
-  %17 = fmul float %11, %16
-  %18 = fadd float %14, %17
-  %19 = fmul float %13, %16
-  %20 = fadd float %19, %18
-  %21 = fmul float %20, 2.000000e+00
-  ret float %21
+  %10 = getelementptr inbounds [3 x float]* %lx, i64 0, i64 0, !dbg !1272
+  %11 = load float* %10, align 4, !dbg !1272, !tbaa !533
+  %12 = getelementptr inbounds [3 x float]* %lx, i64 0, i64 1, !dbg !1273
+  %13 = load float* %12, align 4, !dbg !1273, !tbaa !533
+  %14 = fmul float %11, %13, !dbg !1274
+  %15 = getelementptr inbounds [3 x float]* %lx, i64 0, i64 2, !dbg !1275
+  %16 = load float* %15, align 4, !dbg !1275, !tbaa !533
+  %17 = fmul float %11, %16, !dbg !1276
+  %18 = fadd float %14, %17, !dbg !1277
+  %19 = fmul float %13, %16, !dbg !1278
+  %20 = fadd float %19, %18, !dbg !1279
+  %21 = fmul float %20, 2.000000e+00, !dbg !1280
+  ret float %21, !dbg !1281
 }

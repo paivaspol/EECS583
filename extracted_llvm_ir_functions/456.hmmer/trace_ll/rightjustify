@@ -1,67 +1,73 @@
 define internal fastcc void @rightjustify(i8* nocapture %s, i32 %n) #0 {
-entry:
-  %sub = add nsw i32 %n, -1
-  %cmp6165 = icmp sgt i32 %n, 0
-  br i1 %cmp6165, label %while.body.lr.ph.lr.ph, label %while.cond33.preheader
+  tail call void @llvm.dbg.value(metadata i8* %s, i64 0, metadata !455, metadata !463), !dbg !1315
+  tail call void @llvm.dbg.value(metadata i32 %n, i64 0, metadata !456, metadata !463), !dbg !1316
+  %1 = add nsw i32 %n, -1, !dbg !1317
+  tail call void @llvm.dbg.value(metadata i32 %1, i64 0, metadata !457, metadata !463), !dbg !1318
+  tail call void @llvm.dbg.value(metadata i32 %1, i64 0, metadata !458, metadata !463), !dbg !1319
+  %2 = icmp sgt i32 %n, 0, !dbg !1320
+  br i1 %2, label %.lr.ph4.lr.ph, label %.preheader, !dbg !1321
 
-while.body.lr.ph.lr.ph:                           ; preds = %entry
-  %0 = sext i32 %n to i64
-  br label %while.body.lr.ph
+.lr.ph4.lr.ph:                                    ; preds = %0
+  %3 = sext i32 %n to i64
+  br label %.lr.ph4, !dbg !1321
 
-while.body.lr.ph:                                 ; preds = %while.body.lr.ph.lr.ph, %if.else
-  %indvars.iv73.in = phi i64 [ %0, %while.body.lr.ph.lr.ph ], [ %indvars.iv73, %if.else ]
-  %opos.0.ph67 = phi i32 [ %sub, %while.body.lr.ph.lr.ph ], [ %dec27, %if.else ]
-  %npos.0.ph66 = phi i32 [ %sub, %while.body.lr.ph.lr.ph ], [ %dec30, %if.else ]
-  %indvars.iv73 = add i64 %indvars.iv73.in, -1
-  %1 = sext i32 %opos.0.ph67 to i64
-  br label %while.body
+.lr.ph4:                                          ; preds = %.lr.ph4.lr.ph, %.outer
+  %indvars.iv15.in = phi i64 [ %3, %.lr.ph4.lr.ph ], [ %indvars.iv15, %.outer ]
+  %opos.0.ph7 = phi i32 [ %1, %.lr.ph4.lr.ph ], [ %14, %.outer ]
+  %npos.0.ph6 = phi i32 [ %1, %.lr.ph4.lr.ph ], [ %15, %.outer ]
+  %indvars.iv15 = add i64 %indvars.iv15.in, -1, !dbg !1321
+  %4 = sext i32 %opos.0.ph7 to i64
+  br label %8, !dbg !1321
 
-while.cond33.preheader:                           ; preds = %entry, %if.else, %if.then
-  %npos.0.ph64 = phi i32 [ %npos.0.ph66, %if.then ], [ %sub, %entry ], [ %dec30, %if.else ]
-  %cmp3458 = icmp sgt i32 %npos.0.ph64, -1
-  br i1 %cmp3458, label %while.body36.lr.ph, label %while.end40
+..preheader_crit_edge:                            ; preds = %11
+  %5 = trunc i64 %indvars.iv15 to i32, !dbg !1321
+  br label %.preheader, !dbg !1321
 
-while.body36.lr.ph:                               ; preds = %while.cond33.preheader
-  %2 = sext i32 %npos.0.ph64 to i64
-  br label %while.body36
+.preheader:                                       ; preds = %.outer, %0, %..preheader_crit_edge
+  %npos.0.ph.lcssa = phi i32 [ %5, %..preheader_crit_edge ], [ %1, %0 ], [ %15, %.outer ]
+  %6 = icmp sgt i32 %npos.0.ph.lcssa, -1, !dbg !1322
+  br i1 %6, label %.lr.ph, label %._crit_edge, !dbg !1323
 
-while.body:                                       ; preds = %while.body.lr.ph, %if.then
-  %indvars.iv70 = phi i64 [ %1, %while.body.lr.ph ], [ %indvars.iv.next71, %if.then ]
-  %opos.062 = phi i32 [ %opos.0.ph67, %while.body.lr.ph ], [ %dec, %if.then ]
-  %arrayidx = getelementptr inbounds i8* %s, i64 %indvars.iv70
-  %3 = load i8* %arrayidx, align 1, !tbaa !1
-  switch i8 %3, label %if.else [
-    i8 32, label %if.then
-    i8 46, label %if.then
-    i8 95, label %if.then
-    i8 45, label %if.then
-    i8 126, label %if.then
-  ]
+.lr.ph:                                           ; preds = %.preheader
+  %7 = sext i32 %npos.0.ph.lcssa to i64
+  br label %18, !dbg !1323
 
-if.then:                                          ; preds = %while.body, %while.body, %while.body, %while.body, %while.body
-  %indvars.iv.next71 = add i64 %indvars.iv70, -1
-  %dec = add nsw i32 %opos.062, -1
-  %4 = trunc i64 %indvars.iv70 to i32
-  %cmp = icmp sgt i32 %4, 0
-  br i1 %cmp, label %while.body, label %while.cond33.preheader
+; <label>:8                                       ; preds = %.lr.ph4, %11
+  %indvars.iv13 = phi i64 [ %4, %.lr.ph4 ], [ %indvars.iv.next14, %11 ]
+  %9 = getelementptr inbounds i8* %s, i64 %indvars.iv13, !dbg !1324
+  %10 = load i8* %9, align 1, !dbg !1324, !tbaa !517
+  switch i8 %10, label %.outer [
+    i8 32, label %11
+    i8 46, label %11
+    i8 95, label %11
+    i8 45, label %11
+    i8 126, label %11
+  ], !dbg !1324
 
-if.else:                                          ; preds = %while.body
-  %dec27 = add nsw i32 %opos.062, -1
-  %dec30 = add nsw i32 %npos.0.ph66, -1
-  %arrayidx32 = getelementptr inbounds i8* %s, i64 %indvars.iv73
-  store i8 %3, i8* %arrayidx32, align 1, !tbaa !1
-  %cmp61 = icmp sgt i32 %opos.062, 0
-  br i1 %cmp61, label %while.body.lr.ph, label %while.cond33.preheader
+; <label>:11                                      ; preds = %8, %8, %8, %8, %8
+  %12 = icmp sgt i64 %indvars.iv13, 0, !dbg !1320
+  %indvars.iv.next14 = add nsw i64 %indvars.iv13, -1, !dbg !1321
+  br i1 %12, label %8, label %..preheader_crit_edge, !dbg !1321
 
-while.body36:                                     ; preds = %while.body36.lr.ph, %while.body36
-  %indvars.iv = phi i64 [ %2, %while.body36.lr.ph ], [ %indvars.iv.next, %while.body36 ]
-  %indvars.iv.next = add i64 %indvars.iv, -1
-  %arrayidx39 = getelementptr inbounds i8* %s, i64 %indvars.iv
-  store i8 46, i8* %arrayidx39, align 1, !tbaa !1
-  %5 = trunc i64 %indvars.iv to i32
-  %cmp34 = icmp sgt i32 %5, 0
-  br i1 %cmp34, label %while.body36, label %while.end40
+.outer:                                           ; preds = %8
+  %13 = trunc i64 %indvars.iv13 to i32, !dbg !1327
+  %14 = add nsw i32 %13, -1, !dbg !1327
+  tail call void @llvm.dbg.value(metadata i32 %14, i64 0, metadata !458, metadata !463), !dbg !1319
+  %15 = add nsw i32 %npos.0.ph6, -1, !dbg !1328
+  tail call void @llvm.dbg.value(metadata i32 %15, i64 0, metadata !457, metadata !463), !dbg !1318
+  %16 = getelementptr inbounds i8* %s, i64 %indvars.iv15, !dbg !1329
+  store i8 %10, i8* %16, align 1, !dbg !1330, !tbaa !517
+  %17 = icmp sgt i32 %13, 0, !dbg !1320
+  br i1 %17, label %.lr.ph4, label %.preheader, !dbg !1321
 
-while.end40:                                      ; preds = %while.body36, %while.cond33.preheader
-  ret void
+; <label>:18                                      ; preds = %.lr.ph, %18
+  %indvars.iv = phi i64 [ %7, %.lr.ph ], [ %indvars.iv.next, %18 ]
+  %indvars.iv.next = add nsw i64 %indvars.iv, -1, !dbg !1323
+  %19 = getelementptr inbounds i8* %s, i64 %indvars.iv, !dbg !1331
+  store i8 46, i8* %19, align 1, !dbg !1332, !tbaa !517
+  %20 = icmp sgt i64 %indvars.iv, 0, !dbg !1322
+  br i1 %20, label %18, label %._crit_edge, !dbg !1323
+
+._crit_edge:                                      ; preds = %18, %.preheader
+  ret void, !dbg !1333
 }

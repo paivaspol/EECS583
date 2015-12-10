@@ -1,94 +1,98 @@
 define void @init_mdatoms(%struct.t_mdatoms* nocapture readonly %md, float %lambda, i32 %bFirst) #3 {
-  %1 = fsub float 1.000000e+00, %lambda
-  %2 = icmp eq i32 %bFirst, 0
-  br i1 %2, label %3, label %.thread
+  tail call void @llvm.dbg.value(metadata %struct.t_mdatoms* %md, i64 0, metadata !235, metadata !248), !dbg !639
+  tail call void @llvm.dbg.value(metadata float %lambda, i64 0, metadata !236, metadata !248), !dbg !640
+  tail call void @llvm.dbg.value(metadata i32 %bFirst, i64 0, metadata !237, metadata !248), !dbg !641
+  %1 = fsub float 1.000000e+00, %lambda, !dbg !642
+  tail call void @llvm.dbg.value(metadata float %1, i64 0, metadata !240, metadata !248), !dbg !643
+  %2 = icmp eq i32 %bFirst, 0, !dbg !644
+  br i1 %2, label %3, label %.thread, !dbg !646
 
 .thread:                                          ; preds = %0
-  store float %lambda, float* @init_mdatoms.lambda0, align 4, !tbaa !41
-  br label %.preheader
+  store float %lambda, float* @init_mdatoms.lambda0, align 4, !dbg !647, !tbaa !375
+  br label %.preheader, !dbg !648
 
 ; <label>:3                                       ; preds = %0
-  %4 = load float* @init_mdatoms.lambda0, align 4, !tbaa !41
-  %5 = fsub float %4, %lambda
-  %fabsf = tail call float @fabsf(float %5) #4
-  %6 = fpext float %fabsf to double
-  %7 = fcmp ogt double %6, 1.200000e-38
-  br i1 %7, label %.preheader, label %.loopexit
+  %4 = load float* @init_mdatoms.lambda0, align 4, !dbg !650, !tbaa !375
+  %5 = fsub float %4, %lambda, !dbg !651
+  %fabsf = tail call float @fabsf(float %5) #4, !dbg !652
+  %6 = fpext float %fabsf to double, !dbg !652
+  %7 = fcmp ogt double %6, 1.200000e-38, !dbg !653
+  br i1 %7, label %.preheader, label %.loopexit, !dbg !654
 
 .preheader:                                       ; preds = %3, %.thread
-  %.ph.in = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 1
-  %.ph = load i32* %.ph.in, align 4
-  %8 = icmp sgt i32 %.ph, 0
-  br i1 %8, label %.lr.ph, label %.loopexit
+  %.ph.in = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 1, !dbg !655
+  %.ph = load i32* %.ph.in, align 4, !dbg !655
+  %8 = icmp sgt i32 %.ph, 0, !dbg !656
+  br i1 %8, label %.lr.ph, label %.loopexit, !dbg !660
 
 .lr.ph:                                           ; preds = %.preheader
-  %9 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 9
-  %10 = load i32** %9, align 8, !tbaa !38
-  %11 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 2
-  %12 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 3
-  %13 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 4
-  %14 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 5
-  %15 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 6
-  %16 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 7
-  %17 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 8
-  %18 = add i32 %.ph, -1
-  br label %19
+  %9 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 9, !dbg !661
+  %10 = load i32** %9, align 8, !dbg !661, !tbaa !344
+  %11 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 2, !dbg !664
+  %12 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 3, !dbg !666
+  %13 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 4, !dbg !667
+  %14 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 5, !dbg !668
+  %15 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 6, !dbg !670
+  %16 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 7, !dbg !671
+  %17 = getelementptr inbounds %struct.t_mdatoms* %md, i64 0, i32 8, !dbg !672
+  %18 = add i32 %.ph, -1, !dbg !660
+  br label %19, !dbg !660
 
 ; <label>:19                                      ; preds = %55, %.lr.ph
   %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %55 ]
-  %20 = getelementptr inbounds i32* %10, i64 %indvars.iv
-  %21 = load i32* %20, align 4, !tbaa !49
-  %22 = or i32 %21, %bFirst
-  %23 = icmp eq i32 %22, 0
-  br i1 %23, label %55, label %24
+  %20 = getelementptr inbounds i32* %10, i64 %indvars.iv, !dbg !673
+  %21 = load i32* %20, align 4, !dbg !673, !tbaa !428
+  %22 = or i32 %21, %bFirst, !dbg !674
+  %23 = icmp eq i32 %22, 0, !dbg !674
+  br i1 %23, label %55, label %24, !dbg !674
 
 ; <label>:24                                      ; preds = %19
-  %25 = load float** %11, align 8, !tbaa !20
-  %26 = getelementptr inbounds float* %25, i64 %indvars.iv
-  %27 = load float* %26, align 4, !tbaa !41
-  %28 = fmul float %1, %27
-  %29 = load float** %12, align 8, !tbaa !21
-  %30 = getelementptr inbounds float* %29, i64 %indvars.iv
-  %31 = load float* %30, align 4, !tbaa !41
-  %32 = fmul float %31, %lambda
-  %33 = fadd float %28, %32
-  %34 = load float** %13, align 8, !tbaa !22
-  %35 = getelementptr inbounds float* %34, i64 %indvars.iv
-  store float %33, float* %35, align 4, !tbaa !41
-  %36 = load float** %14, align 8, !tbaa !23
-  %37 = getelementptr inbounds float* %36, i64 %indvars.iv
-  %38 = load float* %37, align 4, !tbaa !41
-  %39 = fpext float %38 to double
-  %40 = fcmp ogt double %39, 0x39B64F86CB9CEFB1
-  br i1 %40, label %41, label %43
+  %25 = load float** %11, align 8, !dbg !664, !tbaa !308
+  %26 = getelementptr inbounds float* %25, i64 %indvars.iv, !dbg !675
+  %27 = load float* %26, align 4, !dbg !675, !tbaa !375
+  %28 = fmul float %1, %27, !dbg !676
+  %29 = load float** %12, align 8, !dbg !666, !tbaa !310
+  %30 = getelementptr inbounds float* %29, i64 %indvars.iv, !dbg !677
+  %31 = load float* %30, align 4, !dbg !677, !tbaa !375
+  %32 = fmul float %31, %lambda, !dbg !678
+  %33 = fadd float %28, %32, !dbg !679
+  %34 = load float** %13, align 8, !dbg !667, !tbaa !312
+  %35 = getelementptr inbounds float* %34, i64 %indvars.iv, !dbg !680
+  store float %33, float* %35, align 4, !dbg !681, !tbaa !375
+  %36 = load float** %14, align 8, !dbg !668, !tbaa !314
+  %37 = getelementptr inbounds float* %36, i64 %indvars.iv, !dbg !682
+  %38 = load float* %37, align 4, !dbg !682, !tbaa !375
+  %39 = fpext float %38 to double, !dbg !682
+  %40 = fcmp ogt double %39, 0x39B64F86CB9CEFB1, !dbg !683
+  br i1 %40, label %41, label %43, !dbg !684
 
 ; <label>:41                                      ; preds = %24
-  %42 = fdiv float 1.000000e+00, %33
-  store float %42, float* %37, align 4, !tbaa !41
-  br label %43
+  %42 = fdiv float 1.000000e+00, %33, !dbg !685
+  store float %42, float* %37, align 4, !dbg !686, !tbaa !375
+  br label %43, !dbg !687
 
 ; <label>:43                                      ; preds = %41, %24
-  %44 = load float** %15, align 8, !tbaa !24
-  %45 = getelementptr inbounds float* %44, i64 %indvars.iv
-  %46 = load float* %45, align 4, !tbaa !41
-  %47 = fmul float %1, %46
-  %48 = load float** %16, align 8, !tbaa !25
-  %49 = getelementptr inbounds float* %48, i64 %indvars.iv
-  %50 = load float* %49, align 4, !tbaa !41
-  %51 = fmul float %50, %lambda
-  %52 = fadd float %47, %51
-  %53 = load float** %17, align 8, !tbaa !26
-  %54 = getelementptr inbounds float* %53, i64 %indvars.iv
-  store float %52, float* %54, align 4, !tbaa !41
-  br label %55
+  %44 = load float** %15, align 8, !dbg !670, !tbaa !316
+  %45 = getelementptr inbounds float* %44, i64 %indvars.iv, !dbg !688
+  %46 = load float* %45, align 4, !dbg !688, !tbaa !375
+  %47 = fmul float %1, %46, !dbg !689
+  %48 = load float** %16, align 8, !dbg !671, !tbaa !318
+  %49 = getelementptr inbounds float* %48, i64 %indvars.iv, !dbg !690
+  %50 = load float* %49, align 4, !dbg !690, !tbaa !375
+  %51 = fmul float %50, %lambda, !dbg !691
+  %52 = fadd float %47, %51, !dbg !692
+  %53 = load float** %17, align 8, !dbg !672, !tbaa !320
+  %54 = getelementptr inbounds float* %53, i64 %indvars.iv, !dbg !693
+  store float %52, float* %54, align 4, !dbg !694, !tbaa !375
+  br label %55, !dbg !695
 
 ; <label>:55                                      ; preds = %19, %43
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %18
-  br i1 %exitcond, label %.loopexit, label %19
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !660
+  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !660
+  %exitcond = icmp eq i32 %lftr.wideiv, %18, !dbg !660
+  br i1 %exitcond, label %.loopexit, label %19, !dbg !660
 
 .loopexit:                                        ; preds = %55, %.preheader, %3
-  store float %lambda, float* @init_mdatoms.lambda0, align 4, !tbaa !41
-  ret void
+  store float %lambda, float* @init_mdatoms.lambda0, align 4, !dbg !696, !tbaa !375
+  ret void, !dbg !697
 }

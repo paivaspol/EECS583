@@ -1,42 +1,48 @@
-define i8* @get_estr(i32* nocapture %ninp, %struct.t_inpfile** %inp, i8* %name, i8* %def) #1 {
+define i8* @get_estr(i32* nocapture %ninp, %struct.t_inpfile** %inp, i8* %name, i8* %def) #2 {
   %buf = alloca [32 x i8], align 16
-  %1 = tail call fastcc i32 @get_einp(i32* %ninp, %struct.t_inpfile** %inp, i8* %name) #8
-  %2 = icmp eq i32 %1, -1
-  br i1 %2, label %3, label %20
+  tail call void @llvm.dbg.value(metadata i32* %ninp, i64 0, metadata !150, metadata !209), !dbg !485
+  tail call void @llvm.dbg.value(metadata %struct.t_inpfile** %inp, i64 0, metadata !151, metadata !209), !dbg !486
+  tail call void @llvm.dbg.value(metadata i8* %name, i64 0, metadata !152, metadata !209), !dbg !487
+  tail call void @llvm.dbg.value(metadata i8* %def, i64 0, metadata !153, metadata !209), !dbg !488
+  tail call void @llvm.dbg.declare(metadata [32 x i8]* %buf, metadata !154, metadata !209), !dbg !489
+  %1 = tail call fastcc i32 @get_einp(i32* %ninp, %struct.t_inpfile** %inp, i8* %name) #9, !dbg !490
+  tail call void @llvm.dbg.value(metadata i32 %1, i64 0, metadata !155, metadata !209), !dbg !491
+  %2 = icmp eq i32 %1, -1, !dbg !492
+  br i1 %2, label %3, label %20, !dbg !494
 
 ; <label>:3                                       ; preds = %0
-  %4 = icmp eq i8* %def, null
-  br i1 %4, label %14, label %5
+  %4 = icmp eq i8* %def, null, !dbg !495
+  br i1 %4, label %14, label %5, !dbg !498
 
 ; <label>:5                                       ; preds = %3
-  %6 = getelementptr inbounds [32 x i8]* %buf, i64 0, i64 0
-  %7 = call i32 (i8*, i32, i64, i8*, ...)* @__sprintf_chk(i8* %6, i32 0, i64 32, i8* getelementptr inbounds ([3 x i8]* @.str14, i64 0, i64 0), i8* %def) #7
-  %8 = call i8* @strdup(i8* %6) #7
-  %9 = load i32* %ninp, align 4, !tbaa !6
-  %10 = add nsw i32 %9, -1
-  %11 = sext i32 %10 to i64
-  %12 = load %struct.t_inpfile** %inp, align 8, !tbaa !2
-  %13 = getelementptr inbounds %struct.t_inpfile* %12, i64 %11, i32 3
-  store i8* %8, i8** %13, align 8, !tbaa !13
-  br label %25
+  %6 = getelementptr inbounds [32 x i8]* %buf, i64 0, i64 0, !dbg !499
+  %7 = call i32 (i8*, i32, i64, i8*, ...)* @__sprintf_chk(i8* %6, i32 0, i64 32, i8* getelementptr inbounds ([3 x i8]* @.str14, i64 0, i64 0), i8* %def) #8, !dbg !499
+  %8 = call i8* @strdup(i8* %6) #8, !dbg !501
+  %9 = load i32* %ninp, align 4, !dbg !502, !tbaa !232
+  %10 = add nsw i32 %9, -1, !dbg !503
+  %11 = sext i32 %10 to i64, !dbg !504
+  %12 = load %struct.t_inpfile** %inp, align 8, !dbg !505, !tbaa !225
+  %13 = getelementptr inbounds %struct.t_inpfile* %12, i64 %11, i32 3, !dbg !506
+  store i8* %8, i8** %13, align 8, !dbg !507, !tbaa !326
+  br label %25, !dbg !508
 
 ; <label>:14                                      ; preds = %3
-  %15 = load i32* %ninp, align 4, !tbaa !6
-  %16 = add nsw i32 %15, -1
-  %17 = sext i32 %16 to i64
-  %18 = load %struct.t_inpfile** %inp, align 8, !tbaa !2
-  %19 = getelementptr inbounds %struct.t_inpfile* %18, i64 %17, i32 3
-  store i8* null, i8** %19, align 8, !tbaa !13
+  %15 = load i32* %ninp, align 4, !dbg !509, !tbaa !232
+  %16 = add nsw i32 %15, -1, !dbg !510
+  %17 = sext i32 %16 to i64, !dbg !511
+  %18 = load %struct.t_inpfile** %inp, align 8, !dbg !512, !tbaa !225
+  %19 = getelementptr inbounds %struct.t_inpfile* %18, i64 %17, i32 3, !dbg !513
+  store i8* null, i8** %19, align 8, !dbg !514, !tbaa !326
   br label %25
 
 ; <label>:20                                      ; preds = %0
-  %21 = sext i32 %1 to i64
-  %22 = load %struct.t_inpfile** %inp, align 8, !tbaa !2
-  %23 = getelementptr inbounds %struct.t_inpfile* %22, i64 %21, i32 3
-  %24 = load i8** %23, align 8, !tbaa !13
-  br label %25
+  %21 = sext i32 %1 to i64, !dbg !515
+  %22 = load %struct.t_inpfile** %inp, align 8, !dbg !516, !tbaa !225
+  %23 = getelementptr inbounds %struct.t_inpfile* %22, i64 %21, i32 3, !dbg !517
+  %24 = load i8** %23, align 8, !dbg !517, !tbaa !326
+  br label %25, !dbg !518
 
 ; <label>:25                                      ; preds = %5, %14, %20
   %.0 = phi i8* [ %24, %20 ], [ null, %14 ], [ %def, %5 ]
-  ret i8* %.0
+  ret i8* %.0, !dbg !519
 }

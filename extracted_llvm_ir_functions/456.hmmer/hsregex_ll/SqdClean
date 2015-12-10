@@ -1,25 +1,24 @@
 define void @SqdClean() #0 {
-entry:
-  br label %for.body
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !48, metadata !274), !dbg !533
+  br label %1, !dbg !534
 
-for.body:                                         ; preds = %for.inc, %entry
-  %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %for.inc ]
-  %arrayidx = getelementptr inbounds [10 x i8*]* @sqd_parse, i64 0, i64 %indvars.iv
-  %0 = load i8** %arrayidx, align 8, !tbaa !0
-  %cmp1 = icmp eq i8* %0, null
-  br i1 %cmp1, label %for.inc, label %if.then
+; <label>:1                                       ; preds = %6, %0
+  %indvars.iv = phi i64 [ 0, %0 ], [ %indvars.iv.next, %6 ]
+  %2 = getelementptr inbounds [10 x i8*]* @sqd_parse, i64 0, i64 %indvars.iv, !dbg !536
+  %3 = load i8** %2, align 8, !dbg !536, !tbaa !288
+  %4 = icmp eq i8* %3, null, !dbg !539
+  br i1 %4, label %6, label %5, !dbg !540
 
-if.then:                                          ; preds = %for.body
-  tail call void @free(i8* %0) #9
-  store i8* null, i8** %arrayidx, align 8, !tbaa !0
-  br label %for.inc
+; <label>:5                                       ; preds = %1
+  tail call void @free(i8* %3) #9, !dbg !541
+  store i8* null, i8** %2, align 8, !dbg !543, !tbaa !288
+  br label %6, !dbg !544
 
-for.inc:                                          ; preds = %for.body, %if.then
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, 10
-  br i1 %exitcond, label %for.end, label %for.body
+; <label>:6                                       ; preds = %1, %5
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !534
+  %exitcond = icmp eq i64 %indvars.iv.next, 10, !dbg !534
+  br i1 %exitcond, label %7, label %1, !dbg !534
 
-for.end:                                          ; preds = %for.inc
-  ret void
+; <label>:7                                       ; preds = %6
+  ret void, !dbg !545
 }

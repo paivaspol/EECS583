@@ -1,17 +1,18 @@
 define void @DenseMtx_free(%struct._DenseMtx* %mtx) #0 {
-entry:
-  %cmp = icmp eq %struct._DenseMtx* %mtx, null
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata %struct._DenseMtx* %mtx, i64 0, metadata !54, metadata !63), !dbg !116
+  %1 = icmp eq %struct._DenseMtx* %mtx, null, !dbg !117
+  br i1 %1, label %2, label %5, !dbg !119
 
-if.then:                                          ; preds = %entry
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([47 x i8]* @.str4, i64 0, i64 0), %struct._DenseMtx* null) #5
-  tail call void @exit(i32 -1) #6
-  unreachable
+; <label>:2                                       ; preds = %0
+  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !120, !tbaa !68
+  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([47 x i8]* @.str4, i64 0, i64 0), %struct._DenseMtx* null) #6, !dbg !122
+  tail call void @exit(i32 -1) #7, !dbg !123
+  unreachable, !dbg !123
 
-if.end:                                           ; preds = %entry
-  tail call void @DenseMtx_clearData(%struct._DenseMtx* %mtx) #7
-  %1 = bitcast %struct._DenseMtx* %mtx to i8*
-  tail call void @free(i8* %1) #5
-  ret void
+; <label>:5                                       ; preds = %0
+  tail call void @DenseMtx_clearData(%struct._DenseMtx* %mtx) #8, !dbg !124
+  %6 = bitcast %struct._DenseMtx* %mtx to i8*, !dbg !125
+  tail call void @free(i8* %6) #8, !dbg !125
+  tail call void @llvm.dbg.value(metadata %struct._DenseMtx* null, i64 0, metadata !54, metadata !63), !dbg !116
+  ret void, !dbg !128
 }

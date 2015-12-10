@@ -1,70 +1,78 @@
 define i32 @CCTKi_AddGH(%struct.tFleshConfig* nocapture %config, i32 %convergence_level, %struct.cGH* %GH) #1 {
-  %1 = getelementptr inbounds %struct.tFleshConfig* %config, i64 0, i32 2
-  %2 = load i32* %1, align 4, !tbaa !2
-  %3 = icmp eq i32 %2, 0
+  tail call void @llvm.dbg.value(metadata %struct.tFleshConfig* %config, i64 0, metadata !64, metadata !77), !dbg !78
+  tail call void @llvm.dbg.value(metadata i32 %convergence_level, i64 0, metadata !65, metadata !77), !dbg !79
+  tail call void @llvm.dbg.value(metadata %struct.cGH* %GH, i64 0, metadata !66, metadata !77), !dbg !80
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !67, metadata !77), !dbg !81
+  %1 = getelementptr inbounds %struct.tFleshConfig* %config, i64 0, i32 2, !dbg !82
+  %2 = load i32* %1, align 4, !dbg !82, !tbaa !84
+  %3 = icmp eq i32 %2, 0, !dbg !90
   %4 = add i32 %2, -1
-  %5 = icmp ult i32 %4, %convergence_level
-  %or.cond = or i1 %3, %5
-  %6 = getelementptr inbounds %struct.tFleshConfig* %config, i64 0, i32 1
-  br i1 %or.cond, label %7, label %._crit_edge6
+  %5 = icmp ult i32 %4, %convergence_level, !dbg !91
+  %or.cond = or i1 %3, %5, !dbg !92
+  %6 = getelementptr inbounds %struct.tFleshConfig* %config, i64 0, i32 1, !dbg !93
+  br i1 %or.cond, label %7, label %._crit_edge6, !dbg !92
 
 ; <label>:7                                       ; preds = %0
-  %8 = bitcast %struct.cGH*** %6 to i8**
-  %9 = load i8** %8, align 8, !tbaa !8
-  %10 = add i32 %convergence_level, 1
-  %11 = zext i32 %10 to i64
-  %12 = shl nuw nsw i64 %11, 3
-  %13 = tail call i8* @realloc(i8* %9, i64 %12) #4
-  %14 = icmp eq i8* %13, null
-  br i1 %14, label %.thread3, label %15
+  %8 = bitcast %struct.cGH*** %6 to i8**, !dbg !93
+  %9 = load i8** %8, align 8, !dbg !93, !tbaa !95
+  %10 = add i32 %convergence_level, 1, !dbg !96
+  %11 = zext i32 %10 to i64, !dbg !97
+  %12 = shl nuw nsw i64 %11, 3, !dbg !98
+  %13 = tail call i8* @realloc(i8* %9, i64 %12) #5, !dbg !99
+  %14 = icmp eq i8* %13, null, !dbg !100
+  br i1 %14, label %.thread3, label %15, !dbg !102
 
 ; <label>:15                                      ; preds = %7
-  store i8* %13, i8** %8, align 8, !tbaa !8
-  %16 = load i32* %1, align 4, !tbaa !2
-  %17 = icmp ult i32 %16, %10
-  br i1 %17, label %.lr.ph, label %._crit_edge
+  store i8* %13, i8** %8, align 8, !dbg !103, !tbaa !95
+  %16 = load i32* %1, align 4, !dbg !105, !tbaa !84
+  tail call void @llvm.dbg.value(metadata i32 %16, i64 0, metadata !68, metadata !77), !dbg !107
+  %17 = icmp ult i32 %16, %10, !dbg !108
+  br i1 %17, label %.lr.ph, label %._crit_edge, !dbg !110
 
 .lr.ph:                                           ; preds = %15
   %18 = bitcast i8* %13 to %struct.cGH**
   %19 = zext i32 %16 to i64
-  %20 = getelementptr inbounds %struct.cGH** %18, i64 %19
-  store %struct.cGH* null, %struct.cGH** %20, align 8, !tbaa !9
-  %exitcond8 = icmp eq i32 %16, %convergence_level
-  br i1 %exitcond8, label %._crit_edge, label %._crit_edge5
+  %20 = getelementptr inbounds %struct.cGH** %18, i64 %19, !dbg !111
+  store %struct.cGH* null, %struct.cGH** %20, align 8, !dbg !113, !tbaa !114
+  tail call void @llvm.dbg.value(metadata i32 %21, i64 0, metadata !68, metadata !77), !dbg !107
+  %exitcond8 = icmp eq i32 %16, %convergence_level, !dbg !110
+  br i1 %exitcond8, label %._crit_edge, label %._crit_edge5, !dbg !110
 
 ._crit_edge5:                                     ; preds = %.lr.ph, %._crit_edge5
   %i.0410 = phi i32 [ %21, %._crit_edge5 ], [ %16, %.lr.ph ]
   %indvars.iv9 = phi i64 [ %indvars.iv.next, %._crit_edge5 ], [ %19, %.lr.ph ]
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv9, 1
-  %21 = add nuw i32 %i.0410, 1
-  %.pre = load %struct.cGH*** %6, align 8, !tbaa !8
-  %22 = getelementptr inbounds %struct.cGH** %.pre, i64 %indvars.iv.next
-  store %struct.cGH* null, %struct.cGH** %22, align 8, !tbaa !9
-  %exitcond = icmp eq i32 %21, %convergence_level
-  br i1 %exitcond, label %._crit_edge, label %._crit_edge5
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv9, 1, !dbg !110
+  %21 = add nuw i32 %i.0410, 1, !dbg !115
+  %.pre = load %struct.cGH*** %6, align 8, !dbg !116, !tbaa !95
+  %22 = getelementptr inbounds %struct.cGH** %.pre, i64 %indvars.iv.next, !dbg !111
+  store %struct.cGH* null, %struct.cGH** %22, align 8, !dbg !113, !tbaa !114
+  tail call void @llvm.dbg.value(metadata i32 %21, i64 0, metadata !68, metadata !77), !dbg !107
+  %exitcond = icmp eq i32 %21, %convergence_level, !dbg !110
+  br i1 %exitcond, label %._crit_edge, label %._crit_edge5, !dbg !110
 
 ._crit_edge:                                      ; preds = %.lr.ph, %._crit_edge5, %15
-  store i32 %10, i32* %1, align 4, !tbaa !2
-  br label %._crit_edge6
+  store i32 %10, i32* %1, align 4, !dbg !117, !tbaa !84
+  br label %._crit_edge6, !dbg !118
 
 ._crit_edge6:                                     ; preds = %0, %._crit_edge
-  %23 = zext i32 %convergence_level to i64
-  %24 = load %struct.cGH*** %6, align 8, !tbaa !8
-  %25 = getelementptr inbounds %struct.cGH** %24, i64 %23
-  %26 = load %struct.cGH** %25, align 8, !tbaa !9
-  %27 = icmp eq %struct.cGH* %26, null
-  br i1 %27, label %28, label %.thread3
+  %23 = zext i32 %convergence_level to i64, !dbg !119
+  %24 = load %struct.cGH*** %6, align 8, !dbg !121, !tbaa !95
+  %25 = getelementptr inbounds %struct.cGH** %24, i64 %23, !dbg !119
+  %26 = load %struct.cGH** %25, align 8, !dbg !119, !tbaa !114
+  %27 = icmp eq %struct.cGH* %26, null, !dbg !119
+  br i1 %27, label %28, label %.thread3, !dbg !122
 
 ; <label>:28                                      ; preds = %._crit_edge6
-  store %struct.cGH* %GH, %struct.cGH** %25, align 8, !tbaa !9
-  br label %31
+  store %struct.cGH* %GH, %struct.cGH** %25, align 8, !dbg !123, !tbaa !114
+  br label %31, !dbg !125
 
 .thread3:                                         ; preds = %7, %._crit_edge6
-  %29 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !9
-  %30 = tail call i64 @fwrite(i8* getelementptr inbounds ([56 x i8]* @.str, i64 0, i64 0), i64 55, i64 1, %struct.__sFILE* %29)
+  %29 = load %struct.__sFILE** @__stderrp, align 8, !dbg !126, !tbaa !114
+  %30 = tail call i64 @fwrite(i8* getelementptr inbounds ([56 x i8]* @.str, i64 0, i64 0), i64 55, i64 1, %struct.__sFILE* %29), !dbg !128
+  tail call void @llvm.dbg.value(metadata i32 2, i64 0, metadata !67, metadata !77), !dbg !81
   br label %31
 
 ; <label>:31                                      ; preds = %.thread3, %28
   %retval.1 = phi i32 [ 2, %.thread3 ], [ 0, %28 ]
-  ret i32 %retval.1
+  ret i32 %retval.1, !dbg !129
 }

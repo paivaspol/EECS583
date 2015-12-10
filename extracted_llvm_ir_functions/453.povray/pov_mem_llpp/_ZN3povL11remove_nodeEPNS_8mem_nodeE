@@ -1,0 +1,44 @@
+define internal fastcc void @_ZN3povL11remove_nodeEPNS_8mem_nodeE(%"struct.pov::mem_node"* readonly %node) #0 {
+  tail call void @llvm.dbg.value(metadata %"struct.pov::mem_node"* %node, i64 0, metadata !361, metadata !689), !dbg !877
+  %1 = load i64* @_ZN3povL9num_nodesE, align 8, !dbg !878, !tbaa !668
+  %2 = add nsw i64 %1, -1, !dbg !878
+  store i64 %2, i64* @_ZN3povL9num_nodesE, align 8, !dbg !878, !tbaa !668
+  %3 = getelementptr inbounds %"struct.pov::mem_node"* %node, i64 0, i32 1, !dbg !879
+  %4 = load %"struct.pov::mem_node"** %3, align 8, !dbg !879, !tbaa !733
+  %5 = icmp eq %"struct.pov::mem_node"* %4, null, !dbg !881
+  %6 = ptrtoint %"struct.pov::mem_node"* %4 to i64
+  %.pre = getelementptr inbounds %"struct.pov::mem_node"* %node, i64 0, i32 2, !dbg !882
+  br i1 %5, label %._crit_edge, label %7, !dbg !884
+
+; <label>:7                                       ; preds = %0
+  %8 = bitcast %"struct.pov::mem_node"** %.pre to i64*, !dbg !885
+  %9 = load i64* %8, align 8, !dbg !885, !tbaa !740
+  %10 = getelementptr inbounds %"struct.pov::mem_node"* %4, i64 0, i32 2, !dbg !886
+  %11 = bitcast %"struct.pov::mem_node"** %10 to i64*, !dbg !887
+  store i64 %9, i64* %11, align 8, !dbg !887, !tbaa !740
+  br label %._crit_edge, !dbg !888
+
+._crit_edge:                                      ; preds = %0, %7
+  %12 = load %"struct.pov::mem_node"** %.pre, align 8, !dbg !882, !tbaa !740
+  %13 = icmp eq %"struct.pov::mem_node"* %12, null, !dbg !889
+  %14 = ptrtoint %"struct.pov::mem_node"* %12 to i64
+  br i1 %13, label %18, label %15, !dbg !890
+
+; <label>:15                                      ; preds = %._crit_edge
+  %16 = getelementptr inbounds %"struct.pov::mem_node"* %12, i64 0, i32 1, !dbg !891
+  %17 = bitcast %"struct.pov::mem_node"** %16 to i64*, !dbg !892
+  store i64 %6, i64* %17, align 8, !dbg !892, !tbaa !733
+  br label %18, !dbg !893
+
+; <label>:18                                      ; preds = %._crit_edge, %15
+  %19 = load %"struct.pov::mem_node"** @_ZN3povL7memlistE, align 8, !dbg !894, !tbaa !676
+  %20 = icmp eq %"struct.pov::mem_node"* %19, %node, !dbg !896
+  br i1 %20, label %21, label %22, !dbg !897
+
+; <label>:21                                      ; preds = %18
+  store i64 %14, i64* bitcast (%"struct.pov::mem_node"** @_ZN3povL7memlistE to i64*), align 8, !dbg !898, !tbaa !676
+  br label %22, !dbg !900
+
+; <label>:22                                      ; preds = %21, %18
+  ret void, !dbg !901
+}

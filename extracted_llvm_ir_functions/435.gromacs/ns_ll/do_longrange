@@ -1,70 +1,98 @@
-define internal fastcc void @do_longrange(%struct.__sFILE* %log, %struct.t_commrec* %cr, %struct.t_topology* nocapture readonly %top, %struct.t_forcerec* %fr, i32 %ngid, %struct.t_mdatoms* %md, i32 %icg, i32 %jgid, i32 %nlr, i32* nocapture readonly %lr, i64* nocapture readonly %bexcl, i32 %shift, [3 x float]* %x, float* %box_size, %struct.t_nrnb* %nrnb, float %lambda, float* %dvdlambda, %struct.t_groups* nocapture readonly %grps, i32 %bVDWOnly, i32 %bCoulOnly, i32 %bDoForces, i32* nocapture readonly %bHaveLJ) #3 {
-  %1 = icmp ne i32 %bDoForces, 0
-  %2 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 53
-  %3 = getelementptr inbounds %struct.t_groups* %grps, i64 0, i32 0, i32 1, i64 4
-  %4 = getelementptr inbounds %struct.t_groups* %grps, i64 0, i32 0, i32 1, i64 3
-  br label %5
+define internal fastcc void @do_longrange(%struct.__sFILE* %log, %struct.t_commrec* %cr, %struct.t_topology* nocapture readonly %top, %struct.t_forcerec* %fr, i32 %ngid, %struct.t_mdatoms* %md, i32 %icg, i32 %jgid, i32 %nlr, i32* nocapture readonly %lr, i64* nocapture readonly %bexcl, i32 %shift, [3 x float]* %x, float* %box_size, %struct.t_nrnb* %nrnb, float %lambda, float* %dvdlambda, %struct.t_groups* nocapture readonly %grps, i32 %bVDWOnly, i32 %bCoulOnly, i32 %bDoForces, i32* nocapture readonly %bHaveLJ) #4 {
+  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %log, i64 0, metadata !1179, metadata !1411), !dbg !3993
+  tail call void @llvm.dbg.value(metadata %struct.t_commrec* %cr, i64 0, metadata !1180, metadata !1411), !dbg !3994
+  tail call void @llvm.dbg.value(metadata %struct.t_topology* %top, i64 0, metadata !1181, metadata !1411), !dbg !3995
+  tail call void @llvm.dbg.value(metadata %struct.t_forcerec* %fr, i64 0, metadata !1182, metadata !1411), !dbg !3996
+  tail call void @llvm.dbg.value(metadata i32 %ngid, i64 0, metadata !1183, metadata !1411), !dbg !3997
+  tail call void @llvm.dbg.value(metadata %struct.t_mdatoms* %md, i64 0, metadata !1184, metadata !1411), !dbg !3998
+  tail call void @llvm.dbg.value(metadata i32 %icg, i64 0, metadata !1185, metadata !1411), !dbg !3999
+  tail call void @llvm.dbg.value(metadata i32 %jgid, i64 0, metadata !1186, metadata !1411), !dbg !4000
+  tail call void @llvm.dbg.value(metadata i32 %nlr, i64 0, metadata !1187, metadata !1411), !dbg !4001
+  tail call void @llvm.dbg.value(metadata i32* %lr, i64 0, metadata !1188, metadata !1411), !dbg !4002
+  tail call void @llvm.dbg.value(metadata i64* %bexcl, i64 0, metadata !1189, metadata !1411), !dbg !4003
+  tail call void @llvm.dbg.value(metadata i32 %shift, i64 0, metadata !1190, metadata !1411), !dbg !4004
+  tail call void @llvm.dbg.value(metadata [3 x float]* %x, i64 0, metadata !1191, metadata !1411), !dbg !4005
+  tail call void @llvm.dbg.value(metadata float* %box_size, i64 0, metadata !1192, metadata !1411), !dbg !4006
+  tail call void @llvm.dbg.value(metadata %struct.t_nrnb* %nrnb, i64 0, metadata !1193, metadata !1411), !dbg !4007
+  tail call void @llvm.dbg.value(metadata float %lambda, i64 0, metadata !1194, metadata !1411), !dbg !4008
+  tail call void @llvm.dbg.value(metadata float* %dvdlambda, i64 0, metadata !1195, metadata !1411), !dbg !4009
+  tail call void @llvm.dbg.value(metadata %struct.t_groups* %grps, i64 0, metadata !1196, metadata !1411), !dbg !4010
+  tail call void @llvm.dbg.value(metadata i32 %bVDWOnly, i64 0, metadata !1197, metadata !1411), !dbg !4011
+  tail call void @llvm.dbg.value(metadata i32 %bCoulOnly, i64 0, metadata !1198, metadata !1411), !dbg !4012
+  tail call void @llvm.dbg.value(metadata i32 %bDoForces, i64 0, metadata !1199, metadata !1411), !dbg !4013
+  tail call void @llvm.dbg.value(metadata i32* %bHaveLJ, i64 0, metadata !1200, metadata !1411), !dbg !4014
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !1201, metadata !1411), !dbg !4015
+  %1 = icmp ne i32 %bDoForces, 0, !dbg !4016
+  %2 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 53, !dbg !4021
+  %3 = getelementptr inbounds %struct.t_groups* %grps, i64 0, i32 0, i32 1, i64 4, !dbg !4023
+  %4 = getelementptr inbounds %struct.t_groups* %grps, i64 0, i32 0, i32 1, i64 3, !dbg !4024
+  br label %5, !dbg !4025
 
 ; <label>:5                                       ; preds = %reset_nblist.exit, %0
   %indvars.iv = phi i64 [ 0, %0 ], [ %indvars.iv.next, %reset_nblist.exit ]
-  %6 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 50, i64 %indvars.iv, i32 1
-  %7 = load i32* %6, align 4, !tbaa !18
-  %8 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 50, i64 %indvars.iv, i32 2
-  %9 = load i32* %8, align 4, !tbaa !35
-  %10 = add nsw i32 %9, -32
-  %11 = icmp sgt i32 %7, %10
-  %or.cond = or i1 %1, %11
-  br i1 %or.cond, label %12, label %reset_nblist.exit
+  %6 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 50, i64 %indvars.iv, i32 1, !dbg !4026
+  %7 = load i32* %6, align 4, !dbg !4026, !tbaa !1487
+  %8 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 50, i64 %indvars.iv, i32 2, !dbg !4027
+  %9 = load i32* %8, align 4, !dbg !4027, !tbaa !1790
+  %10 = add nsw i32 %9, -32, !dbg !4028
+  %11 = icmp sgt i32 %7, %10, !dbg !4029
+  %or.cond = or i1 %1, %11, !dbg !4030
+  br i1 %or.cond, label %12, label %reset_nblist.exit, !dbg !4030
 
 ; <label>:12                                      ; preds = %5
-  %13 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 50, i64 %indvars.iv
-  tail call fastcc void @close_nblist(%struct.t_nblist* %13) #8
-  %14 = load [3 x float]** %2, align 8, !tbaa !95
-  %15 = load float** %3, align 8, !tbaa !23
-  %16 = load float** %4, align 8, !tbaa !23
-  %17 = trunc i64 %indvars.iv to i32
-  tail call void @do_fnbf(%struct.__sFILE* %log, %struct.t_commrec* %cr, %struct.t_forcerec* %fr, [3 x float]* %x, [3 x float]* %14, %struct.t_mdatoms* %md, float* %15, float* %16, float* %box_size, %struct.t_nrnb* %nrnb, float %lambda, float* %dvdlambda, i32 1, i32 %17) #8
-  store i32 0, i32* %6, align 4, !tbaa !18
-  %18 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 50, i64 %indvars.iv, i32 3
-  store i32 0, i32* %18, align 4, !tbaa !38
-  %19 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 50, i64 %indvars.iv, i32 5
-  store i32 0, i32* %19, align 4, !tbaa !37
-  %20 = load i32* %8, align 4, !tbaa !35
-  %21 = icmp sgt i32 %20, 0
-  br i1 %21, label %22, label %reset_nblist.exit
+  tail call void @llvm.dbg.value(metadata %struct.t_forcerec* %fr, i64 0, metadata !1204, metadata !1411) #8, !dbg !4031
+  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !1205, metadata !1411) #8, !dbg !4033
+  %13 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 50, i64 %indvars.iv, !dbg !4034
+  tail call fastcc void @close_nblist(%struct.t_nblist* %13) #9, !dbg !4035
+  %14 = load [3 x float]** %2, align 8, !dbg !4021, !tbaa !4036
+  %15 = load float** %3, align 8, !dbg !4023, !tbaa !1551
+  %16 = load float** %4, align 8, !dbg !4024, !tbaa !1551
+  %17 = trunc i64 %indvars.iv to i32, !dbg !4037
+  tail call void @do_fnbf(%struct.__sFILE* %log, %struct.t_commrec* %cr, %struct.t_forcerec* %fr, [3 x float]* %x, [3 x float]* %14, %struct.t_mdatoms* %md, float* %15, float* %16, float* %box_size, %struct.t_nrnb* %nrnb, float %lambda, float* %dvdlambda, i32 1, i32 %17) #9, !dbg !4037
+  tail call void @llvm.dbg.value(metadata %struct.t_forcerec* %fr, i64 0, metadata !928, metadata !1411) #8, !dbg !4038
+  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !929, metadata !1411) #8, !dbg !4040
+  tail call void @llvm.dbg.value(metadata %struct.t_nblist* %13, i64 0, metadata !934, metadata !1411), !dbg !4041
+  store i32 0, i32* %6, align 4, !dbg !4043, !tbaa !1487
+  %18 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 50, i64 %indvars.iv, i32 3, !dbg !4044
+  store i32 0, i32* %18, align 4, !dbg !4045, !tbaa !1801
+  %19 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 50, i64 %indvars.iv, i32 5, !dbg !4046
+  store i32 0, i32* %19, align 4, !dbg !4047, !tbaa !1796
+  %20 = load i32* %8, align 4, !dbg !4048, !tbaa !1790
+  %21 = icmp sgt i32 %20, 0, !dbg !4049
+  br i1 %21, label %22, label %reset_nblist.exit, !dbg !4050
 
 ; <label>:22                                      ; preds = %12
-  %23 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 50, i64 %indvars.iv, i32 8
-  %24 = load i32** %23, align 8, !tbaa !42
-  store i32 -1, i32* %24, align 4, !tbaa !17
-  %25 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 50, i64 %indvars.iv, i32 4
-  %26 = load i32* %25, align 4, !tbaa !36
-  %27 = icmp sgt i32 %26, 1
-  br i1 %27, label %28, label %reset_nblist.exit
+  %23 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 50, i64 %indvars.iv, i32 8, !dbg !4051
+  %24 = load i32** %23, align 8, !dbg !4051, !tbaa !1819
+  store i32 -1, i32* %24, align 4, !dbg !4052, !tbaa !1473
+  %25 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 50, i64 %indvars.iv, i32 4, !dbg !4053
+  %26 = load i32* %25, align 4, !dbg !4053, !tbaa !1793
+  %27 = icmp sgt i32 %26, 1, !dbg !4054
+  br i1 %27, label %28, label %reset_nblist.exit, !dbg !4055
 
 ; <label>:28                                      ; preds = %22
-  %29 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 50, i64 %indvars.iv, i32 10
-  %30 = load i32** %29, align 8, !tbaa !41
-  store i32 0, i32* %30, align 4, !tbaa !17
-  %31 = getelementptr inbounds i32* %30, i64 1
-  store i32 0, i32* %31, align 4, !tbaa !17
-  br label %reset_nblist.exit
+  %29 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 50, i64 %indvars.iv, i32 10, !dbg !4056
+  %30 = load i32** %29, align 8, !dbg !4056, !tbaa !1814
+  store i32 0, i32* %30, align 4, !dbg !4057, !tbaa !1473
+  %31 = getelementptr inbounds i32* %30, i64 1, !dbg !4058
+  store i32 0, i32* %31, align 4, !dbg !4059, !tbaa !1473
+  br label %reset_nblist.exit, !dbg !4060
 
 reset_nblist.exit:                                ; preds = %28, %22, %12, %5
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %exitcond = icmp eq i64 %indvars.iv.next, 13
-  br i1 %exitcond, label %32, label %5
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !4025
+  %exitcond = icmp eq i64 %indvars.iv.next, 13, !dbg !4025
+  br i1 %exitcond, label %32, label %5, !dbg !4025
 
 ; <label>:32                                      ; preds = %reset_nblist.exit
-  %33 = icmp eq i32 %bDoForces, 0
-  br i1 %33, label %34, label %37
+  %33 = icmp eq i32 %bDoForces, 0, !dbg !4061
+  br i1 %33, label %34, label %37, !dbg !4063
 
 ; <label>:34                                      ; preds = %32
-  %35 = getelementptr inbounds %struct.t_topology* %top, i64 0, i32 3, i64 0, i32 2
-  %36 = load i32** %35, align 8, !tbaa !50
-  tail call fastcc void @put_in_list(i32* %bHaveLJ, i32 %ngid, %struct.t_mdatoms* %md, i32 %icg, i32 %jgid, i32 %nlr, i32* %lr, i32* %36, i64* %bexcl, i32 %shift, %struct.t_forcerec* %fr, i32 1, i32 %bVDWOnly, i32 %bCoulOnly) #9
-  br label %37
+  %35 = getelementptr inbounds %struct.t_topology* %top, i64 0, i32 3, i64 0, i32 2, !dbg !4064
+  %36 = load i32** %35, align 8, !dbg !4064, !tbaa !1995
+  tail call fastcc void @put_in_list(i32* %bHaveLJ, i32 %ngid, %struct.t_mdatoms* %md, i32 %icg, i32 %jgid, i32 %nlr, i32* %lr, i32* %36, i64* %bexcl, i32 %shift, %struct.t_forcerec* %fr, i32 1, i32 %bVDWOnly, i32 %bCoulOnly) #10, !dbg !4066
+  br label %37, !dbg !4067
 
 ; <label>:37                                      ; preds = %32, %34
-  ret void
+  ret void, !dbg !4068
 }

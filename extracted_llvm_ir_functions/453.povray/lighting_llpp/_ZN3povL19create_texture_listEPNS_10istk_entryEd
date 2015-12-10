@@ -1,0 +1,284 @@
+define internal fastcc i32 @_ZN3povL19create_texture_listEPNS_10istk_entryEd(%"struct.pov::istk_entry"* %Ray_Intersection, double %realNormDir) #0 {
+  %Texture_Count = alloca i32, align 4
+  %Weights = alloca [3 x double], align 16
+  tail call void @llvm.dbg.value(metadata %"struct.pov::istk_entry"* %Ray_Intersection, i64 0, metadata !1455, metadata !2666), !dbg !3357
+  tail call void @llvm.dbg.value(metadata double %realNormDir, i64 0, metadata !1456, metadata !2666), !dbg !3358
+  tail call void @llvm.dbg.value(metadata i8 0, i64 0, metadata !1460, metadata !2666), !dbg !3359
+  tail call void @llvm.dbg.value(metadata i8 0, i64 0, metadata !1461, metadata !2666), !dbg !3360
+  %1 = fcmp ogt double %realNormDir, 0.000000e+00, !dbg !3361
+  br i1 %1, label %2, label %7, !dbg !3363
+
+; <label>:2                                       ; preds = %0
+  %3 = getelementptr inbounds %"struct.pov::istk_entry"* %Ray_Intersection, i64 0, i32 5, !dbg !3364
+  %4 = load %"struct.pov::Object_Struct"** %3, align 8, !dbg !3364, !tbaa !3151
+  %5 = getelementptr inbounds %"struct.pov::Object_Struct"* %4, i64 0, i32 4, !dbg !3365
+  %6 = load %"struct.pov::Texture_Struct"** %5, align 8, !dbg !3365, !tbaa !3366
+  tail call void @llvm.dbg.value(metadata i8 1, i64 0, metadata !1460, metadata !2666), !dbg !3359
+  %not. = icmp ne %"struct.pov::Texture_Struct"* %6, null, !dbg !3367
+  br label %7, !dbg !3367
+
+; <label>:7                                       ; preds = %2, %0
+  %useInteriorTexture.0 = phi i1 [ false, %0 ], [ %not., %2 ]
+  %8 = getelementptr inbounds %"struct.pov::istk_entry"* %Ray_Intersection, i64 0, i32 18, !dbg !3368
+  %9 = bitcast i8** %8 to %"struct.pov::CSG_Struct"**, !dbg !3368
+  %10 = load %"struct.pov::CSG_Struct"** %9, align 8, !dbg !3368, !tbaa !3369
+  tail call void @llvm.dbg.value(metadata %"struct.pov::CSG_Struct"* %10, i64 0, metadata !1462, metadata !2666), !dbg !3370
+  %11 = icmp eq %"struct.pov::CSG_Struct"* %10, null, !dbg !3371
+  %.phi.trans.insert = getelementptr inbounds %"struct.pov::istk_entry"* %Ray_Intersection, i64 0, i32 5
+  %.pre = load %"struct.pov::Object_Struct"** %.phi.trans.insert, align 8, !dbg !3373, !tbaa !3151
+  %.phi.trans.insert2 = getelementptr inbounds %"struct.pov::Object_Struct"* %.pre, i64 0, i32 13
+  %.pre3 = load i32* %.phi.trans.insert2, align 4, !dbg !3373, !tbaa !3160
+  %12 = and i32 %.pre3, 256
+  %13 = icmp eq i32 %12, 0, !dbg !3374
+  %or.cond9 = or i1 %11, %13, !dbg !3375
+  br i1 %or.cond9, label %._crit_edge, label %14, !dbg !3375
+
+; <label>:14                                      ; preds = %7
+  %15 = getelementptr inbounds %"struct.pov::CSG_Struct"* %10, i64 0, i32 0, !dbg !3376
+  %16 = load %"struct.pov::Method_Struct"** %15, align 8, !dbg !3376, !tbaa !3377
+  %17 = icmp eq %"struct.pov::Method_Struct"* %16, @_ZN3pov24CSG_Intersection_MethodsE, !dbg !3379
+  %18 = icmp eq %"struct.pov::Method_Struct"* %16, @_ZN3pov17CSG_Merge_MethodsE, !dbg !3380
+  %or.cond = or i1 %17, %18, !dbg !3381
+  %19 = icmp eq %"struct.pov::Method_Struct"* %16, @_ZN3pov17CSG_Union_MethodsE, !dbg !3382
+  %or.cond1 = or i1 %19, %or.cond, !dbg !3381
+  br i1 %or.cond1, label %20, label %._crit_edge, !dbg !3381
+
+; <label>:20                                      ; preds = %14
+  %21 = getelementptr inbounds %"struct.pov::Object_Struct"* %.pre, i64 0, i32 3, !dbg !3383
+  %22 = load %"struct.pov::Texture_Struct"** %21, align 8, !dbg !3383, !tbaa !3386
+  %23 = icmp eq %"struct.pov::Texture_Struct"* %22, null, !dbg !3387
+  br i1 %23, label %24, label %.thread, !dbg !3388
+
+; <label>:24                                      ; preds = %20
+  %25 = getelementptr inbounds %"struct.pov::istk_entry"* %Ray_Intersection, i64 0, i32 1, i64 0, !dbg !3389
+  %26 = load %"struct.pov::Texture_Struct"*** @_ZN3pov12Texture_ListE, align 8, !dbg !3391, !tbaa !2657
+  %27 = load double** @_ZN3pov11Weight_ListE, align 8, !dbg !3392, !tbaa !2657
+  tail call void @llvm.dbg.value(metadata i32* %Texture_Count, i64 0, metadata !1457, metadata !2666), !dbg !3393
+  call void @_ZN3pov22Determine_CSG_TexturesEPNS_10CSG_StructEPdPiPPNS_14Texture_StructES2_(%"struct.pov::CSG_Struct"* %10, double* %25, i32* %Texture_Count, %"struct.pov::Texture_Struct"** %26, double* %27) #6, !dbg !3394
+  call void @llvm.dbg.value(metadata i32* %Texture_Count, i64 0, metadata !1457, metadata !2666), !dbg !3393
+  br label %165, !dbg !3395
+
+._crit_edge:                                      ; preds = %7, %14
+  %28 = and i32 %.pre3, 256, !dbg !3373
+  %29 = icmp eq i32 %28, 0, !dbg !3373
+  br i1 %29, label %.thread, label %30, !dbg !3396
+
+; <label>:30                                      ; preds = %._crit_edge
+  %31 = getelementptr inbounds %"struct.pov::Object_Struct"* %.pre, i64 0, i32 0, !dbg !3397
+  %32 = load %"struct.pov::Method_Struct"** %31, align 8, !dbg !3397, !tbaa !3152
+  %33 = icmp eq %"struct.pov::Method_Struct"* %32, @_ZN3pov12Blob_MethodsE, !dbg !3399
+  br i1 %33, label %34, label %39, !dbg !3400
+
+; <label>:34                                      ; preds = %30
+  %35 = bitcast %"struct.pov::Object_Struct"* %.pre to %"struct.pov::Blob_Struct"*, !dbg !3401
+  tail call void @llvm.dbg.value(metadata %"struct.pov::Blob_Struct"* %35, i64 0, metadata !1458, metadata !2666), !dbg !3403
+  %36 = getelementptr inbounds %"struct.pov::istk_entry"* %Ray_Intersection, i64 0, i32 1, i64 0, !dbg !3404
+  %37 = load %"struct.pov::Texture_Struct"*** @_ZN3pov12Texture_ListE, align 8, !dbg !3405, !tbaa !2657
+  %38 = load double** @_ZN3pov11Weight_ListE, align 8, !dbg !3406, !tbaa !2657
+  tail call void @llvm.dbg.value(metadata i32* %Texture_Count, i64 0, metadata !1457, metadata !2666), !dbg !3393
+  call void @_ZN3pov23Determine_Blob_TexturesEPNS_11Blob_StructEPdPiPPNS_14Texture_StructES2_(%"struct.pov::Blob_Struct"* %35, double* %36, i32* %Texture_Count, %"struct.pov::Texture_Struct"** %37, double* %38) #6, !dbg !3407
+  %.pre4 = load %"struct.pov::Object_Struct"** %.phi.trans.insert, align 8, !dbg !3408, !tbaa !3151
+  %.phi.trans.insert5 = getelementptr inbounds %"struct.pov::Object_Struct"* %.pre4, i64 0, i32 0
+  %.pre6 = load %"struct.pov::Method_Struct"** %.phi.trans.insert5, align 8, !dbg !3409, !tbaa !3152
+  br label %39, !dbg !3410
+
+; <label>:39                                      ; preds = %34, %30
+  %40 = phi %"struct.pov::Method_Struct"* [ %.pre6, %34 ], [ %32, %30 ]
+  %41 = phi %"struct.pov::Object_Struct"* [ %.pre4, %34 ], [ %.pre, %30 ]
+  %42 = icmp eq %"struct.pov::Method_Struct"* %40, @_ZN3pov12Mesh_MethodsE, !dbg !3411
+  br i1 %42, label %43, label %165, !dbg !3412
+
+; <label>:43                                      ; preds = %39
+  %44 = getelementptr inbounds %"struct.pov::istk_entry"* %Ray_Intersection, i64 0, i32 17, !dbg !3413
+  %45 = bitcast i8** %44 to %"struct.pov::Mesh_Triangle_Struct"**, !dbg !3413
+  %46 = load %"struct.pov::Mesh_Triangle_Struct"** %45, align 8, !dbg !3413, !tbaa !3414
+  call void @llvm.dbg.value(metadata %"struct.pov::Mesh_Triangle_Struct"* %46, i64 0, metadata !1459, metadata !2666), !dbg !3415
+  %47 = getelementptr inbounds %"struct.pov::Mesh_Triangle_Struct"* %46, i64 0, i32 0, !dbg !3416
+  %48 = load i8* %47, align 8, !dbg !3416
+  %49 = and i8 %48, 32, !dbg !3416
+  %50 = icmp eq i8 %49, 0, !dbg !3417
+  br i1 %50, label %132, label %51, !dbg !3418
+
+; <label>:51                                      ; preds = %43
+  call void @llvm.dbg.declare(metadata [3 x double]* %Weights, metadata !1463, metadata !2666), !dbg !3419
+  %52 = getelementptr inbounds [3 x double]* %Weights, i64 0, i64 0, !dbg !3420
+  %53 = getelementptr inbounds %"struct.pov::istk_entry"* %Ray_Intersection, i64 0, i32 1, i64 0, !dbg !3421
+  %54 = bitcast %"struct.pov::Object_Struct"* %41 to %"struct.pov::Mesh_Struct"*, !dbg !3422
+  %55 = call i32 @_ZN3pov16Mesh_InterpolateEPdS0_PNS_11Mesh_StructEPNS_20Mesh_Triangle_StructE(double* %52, double* %53, %"struct.pov::Mesh_Struct"* %54, %"struct.pov::Mesh_Triangle_Struct"* %46) #6, !dbg !3423
+  %56 = getelementptr inbounds %"struct.pov::Mesh_Triangle_Struct"* %46, i64 0, i32 5, !dbg !3424
+  %57 = load i64* %56, align 8, !dbg !3424, !tbaa !3426
+  %58 = icmp sgt i64 %57, -1, !dbg !3428
+  br i1 %58, label %59, label %68, !dbg !3429
+
+; <label>:59                                      ; preds = %51
+  %60 = bitcast %"struct.pov::Object_Struct"** %.phi.trans.insert to %"struct.pov::Mesh_Struct"**, !dbg !3430
+  %61 = load %"struct.pov::Mesh_Struct"** %60, align 8, !dbg !3430, !tbaa !3151
+  %62 = getelementptr inbounds %"struct.pov::Mesh_Struct"* %61, i64 0, i32 16, !dbg !3431
+  %63 = load %"struct.pov::Texture_Struct"*** %62, align 8, !dbg !3431, !tbaa !3432
+  %64 = getelementptr inbounds %"struct.pov::Texture_Struct"** %63, i64 %57, !dbg !3435
+  %65 = bitcast %"struct.pov::Texture_Struct"** %64 to i64*, !dbg !3435
+  %66 = load i64* %65, align 8, !dbg !3435, !tbaa !2657
+  %67 = load i64** bitcast (%"struct.pov::Texture_Struct"*** @_ZN3pov12Texture_ListE to i64**), align 8, !dbg !3436, !tbaa !2657
+  store i64 %66, i64* %67, align 8, !dbg !3437, !tbaa !2657
+  br label %74, !dbg !3436
+
+; <label>:68                                      ; preds = %51
+  %69 = load %"struct.pov::Object_Struct"** %.phi.trans.insert, align 8, !dbg !3438, !tbaa !3151
+  %70 = getelementptr inbounds %"struct.pov::Object_Struct"* %69, i64 0, i32 3, !dbg !3439
+  %71 = bitcast %"struct.pov::Texture_Struct"** %70 to i64*, !dbg !3439
+  %72 = load i64* %71, align 8, !dbg !3439, !tbaa !3386
+  %73 = load i64** bitcast (%"struct.pov::Texture_Struct"*** @_ZN3pov12Texture_ListE to i64**), align 8, !dbg !3440, !tbaa !2657
+  store i64 %72, i64* %73, align 8, !dbg !3441, !tbaa !2657
+  br label %74
+
+; <label>:74                                      ; preds = %68, %59
+  %75 = getelementptr inbounds %"struct.pov::Mesh_Triangle_Struct"* %46, i64 0, i32 6, !dbg !3442
+  %76 = load i64* %75, align 8, !dbg !3442, !tbaa !3444
+  %77 = icmp sgt i64 %76, -1, !dbg !3445
+  br i1 %77, label %78, label %89, !dbg !3446
+
+; <label>:78                                      ; preds = %74
+  %79 = bitcast %"struct.pov::Object_Struct"** %.phi.trans.insert to %"struct.pov::Mesh_Struct"**, !dbg !3447
+  %80 = load %"struct.pov::Mesh_Struct"** %79, align 8, !dbg !3447, !tbaa !3151
+  %81 = getelementptr inbounds %"struct.pov::Mesh_Struct"* %80, i64 0, i32 16, !dbg !3448
+  %82 = load %"struct.pov::Texture_Struct"*** %81, align 8, !dbg !3448, !tbaa !3432
+  %83 = getelementptr inbounds %"struct.pov::Texture_Struct"** %82, i64 %76, !dbg !3449
+  %84 = bitcast %"struct.pov::Texture_Struct"** %83 to i64*, !dbg !3449
+  %85 = load i64* %84, align 8, !dbg !3449, !tbaa !2657
+  %86 = load %"struct.pov::Texture_Struct"*** @_ZN3pov12Texture_ListE, align 8, !dbg !3450, !tbaa !2657
+  %87 = getelementptr inbounds %"struct.pov::Texture_Struct"** %86, i64 1, !dbg !3450
+  %88 = bitcast %"struct.pov::Texture_Struct"** %87 to i64*, !dbg !3451
+  store i64 %85, i64* %88, align 8, !dbg !3451, !tbaa !2657
+  br label %97, !dbg !3450
+
+; <label>:89                                      ; preds = %74
+  %90 = load %"struct.pov::Object_Struct"** %.phi.trans.insert, align 8, !dbg !3452, !tbaa !3151
+  %91 = getelementptr inbounds %"struct.pov::Object_Struct"* %90, i64 0, i32 3, !dbg !3453
+  %92 = bitcast %"struct.pov::Texture_Struct"** %91 to i64*, !dbg !3453
+  %93 = load i64* %92, align 8, !dbg !3453, !tbaa !3386
+  %94 = load %"struct.pov::Texture_Struct"*** @_ZN3pov12Texture_ListE, align 8, !dbg !3454, !tbaa !2657
+  %95 = getelementptr inbounds %"struct.pov::Texture_Struct"** %94, i64 1, !dbg !3454
+  %96 = bitcast %"struct.pov::Texture_Struct"** %95 to i64*, !dbg !3455
+  store i64 %93, i64* %96, align 8, !dbg !3455, !tbaa !2657
+  br label %97
+
+; <label>:97                                      ; preds = %89, %78
+  %98 = getelementptr inbounds %"struct.pov::Mesh_Triangle_Struct"* %46, i64 0, i32 7, !dbg !3456
+  %99 = load i64* %98, align 8, !dbg !3456, !tbaa !3458
+  %100 = icmp sgt i64 %99, -1, !dbg !3459
+  br i1 %100, label %101, label %112, !dbg !3460
+
+; <label>:101                                     ; preds = %97
+  %102 = bitcast %"struct.pov::Object_Struct"** %.phi.trans.insert to %"struct.pov::Mesh_Struct"**, !dbg !3461
+  %103 = load %"struct.pov::Mesh_Struct"** %102, align 8, !dbg !3461, !tbaa !3151
+  %104 = getelementptr inbounds %"struct.pov::Mesh_Struct"* %103, i64 0, i32 16, !dbg !3462
+  %105 = load %"struct.pov::Texture_Struct"*** %104, align 8, !dbg !3462, !tbaa !3432
+  %106 = getelementptr inbounds %"struct.pov::Texture_Struct"** %105, i64 %99, !dbg !3463
+  %107 = bitcast %"struct.pov::Texture_Struct"** %106 to i64*, !dbg !3463
+  %108 = load i64* %107, align 8, !dbg !3463, !tbaa !2657
+  %109 = load %"struct.pov::Texture_Struct"*** @_ZN3pov12Texture_ListE, align 8, !dbg !3464, !tbaa !2657
+  %110 = getelementptr inbounds %"struct.pov::Texture_Struct"** %109, i64 2, !dbg !3464
+  %111 = bitcast %"struct.pov::Texture_Struct"** %110 to i64*, !dbg !3465
+  store i64 %108, i64* %111, align 8, !dbg !3465, !tbaa !2657
+  br label %120, !dbg !3464
+
+; <label>:112                                     ; preds = %97
+  %113 = load %"struct.pov::Object_Struct"** %.phi.trans.insert, align 8, !dbg !3466, !tbaa !3151
+  %114 = getelementptr inbounds %"struct.pov::Object_Struct"* %113, i64 0, i32 3, !dbg !3467
+  %115 = bitcast %"struct.pov::Texture_Struct"** %114 to i64*, !dbg !3467
+  %116 = load i64* %115, align 8, !dbg !3467, !tbaa !3386
+  %117 = load %"struct.pov::Texture_Struct"*** @_ZN3pov12Texture_ListE, align 8, !dbg !3468, !tbaa !2657
+  %118 = getelementptr inbounds %"struct.pov::Texture_Struct"** %117, i64 2, !dbg !3468
+  %119 = bitcast %"struct.pov::Texture_Struct"** %118 to i64*, !dbg !3469
+  store i64 %116, i64* %119, align 8, !dbg !3469, !tbaa !2657
+  br label %120
+
+; <label>:120                                     ; preds = %112, %101
+  %121 = bitcast [3 x double]* %Weights to i64*, !dbg !3470
+  %122 = load i64* %121, align 16, !dbg !3470, !tbaa !3114
+  %123 = load i64** bitcast (double** @_ZN3pov11Weight_ListE to i64**), align 8, !dbg !3471, !tbaa !2657
+  store i64 %122, i64* %123, align 8, !dbg !3472, !tbaa !3114
+  %124 = getelementptr inbounds [3 x double]* %Weights, i64 0, i64 1, !dbg !3473
+  %125 = bitcast double* %124 to i64*, !dbg !3473
+  %126 = load i64* %125, align 8, !dbg !3473, !tbaa !3114
+  %127 = getelementptr inbounds i64* %123, i64 1, !dbg !3474
+  store i64 %126, i64* %127, align 8, !dbg !3475, !tbaa !3114
+  %128 = getelementptr inbounds [3 x double]* %Weights, i64 0, i64 2, !dbg !3476
+  %129 = bitcast double* %128 to i64*, !dbg !3476
+  %130 = load i64* %129, align 16, !dbg !3476, !tbaa !3114
+  %131 = getelementptr inbounds i64* %123, i64 2, !dbg !3477
+  store i64 %130, i64* %131, align 8, !dbg !3478, !tbaa !3114
+  call void @llvm.dbg.value(metadata i32 3, i64 0, metadata !1457, metadata !2666), !dbg !3393
+  store i32 3, i32* %Texture_Count, align 4, !dbg !3479, !tbaa !2664
+  br label %165, !dbg !3480
+
+; <label>:132                                     ; preds = %43
+  %133 = getelementptr inbounds %"struct.pov::Mesh_Triangle_Struct"* %46, i64 0, i32 5, !dbg !3481
+  %134 = load i64* %133, align 8, !dbg !3481, !tbaa !3426
+  %135 = icmp sgt i64 %134, -1, !dbg !3484
+  br i1 %135, label %136, label %144, !dbg !3485
+
+; <label>:136                                     ; preds = %132
+  %137 = getelementptr inbounds %"struct.pov::Object_Struct"* %41, i64 1, i32 2, !dbg !3486
+  %138 = bitcast %"struct.pov::Object_Struct"** %137 to %"struct.pov::Texture_Struct"***, !dbg !3486
+  %139 = load %"struct.pov::Texture_Struct"*** %138, align 8, !dbg !3486, !tbaa !3432
+  %140 = getelementptr inbounds %"struct.pov::Texture_Struct"** %139, i64 %134, !dbg !3488
+  %141 = bitcast %"struct.pov::Texture_Struct"** %140 to i64*, !dbg !3488
+  %142 = load i64* %141, align 8, !dbg !3488, !tbaa !2657
+  %143 = load i64** bitcast (%"struct.pov::Texture_Struct"*** @_ZN3pov12Texture_ListE to i64**), align 8, !dbg !3489, !tbaa !2657
+  store i64 %142, i64* %143, align 8, !dbg !3490, !tbaa !2657
+  br label %149, !dbg !3491
+
+; <label>:144                                     ; preds = %132
+  %145 = getelementptr inbounds %"struct.pov::Object_Struct"* %41, i64 0, i32 3, !dbg !3492
+  %146 = bitcast %"struct.pov::Texture_Struct"** %145 to i64*, !dbg !3492
+  %147 = load i64* %146, align 8, !dbg !3492, !tbaa !3386
+  %148 = load i64** bitcast (%"struct.pov::Texture_Struct"*** @_ZN3pov12Texture_ListE to i64**), align 8, !dbg !3494, !tbaa !2657
+  store i64 %147, i64* %148, align 8, !dbg !3495, !tbaa !2657
+  br label %149
+
+; <label>:149                                     ; preds = %144, %136
+  %150 = load double** @_ZN3pov11Weight_ListE, align 8, !dbg !3496, !tbaa !2657
+  store double 1.000000e+00, double* %150, align 8, !dbg !3497, !tbaa !3114
+  call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !1457, metadata !2666), !dbg !3393
+  store i32 1, i32* %Texture_Count, align 4, !dbg !3498, !tbaa !2664
+  br label %165
+
+.thread:                                          ; preds = %20, %._crit_edge
+  %151 = getelementptr inbounds %"struct.pov::Object_Struct"* %.pre, i64 0, i32 3, !dbg !3499
+  %152 = load %"struct.pov::Texture_Struct"** %151, align 8, !dbg !3499, !tbaa !3386
+  %153 = icmp eq %"struct.pov::Texture_Struct"* %152, null, !dbg !3501
+  br i1 %153, label %154, label %155, !dbg !3502
+
+; <label>:154                                     ; preds = %.thread
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !1457, metadata !2666), !dbg !3393
+  store i32 0, i32* %Texture_Count, align 4, !dbg !3503, !tbaa !2664
+  br label %165, !dbg !3505
+
+; <label>:155                                     ; preds = %.thread
+  br i1 %useInteriorTexture.0, label %156, label %161, !dbg !3506
+
+; <label>:156                                     ; preds = %155
+  %157 = getelementptr inbounds %"struct.pov::Object_Struct"* %.pre, i64 0, i32 4, !dbg !3508
+  %158 = bitcast %"struct.pov::Texture_Struct"** %157 to i64*, !dbg !3508
+  %159 = load i64* %158, align 8, !dbg !3508, !tbaa !3366
+  %160 = load i64** bitcast (%"struct.pov::Texture_Struct"*** @_ZN3pov12Texture_ListE to i64**), align 8, !dbg !3511, !tbaa !2657
+  store i64 %159, i64* %160, align 8, !dbg !3512, !tbaa !2657
+  br label %163, !dbg !3513
+
+; <label>:161                                     ; preds = %155
+  %162 = load %"struct.pov::Texture_Struct"*** @_ZN3pov12Texture_ListE, align 8, !dbg !3514, !tbaa !2657
+  store %"struct.pov::Texture_Struct"* %152, %"struct.pov::Texture_Struct"** %162, align 8, !dbg !3516, !tbaa !2657
+  br label %163
+
+; <label>:163                                     ; preds = %161, %156
+  %164 = load double** @_ZN3pov11Weight_ListE, align 8, !dbg !3517, !tbaa !2657
+  store double 1.000000e+00, double* %164, align 8, !dbg !3518, !tbaa !3114
+  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !1457, metadata !2666), !dbg !3393
+  store i32 1, i32* %Texture_Count, align 4, !dbg !3519, !tbaa !2664
+  br label %165
+
+; <label>:165                                     ; preds = %120, %149, %39, %163, %154, %24
+  %.0 = load i32* %Texture_Count, align 4, !dbg !3520
+  ret i32 %.0, !dbg !3521
+}

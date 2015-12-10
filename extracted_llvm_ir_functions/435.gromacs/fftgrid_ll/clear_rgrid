@@ -1,50 +1,55 @@
 define void @clear_rgrid(i32 %nx, i32 %ny, i32 %nz, float*** nocapture readonly %grid) #4 {
-  %1 = icmp sgt i32 %nx, 0
-  br i1 %1, label %.preheader1.lr.ph, label %._crit_edge6
+  tail call void @llvm.dbg.value(metadata i32 %nx, i64 0, metadata !337, metadata !432), !dbg !849
+  tail call void @llvm.dbg.value(metadata i32 %ny, i64 0, metadata !338, metadata !432), !dbg !850
+  tail call void @llvm.dbg.value(metadata i32 %nz, i64 0, metadata !339, metadata !432), !dbg !851
+  tail call void @llvm.dbg.value(metadata float*** %grid, i64 0, metadata !340, metadata !432), !dbg !852
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !341, metadata !432), !dbg !853
+  %1 = icmp sgt i32 %nx, 0, !dbg !854
+  br i1 %1, label %.preheader1.lr.ph, label %._crit_edge6, !dbg !857
 
 .preheader1.lr.ph:                                ; preds = %0
-  %2 = icmp sgt i32 %ny, 0
-  %3 = icmp sgt i32 %nz, 0
-  %4 = add i32 %nz, -1
+  %2 = icmp sgt i32 %ny, 0, !dbg !858
+  %3 = icmp sgt i32 %nz, 0, !dbg !861
+  %4 = add i32 %nz, -1, !dbg !857
   %5 = zext i32 %4 to i64
-  %6 = shl nuw nsw i64 %5, 2
-  %7 = add nuw nsw i64 %6, 4
-  %8 = add i32 %ny, -1
-  %9 = add i32 %nx, -1
-  br label %.preheader1
+  %6 = shl nuw nsw i64 %5, 2, !dbg !857
+  %7 = add nuw nsw i64 %6, 4, !dbg !857
+  %8 = add i32 %ny, -1, !dbg !857
+  %9 = add i32 %nx, -1, !dbg !857
+  br label %.preheader1, !dbg !857
 
 .preheader1:                                      ; preds = %._crit_edge4, %.preheader1.lr.ph
   %indvars.iv7 = phi i64 [ 0, %.preheader1.lr.ph ], [ %indvars.iv.next8, %._crit_edge4 ]
-  br i1 %2, label %.preheader.lr.ph, label %._crit_edge4
+  br i1 %2, label %.preheader.lr.ph, label %._crit_edge4, !dbg !864
 
 .preheader.lr.ph:                                 ; preds = %.preheader1
-  %10 = getelementptr inbounds float*** %grid, i64 %indvars.iv7
-  br label %.preheader
+  %10 = getelementptr inbounds float*** %grid, i64 %indvars.iv7, !dbg !865
+  br label %.preheader, !dbg !864
 
 .preheader:                                       ; preds = %15, %.preheader.lr.ph
   %indvars.iv = phi i64 [ 0, %.preheader.lr.ph ], [ %indvars.iv.next, %15 ]
-  br i1 %3, label %.lr.ph, label %15
+  br i1 %3, label %.lr.ph, label %15, !dbg !866
 
 .lr.ph:                                           ; preds = %.preheader
-  %11 = load float*** %10, align 8, !tbaa !32
-  %12 = getelementptr inbounds float** %11, i64 %indvars.iv
-  %13 = bitcast float** %12 to i8**
-  %14 = load i8** %13, align 8, !tbaa !32
-  call void @llvm.memset.p0i8.i64(i8* %14, i8 0, i64 %7, i32 4, i1 false)
-  br label %15
+  %11 = load float*** %10, align 8, !dbg !865, !tbaa !723
+  %12 = getelementptr inbounds float** %11, i64 %indvars.iv, !dbg !865
+  %13 = bitcast float** %12 to i8**, !dbg !865
+  %14 = load i8** %13, align 8, !dbg !865, !tbaa !723
+  call void @llvm.memset.p0i8.i64(i8* %14, i8 0, i64 %7, i32 4, i1 false), !dbg !867
+  br label %15, !dbg !866
 
 ; <label>:15                                      ; preds = %.lr.ph, %.preheader
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %8
-  br i1 %exitcond, label %._crit_edge4, label %.preheader
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !864
+  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !864
+  %exitcond = icmp eq i32 %lftr.wideiv, %8, !dbg !864
+  br i1 %exitcond, label %._crit_edge4, label %.preheader, !dbg !864
 
 ._crit_edge4:                                     ; preds = %15, %.preheader1
-  %indvars.iv.next8 = add nuw nsw i64 %indvars.iv7, 1
-  %lftr.wideiv9 = trunc i64 %indvars.iv7 to i32
-  %exitcond10 = icmp eq i32 %lftr.wideiv9, %9
-  br i1 %exitcond10, label %._crit_edge6, label %.preheader1
+  %indvars.iv.next8 = add nuw nsw i64 %indvars.iv7, 1, !dbg !857
+  %lftr.wideiv9 = trunc i64 %indvars.iv7 to i32, !dbg !857
+  %exitcond10 = icmp eq i32 %lftr.wideiv9, %9, !dbg !857
+  br i1 %exitcond10, label %._crit_edge6, label %.preheader1, !dbg !857
 
 ._crit_edge6:                                     ; preds = %._crit_edge4, %0
-  ret void
+  ret void, !dbg !868
 }

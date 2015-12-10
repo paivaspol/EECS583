@@ -1,21 +1,41 @@
-define float @do_opt_pppm(%struct.__sFILE* nocapture %log, i32 %bVerbose, %struct.t_inputrec* nocapture readonly %ir, i32 %natoms, [3 x float]* nocapture readonly %x, [3 x float]* nocapture %f, float* nocapture readonly %charge, float* %box, float* nocapture %phi, %struct.t_commrec* %cr, %struct.t_nrnb* nocapture %nrnb, float* nocapture readonly %beta, %struct.t_fftgrid* %grid, i32 %bOld) #1 {
-  %1 = tail call i64 @fwrite(i8* getelementptr inbounds ([26 x i8]* @.str8, i64 0, i64 0), i64 25, i64 1, %struct.__sFILE* %log)
-  %2 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 17
-  %3 = load i32* %2, align 4, !tbaa !22
-  %4 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 18
-  %5 = load i32* %4, align 4, !tbaa !25
-  %6 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 19
-  %7 = load i32* %6, align 4, !tbaa !26
-  %8 = tail call float*** @mk_rgrid(i32 %3, i32 %5, i32 %7) #6
-  %9 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 37
-  %10 = load float* %9, align 4, !tbaa !27
-  %11 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 38
-  %12 = load float* %11, align 4, !tbaa !28
-  tail call void @mk_ghat(%struct.__sFILE* null, i32 %3, i32 %5, i32 %7, float*** %8, float* %box, float %10, float %12, i32 1, i32 %bOld) #6
-  tail call void @clear_fftgrid(%struct.t_fftgrid* %grid) #6
-  tail call void @spread_q(%struct.__sFILE* %log, i32 undef, i32 0, i32 %natoms, [3 x float]* %x, float* %charge, float* %box, %struct.t_fftgrid* %grid, %struct.t_nrnb* %nrnb) #7
-  tail call void @solve_pppm(%struct.__sFILE* undef, %struct.t_commrec* %cr, %struct.t_fftgrid* %grid, float*** %8, float* undef, i32 %bVerbose, %struct.t_nrnb* %nrnb) #7
-  %13 = tail call fastcc float @gather_f(%struct.__sFILE* %log, i32 0, i32 %natoms, [3 x float]* %x, [3 x float]* %f, float* %charge, float* %box, float* %phi, %struct.t_fftgrid* %grid, float* %beta, %struct.t_nrnb* %nrnb) #7
-  tail call void @free_rgrid(float*** %8, i32 %3, i32 %5) #6
-  ret float %13
+define float @do_opt_pppm(%struct.__sFILE* nocapture %log, i32 %bVerbose, %struct.t_inputrec* nocapture readonly %ir, i32 %natoms, [3 x float]* nocapture readonly %x, [3 x float]* nocapture %f, float* nocapture readonly %charge, float* %box, float* nocapture %phi, %struct.t_commrec* %cr, %struct.t_nrnb* nocapture %nrnb, float* nocapture readonly %beta, %struct.t_fftgrid* %grid, i32 %bOld) #2 {
+  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %log, i64 0, metadata !592, metadata !695), !dbg !1522
+  tail call void @llvm.dbg.value(metadata i32 %bVerbose, i64 0, metadata !593, metadata !695), !dbg !1523
+  tail call void @llvm.dbg.value(metadata %struct.t_inputrec* %ir, i64 0, metadata !594, metadata !695), !dbg !1524
+  tail call void @llvm.dbg.value(metadata i32 %natoms, i64 0, metadata !595, metadata !695), !dbg !1525
+  tail call void @llvm.dbg.value(metadata [3 x float]* %x, i64 0, metadata !596, metadata !695), !dbg !1526
+  tail call void @llvm.dbg.value(metadata [3 x float]* %f, i64 0, metadata !597, metadata !695), !dbg !1527
+  tail call void @llvm.dbg.value(metadata float* %charge, i64 0, metadata !598, metadata !695), !dbg !1528
+  tail call void @llvm.dbg.value(metadata float* %box, i64 0, metadata !599, metadata !695), !dbg !1529
+  tail call void @llvm.dbg.value(metadata float* %phi, i64 0, metadata !600, metadata !695), !dbg !1530
+  tail call void @llvm.dbg.value(metadata %struct.t_commrec* %cr, i64 0, metadata !601, metadata !695), !dbg !1531
+  tail call void @llvm.dbg.value(metadata %struct.t_nrnb* %nrnb, i64 0, metadata !602, metadata !695), !dbg !1532
+  tail call void @llvm.dbg.value(metadata float* %beta, i64 0, metadata !603, metadata !695), !dbg !1533
+  tail call void @llvm.dbg.value(metadata %struct.t_fftgrid* %grid, i64 0, metadata !604, metadata !695), !dbg !1534
+  tail call void @llvm.dbg.value(metadata i32 %bOld, i64 0, metadata !605, metadata !695), !dbg !1535
+  tail call void @llvm.dbg.value(metadata float 0.000000e+00, i64 0, metadata !610, metadata !695), !dbg !1536
+  %1 = tail call i64 @fwrite(i8* getelementptr inbounds ([26 x i8]* @.str8, i64 0, i64 0), i64 25, i64 1, %struct.__sFILE* %log), !dbg !1537
+  %2 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 17, !dbg !1538
+  %3 = load i32* %2, align 4, !dbg !1538, !tbaa !1218
+  tail call void @llvm.dbg.value(metadata i32 %3, i64 0, metadata !607, metadata !695), !dbg !1539
+  %4 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 18, !dbg !1540
+  %5 = load i32* %4, align 4, !dbg !1540, !tbaa !1223
+  tail call void @llvm.dbg.value(metadata i32 %5, i64 0, metadata !608, metadata !695), !dbg !1541
+  %6 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 19, !dbg !1542
+  %7 = load i32* %6, align 4, !dbg !1542, !tbaa !1226
+  tail call void @llvm.dbg.value(metadata i32 %7, i64 0, metadata !609, metadata !695), !dbg !1543
+  %8 = tail call float*** @mk_rgrid(i32 %3, i32 %5, i32 %7) #7, !dbg !1544
+  tail call void @llvm.dbg.value(metadata float*** %8, i64 0, metadata !606, metadata !695), !dbg !1545
+  %9 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 37, !dbg !1546
+  %10 = load float* %9, align 4, !dbg !1546, !tbaa !1239
+  %11 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 38, !dbg !1547
+  %12 = load float* %11, align 4, !dbg !1547, !tbaa !1241
+  tail call void @mk_ghat(%struct.__sFILE* null, i32 %3, i32 %5, i32 %7, float*** %8, float* %box, float %10, float %12, i32 1, i32 %bOld) #7, !dbg !1548
+  tail call void @clear_fftgrid(%struct.t_fftgrid* %grid) #7, !dbg !1549
+  tail call void @spread_q(%struct.__sFILE* %log, i32 undef, i32 0, i32 %natoms, [3 x float]* %x, float* %charge, float* %box, %struct.t_fftgrid* %grid, %struct.t_nrnb* %nrnb) #8, !dbg !1550
+  tail call void @solve_pppm(%struct.__sFILE* undef, %struct.t_commrec* %cr, %struct.t_fftgrid* %grid, float*** %8, float* undef, i32 %bVerbose, %struct.t_nrnb* %nrnb) #8, !dbg !1551
+  %13 = tail call fastcc float @gather_f(%struct.__sFILE* %log, i32 0, i32 %natoms, [3 x float]* %x, [3 x float]* %f, float* %charge, float* %box, float* %phi, %struct.t_fftgrid* %grid, float* %beta, %struct.t_nrnb* %nrnb) #8, !dbg !1552
+  tail call void @llvm.dbg.value(metadata float %13, i64 0, metadata !610, metadata !695), !dbg !1536
+  tail call void @free_rgrid(float*** %8, i32 %3, i32 %5) #7, !dbg !1553
+  ret float %13, !dbg !1554
 }

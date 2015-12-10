@@ -1,16 +1,19 @@
-define internal fastcc i32 @add_parg(i32 %npargs, %struct.t_pargs** nocapture %pa, %struct.t_pargs* %pa_add) #1 {
-  %1 = bitcast %struct.t_pargs** %pa to i8**
-  %2 = load i8** %1, align 8, !tbaa !19
-  %3 = add nsw i32 %npargs, 1
-  %4 = shl i32 %3, 5
-  %5 = tail call i8* @save_realloc(i8* getelementptr inbounds ([6 x i8]* @.str80, i64 0, i64 0), i8* getelementptr inbounds ([68 x i8]* @.str6, i64 0, i64 0), i32 390, i8* %2, i32 %4) #12
-  %6 = bitcast i8* %5 to %struct.t_pargs*
-  store i8* %5, i8** %1, align 8, !tbaa !19
-  %7 = sext i32 %npargs to i64
-  %8 = getelementptr inbounds %struct.t_pargs* %6, i64 %7
-  %9 = bitcast %struct.t_pargs* %8 to i8*
-  %10 = bitcast %struct.t_pargs* %pa_add to i8*
-  %11 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %9, i1 false)
-  %12 = tail call i8* @__memcpy_chk(i8* %9, i8* %10, i64 32, i64 %11) #12
-  ret i32 %3
+define internal fastcc i32 @add_parg(i32 %npargs, %struct.t_pargs** nocapture %pa, %struct.t_pargs* %pa_add) #2 {
+  tail call void @llvm.dbg.value(metadata i32 %npargs, i64 0, metadata !778, metadata !852), !dbg !1920
+  tail call void @llvm.dbg.value(metadata %struct.t_pargs** %pa, i64 0, metadata !779, metadata !852), !dbg !1921
+  tail call void @llvm.dbg.value(metadata %struct.t_pargs* %pa_add, i64 0, metadata !780, metadata !852), !dbg !1922
+  %1 = bitcast %struct.t_pargs** %pa to i8**, !dbg !1923
+  %2 = load i8** %1, align 8, !dbg !1923, !tbaa !1132
+  %3 = add nsw i32 %npargs, 1, !dbg !1923
+  %4 = shl i32 %3, 5, !dbg !1923
+  %5 = tail call i8* @save_realloc(i8* getelementptr inbounds ([6 x i8]* @.str80, i64 0, i64 0), i8* getelementptr inbounds ([68 x i8]* @.str6, i64 0, i64 0), i32 390, i8* %2, i32 %4) #12, !dbg !1923
+  %6 = bitcast i8* %5 to %struct.t_pargs*, !dbg !1923
+  store i8* %5, i8** %1, align 8, !dbg !1923, !tbaa !1132
+  %7 = sext i32 %npargs to i64, !dbg !1924
+  %8 = getelementptr inbounds %struct.t_pargs* %6, i64 %7, !dbg !1924
+  %9 = bitcast %struct.t_pargs* %8 to i8*, !dbg !1924
+  %10 = bitcast %struct.t_pargs* %pa_add to i8*, !dbg !1924
+  %11 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %9, i1 false), !dbg !1924
+  %12 = tail call i8* @__memcpy_chk(i8* %9, i8* %10, i64 32, i64 %11) #12, !dbg !1924
+  ret i32 %3, !dbg !1925
 }

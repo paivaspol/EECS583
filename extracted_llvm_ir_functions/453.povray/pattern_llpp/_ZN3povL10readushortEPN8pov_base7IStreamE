@@ -1,0 +1,45 @@
+define internal fastcc zeroext i16 @_ZN3povL10readushortEPN8pov_base7IStreamE(%"class.pov_base::IStream"* nocapture readonly %infile) #0 {
+  tail call void @llvm.dbg.value(metadata %"class.pov_base::IStream"* %infile, i64 0, metadata !1893, metadata !2444), !dbg !6386
+  tail call void @llvm.dbg.value(metadata i16 0, i64 0, metadata !1894, metadata !2444), !dbg !6387
+  tail call void @llvm.dbg.value(metadata i16 0, i64 0, metadata !1895, metadata !2444), !dbg !6388
+  tail call void @llvm.dbg.value(metadata %"class.pov_base::IStream"* %infile, i64 0, metadata !1898, metadata !2444) #5, !dbg !6389
+  %1 = getelementptr inbounds %"class.pov_base::IStream"* %infile, i64 0, i32 0, i32 1, !dbg !6392
+  %2 = load i8* %1, align 1, !dbg !6392, !tbaa !6274, !range !3529
+  %3 = icmp eq i8 %2, 0, !dbg !6392
+  br i1 %3, label %_ZN8pov_base7IStream9Read_ByteEv.exit, label %_ZN8pov_base7IStream9Read_ByteEv.exit.thread, !dbg !6392
+
+_ZN8pov_base7IStream9Read_ByteEv.exit:            ; preds = %0
+  %4 = getelementptr inbounds %"class.pov_base::IStream"* %infile, i64 0, i32 0, i32 2, !dbg !6393
+  %5 = load %struct.__sFILE** %4, align 8, !dbg !6393, !tbaa !6229
+  %6 = tail call i32 @fgetc(%struct.__sFILE* %5) #11, !dbg !6394
+  %sext.mask = and i32 %6, 65535, !dbg !6395
+  %7 = icmp eq i32 %sext.mask, 65535, !dbg !6395
+  br i1 %7, label %_ZN8pov_base7IStream9Read_ByteEv.exit.thread, label %8, !dbg !6396
+
+; <label>:8                                       ; preds = %_ZN8pov_base7IStream9Read_ByteEv.exit
+  tail call void @llvm.dbg.value(metadata %"class.pov_base::IStream"* %infile, i64 0, metadata !1898, metadata !2444) #5, !dbg !6397
+  %9 = load i8* %1, align 1, !dbg !6399, !tbaa !6274, !range !3529
+  %10 = icmp eq i8 %9, 0, !dbg !6399
+  br i1 %10, label %_ZN8pov_base7IStream9Read_ByteEv.exit2, label %_ZN8pov_base7IStream9Read_ByteEv.exit.thread, !dbg !6399
+
+_ZN8pov_base7IStream9Read_ByteEv.exit2:           ; preds = %8
+  %11 = load %struct.__sFILE** %4, align 8, !dbg !6400, !tbaa !6229
+  %12 = tail call i32 @fgetc(%struct.__sFILE* %11) #11, !dbg !6401
+  %sext.mask1 = and i32 %12, 65535, !dbg !6402
+  %13 = icmp eq i32 %sext.mask1, 65535, !dbg !6402
+  br i1 %13, label %_ZN8pov_base7IStream9Read_ByteEv.exit.thread, label %16, !dbg !6403
+
+_ZN8pov_base7IStream9Read_ByteEv.exit.thread:     ; preds = %8, %0, %_ZN8pov_base7IStream9Read_ByteEv.exit2, %_ZN8pov_base7IStream9Read_ByteEv.exit
+  %14 = phi i32 [ %6, %_ZN8pov_base7IStream9Read_ByteEv.exit ], [ %6, %_ZN8pov_base7IStream9Read_ByteEv.exit2 ], [ -1, %0 ], [ %6, %8 ]
+  %i1.0 = phi i32 [ 0, %_ZN8pov_base7IStream9Read_ByteEv.exit ], [ %12, %_ZN8pov_base7IStream9Read_ByteEv.exit2 ], [ 0, %0 ], [ -1, %8 ]
+  %15 = tail call i32 (i8*, ...)* @_ZN3pov5ErrorEPKcz(i8* getelementptr inbounds ([27 x i8]* @.str12, i64 0, i64 0)) #9, !dbg !6404
+  br label %16, !dbg !6406
+
+; <label>:16                                      ; preds = %_ZN8pov_base7IStream9Read_ByteEv.exit.thread, %_ZN8pov_base7IStream9Read_ByteEv.exit2
+  %17 = phi i32 [ %14, %_ZN8pov_base7IStream9Read_ByteEv.exit.thread ], [ %6, %_ZN8pov_base7IStream9Read_ByteEv.exit2 ]
+  %i1.1 = phi i32 [ %i1.0, %_ZN8pov_base7IStream9Read_ByteEv.exit.thread ], [ %12, %_ZN8pov_base7IStream9Read_ByteEv.exit2 ]
+  %18 = shl i32 %17, 8, !dbg !6407
+  %19 = or i32 %18, %i1.1, !dbg !6408
+  %20 = trunc i32 %19 to i16, !dbg !6409
+  ret i16 %20, !dbg !6410
+}

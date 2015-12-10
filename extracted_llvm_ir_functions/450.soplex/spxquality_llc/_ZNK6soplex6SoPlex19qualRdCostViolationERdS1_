@@ -1,0 +1,72 @@
+define void @_ZNK6soplex6SoPlex19qualRdCostViolationERdS1_(%"class.soplex::SoPlex"* nocapture readonly %this, double* nocapture dereferenceable(8) %maxviol, double* nocapture dereferenceable(8) %sumviol) unnamed_addr #0 align 2 {
+  %rdcost = alloca %"class.soplex::DVector", align 8
+  tail call void @llvm.dbg.value(metadata %"class.soplex::SoPlex"* %this, i64 0, metadata !5120, metadata !6038), !dbg !6474
+  tail call void @llvm.dbg.value(metadata double* %maxviol, i64 0, metadata !5121, metadata !6038), !dbg !6475
+  tail call void @llvm.dbg.value(metadata double* %sumviol, i64 0, metadata !5122, metadata !6038), !dbg !6476
+  store double 0.000000e+00, double* %maxviol, align 8, !dbg !6477, !tbaa !6043
+  store double 0.000000e+00, double* %sumviol, align 8, !dbg !6478, !tbaa !6043
+  %1 = getelementptr inbounds %"class.soplex::SoPlex"* %this, i64 0, i32 0, i32 2, i32 0, i32 1, i32 4, !dbg !6479
+  %2 = load i32* %1, align 4, !dbg !6479, !tbaa !6053
+  tail call void @llvm.dbg.value(metadata %"class.soplex::DVector"* %rdcost, i64 0, metadata !5123, metadata !6038), !dbg !6484
+  call void @_ZN6soplex7DVectorC1Ei(%"class.soplex::DVector"* %rdcost, i32 %2) #5, !dbg !6484
+  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !5124, metadata !6038), !dbg !6485
+  %3 = load i32* %1, align 4, !dbg !6486, !tbaa !6053
+  %4 = icmp sgt i32 %3, 0, !dbg !6491
+  br i1 %4, label %.lr.ph, label %._crit_edge, !dbg !6492
+
+.lr.ph:                                           ; preds = %0
+  %5 = getelementptr inbounds %"class.soplex::SoPlex"* %this, i64 0, i32 0, i32 3, !dbg !6493
+  %6 = load i32* %5, align 4, !dbg !6493, !tbaa !6496
+  %7 = icmp eq i32 %6, -1, !dbg !6499
+  %8 = getelementptr inbounds %"class.soplex::DVector"* %rdcost, i64 0, i32 0, i32 1, !dbg !6500
+  %9 = load double** %8, align 8, !dbg !6500, !tbaa !6090
+  %10 = sext i32 %3 to i64, !dbg !6492
+  br label %11, !dbg !6492
+
+; <label>:11                                      ; preds = %.lr.ph, %25
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %25 ]
+  call void @llvm.dbg.value(metadata double 0.000000e+00, i64 0, metadata !5126, metadata !6038), !dbg !6504
+  %12 = getelementptr inbounds double* %9, i64 %indvars.iv, !dbg !6500
+  %13 = load double* %12, align 8, !dbg !6505, !tbaa !6043
+  br i1 %7, label %14, label %18, !dbg !6506
+
+; <label>:14                                      ; preds = %11
+  %15 = fcmp olt double %13, 0.000000e+00, !dbg !6507
+  br i1 %15, label %16, label %21, !dbg !6508
+
+; <label>:16                                      ; preds = %14
+  %17 = fsub double -0.000000e+00, %13, !dbg !6509
+  call void @llvm.dbg.value(metadata double %17, i64 0, metadata !5126, metadata !6038), !dbg !6504
+  br label %21, !dbg !6510
+
+; <label>:18                                      ; preds = %11
+  %19 = fcmp ogt double %13, 0.000000e+00, !dbg !6511
+  br i1 %19, label %20, label %21, !dbg !6514
+
+; <label>:20                                      ; preds = %18
+  call void @llvm.dbg.value(metadata double %13, i64 0, metadata !5126, metadata !6038), !dbg !6504
+  br label %21, !dbg !6515
+
+; <label>:21                                      ; preds = %18, %20, %14, %16
+  %viol.0 = phi double [ %17, %16 ], [ 0.000000e+00, %14 ], [ %13, %20 ], [ 0.000000e+00, %18 ]
+  %22 = load double* %maxviol, align 8, !dbg !6516, !tbaa !6043
+  %23 = fcmp ogt double %viol.0, %22, !dbg !6518
+  br i1 %23, label %24, label %25, !dbg !6519
+
+; <label>:24                                      ; preds = %21
+  store double %viol.0, double* %maxviol, align 8, !dbg !6520, !tbaa !6043
+  br label %25, !dbg !6521
+
+; <label>:25                                      ; preds = %24, %21
+  %26 = load double* %sumviol, align 8, !dbg !6522, !tbaa !6043
+  %27 = fadd double %viol.0, %26, !dbg !6522
+  store double %27, double* %sumviol, align 8, !dbg !6522, !tbaa !6043
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !6492
+  %28 = icmp slt i64 %indvars.iv.next, %10, !dbg !6491
+  br i1 %28, label %11, label %._crit_edge, !dbg !6492
+
+._crit_edge:                                      ; preds = %25, %0
+  call void @llvm.dbg.value(metadata %"class.soplex::DVector"* %rdcost, i64 0, metadata !5123, metadata !6038), !dbg !6484
+  call void @_ZN6soplex7DVectorD1Ev(%"class.soplex::DVector"* %rdcost) #5, !dbg !6523
+  ret void, !dbg !6523
+}

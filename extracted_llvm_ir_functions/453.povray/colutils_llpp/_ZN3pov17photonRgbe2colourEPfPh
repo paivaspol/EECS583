@@ -1,0 +1,45 @@
+define void @_ZN3pov17photonRgbe2colourEPfPh(float* nocapture %c, i8* nocapture readonly %rgbe) #0 {
+  tail call void @llvm.dbg.value(metadata float* %c, i64 0, metadata !146, metadata !614), !dbg !823
+  tail call void @llvm.dbg.value(metadata i8* %rgbe, i64 0, metadata !147, metadata !614), !dbg !824
+  %1 = getelementptr inbounds i8* %rgbe, i64 3, !dbg !825
+  %2 = load i8* %1, align 1, !dbg !825, !tbaa !688
+  %3 = icmp eq i8 %2, 0, !dbg !825
+  br i1 %3, label %24, label %4, !dbg !827
+
+; <label>:4                                       ; preds = %0
+  %5 = zext i8 %2 to i32, !dbg !828
+  %6 = add nsw i32 %5, -258, !dbg !830
+  %7 = tail call double @ldexp(double 1.000000e+00, i32 %6) #8, !dbg !831
+  %8 = fptrunc double %7 to float, !dbg !831
+  tail call void @llvm.dbg.value(metadata float %8, i64 0, metadata !148, metadata !614), !dbg !832
+  %9 = load i8* %rgbe, align 1, !dbg !833, !tbaa !688
+  %10 = zext i8 %9 to i32, !dbg !833
+  %11 = sitofp i32 %10 to float, !dbg !833
+  %12 = fmul float %8, %11, !dbg !834
+  store float %12, float* %c, align 4, !dbg !835, !tbaa !636
+  %13 = getelementptr inbounds i8* %rgbe, i64 1, !dbg !836
+  %14 = load i8* %13, align 1, !dbg !836, !tbaa !688
+  %15 = zext i8 %14 to i32, !dbg !836
+  %16 = sitofp i32 %15 to float, !dbg !836
+  %17 = fmul float %8, %16, !dbg !837
+  %18 = getelementptr inbounds float* %c, i64 1, !dbg !838
+  store float %17, float* %18, align 4, !dbg !839, !tbaa !636
+  %19 = getelementptr inbounds i8* %rgbe, i64 2, !dbg !840
+  %20 = load i8* %19, align 1, !dbg !840, !tbaa !688
+  %21 = zext i8 %20 to i32, !dbg !840
+  %22 = sitofp i32 %21 to float, !dbg !840
+  %23 = fmul float %8, %22, !dbg !841
+  br label %26, !dbg !842
+
+; <label>:24                                      ; preds = %0
+  %25 = getelementptr inbounds float* %c, i64 1, !dbg !843
+  store float 0.000000e+00, float* %25, align 4, !dbg !844, !tbaa !636
+  store float 0.000000e+00, float* %c, align 4, !dbg !845, !tbaa !636
+  br label %26
+
+; <label>:26                                      ; preds = %24, %4
+  %.sink = phi float [ 0.000000e+00, %24 ], [ %23, %4 ]
+  %27 = getelementptr inbounds float* %c, i64 2, !dbg !846
+  store float %.sink, float* %27, align 4
+  ret void, !dbg !847
+}

@@ -1,39 +1,46 @@
 define double @DVsumabs(i32 %size, double* %y) #0 {
-entry:
-  %cmp = icmp sgt i32 %size, 0
-  br i1 %cmp, label %if.then, label %if.end9
+  tail call void @llvm.dbg.value(metadata i32 %size, i64 0, metadata !417, metadata !696), !dbg !1460
+  tail call void @llvm.dbg.value(metadata double* %y, i64 0, metadata !418, metadata !696), !dbg !1461
+  tail call void @llvm.dbg.value(metadata double 0.000000e+00, i64 0, metadata !419, metadata !696), !dbg !1462
+  %1 = icmp sgt i32 %size, 0, !dbg !1463
+  br i1 %1, label %2, label %.loopexit, !dbg !1464
 
-if.then:                                          ; preds = %entry
-  %cmp1 = icmp eq double* %y, null
-  br i1 %cmp1, label %if.then2, label %for.body
+; <label>:2                                       ; preds = %0
+  %3 = icmp eq double* %y, null, !dbg !1465
+  br i1 %3, label %5, label %.lr.ph, !dbg !1466
 
-if.then2:                                         ; preds = %if.then
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([60 x i8]* @.str33, i64 0, i64 0), i32 %size, double* null) #5
-  tail call void @exit(i32 -1) #6
-  unreachable
+.lr.ph:                                           ; preds = %2
+  %4 = add i32 %size, -1, !dbg !1467
+  br label %8, !dbg !1467
 
-for.body:                                         ; preds = %if.then, %cond.end
-  %indvars.iv = phi i64 [ %indvars.iv.next, %cond.end ], [ 0, %if.then ]
-  %sum.020 = phi double [ %add, %cond.end ], [ 0.000000e+00, %if.then ]
-  %arrayidx = getelementptr inbounds double* %y, i64 %indvars.iv
-  %1 = load double* %arrayidx, align 8, !tbaa !3
-  %cmp4 = fcmp ult double %1, 0.000000e+00
-  br i1 %cmp4, label %cond.false, label %cond.end
+; <label>:5                                       ; preds = %2
+  %6 = load %struct.__sFILE** @__stderrp, align 8, !dbg !1469, !tbaa !709
+  %7 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %6, i8* getelementptr inbounds ([60 x i8]* @.str33, i64 0, i64 0), i32 %size, double* null) #7, !dbg !1471
+  tail call void @exit(i32 -1) #8, !dbg !1472
+  unreachable, !dbg !1472
 
-cond.false:                                       ; preds = %for.body
-  %sub = fsub double -0.000000e+00, %1
-  br label %cond.end
+; <label>:8                                       ; preds = %14, %.lr.ph
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %14 ]
+  %sum.01 = phi double [ 0.000000e+00, %.lr.ph ], [ %16, %14 ]
+  %9 = getelementptr inbounds double* %y, i64 %indvars.iv, !dbg !1473
+  %10 = load double* %9, align 8, !dbg !1473, !tbaa !718
+  %11 = fcmp ult double %10, 0.000000e+00, !dbg !1476
+  br i1 %11, label %12, label %14, !dbg !1477
 
-cond.end:                                         ; preds = %for.body, %cond.false
-  %cond = phi double [ %sub, %cond.false ], [ %1, %for.body ]
-  %add = fadd double %sum.020, %cond
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %size
-  br i1 %exitcond, label %if.end9, label %for.body
+; <label>:12                                      ; preds = %8
+  %13 = fsub double -0.000000e+00, %10, !dbg !1478
+  br label %14, !dbg !1477
 
-if.end9:                                          ; preds = %cond.end, %entry
-  %sum.1 = phi double [ 0.000000e+00, %entry ], [ %add, %cond.end ]
-  ret double %sum.1
+; <label>:14                                      ; preds = %8, %12
+  %15 = phi double [ %13, %12 ], [ %10, %8 ], !dbg !1477
+  %16 = fadd double %sum.01, %15, !dbg !1479
+  tail call void @llvm.dbg.value(metadata double %16, i64 0, metadata !419, metadata !696), !dbg !1462
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !1467
+  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !1467
+  %exitcond = icmp eq i32 %lftr.wideiv, %4, !dbg !1467
+  br i1 %exitcond, label %.loopexit, label %8, !dbg !1467
+
+.loopexit:                                        ; preds = %14, %0
+  %sum.1 = phi double [ 0.000000e+00, %0 ], [ %16, %14 ]
+  ret double %sum.1, !dbg !1480
 }

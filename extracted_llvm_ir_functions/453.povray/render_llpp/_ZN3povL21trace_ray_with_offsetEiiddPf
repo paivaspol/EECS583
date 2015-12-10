@@ -1,0 +1,92 @@
+define internal fastcc void @_ZN3povL21trace_ray_with_offsetEiiddPf(i32 %x, i32 %y, double %dx, double %dy, float* %Colour) #0 {
+  %Jitter_X = alloca double, align 8
+  %Jitter_Y = alloca double, align 8
+  tail call void @llvm.dbg.value(metadata i32 %x, i64 0, metadata !1374, metadata !2153), !dbg !6322
+  tail call void @llvm.dbg.value(metadata i32 %y, i64 0, metadata !1375, metadata !2153), !dbg !6323
+  tail call void @llvm.dbg.value(metadata double %dx, i64 0, metadata !1376, metadata !2153), !dbg !6324
+  tail call void @llvm.dbg.value(metadata double %dy, i64 0, metadata !1377, metadata !2153), !dbg !6325
+  tail call void @llvm.dbg.value(metadata float* %Colour, i64 0, metadata !1378, metadata !2153), !dbg !6326
+  %1 = load i32* @_ZN3povL18Focal_Blur_Is_UsedE, align 4, !dbg !6327, !tbaa !2144
+  %2 = icmp eq i32 %1, 0, !dbg !6327
+  br i1 %2, label %6, label %3, !dbg !6329
+
+; <label>:3                                       ; preds = %0
+  %4 = sitofp i32 %x to double, !dbg !6330
+  %5 = sitofp i32 %y to double, !dbg !6332
+  tail call fastcc void @_ZN3povL10focal_blurEPNS_10Ray_StructEPfdd(float* %Colour, double %4, double %5) #7, !dbg !6333
+  br label %36, !dbg !6334
+
+; <label>:6                                       ; preds = %0
+  %7 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 0), align 8, !dbg !6335, !tbaa !2198
+  %8 = and i32 %7, 16, !dbg !6338
+  %9 = icmp eq i32 %8, 0, !dbg !6338
+  br i1 %9, label %11, label %10, !dbg !6339
+
+; <label>:10                                      ; preds = %6
+  tail call void @llvm.dbg.value(metadata double* %Jitter_X, i64 0, metadata !1379, metadata !2153), !dbg !6340
+  tail call void @llvm.dbg.value(metadata double* %Jitter_Y, i64 0, metadata !1380, metadata !2153), !dbg !6341
+  call fastcc void @_ZN3povL21jitter_pixel_positionEiiPdS0_(i32 %x, i32 %y, double* %Jitter_X, double* %Jitter_Y) #7, !dbg !6342
+  %.pre = load double* %Jitter_X, align 8, !dbg !6344, !tbaa !2141
+  %.pre1 = load double* %Jitter_Y, align 8, !dbg !6346, !tbaa !2141
+  br label %12, !dbg !6347
+
+; <label>:11                                      ; preds = %6
+  tail call void @llvm.dbg.value(metadata double 0.000000e+00, i64 0, metadata !1380, metadata !2153), !dbg !6341
+  store double 0.000000e+00, double* %Jitter_Y, align 8, !dbg !6348, !tbaa !2141
+  tail call void @llvm.dbg.value(metadata double 0.000000e+00, i64 0, metadata !1379, metadata !2153), !dbg !6340
+  store double 0.000000e+00, double* %Jitter_X, align 8, !dbg !6350, !tbaa !2141
+  br label %12
+
+; <label>:12                                      ; preds = %11, %10
+  %13 = phi double [ 0.000000e+00, %11 ], [ %.pre1, %10 ]
+  %14 = phi double [ 0.000000e+00, %11 ], [ %.pre, %10 ]
+  %15 = sitofp i32 %x to double, !dbg !6351
+  %16 = fadd double %15, %dx, !dbg !6352
+  tail call void @llvm.dbg.value(metadata double* %Jitter_X, i64 0, metadata !1379, metadata !2153), !dbg !6340
+  %17 = fadd double %16, %14, !dbg !6353
+  %18 = sitofp i32 %y to double, !dbg !6354
+  %19 = fadd double %18, %dy, !dbg !6355
+  tail call void @llvm.dbg.value(metadata double* %Jitter_Y, i64 0, metadata !1380, metadata !2153), !dbg !6341
+  %20 = fadd double %19, %13, !dbg !6356
+  %21 = tail call fastcc i32 @_ZN3povL10create_rayEPNS_10Ray_StructEddi(double %17, double %20, i32 0) #7, !dbg !6357
+  %22 = icmp eq i32 %21, 0, !dbg !6357
+  br i1 %22, label %33, label %23, !dbg !6358
+
+; <label>:23                                      ; preds = %12
+  store i32 1, i32* @_ZN3pov11Trace_LevelE, align 4, !dbg !6359, !tbaa !2144
+  store double 0.000000e+00, double* @_ZN3pov11Total_DepthE, align 8, !dbg !6361, !tbaa !2141
+  store i8 0, i8* @_ZN3pov17In_Reflection_RayE, align 1, !dbg !6362, !tbaa !2757
+  store i8 0, i8* @_ZN3pov13In_Shadow_RayE, align 1, !dbg !6363, !tbaa !2757
+  tail call void @llvm.dbg.value(metadata i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 2), i64 0, metadata !1301, metadata !2153), !dbg !6364
+  %24 = load i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 2), align 8, !dbg !6366, !tbaa !2670
+  %25 = add nsw i64 %24, 1, !dbg !6366
+  store i64 %25, i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 2), align 8, !dbg !6366, !tbaa !2670
+  %26 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 0), align 8, !dbg !6367, !tbaa !2198
+  %27 = and i32 %26, 2048, !dbg !6369
+  %28 = icmp eq i32 %27, 0, !dbg !6369
+  br i1 %28, label %31, label %29, !dbg !6370
+
+; <label>:29                                      ; preds = %23
+  %30 = tail call double @_ZN3pov17Trace_Primary_RayEPNS_10Ray_StructEPfdi(%"struct.pov::Ray_Struct"* @_ZN3povL10Camera_RayE, float* %Colour, double 1.000000e+00, i32 %x) #7, !dbg !6371
+  br label %36, !dbg !6373
+
+; <label>:31                                      ; preds = %23
+  %32 = tail call double @_ZN3pov5TraceEPNS_10Ray_StructEPfd(%"struct.pov::Ray_Struct"* @_ZN3povL10Camera_RayE, float* %Colour, double 1.000000e+00) #7, !dbg !6374
+  br label %36
+
+; <label>:33                                      ; preds = %12
+  tail call void @llvm.dbg.value(metadata float* %Colour, i64 0, metadata !1226, metadata !2153), !dbg !6376
+  tail call void @llvm.dbg.value(metadata float 0.000000e+00, i64 0, metadata !1227, metadata !2153), !dbg !6379
+  tail call void @llvm.dbg.value(metadata float 0.000000e+00, i64 0, metadata !1228, metadata !2153), !dbg !6380
+  tail call void @llvm.dbg.value(metadata float 0.000000e+00, i64 0, metadata !1229, metadata !2153), !dbg !6381
+  tail call void @llvm.dbg.value(metadata float 0.000000e+00, i64 0, metadata !1230, metadata !2153), !dbg !6382
+  tail call void @llvm.dbg.value(metadata float 1.000000e+00, i64 0, metadata !1231, metadata !2153), !dbg !6383
+  %34 = getelementptr inbounds float* %Colour, i64 4, !dbg !6384
+  %35 = bitcast float* %Colour to i8*, !dbg !6385
+  call void @llvm.memset.p0i8.i64(i8* %35, i8 0, i64 16, i32 4, i1 false), !dbg !6386
+  store float 1.000000e+00, float* %34, align 4, !dbg !6385, !tbaa !2801
+  br label %36
+
+; <label>:36                                      ; preds = %33, %31, %29, %3
+  ret void, !dbg !6387
+}

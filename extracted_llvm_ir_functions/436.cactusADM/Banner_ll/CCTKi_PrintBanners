@@ -1,45 +1,51 @@
 define i32 @CCTKi_PrintBanners() #1 {
   %i = alloca i32, align 4
-  %1 = call i8* @CCTK_ParameterGet(i8* getelementptr inbounds ([18 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str4, i64 0, i64 0), i32* %i) #5
-  %2 = bitcast i8* %1 to i32*
-  %3 = load i32* %2, align 4, !tbaa !2
-  %4 = icmp eq i32 %3, 0
-  br i1 %4, label %21, label %.preheader
+  tail call void @llvm.dbg.value(metadata i32* %i, i64 0, metadata !48, metadata !61), !dbg !130
+  %1 = call i8* @CCTK_ParameterGet(i8* getelementptr inbounds ([18 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str4, i64 0, i64 0), i32* %i) #6, !dbg !131
+  %2 = bitcast i8* %1 to i32*, !dbg !132
+  call void @llvm.dbg.value(metadata i32* %2, i64 0, metadata !49, metadata !61), !dbg !133
+  %3 = load i32* %2, align 4, !dbg !134, !tbaa !76
+  %4 = icmp eq i32 %3, 0, !dbg !134
+  br i1 %4, label %21, label %.preheader, !dbg !136
 
 .preheader:                                       ; preds = %0
-  store i32 0, i32* %i, align 4, !tbaa !2
-  %5 = load i32* @number_banners, align 4, !tbaa !2
-  %6 = icmp sgt i32 %5, 0
-  br i1 %6, label %.lr.ph, label %._crit_edge
+  store i32 0, i32* %i, align 4, !dbg !137, !tbaa !76
+  call void @llvm.dbg.value(metadata i32* %i, i64 0, metadata !48, metadata !61), !dbg !130
+  %5 = load i32* @number_banners, align 4, !dbg !141, !tbaa !76
+  %6 = icmp sgt i32 %5, 0, !dbg !142
+  br i1 %6, label %.lr.ph, label %._crit_edge, !dbg !143
 
 .lr.ph:                                           ; preds = %.preheader, %15
   %7 = phi i32 [ %16, %15 ], [ %5, %.preheader ]
   %storemerge1 = phi i32 [ %18, %15 ], [ 0, %.preheader ]
-  %8 = sext i32 %storemerge1 to i64
-  %9 = load i8*** @banner_strings, align 8, !tbaa !6
-  %10 = getelementptr inbounds i8** %9, i64 %8
-  %11 = load i8** %10, align 8, !tbaa !6
-  %12 = icmp eq i8* %11, null
-  br i1 %12, label %15, label %13
+  %8 = sext i32 %storemerge1 to i64, !dbg !144
+  %9 = load i8*** @banner_strings, align 8, !dbg !144, !tbaa !88
+  %10 = getelementptr inbounds i8** %9, i64 %8, !dbg !144
+  %11 = load i8** %10, align 8, !dbg !144, !tbaa !88
+  %12 = icmp eq i8* %11, null, !dbg !144
+  br i1 %12, label %15, label %13, !dbg !147
 
 ; <label>:13                                      ; preds = %.lr.ph
-  %14 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([6 x i8]* @.str5, i64 0, i64 0), i8* getelementptr inbounds ([82 x i8]* @.str7, i64 0, i64 0), i8* %11) #5
-  %.pre = load i32* %i, align 4, !tbaa !2
-  %.pre2 = load i32* @number_banners, align 4, !tbaa !2
-  br label %15
+  %14 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([6 x i8]* @.str5, i64 0, i64 0), i8* getelementptr inbounds ([82 x i8]* @.str7, i64 0, i64 0), i8* %11) #6, !dbg !148
+  %.pre = load i32* %i, align 4, !dbg !137, !tbaa !76
+  %.pre2 = load i32* @number_banners, align 4, !dbg !141, !tbaa !76
+  br label %15, !dbg !150
 
 ; <label>:15                                      ; preds = %.lr.ph, %13
-  %16 = phi i32 [ %7, %.lr.ph ], [ %.pre2, %13 ]
-  %17 = phi i32 [ %storemerge1, %.lr.ph ], [ %.pre, %13 ]
-  %18 = add nsw i32 %17, 1
-  store i32 %18, i32* %i, align 4, !tbaa !2
-  %19 = icmp slt i32 %18, %16
-  br i1 %19, label %.lr.ph, label %._crit_edge
+  %16 = phi i32 [ %7, %.lr.ph ], [ %.pre2, %13 ], !dbg !130
+  %17 = phi i32 [ %storemerge1, %.lr.ph ], [ %.pre, %13 ], !dbg !130
+  call void @llvm.dbg.value(metadata i32* %i, i64 0, metadata !48, metadata !61), !dbg !130
+  %18 = add nsw i32 %17, 1, !dbg !137
+  call void @llvm.dbg.value(metadata i32 %18, i64 0, metadata !48, metadata !61), !dbg !130
+  store i32 %18, i32* %i, align 4, !dbg !137, !tbaa !76
+  call void @llvm.dbg.value(metadata i32* %i, i64 0, metadata !48, metadata !61), !dbg !130
+  %19 = icmp slt i32 %18, %16, !dbg !142
+  br i1 %19, label %.lr.ph, label %._crit_edge, !dbg !143
 
 ._crit_edge:                                      ; preds = %15, %.preheader
-  %20 = call i32 @puts(i8* getelementptr inbounds ([82 x i8]* @.str7, i64 0, i64 0)) #5
-  br label %21
+  %20 = call i32 @puts(i8* getelementptr inbounds ([82 x i8]* @.str7, i64 0, i64 0)) #6, !dbg !151
+  br label %21, !dbg !152
 
 ; <label>:21                                      ; preds = %0, %._crit_edge
-  ret i32 0
+  ret i32 0, !dbg !153
 }

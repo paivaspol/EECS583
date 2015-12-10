@@ -1,21 +1,22 @@
 define void @s2upper(i8* nocapture %s) #0 {
-entry:
-  %0 = load i8* %s, align 1, !tbaa !1
-  %cmp7 = icmp eq i8 %0, 0
-  br i1 %cmp7, label %for.end, label %for.body
+  tail call void @llvm.dbg.value(metadata i8* %s, i64 0, metadata !42, metadata !225), !dbg !305
+  %1 = load i8* %s, align 1, !dbg !306, !tbaa !247
+  %2 = icmp eq i8 %1, 0, !dbg !309
+  br i1 %2, label %._crit_edge, label %.lr.ph, !dbg !310
 
-for.body:                                         ; preds = %entry, %for.body
-  %1 = phi i8 [ %2, %for.body ], [ %0, %entry ]
-  %s.addr.08 = phi i8* [ %incdec.ptr, %for.body ], [ %s, %entry ]
-  %conv = sext i8 %1 to i32
-  %call = tail call i32 @sre_toupper(i32 %conv) #8
-  %conv3 = trunc i32 %call to i8
-  store i8 %conv3, i8* %s.addr.08, align 1, !tbaa !1
-  %incdec.ptr = getelementptr inbounds i8* %s.addr.08, i64 1
-  %2 = load i8* %incdec.ptr, align 1, !tbaa !1
-  %cmp = icmp eq i8 %2, 0
-  br i1 %cmp, label %for.end, label %for.body
+.lr.ph:                                           ; preds = %0, %.lr.ph
+  %3 = phi i8 [ %8, %.lr.ph ], [ %1, %0 ]
+  %.01 = phi i8* [ %7, %.lr.ph ], [ %s, %0 ]
+  %4 = sext i8 %3 to i32, !dbg !306
+  %5 = tail call i32 @sre_toupper(i32 %4) #5, !dbg !311
+  %6 = trunc i32 %5 to i8, !dbg !311
+  store i8 %6, i8* %.01, align 1, !dbg !312, !tbaa !247
+  %7 = getelementptr inbounds i8* %.01, i64 1, !dbg !313
+  tail call void @llvm.dbg.value(metadata i8* %7, i64 0, metadata !42, metadata !225), !dbg !305
+  %8 = load i8* %7, align 1, !dbg !306, !tbaa !247
+  %9 = icmp eq i8 %8, 0, !dbg !309
+  br i1 %9, label %._crit_edge, label %.lr.ph, !dbg !310
 
-for.end:                                          ; preds = %for.body, %entry
-  ret void
+._crit_edge:                                      ; preds = %.lr.ph, %0
+  ret void, !dbg !314
 }

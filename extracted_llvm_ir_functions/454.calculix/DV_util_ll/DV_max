@@ -1,31 +1,32 @@
 define double @DV_max(%struct._DV* %dv) #0 {
-entry:
   %i = alloca i32, align 4
-  %cmp = icmp eq %struct._DV* %dv, null
-  br i1 %cmp, label %if.then, label %lor.lhs.false
+  tail call void @llvm.dbg.value(metadata %struct._DV* %dv, i64 0, metadata !38, metadata !102), !dbg !177
+  %1 = icmp eq %struct._DV* %dv, null, !dbg !178
+  br i1 %1, label %._crit_edge, label %2, !dbg !180
 
-lor.lhs.false:                                    ; preds = %entry
-  %size = getelementptr inbounds %struct._DV* %dv, i64 0, i32 0
-  %0 = load i32* %size, align 4, !tbaa !3
-  %cmp1 = icmp slt i32 %0, 1
-  br i1 %cmp1, label %if.then, label %lor.lhs.false2
+; <label>:2                                       ; preds = %0
+  %3 = getelementptr inbounds %struct._DV* %dv, i64 0, i32 0, !dbg !181
+  %4 = load i32* %3, align 4, !dbg !181, !tbaa !126
+  %5 = icmp slt i32 %4, 1, !dbg !182
+  br i1 %5, label %._crit_edge, label %6, !dbg !183
 
-lor.lhs.false2:                                   ; preds = %lor.lhs.false
-  %vec = getelementptr inbounds %struct._DV* %dv, i64 0, i32 3
-  %1 = load double** %vec, align 8, !tbaa !0
-  %cmp3 = icmp eq double* %1, null
-  br i1 %cmp3, label %if.then, label %if.end
+; <label>:6                                       ; preds = %2
+  %7 = getelementptr inbounds %struct._DV* %dv, i64 0, i32 3, !dbg !184
+  %8 = load double** %7, align 8, !dbg !184, !tbaa !118
+  %9 = icmp eq double* %8, null, !dbg !185
+  br i1 %9, label %._crit_edge, label %15, !dbg !186
 
-if.then:                                          ; preds = %lor.lhs.false, %entry, %lor.lhs.false2
-  %2 = phi i32 [ %0, %lor.lhs.false2 ], [ 0, %entry ], [ %0, %lor.lhs.false ]
-  %3 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %vec5 = getelementptr inbounds %struct._DV* %dv, i64 0, i32 3
-  %4 = load double** %vec5, align 8, !tbaa !0
-  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([49 x i8]* @.str3, i64 0, i64 0), %struct._DV* %dv, i32 %2, double* %4) #4
-  call void @exit(i32 -1) #5
-  unreachable
+._crit_edge:                                      ; preds = %0, %6, %2
+  %10 = phi i32 [ %4, %6 ], [ %4, %2 ], [ 0, %0 ]
+  %11 = load %struct.__sFILE** @__stderrp, align 8, !dbg !187, !tbaa !110
+  %12 = getelementptr inbounds %struct._DV* %dv, i64 0, i32 3, !dbg !189
+  %13 = load double** %12, align 8, !dbg !189, !tbaa !118
+  %14 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %11, i8* getelementptr inbounds ([49 x i8]* @.str3, i64 0, i64 0), %struct._DV* %dv, i32 %10, double* %13) #5, !dbg !190
+  tail call void @exit(i32 -1) #6, !dbg !191
+  unreachable, !dbg !191
 
-if.end:                                           ; preds = %lor.lhs.false2
-  %call8 = call double @DVmax(i32 %0, double* %1, i32* %i) #4
-  ret double %call8
+; <label>:15                                      ; preds = %6
+  tail call void @llvm.dbg.value(metadata i32* %i, i64 0, metadata !39, metadata !102), !dbg !192
+  %16 = call double @DVmax(i32 %4, double* %8, i32* %i) #5, !dbg !193
+  ret double %16, !dbg !194
 }

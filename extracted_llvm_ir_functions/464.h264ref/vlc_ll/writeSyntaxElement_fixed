@@ -1,21 +1,22 @@
-define i32 @writeSyntaxElement_fixed(%struct.syntaxelement* nocapture %se, %struct.datapartition* nocapture %this_dataPart) #0 {
-entry:
-  %bitstream = getelementptr inbounds %struct.datapartition* %this_dataPart, i64 0, i32 0
-  %0 = load %struct.Bitstream** %bitstream, align 8, !tbaa !3
-  tail call void @writeUVLC2buffer(%struct.syntaxelement* %se, %struct.Bitstream* %0) #4
-  %type = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 0
-  %1 = load i32* %type, align 4, !tbaa !0
-  %cmp = icmp eq i32 %1, 0
-  br i1 %cmp, label %if.end, label %if.then
+define i32 @writeSyntaxElement_fixed(%struct.syntaxelement* nocapture readonly %se, %struct.datapartition* nocapture readonly %this_dataPart) #0 {
+  tail call void @llvm.dbg.value(metadata %struct.syntaxelement* %se, i64 0, metadata !227, metadata !814), !dbg !972
+  tail call void @llvm.dbg.value(metadata %struct.datapartition* %this_dataPart, i64 0, metadata !228, metadata !814), !dbg !973
+  %1 = getelementptr inbounds %struct.datapartition* %this_dataPart, i64 0, i32 0, !dbg !974
+  %2 = load %struct.Bitstream** %1, align 8, !dbg !974, !tbaa !838
+  tail call void @writeUVLC2buffer(%struct.syntaxelement* %se, %struct.Bitstream* %2) #6, !dbg !975
+  %3 = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 0, !dbg !976
+  %4 = load i32* %3, align 4, !dbg !976, !tbaa !822
+  %5 = icmp eq i32 %4, 0, !dbg !978
+  br i1 %5, label %9, label %6, !dbg !979
 
-if.then:                                          ; preds = %entry
-  %2 = load %struct.Bitstream** %bitstream, align 8, !tbaa !3
-  %write_flag = getelementptr inbounds %struct.Bitstream* %2, i64 0, i32 10
-  store i32 1, i32* %write_flag, align 4, !tbaa !0
-  br label %if.end
+; <label>:6                                       ; preds = %0
+  %7 = load %struct.Bitstream** %1, align 8, !dbg !980, !tbaa !838
+  %8 = getelementptr inbounds %struct.Bitstream* %7, i64 0, i32 10, !dbg !981
+  store i32 1, i32* %8, align 4, !dbg !982, !tbaa !901
+  br label %9, !dbg !983
 
-if.end:                                           ; preds = %entry, %if.then
-  %len = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 3
-  %3 = load i32* %len, align 4, !tbaa !0
-  ret i32 %3
+; <label>:9                                       ; preds = %0, %6
+  %10 = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 3, !dbg !984
+  %11 = load i32* %10, align 4, !dbg !984, !tbaa !880
+  ret i32 %11, !dbg !985
 }

@@ -1,26 +1,30 @@
 define i8* @sre_strdup(i8* %s, i32 %n) #0 {
-entry:
-  %cmp = icmp eq i8* %s, null
-  br i1 %cmp, label %return, label %if.end
+  tail call void @llvm.dbg.value(metadata i8* %s, i64 0, metadata !190, metadata !225), !dbg !517
+  tail call void @llvm.dbg.value(metadata i32 %n, i64 0, metadata !191, metadata !225), !dbg !518
+  %1 = icmp eq i8* %s, null, !dbg !519
+  br i1 %1, label %13, label %2, !dbg !521
 
-if.end:                                           ; preds = %entry
-  %cmp1 = icmp slt i32 %n, 0
-  br i1 %cmp1, label %if.then2, label %if.end3
+; <label>:2                                       ; preds = %0
+  %3 = icmp slt i32 %n, 0, !dbg !522
+  br i1 %3, label %4, label %7, !dbg !524
 
-if.then2:                                         ; preds = %if.end
-  %call = tail call i64 @strlen(i8* %s) #7
-  %conv = trunc i64 %call to i32
-  br label %if.end3
+; <label>:4                                       ; preds = %2
+  %5 = tail call i64 @strlen(i8* %s) #5, !dbg !525
+  %6 = trunc i64 %5 to i32, !dbg !525
+  tail call void @llvm.dbg.value(metadata i32 %6, i64 0, metadata !191, metadata !225), !dbg !518
+  br label %7, !dbg !526
 
-if.end3:                                          ; preds = %if.then2, %if.end
-  %n.addr.0 = phi i32 [ %conv, %if.then2 ], [ %n, %if.end ]
-  %add = add nsw i32 %n.addr.0, 1
-  %conv4 = sext i32 %add to i64
-  %call5 = tail call i8* @sre_malloc(i8* getelementptr inbounds ([56 x i8]* @.str2, i64 0, i64 0), i32 442, i64 %conv4) #10
-  %call6 = tail call i8* @strcpy(i8* %call5, i8* %s) #8
-  br label %return
+; <label>:7                                       ; preds = %4, %2
+  %.01 = phi i32 [ %6, %4 ], [ %n, %2 ]
+  %8 = add nsw i32 %.01, 1, !dbg !527
+  %9 = sext i32 %8 to i64, !dbg !527
+  %10 = tail call i8* @sre_malloc(i8* getelementptr inbounds ([68 x i8]* @.str2, i64 0, i64 0), i32 442, i64 %9) #7, !dbg !527
+  tail call void @llvm.dbg.value(metadata i8* %10, i64 0, metadata !192, metadata !225), !dbg !528
+  %11 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %10, i1 false), !dbg !529
+  %12 = tail call i8* @__strcpy_chk(i8* %10, i8* %s, i64 %11) #5, !dbg !529
+  br label %13, !dbg !530
 
-return:                                           ; preds = %entry, %if.end3
-  %retval.0 = phi i8* [ %call5, %if.end3 ], [ null, %entry ]
-  ret i8* %retval.0
+; <label>:13                                      ; preds = %0, %7
+  %.0 = phi i8* [ %10, %7 ], [ null, %0 ]
+  ret i8* %.0, !dbg !531
 }

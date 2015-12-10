@@ -1,24 +1,30 @@
 define i8* @CCTK_VarDataPtr(%struct.cGH* nocapture readonly %GH, i32 %timelevel, i8* %varname) #1 {
-  %1 = tail call i32 @CCTK_VarIndex(i8* %varname) #6
-  %2 = icmp sgt i32 %1, -1
-  br i1 %2, label %3, label %12
+  tail call void @llvm.dbg.value(metadata %struct.cGH* %GH, i64 0, metadata !56, metadata !553), !dbg !554
+  tail call void @llvm.dbg.value(metadata i32 %timelevel, i64 0, metadata !57, metadata !553), !dbg !555
+  tail call void @llvm.dbg.value(metadata i8* %varname, i64 0, metadata !58, metadata !553), !dbg !556
+  %1 = tail call i32 @CCTK_VarIndex(i8* %varname) #6, !dbg !557
+  tail call void @llvm.dbg.value(metadata i32 %1, i64 0, metadata !59, metadata !553), !dbg !558
+  %2 = icmp sgt i32 %1, -1, !dbg !559
+  br i1 %2, label %3, label %12, !dbg !561
 
 ; <label>:3                                       ; preds = %0
-  %4 = sext i32 %timelevel to i64
-  %5 = sext i32 %1 to i64
-  %6 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17
-  %7 = load i8**** %6, align 8, !tbaa !2
-  %8 = getelementptr inbounds i8*** %7, i64 %5
-  %9 = load i8*** %8, align 8, !tbaa !9
-  %10 = getelementptr inbounds i8** %9, i64 %4
-  %11 = load i8** %10, align 8, !tbaa !9
-  br label %14
+  %4 = sext i32 %timelevel to i64, !dbg !562
+  %5 = sext i32 %1 to i64, !dbg !562
+  %6 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 17, !dbg !564
+  %7 = load i8**** %6, align 8, !dbg !564, !tbaa !565
+  %8 = getelementptr inbounds i8*** %7, i64 %5, !dbg !562
+  %9 = load i8*** %8, align 8, !dbg !562, !tbaa !572
+  %10 = getelementptr inbounds i8** %9, i64 %4, !dbg !562
+  %11 = load i8** %10, align 8, !dbg !562, !tbaa !572
+  tail call void @llvm.dbg.value(metadata i8* %11, i64 0, metadata !60, metadata !553), !dbg !573
+  br label %14, !dbg !574
 
 ; <label>:12                                      ; preds = %0
-  %13 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 228, i8* getelementptr inbounds ([79 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([46 x i8]* @.str2, i64 0, i64 0), i8* %varname) #6
+  %13 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 228, i8* getelementptr inbounds ([79 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([46 x i8]* @.str2, i64 0, i64 0), i8* %varname) #6, !dbg !575
+  tail call void @llvm.dbg.value(metadata i8* null, i64 0, metadata !60, metadata !553), !dbg !573
   br label %14
 
 ; <label>:14                                      ; preds = %12, %3
   %retval.0 = phi i8* [ %11, %3 ], [ null, %12 ]
-  ret i8* %retval.0
+  ret i8* %retval.0, !dbg !577
 }

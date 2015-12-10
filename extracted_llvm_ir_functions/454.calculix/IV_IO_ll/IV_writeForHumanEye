@@ -1,36 +1,39 @@
-define i32 @IV_writeForHumanEye(%struct._IV* %iv, %struct._IO_FILE* %fp) #0 {
-entry:
+define i32 @IV_writeForHumanEye(%struct._IV* %iv, %struct.__sFILE* %fp) #0 {
   %ierr = alloca i32, align 4
-  %cmp = icmp eq %struct._IV* %iv, null
-  %cmp1 = icmp eq %struct._IO_FILE* %fp, null
-  %or.cond = or i1 %cmp, %cmp1
-  br i1 %or.cond, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata %struct._IV* %iv, i64 0, metadata !124, metadata !159), !dbg !457
+  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %fp, i64 0, metadata !125, metadata !159), !dbg !458
+  %1 = icmp eq %struct._IV* %iv, null, !dbg !459
+  %2 = icmp eq %struct.__sFILE* %fp, null, !dbg !461
+  %or.cond = or i1 %1, %2, !dbg !462
+  br i1 %or.cond, label %3, label %6, !dbg !462
 
-if.then:                                          ; preds = %entry
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([56 x i8]* @.str25, i64 0, i64 0), %struct._IV* %iv, %struct._IO_FILE* %fp) #5
-  call void @exit(i32 -1) #8
-  unreachable
+; <label>:3                                       ; preds = %0
+  %4 = load %struct.__sFILE** @__stderrp, align 8, !dbg !463, !tbaa !168
+  %5 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %4, i8* getelementptr inbounds ([56 x i8]* @.str25, i64 0, i64 0), %struct._IV* %iv, %struct.__sFILE* %fp) #6, !dbg !465
+  tail call void @exit(i32 -1) #8, !dbg !466
+  unreachable, !dbg !466
 
-if.end:                                           ; preds = %entry
-  %call2 = call i32 @IV_writeStats(%struct._IV* %iv, %struct._IO_FILE* %fp) #7
-  %cmp3 = icmp eq i32 %call2, 0
-  br i1 %cmp3, label %if.then4, label %if.end6
+; <label>:6                                       ; preds = %0
+  %7 = tail call i32 @IV_writeStats(%struct._IV* %iv, %struct.__sFILE* %fp) #7, !dbg !467
+  tail call void @llvm.dbg.value(metadata i32 %7, i64 0, metadata !127, metadata !159), !dbg !469
+  %8 = icmp eq i32 %7, 0, !dbg !470
+  br i1 %8, label %9, label %12, !dbg !471
 
-if.then4:                                         ; preds = %if.end
-  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call5 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([88 x i8]* @.str26, i64 0, i64 0), %struct._IV* %iv, %struct._IO_FILE* %fp, i32 0, %struct._IV* %iv, %struct._IO_FILE* %fp) #5
-  br label %return
+; <label>:9                                       ; preds = %6
+  %10 = load %struct.__sFILE** @__stderrp, align 8, !dbg !472, !tbaa !168
+  %11 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %10, i8* getelementptr inbounds ([88 x i8]* @.str26, i64 0, i64 0), %struct._IV* %iv, %struct.__sFILE* %fp, i32 0, %struct._IV* %iv, %struct.__sFILE* %fp) #6, !dbg !474
+  br label %18, !dbg !475
 
-if.end6:                                          ; preds = %if.end
-  %size = getelementptr inbounds %struct._IV* %iv, i64 0, i32 0
-  %2 = load i32* %size, align 4, !tbaa !3
-  %vec = getelementptr inbounds %struct._IV* %iv, i64 0, i32 3
-  %3 = load i32** %vec, align 8, !tbaa !0
-  %call7 = call i32 @IVfp80(%struct._IO_FILE* %fp, i32 %2, i32* %3, i32 80, i32* %ierr) #5
-  br label %return
+; <label>:12                                      ; preds = %6
+  %13 = getelementptr inbounds %struct._IV* %iv, i64 0, i32 0, !dbg !476
+  %14 = load i32* %13, align 4, !dbg !476, !tbaa !251
+  %15 = getelementptr inbounds %struct._IV* %iv, i64 0, i32 3, !dbg !477
+  %16 = load i32** %15, align 8, !dbg !477, !tbaa !255
+  tail call void @llvm.dbg.value(metadata i32* %ierr, i64 0, metadata !126, metadata !159), !dbg !478
+  %17 = call i32 @IVfp80(%struct.__sFILE* %fp, i32 %14, i32* %16, i32 80, i32* %ierr) #6, !dbg !479
+  br label %18, !dbg !480
 
-return:                                           ; preds = %if.end6, %if.then4
-  %retval.0 = phi i32 [ 0, %if.then4 ], [ 1, %if.end6 ]
-  ret i32 %retval.0
+; <label>:18                                      ; preds = %12, %9
+  %.0 = phi i32 [ 0, %9 ], [ 1, %12 ]
+  ret i32 %.0, !dbg !481
 }

@@ -1,102 +1,106 @@
 define i32 @terminate_slice() #0 {
-entry:
-  %0 = load %struct.ImageParameters** @img, align 8, !tbaa !0
-  %currentSlice = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 50
-  %1 = load %struct.Slice** %currentSlice, align 8, !tbaa !0
-  %2 = load %struct.InputParameters** @input, align 8, !tbaa !0
-  %symbol_mode = getelementptr inbounds %struct.InputParameters* %2, i64 0, i32 59
-  %3 = load i32* %symbol_mode, align 4, !tbaa !3
-  %cmp = icmp eq i32 %3, 1
-  br i1 %cmp, label %if.then, label %for.cond.preheader
+  %1 = load %struct.ImageParameters** @img, align 8, !dbg !875, !tbaa !775
+  %2 = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 50, !dbg !876
+  %3 = load %struct.Slice** %2, align 8, !dbg !876, !tbaa !780
+  tail call void @llvm.dbg.value(metadata %struct.Slice* %3, i64 0, metadata !237, metadata !785), !dbg !877
+  %4 = load %struct.InputParameters** @input, align 8, !dbg !878, !tbaa !775
+  %5 = getelementptr inbounds %struct.InputParameters* %4, i64 0, i32 59, !dbg !880
+  %6 = load i32* %5, align 4, !dbg !880, !tbaa !841
+  %7 = icmp eq i32 %6, 1, !dbg !881
+  br i1 %7, label %8, label %.preheader, !dbg !882
 
-if.then:                                          ; preds = %entry
-  tail call void @write_terminating_bit(i16 signext 1) #4
-  br label %for.cond.preheader
+; <label>:8                                       ; preds = %0
+  tail call void @write_terminating_bit(i16 signext 1) #6, !dbg !883
+  br label %.preheader, !dbg !883
 
-for.cond.preheader:                               ; preds = %if.then, %entry
-  %max_part_nr = getelementptr inbounds %struct.Slice* %1, i64 0, i32 4
-  %4 = load i32* %max_part_nr, align 4, !tbaa !3
-  %cmp148 = icmp sgt i32 %4, 0
-  br i1 %cmp148, label %for.body.lr.ph, label %for.end
+.preheader:                                       ; preds = %8, %0
+  %9 = getelementptr inbounds %struct.Slice* %3, i64 0, i32 4, !dbg !884
+  %10 = load i32* %9, align 4, !dbg !884, !tbaa !887
+  %11 = icmp sgt i32 %10, 0, !dbg !888
+  br i1 %11, label %.lr.ph, label %._crit_edge, !dbg !889
 
-for.body.lr.ph:                                   ; preds = %for.cond.preheader
-  %partArr = getelementptr inbounds %struct.Slice* %1, i64 0, i32 6
-  br label %for.body
+.lr.ph:                                           ; preds = %.preheader
+  %12 = getelementptr inbounds %struct.Slice* %3, i64 0, i32 6, !dbg !890
+  br label %13, !dbg !889
 
-for.body:                                         ; preds = %for.inc, %for.body.lr.ph
-  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.inc ]
-  %5 = load %struct.datapartition** %partArr, align 8, !tbaa !0
-  %bitstream = getelementptr inbounds %struct.datapartition* %5, i64 %indvars.iv, i32 0
-  %6 = load %struct.Bitstream** %bitstream, align 8, !tbaa !0
-  %7 = load %struct.InputParameters** @input, align 8, !tbaa !0
-  %symbol_mode2 = getelementptr inbounds %struct.InputParameters* %7, i64 0, i32 59
-  %8 = load i32* %symbol_mode2, align 4, !tbaa !3
-  %cmp3 = icmp eq i32 %8, 0
-  br i1 %cmp3, label %if.then4, label %if.else
+; <label>:13                                      ; preds = %.lr.ph, %54
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %54 ]
+  %14 = load %struct.datapartition** %12, align 8, !dbg !890, !tbaa !821
+  %15 = getelementptr inbounds %struct.datapartition* %14, i64 %indvars.iv, i32 0, !dbg !892
+  %16 = load %struct.Bitstream** %15, align 8, !dbg !892, !tbaa !823
+  tail call void @llvm.dbg.value(metadata %struct.Bitstream* %16, i64 0, metadata !236, metadata !785), !dbg !893
+  %17 = load %struct.InputParameters** @input, align 8, !dbg !894, !tbaa !775
+  %18 = getelementptr inbounds %struct.InputParameters* %17, i64 0, i32 59, !dbg !896
+  %19 = load i32* %18, align 4, !dbg !896, !tbaa !841
+  %20 = icmp eq i32 %19, 0, !dbg !897
+  br i1 %20, label %21, label %34, !dbg !898
 
-if.then4:                                         ; preds = %for.body
-  tail call void @SODBtoRBSP(%struct.Bitstream* %6) #4
-  %byte_pos = getelementptr inbounds %struct.Bitstream* %6, i64 0, i32 0
-  %9 = load i32* %byte_pos, align 4, !tbaa !3
-  %streamBuffer = getelementptr inbounds %struct.Bitstream* %6, i64 0, i32 9
-  %10 = load i8** %streamBuffer, align 8, !tbaa !0
-  %call = tail call i32 @RBSPtoEBSP(i8* %10, i32 0, i32 %9, i32 0) #4
-  store i32 %call, i32* %byte_pos, align 4, !tbaa !3
-  %sub = sub nsw i32 %call, %9
-  %mul = shl i32 %sub, 3
-  %11 = load %struct.StatParameters** @stats, align 8, !tbaa !0
-  %em_prev_bits = getelementptr inbounds %struct.StatParameters* %11, i64 0, i32 31
-  %12 = load i32** %em_prev_bits, align 8, !tbaa !0
-  %13 = load i32* %12, align 4, !tbaa !3
-  %add = add nsw i32 %13, %mul
-  store i32 %add, i32* %12, align 4, !tbaa !3
-  br label %for.inc
+; <label>:21                                      ; preds = %13
+  tail call void @SODBtoRBSP(%struct.Bitstream* %16) #6, !dbg !899
+  %22 = getelementptr inbounds %struct.Bitstream* %16, i64 0, i32 0, !dbg !901
+  %23 = load i32* %22, align 4, !dbg !901, !tbaa !902
+  tail call void @llvm.dbg.value(metadata i32 %23, i64 0, metadata !240, metadata !785), !dbg !903
+  %24 = getelementptr inbounds %struct.Bitstream* %16, i64 0, i32 9, !dbg !904
+  %25 = load i8** %24, align 8, !dbg !904, !tbaa !855
+  %26 = tail call i32 @RBSPtoEBSP(i8* %25, i32 0, i32 %23, i32 0) #6, !dbg !905
+  store i32 %26, i32* %22, align 4, !dbg !906, !tbaa !902
+  %27 = sub nsw i32 %26, %23, !dbg !907
+  %28 = shl i32 %27, 3, !dbg !908
+  %29 = load %struct.StatParameters** @stats, align 8, !dbg !909, !tbaa !775
+  %30 = getelementptr inbounds %struct.StatParameters* %29, i64 0, i32 31, !dbg !910
+  %31 = load i32** %30, align 8, !dbg !910, !tbaa !911
+  %32 = load i32* %31, align 4, !dbg !913, !tbaa !914
+  %33 = add nsw i32 %32, %28, !dbg !913
+  store i32 %33, i32* %31, align 4, !dbg !913, !tbaa !914
+  br label %54, !dbg !915
 
-if.else:                                          ; preds = %for.body
-  %ee_cabac = getelementptr inbounds %struct.datapartition* %5, i64 %indvars.iv, i32 1
-  tail call void @arienco_done_encoding(%struct.EncodingEnvironment* %ee_cabac) #4
-  %Ebits_to_go = getelementptr inbounds %struct.datapartition* %5, i64 %indvars.iv, i32 1, i32 3
-  %14 = load i32* %Ebits_to_go, align 4, !tbaa !3
-  %bits_to_go = getelementptr inbounds %struct.Bitstream* %6, i64 0, i32 1
-  store i32 %14, i32* %bits_to_go, align 4, !tbaa !3
-  %byte_buf = getelementptr inbounds %struct.Bitstream* %6, i64 0, i32 2
-  store i8 0, i8* %byte_buf, align 1, !tbaa !1
-  %byte_pos11 = getelementptr inbounds %struct.Bitstream* %6, i64 0, i32 0
-  %15 = load i32* %byte_pos11, align 4, !tbaa !3
-  %streamBuffer13 = getelementptr inbounds %struct.Bitstream* %6, i64 0, i32 9
-  %16 = load i8** %streamBuffer13, align 8, !tbaa !0
-  %E = getelementptr inbounds %struct.datapartition* %5, i64 %indvars.iv, i32 1, i32 16
-  %17 = load i32* %E, align 4, !tbaa !3
-  %call15 = tail call i32 @RBSPtoEBSP(i8* %16, i32 0, i32 %15, i32 %17) #4
-  store i32 %call15, i32* %byte_pos11, align 4, !tbaa !3
-  %sub18 = sub nsw i32 %call15, %15
-  %mul19 = shl i32 %sub18, 3
-  %18 = load %struct.StatParameters** @stats, align 8, !tbaa !0
-  %em_prev_bits20 = getelementptr inbounds %struct.StatParameters* %18, i64 0, i32 31
-  %19 = load i32** %em_prev_bits20, align 8, !tbaa !0
-  %20 = load i32* %19, align 4, !tbaa !3
-  %add21 = add nsw i32 %20, %mul19
-  store i32 %add21, i32* %19, align 4, !tbaa !3
-  br label %for.inc
+; <label>:34                                      ; preds = %13
+  %35 = getelementptr inbounds %struct.datapartition* %14, i64 %indvars.iv, i32 1, !dbg !916
+  tail call void @llvm.dbg.value(metadata %struct.EncodingEnvironment* %35, i64 0, metadata !238, metadata !785), !dbg !918
+  tail call void @arienco_done_encoding(%struct.EncodingEnvironment* %35) #6, !dbg !919
+  %36 = getelementptr inbounds %struct.datapartition* %14, i64 %indvars.iv, i32 1, i32 3, !dbg !920
+  %37 = load i32* %36, align 4, !dbg !920, !tbaa !921
+  %38 = getelementptr inbounds %struct.Bitstream* %16, i64 0, i32 1, !dbg !922
+  store i32 %37, i32* %38, align 4, !dbg !923, !tbaa !850
+  %39 = getelementptr inbounds %struct.Bitstream* %16, i64 0, i32 2, !dbg !924
+  store i8 0, i8* %39, align 1, !dbg !925, !tbaa !926
+  %40 = getelementptr inbounds %struct.Bitstream* %16, i64 0, i32 0, !dbg !927
+  %41 = load i32* %40, align 4, !dbg !928, !tbaa !902
+  tail call void @llvm.dbg.value(metadata i32 %41, i64 0, metadata !240, metadata !785), !dbg !903
+  %42 = getelementptr inbounds %struct.Bitstream* %16, i64 0, i32 9, !dbg !929
+  %43 = load i8** %42, align 8, !dbg !929, !tbaa !855
+  %44 = getelementptr inbounds %struct.datapartition* %14, i64 %indvars.iv, i32 1, i32 16, !dbg !930
+  %45 = load i32* %44, align 4, !dbg !930, !tbaa !931
+  %46 = tail call i32 @RBSPtoEBSP(i8* %43, i32 0, i32 %41, i32 %45) #6, !dbg !932
+  store i32 %46, i32* %40, align 4, !dbg !933, !tbaa !902
+  %47 = sub nsw i32 %46, %41, !dbg !934
+  %48 = shl i32 %47, 3, !dbg !935
+  %49 = load %struct.StatParameters** @stats, align 8, !dbg !936, !tbaa !775
+  %50 = getelementptr inbounds %struct.StatParameters* %49, i64 0, i32 31, !dbg !937
+  %51 = load i32** %50, align 8, !dbg !937, !tbaa !911
+  %52 = load i32* %51, align 4, !dbg !938, !tbaa !914
+  %53 = add nsw i32 %52, %48, !dbg !938
+  store i32 %53, i32* %51, align 4, !dbg !938, !tbaa !914
+  br label %54
 
-for.inc:                                          ; preds = %if.then4, %if.else
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %21 = load i32* %max_part_nr, align 4, !tbaa !3
-  %22 = trunc i64 %indvars.iv.next to i32
-  %cmp1 = icmp slt i32 %22, %21
-  br i1 %cmp1, label %for.body, label %for.end
+; <label>:54                                      ; preds = %21, %34
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !889
+  %55 = load i32* %9, align 4, !dbg !884, !tbaa !887
+  %56 = sext i32 %55 to i64, !dbg !888
+  %57 = icmp slt i64 %indvars.iv.next, %56, !dbg !888
+  br i1 %57, label %13, label %._crit_edge, !dbg !889
 
-for.end:                                          ; preds = %for.inc, %for.cond.preheader
-  %23 = load %struct.InputParameters** @input, align 8, !tbaa !0
-  %symbol_mode23 = getelementptr inbounds %struct.InputParameters* %23, i64 0, i32 59
-  %24 = load i32* %symbol_mode23, align 4, !tbaa !3
-  %cmp24 = icmp eq i32 %24, 1
-  br i1 %cmp24, label %if.then25, label %if.end26
+._crit_edge:                                      ; preds = %54, %.preheader
+  %58 = load %struct.InputParameters** @input, align 8, !dbg !939, !tbaa !775
+  %59 = getelementptr inbounds %struct.InputParameters* %58, i64 0, i32 59, !dbg !941
+  %60 = load i32* %59, align 4, !dbg !941, !tbaa !841
+  %61 = icmp eq i32 %60, 1, !dbg !942
+  br i1 %61, label %62, label %63, !dbg !943
 
-if.then25:                                        ; preds = %for.end
-  tail call void (...)* @store_contexts() #4
-  br label %if.end26
+; <label>:62                                      ; preds = %._crit_edge
+  tail call void (...)* @store_contexts() #6, !dbg !944
+  br label %63, !dbg !946
 
-if.end26:                                         ; preds = %if.then25, %for.end
-  ret i32 0
+; <label>:63                                      ; preds = %62, %._crit_edge
+  ret i32 0, !dbg !947
 }

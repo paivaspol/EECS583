@@ -1,28 +1,29 @@
 define i32 @ChvList_isListNonempty(%struct._ChvList* %chvlist, i32 %ilist) #0 {
-entry:
-  %cmp = icmp eq %struct._ChvList* %chvlist, null
-  %cmp1 = icmp slt i32 %ilist, 0
-  %or.cond = or i1 %cmp, %cmp1
-  br i1 %or.cond, label %if.then, label %lor.lhs.false2
+  tail call void @llvm.dbg.value(metadata %struct._ChvList* %chvlist, i64 0, metadata !60, metadata !84), !dbg !85
+  tail call void @llvm.dbg.value(metadata i32 %ilist, i64 0, metadata !61, metadata !84), !dbg !86
+  %1 = icmp eq %struct._ChvList* %chvlist, null, !dbg !87
+  %2 = icmp slt i32 %ilist, 0, !dbg !89
+  %or.cond = or i1 %1, %2, !dbg !90
+  br i1 %or.cond, label %7, label %3, !dbg !90
 
-lor.lhs.false2:                                   ; preds = %entry
-  %nlist = getelementptr inbounds %struct._ChvList* %chvlist, i64 0, i32 0
-  %0 = load i32* %nlist, align 4, !tbaa !0
-  %cmp3 = icmp sgt i32 %0, %ilist
-  br i1 %cmp3, label %if.end, label %if.then
+; <label>:3                                       ; preds = %0
+  %4 = getelementptr inbounds %struct._ChvList* %chvlist, i64 0, i32 0, !dbg !91
+  %5 = load i32* %4, align 4, !dbg !91, !tbaa !92
+  %6 = icmp sgt i32 %5, %ilist, !dbg !98
+  br i1 %6, label %10, label %7, !dbg !99
 
-if.then:                                          ; preds = %lor.lhs.false2, %entry
-  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([59 x i8]* @.str, i64 0, i64 0), %struct._ChvList* %chvlist, i32 %ilist) #4
-  br label %if.end
+; <label>:7                                       ; preds = %3, %0
+  %8 = load %struct.__sFILE** @__stderrp, align 8, !dbg !100, !tbaa !102
+  %9 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %8, i8* getelementptr inbounds ([59 x i8]* @.str, i64 0, i64 0), %struct._ChvList* %chvlist, i32 %ilist) #5, !dbg !103
+  br label %10, !dbg !104
 
-if.end:                                           ; preds = %lor.lhs.false2, %if.then
-  %idxprom = sext i32 %ilist to i64
-  %heads = getelementptr inbounds %struct._ChvList* %chvlist, i64 0, i32 1
-  %2 = load %struct._Chv*** %heads, align 8, !tbaa !3
-  %arrayidx = getelementptr inbounds %struct._Chv** %2, i64 %idxprom
-  %3 = load %struct._Chv** %arrayidx, align 8, !tbaa !3
-  %cmp4 = icmp ne %struct._Chv* %3, null
-  %conv = zext i1 %cmp4 to i32
-  ret i32 %conv
+; <label>:10                                      ; preds = %3, %7
+  %11 = sext i32 %ilist to i64, !dbg !105
+  %12 = getelementptr inbounds %struct._ChvList* %chvlist, i64 0, i32 1, !dbg !106
+  %13 = load %struct._Chv*** %12, align 8, !dbg !106, !tbaa !107
+  %14 = getelementptr inbounds %struct._Chv** %13, i64 %11, !dbg !105
+  %15 = load %struct._Chv** %14, align 8, !dbg !105, !tbaa !102
+  %16 = icmp ne %struct._Chv* %15, null, !dbg !108
+  %17 = zext i1 %16 to i32, !dbg !108
+  ret i32 %17, !dbg !109
 }

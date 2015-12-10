@@ -1,0 +1,47 @@
+define internal fastcc void @_ZN3povL11Skip_TokensENS_9cond_typeE(i32 %cond) #0 {
+  tail call void @llvm.dbg.value(metadata i32 %cond, i64 0, metadata !1479, metadata !2141), !dbg !5259
+  %1 = load i32* @_ZN3pov8CS_IndexE, align 4, !dbg !5260, !tbaa !2146
+  tail call void @llvm.dbg.value(metadata i32 %1, i64 0, metadata !1480, metadata !2141), !dbg !5261
+  %2 = load i32* @_ZN3pov8SkippingE, align 4, !dbg !5262, !tbaa !2146
+  tail call void @llvm.dbg.value(metadata i32 %2, i64 0, metadata !1481, metadata !2141), !dbg !5263
+  store i32 1, i32* @_ZN3pov8SkippingE, align 4, !dbg !5264, !tbaa !2146
+  %3 = sext i32 %1 to i64, !dbg !5265
+  br label %4, !dbg !5266
+
+; <label>:4                                       ; preds = %.critedge, %0
+  %5 = phi i32 [ %.pre, %.critedge ], [ %1, %0 ]
+  %6 = icmp sgt i32 %5, %1, !dbg !5267
+  br i1 %6, label %.critedge, label %7, !dbg !5268
+
+; <label>:7                                       ; preds = %4
+  %8 = icmp eq i32 %5, %1, !dbg !5269
+  br i1 %8, label %9, label %.critedge1, !dbg !5270
+
+; <label>:9                                       ; preds = %7
+  %10 = load %"struct.pov::Cond_Stack_Entry"** @_ZN3pov10Cond_StackE, align 8, !dbg !5265, !tbaa !2174
+  %11 = getelementptr inbounds %"struct.pov::Cond_Stack_Entry"* %10, i64 %3, i32 0, !dbg !5271
+  %12 = load i32* %11, align 4, !dbg !5271, !tbaa !2209
+  %13 = icmp eq i32 %12, %cond, !dbg !5272
+  br i1 %13, label %.critedge, label %.critedge1, !dbg !5266
+
+.critedge:                                        ; preds = %4, %9
+  tail call void @_ZN3pov9Get_TokenEv() #11, !dbg !5273
+  %.pre = load i32* @_ZN3pov8CS_IndexE, align 4, !dbg !5275, !tbaa !2146
+  br label %4, !dbg !5266
+
+.critedge1:                                       ; preds = %7, %9
+  store i32 %2, i32* @_ZN3pov8SkippingE, align 4, !dbg !5276, !tbaa !2146
+  %14 = load i32* getelementptr inbounds (%"struct.pov::Token_Struct"* @_ZN3pov5TokenE, i64 0, i32 0), align 8, !dbg !5277, !tbaa !2467
+  %15 = icmp eq i32 %14, 157, !dbg !5279
+  br i1 %15, label %16, label %17, !dbg !5280
+
+; <label>:16                                      ; preds = %.critedge1
+  store i32 143, i32* getelementptr inbounds (%"struct.pov::Token_Struct"* @_ZN3pov5TokenE, i64 0, i32 0), align 8, !dbg !5281, !tbaa !2467
+  store i8 0, i8* getelementptr inbounds (%"struct.pov::Token_Struct"* @_ZN3pov5TokenE, i64 0, i32 13), align 8, !dbg !5283, !tbaa !2469
+  br label %17, !dbg !5284
+
+; <label>:17                                      ; preds = %.critedge1, %16
+  %storemerge = phi i32 [ 0, %16 ], [ 1, %.critedge1 ]
+  store i32 %storemerge, i32* getelementptr inbounds (%"struct.pov::Token_Struct"* @_ZN3pov5TokenE, i64 0, i32 7), align 8, !dbg !5285, !tbaa !2286
+  ret void, !dbg !5286
+}

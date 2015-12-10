@@ -1,31 +1,31 @@
 define void @free_mem2Dint64(i64** %array2D) #0 {
-entry:
-  %tobool = icmp eq i64** %array2D, null
-  br i1 %tobool, label %if.else4, label %if.then
+  tail call void @llvm.dbg.value(metadata i64** %array2D, i64 0, metadata !163, metadata !769), !dbg !1184
+  %1 = icmp eq i64** %array2D, null, !dbg !1185
+  br i1 %1, label %10, label %2, !dbg !1187
 
-if.then:                                          ; preds = %entry
-  %0 = load i64** %array2D, align 8, !tbaa !0
-  %tobool1 = icmp eq i64* %0, null
-  br i1 %tobool1, label %if.else, label %if.then2
+; <label>:2                                       ; preds = %0
+  %3 = load i64** %array2D, align 8, !dbg !1188, !tbaa !780
+  %4 = icmp eq i64* %3, null, !dbg !1188
+  br i1 %4, label %7, label %5, !dbg !1191
 
-if.then2:                                         ; preds = %if.then
-  %1 = bitcast i64* %0 to i8*
-  tail call void @free(i8* %1) #3
-  br label %if.end
+; <label>:5                                       ; preds = %2
+  %6 = bitcast i64* %3 to i8*, !dbg !1192
+  tail call void @free(i8* %6) #6, !dbg !1193
+  br label %8, !dbg !1193
 
-if.else:                                          ; preds = %if.then
-  tail call void @error(i8* getelementptr inbounds ([46 x i8]* @.str15, i64 0, i64 0), i32 100) #3
-  br label %if.end
+; <label>:7                                       ; preds = %2
+  tail call void @error(i8* getelementptr inbounds ([46 x i8]* @.str15, i64 0, i64 0), i32 100) #4, !dbg !1194
+  br label %8
 
-if.end:                                           ; preds = %if.else, %if.then2
-  %2 = bitcast i64** %array2D to i8*
-  tail call void @free(i8* %2) #3
-  br label %if.end5
+; <label>:8                                       ; preds = %7, %5
+  %9 = bitcast i64** %array2D to i8*, !dbg !1195
+  tail call void @free(i8* %9) #6, !dbg !1196
+  br label %11, !dbg !1197
 
-if.else4:                                         ; preds = %entry
-  tail call void @error(i8* getelementptr inbounds ([46 x i8]* @.str15, i64 0, i64 0), i32 100) #3
-  br label %if.end5
+; <label>:10                                      ; preds = %0
+  tail call void @error(i8* getelementptr inbounds ([46 x i8]* @.str15, i64 0, i64 0), i32 100) #4, !dbg !1198
+  br label %11
 
-if.end5:                                          ; preds = %if.else4, %if.end
-  ret void
+; <label>:11                                      ; preds = %10, %8
+  ret void, !dbg !1200
 }

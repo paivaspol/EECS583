@@ -1,44 +1,51 @@
 define void @IVinvPerm(i32 %size, i32* %y, i32* %index) #0 {
-entry:
-  %cmp = icmp sgt i32 %size, 0
-  br i1 %cmp, label %if.then, label %if.end10
+  tail call void @llvm.dbg.value(metadata i32 %size, i64 0, metadata !197, metadata !380), !dbg !705
+  tail call void @llvm.dbg.value(metadata i32* %y, i64 0, metadata !198, metadata !380), !dbg !706
+  tail call void @llvm.dbg.value(metadata i32* %index, i64 0, metadata !199, metadata !380), !dbg !707
+  %1 = icmp sgt i32 %size, 0, !dbg !708
+  br i1 %1, label %2, label %IVfree.exit, !dbg !709
 
-if.then:                                          ; preds = %entry
-  %cmp1 = icmp eq i32* %y, null
-  %cmp2 = icmp eq i32* %index, null
-  %or.cond = or i1 %cmp1, %cmp2
-  br i1 %or.cond, label %if.then3, label %for.body.lr.ph
+; <label>:2                                       ; preds = %0
+  %3 = icmp eq i32* %y, null, !dbg !710
+  %4 = icmp eq i32* %index, null, !dbg !711
+  %or.cond = or i1 %3, %4, !dbg !712
+  br i1 %or.cond, label %5, label %.lr.ph, !dbg !712
 
-if.then3:                                         ; preds = %if.then
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([73 x i8]* @.str15, i64 0, i64 0), i32 %size, i32* %y, i32* %index) #6
-  tail call void @exit(i32 -1) #7
-  unreachable
+; <label>:5                                       ; preds = %2
+  %6 = load %struct.__sFILE** @__stderrp, align 8, !dbg !713, !tbaa !399
+  %7 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %6, i8* getelementptr inbounds ([73 x i8]* @.str15, i64 0, i64 0), i32 %size, i32* %y, i32* %index) #8, !dbg !715
+  tail call void @exit(i32 -1) #9, !dbg !716
+  unreachable, !dbg !716
 
-for.body.lr.ph:                                   ; preds = %if.then
-  %call4 = tail call i32* @IVinit2(i32 %size) #8
-  tail call void @IVcopy(i32 %size, i32* %call4, i32* %y) #8
-  br label %for.body
+.lr.ph:                                           ; preds = %2
+  %8 = tail call i32* @IVinit2(i32 %size) #11, !dbg !717
+  tail call void @llvm.dbg.value(metadata i32* %8, i64 0, metadata !200, metadata !380), !dbg !718
+  tail call void @IVcopy(i32 %size, i32* %8, i32* %y) #11, !dbg !719
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !205, metadata !380), !dbg !720
+  %9 = add i32 %size, -1, !dbg !721
+  br label %10, !dbg !721
 
-for.body:                                         ; preds = %for.body, %for.body.lr.ph
-  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
-  %arrayidx = getelementptr inbounds i32* %call4, i64 %indvars.iv
-  %1 = load i32* %arrayidx, align 4, !tbaa !3
-  %arrayidx7 = getelementptr inbounds i32* %index, i64 %indvars.iv
-  %2 = load i32* %arrayidx7, align 4, !tbaa !3
-  %idxprom8 = sext i32 %2 to i64
-  %arrayidx9 = getelementptr inbounds i32* %y, i64 %idxprom8
-  store i32 %1, i32* %arrayidx9, align 4, !tbaa !3
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %size
-  br i1 %exitcond, label %if.then2.i, label %for.body
+; <label>:10                                      ; preds = %10, %.lr.ph
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %10 ]
+  %11 = getelementptr inbounds i32* %8, i64 %indvars.iv, !dbg !723
+  %12 = load i32* %11, align 4, !dbg !723, !tbaa !414
+  %13 = getelementptr inbounds i32* %index, i64 %indvars.iv, !dbg !726
+  %14 = load i32* %13, align 4, !dbg !726, !tbaa !414
+  %15 = sext i32 %14 to i64, !dbg !727
+  %16 = getelementptr inbounds i32* %y, i64 %15, !dbg !727
+  store i32 %12, i32* %16, align 4, !dbg !728, !tbaa !414
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !721
+  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !721
+  %exitcond = icmp eq i32 %lftr.wideiv, %9, !dbg !721
+  br i1 %exitcond, label %17, label %10, !dbg !721
 
-if.then2.i:                                       ; preds = %for.body
-  %3 = bitcast i32* %call4 to i8*
-  tail call void @free(i8* %3) #6
-  br label %if.end10
+; <label>:17                                      ; preds = %10
+  tail call void @llvm.dbg.value(metadata i32* %8, i64 0, metadata !147, metadata !380) #5, !dbg !729
+  %18 = bitcast i32* %8 to i8*, !dbg !731
+  tail call void @free(i8* %18) #8, !dbg !731
+  tail call void @llvm.dbg.value(metadata i32* null, i64 0, metadata !147, metadata !380) #5, !dbg !729
+  br label %IVfree.exit, !dbg !731
 
-if.end10:                                         ; preds = %if.then2.i, %entry
-  ret void
+IVfree.exit:                                      ; preds = %17, %0
+  ret void, !dbg !732
 }

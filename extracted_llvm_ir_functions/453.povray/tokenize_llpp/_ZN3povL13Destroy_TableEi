@@ -1,0 +1,40 @@
+define internal fastcc void @_ZN3povL13Destroy_TableEi(i32 %index) #0 {
+  tail call void @llvm.dbg.value(metadata i32 %index, i64 0, metadata !1494, metadata !2141), !dbg !2433
+  %1 = sext i32 %index to i64, !dbg !2434
+  %2 = getelementptr inbounds [100 x %"struct.pov::Sym_Table_Struct"*]* @_ZN3pov6TablesE, i64 0, i64 %1, !dbg !2434
+  %3 = load %"struct.pov::Sym_Table_Struct"** %2, align 8, !dbg !2434, !tbaa !2174
+  tail call void @llvm.dbg.value(metadata %"struct.pov::Sym_Table_Struct"* %3, i64 0, metadata !1496, metadata !2141), !dbg !2435
+  tail call void @llvm.dbg.value(metadata i32 256, i64 0, metadata !1495, metadata !2141), !dbg !2436
+  br label %4, !dbg !2437
+
+; <label>:4                                       ; preds = %0, %._crit_edge
+  %indvars.iv = phi i64 [ 256, %0 ], [ %indvars.iv.next, %._crit_edge ]
+  %5 = getelementptr inbounds %"struct.pov::Sym_Table_Struct"* %3, i64 0, i32 1, i64 %indvars.iv, !dbg !2439
+  %6 = load %"struct.pov::Sym_Table_Entry"** %5, align 8, !dbg !2439, !tbaa !2174
+  tail call void @llvm.dbg.value(metadata %"struct.pov::Sym_Table_Entry"* %6, i64 0, metadata !1497, metadata !2141), !dbg !2442
+  %7 = icmp eq %"struct.pov::Sym_Table_Entry"* %6, null, !dbg !2443
+  br i1 %7, label %._crit_edge, label %.lr.ph, !dbg !2444
+
+.lr.ph:                                           ; preds = %4, %.lr.ph
+  %Entry.01 = phi %"struct.pov::Sym_Table_Entry"* [ %8, %.lr.ph ], [ %6, %4 ]
+  %8 = tail call %"struct.pov::Sym_Table_Entry"* @_ZN3pov13Destroy_EntryEiPNS_15Sym_Table_EntryE(i32 %index, %"struct.pov::Sym_Table_Entry"* %Entry.01) #11, !dbg !2445
+  tail call void @llvm.dbg.value(metadata %"struct.pov::Sym_Table_Entry"* %8, i64 0, metadata !1497, metadata !2141), !dbg !2442
+  %9 = icmp eq %"struct.pov::Sym_Table_Entry"* %8, null, !dbg !2443
+  br i1 %9, label %._crit_edge, label %.lr.ph, !dbg !2444
+
+._crit_edge:                                      ; preds = %.lr.ph, %4
+  store %"struct.pov::Sym_Table_Entry"* null, %"struct.pov::Sym_Table_Entry"** %5, align 8, !dbg !2447, !tbaa !2174
+  %indvars.iv.next = add nsw i64 %indvars.iv, -1, !dbg !2437
+  %10 = icmp sgt i64 %indvars.iv, 0, !dbg !2448
+  br i1 %10, label %4, label %11, !dbg !2437
+
+; <label>:11                                      ; preds = %._crit_edge
+  %12 = getelementptr inbounds %"struct.pov::Sym_Table_Struct"* %3, i64 0, i32 0, !dbg !2449
+  %13 = load i8** %12, align 8, !dbg !2449, !tbaa !2451
+  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %13, i8* getelementptr inbounds ([69 x i8]* @.str537, i64 0, i64 0), i32 3140) #11, !dbg !2449
+  store i8* null, i8** %12, align 8, !dbg !2449, !tbaa !2451
+  %14 = bitcast %"struct.pov::Sym_Table_Struct"* %3 to i8*, !dbg !2453
+  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %14, i8* getelementptr inbounds ([69 x i8]* @.str537, i64 0, i64 0), i32 3141) #11, !dbg !2453
+  tail call void @llvm.dbg.value(metadata %"struct.pov::Sym_Table_Struct"* null, i64 0, metadata !1496, metadata !2141), !dbg !2435
+  ret void, !dbg !2455
+}

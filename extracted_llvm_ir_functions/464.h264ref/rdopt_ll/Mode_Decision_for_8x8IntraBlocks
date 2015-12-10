@@ -1,27 +1,35 @@
 define i32 @Mode_Decision_for_8x8IntraBlocks(i32 %b8, double %lambda, i32* nocapture %cost) #0 {
-entry:
   %cost4x4 = alloca i32, align 4
-  %mul = fmul double %lambda, 6.000000e+00
-  %add = fadd double %mul, 4.999000e-01
-  %call = call double @floor(double %add) #9
-  %conv = fptosi double %call to i32
-  store i32 %conv, i32* %cost, align 4, !tbaa !3
-  br label %for.body
+  tail call void @llvm.dbg.value(metadata i32 %b8, i64 0, metadata !470, metadata !1629), !dbg !2876
+  tail call void @llvm.dbg.value(metadata double %lambda, i64 0, metadata !471, metadata !1629), !dbg !2877
+  tail call void @llvm.dbg.value(metadata i32* %cost, i64 0, metadata !472, metadata !1629), !dbg !2878
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !473, metadata !1629), !dbg !2879
+  %1 = fmul double %lambda, 6.000000e+00, !dbg !2880
+  %2 = fadd double %1, 4.999000e-01, !dbg !2881
+  %3 = tail call double @floor(double %2) #9, !dbg !2882
+  %4 = fptosi double %3 to i32, !dbg !2883
+  store i32 %4, i32* %cost, align 4, !dbg !2884, !tbaa !1942
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !474, metadata !1629), !dbg !2885
+  br label %5, !dbg !2886
 
-for.body:                                         ; preds = %for.body, %entry
-  %b4.09 = phi i32 [ 0, %entry ], [ %inc, %for.body ]
-  %nonzero.08 = phi i32 [ 0, %entry ], [ %nonzero.0., %for.body ]
-  %call2 = call i32 @Mode_Decision_for_4x4IntraBlocks(i32 %b8, i32 %b4.09, double %lambda, i32* %cost4x4) #10
-  %tobool = icmp eq i32 %call2, 0
-  %nonzero.0. = select i1 %tobool, i32 %nonzero.08, i32 1
-  %0 = load i32* %cost4x4, align 4, !tbaa !3
-  %1 = load i32* %cost, align 4, !tbaa !3
-  %add3 = add nsw i32 %1, %0
-  store i32 %add3, i32* %cost, align 4, !tbaa !3
-  %inc = add nsw i32 %b4.09, 1
-  %exitcond = icmp eq i32 %inc, 4
-  br i1 %exitcond, label %for.end, label %for.body
+; <label>:5                                       ; preds = %5, %0
+  %b4.02 = phi i32 [ 0, %0 ], [ %11, %5 ]
+  %nonzero.01 = phi i32 [ 0, %0 ], [ %nonzero.0., %5 ]
+  tail call void @llvm.dbg.value(metadata i32* %cost4x4, i64 0, metadata !475, metadata !1629), !dbg !2888
+  %6 = call i32 @Mode_Decision_for_4x4IntraBlocks(i32 %b8, i32 %b4.02, double %lambda, i32* %cost4x4) #10, !dbg !2889
+  %7 = icmp eq i32 %6, 0, !dbg !2889
+  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !473, metadata !1629), !dbg !2879
+  %nonzero.0. = select i1 %7, i32 %nonzero.01, i32 1, !dbg !2893
+  tail call void @llvm.dbg.value(metadata i32* %cost4x4, i64 0, metadata !475, metadata !1629), !dbg !2888
+  %8 = load i32* %cost4x4, align 4, !dbg !2894, !tbaa !1942
+  %9 = load i32* %cost, align 4, !dbg !2895, !tbaa !1942
+  %10 = add nsw i32 %9, %8, !dbg !2895
+  store i32 %10, i32* %cost, align 4, !dbg !2895, !tbaa !1942
+  %11 = add nuw nsw i32 %b4.02, 1, !dbg !2896
+  tail call void @llvm.dbg.value(metadata i32 %11, i64 0, metadata !474, metadata !1629), !dbg !2885
+  %exitcond = icmp eq i32 %11, 4, !dbg !2886
+  br i1 %exitcond, label %12, label %5, !dbg !2886
 
-for.end:                                          ; preds = %for.body
-  ret i32 %nonzero.0.
+; <label>:12                                      ; preds = %5
+  ret i32 %nonzero.0., !dbg !2897
 }

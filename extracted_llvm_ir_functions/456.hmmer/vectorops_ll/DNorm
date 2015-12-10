@@ -1,51 +1,64 @@
 define void @DNorm(double* nocapture %vec, i32 %n) #0 {
-entry:
-  %cmp4.i = icmp sgt i32 %n, 0
-  br i1 %cmp4.i, label %for.body.i, label %if.end
+  tail call void @llvm.dbg.value(metadata double* %vec, i64 0, metadata !156, metadata !206), !dbg !467
+  tail call void @llvm.dbg.value(metadata i32 %n, i64 0, metadata !157, metadata !206), !dbg !468
+  tail call void @llvm.dbg.value(metadata double* %vec, i64 0, metadata !42, metadata !206), !dbg !469
+  tail call void @llvm.dbg.value(metadata i32 %n, i64 0, metadata !43, metadata !206), !dbg !471
+  tail call void @llvm.dbg.value(metadata double 0.000000e+00, i64 0, metadata !44, metadata !206), !dbg !472
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !45, metadata !206), !dbg !473
+  %1 = icmp sgt i32 %n, 0, !dbg !474
+  br i1 %1, label %.lr.ph.i, label %.loopexit, !dbg !475
 
-for.cond2.preheader:                              ; preds = %DSum.exit
-  br i1 %cmp4.i, label %for.body4.lr.ph, label %if.end
+DSum.exit.thread.preheader:                       ; preds = %DSum.exit
+  br i1 %1, label %.lr.ph4, label %.loopexit, !dbg !476
 
-for.body4.lr.ph:                                  ; preds = %for.cond2.preheader
-  %conv = sitofp i32 %n to double
-  %div5 = fdiv double 1.000000e+00, %conv
-  br label %for.body4
+.lr.ph4:                                          ; preds = %DSum.exit.thread.preheader
+  %2 = sitofp i32 %n to double, !dbg !479
+  %3 = fdiv double 1.000000e+00, %2, !dbg !481
+  %4 = add i32 %n, -1, !dbg !476
+  br label %DSum.exit.thread, !dbg !476
 
-for.body.i:                                       ; preds = %entry, %for.body.i
-  %indvars.iv.i = phi i64 [ %indvars.iv.next.i, %for.body.i ], [ 0, %entry ]
-  %sum.05.i = phi double [ %add.i, %for.body.i ], [ 0.000000e+00, %entry ]
-  %arrayidx.i = getelementptr inbounds double* %vec, i64 %indvars.iv.i
-  %0 = load double* %arrayidx.i, align 8, !tbaa !0
-  %add.i = fadd double %sum.05.i, %0
-  %indvars.iv.next.i = add i64 %indvars.iv.i, 1
-  %lftr.wideiv32 = trunc i64 %indvars.iv.next.i to i32
-  %exitcond33 = icmp eq i32 %lftr.wideiv32, %n
-  br i1 %exitcond33, label %DSum.exit, label %for.body.i
+.lr.ph.i:                                         ; preds = %0
+  %5 = add i32 %n, -1, !dbg !475
+  br label %6, !dbg !475
 
-DSum.exit:                                        ; preds = %for.body.i
-  %cmp = fcmp une double %add.i, 0.000000e+00
-  br i1 %cmp, label %for.body, label %for.cond2.preheader
+; <label>:6                                       ; preds = %6, %.lr.ph.i
+  %indvars.iv.i = phi i64 [ 0, %.lr.ph.i ], [ %indvars.iv.next.i, %6 ], !dbg !482
+  %sum.01.i = phi double [ 0.000000e+00, %.lr.ph.i ], [ %9, %6 ], !dbg !482
+  %7 = getelementptr inbounds double* %vec, i64 %indvars.iv.i, !dbg !483
+  %8 = load double* %7, align 8, !dbg !483, !tbaa !217
+  %9 = fadd double %sum.01.i, %8, !dbg !484
+  tail call void @llvm.dbg.value(metadata double %9, i64 0, metadata !44, metadata !206), !dbg !472
+  %indvars.iv.next.i = add nuw nsw i64 %indvars.iv.i, 1, !dbg !475
+  %lftr.wideiv9 = trunc i64 %indvars.iv.i to i32, !dbg !475
+  %exitcond10 = icmp eq i32 %lftr.wideiv9, %5, !dbg !475
+  br i1 %exitcond10, label %DSum.exit, label %6, !dbg !475
 
-for.body:                                         ; preds = %DSum.exit, %for.body
-  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %DSum.exit ]
-  %arrayidx = getelementptr inbounds double* %vec, i64 %indvars.iv
-  %1 = load double* %arrayidx, align 8, !tbaa !0
-  %div = fdiv double %1, %add.i
-  store double %div, double* %arrayidx, align 8, !tbaa !0
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %n
-  br i1 %exitcond, label %if.end, label %for.body
+DSum.exit:                                        ; preds = %6
+  tail call void @llvm.dbg.value(metadata double %9, i64 0, metadata !159, metadata !206), !dbg !485
+  %10 = fcmp une double %9, 0.000000e+00, !dbg !486
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !158, metadata !206), !dbg !487
+  br i1 %10, label %.lr.ph, label %DSum.exit.thread.preheader, !dbg !488
 
-for.body4:                                        ; preds = %for.body4, %for.body4.lr.ph
-  %indvars.iv28 = phi i64 [ 0, %for.body4.lr.ph ], [ %indvars.iv.next29, %for.body4 ]
-  %arrayidx7 = getelementptr inbounds double* %vec, i64 %indvars.iv28
-  store double %div5, double* %arrayidx7, align 8, !tbaa !0
-  %indvars.iv.next29 = add i64 %indvars.iv28, 1
-  %lftr.wideiv30 = trunc i64 %indvars.iv.next29 to i32
-  %exitcond31 = icmp eq i32 %lftr.wideiv30, %n
-  br i1 %exitcond31, label %if.end, label %for.body4
+.lr.ph:                                           ; preds = %DSum.exit, %.lr.ph
+  %indvars.iv = phi i64 [ %indvars.iv.next, %.lr.ph ], [ 0, %DSum.exit ]
+  %11 = getelementptr inbounds double* %vec, i64 %indvars.iv, !dbg !489
+  %12 = load double* %11, align 8, !dbg !492, !tbaa !217
+  %13 = fdiv double %12, %9, !dbg !492
+  store double %13, double* %11, align 8, !dbg !492, !tbaa !217
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !493
+  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !493
+  %exitcond = icmp eq i32 %lftr.wideiv, %5, !dbg !493
+  br i1 %exitcond, label %.loopexit, label %.lr.ph, !dbg !493
 
-if.end:                                           ; preds = %entry, %for.cond2.preheader, %for.body4, %for.body
-  ret void
+DSum.exit.thread:                                 ; preds = %DSum.exit.thread, %.lr.ph4
+  %indvars.iv5 = phi i64 [ 0, %.lr.ph4 ], [ %indvars.iv.next6, %DSum.exit.thread ]
+  %14 = getelementptr inbounds double* %vec, i64 %indvars.iv5, !dbg !494
+  store double %3, double* %14, align 8, !dbg !495, !tbaa !217
+  %indvars.iv.next6 = add nuw nsw i64 %indvars.iv5, 1, !dbg !476
+  %lftr.wideiv7 = trunc i64 %indvars.iv5 to i32, !dbg !476
+  %exitcond8 = icmp eq i32 %lftr.wideiv7, %4, !dbg !476
+  br i1 %exitcond8, label %.loopexit, label %DSum.exit.thread, !dbg !476
+
+.loopexit:                                        ; preds = %DSum.exit.thread, %.lr.ph, %0, %DSum.exit.thread.preheader
+  ret void, !dbg !496
 }

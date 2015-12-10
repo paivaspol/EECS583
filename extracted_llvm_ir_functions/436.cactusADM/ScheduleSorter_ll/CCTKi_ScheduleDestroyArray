@@ -1,29 +1,31 @@
 define void @CCTKi_ScheduleDestroyArray(i32 %size, i8** %array) #1 {
-  %1 = icmp eq i8** %array, null
-  br i1 %1, label %9, label %.preheader
+  tail call void @llvm.dbg.value(metadata i32 %size, i64 0, metadata !51, metadata !87), !dbg !240
+  tail call void @llvm.dbg.value(metadata i8** %array, i64 0, metadata !52, metadata !87), !dbg !241
+  %1 = icmp eq i8** %array, null, !dbg !242
+  br i1 %1, label %9, label %.preheader, !dbg !244
 
 .preheader:                                       ; preds = %0
-  %2 = icmp sgt i32 %size, 0
-  br i1 %2, label %.lr.ph, label %._crit_edge
+  %2 = icmp sgt i32 %size, 0, !dbg !245
+  br i1 %2, label %.lr.ph, label %._crit_edge, !dbg !249
 
 .lr.ph:                                           ; preds = %.preheader
   %3 = sext i32 %size to i64
-  br label %4
+  br label %4, !dbg !249
 
 ; <label>:4                                       ; preds = %.lr.ph, %4
   %indvars.iv = phi i64 [ %3, %.lr.ph ], [ %indvars.iv.next, %4 ]
-  %indvars.iv.next = add nsw i64 %indvars.iv, -1
-  %5 = getelementptr inbounds i8** %array, i64 %indvars.iv.next
-  %6 = load i8** %5, align 8, !tbaa !2
-  tail call void @free(i8* %6) #5
-  %7 = icmp sgt i64 %indvars.iv, 1
-  br i1 %7, label %4, label %._crit_edge
+  %indvars.iv.next = add nsw i64 %indvars.iv, -1, !dbg !249
+  %5 = getelementptr inbounds i8** %array, i64 %indvars.iv.next, !dbg !250
+  %6 = load i8** %5, align 8, !dbg !250, !tbaa !117
+  tail call void @free(i8* %6) #6, !dbg !252
+  %7 = icmp sgt i64 %indvars.iv, 1, !dbg !245
+  br i1 %7, label %4, label %._crit_edge, !dbg !249
 
 ._crit_edge:                                      ; preds = %4, %.preheader
-  %8 = bitcast i8** %array to i8*
-  tail call void @free(i8* %8) #5
-  br label %9
+  %8 = bitcast i8** %array to i8*, !dbg !253
+  tail call void @free(i8* %8) #6, !dbg !254
+  br label %9, !dbg !255
 
 ; <label>:9                                       ; preds = %0, %._crit_edge
-  ret void
+  ret void, !dbg !256
 }

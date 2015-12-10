@@ -1,26 +1,27 @@
-define i32 @B8Mode2Value(i32 %b8mode, i32 %b8pdir) #2 {
-entry:
-  %0 = load %struct.ImageParameters** @img, align 8, !tbaa !0
-  %type = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 6
-  %1 = load i32* %type, align 4, !tbaa !3
-  %cmp = icmp eq i32 %1, 1
-  br i1 %cmp, label %if.else, label %if.then
+define i32 @B8Mode2Value(i32 %b8mode, i32 %b8pdir) #3 {
+  tail call void @llvm.dbg.value(metadata i32 %b8mode, i64 0, metadata !830, metadata !1584), !dbg !5419
+  tail call void @llvm.dbg.value(metadata i32 %b8pdir, i64 0, metadata !831, metadata !1584), !dbg !5420
+  %1 = load %struct.ImageParameters** @img, align 8, !dbg !5421, !tbaa !1587
+  %2 = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 6, !dbg !5423
+  %3 = load i32* %2, align 4, !dbg !5423, !tbaa !1721
+  %4 = icmp eq i32 %3, 1, !dbg !5424
+  br i1 %4, label %7, label %5, !dbg !5425
 
-if.then:                                          ; preds = %entry
-  %sub = add nsw i32 %b8mode, -4
-  br label %return
+; <label>:5                                       ; preds = %0
+  %6 = add nsw i32 %b8mode, -4, !dbg !5426
+  br label %15, !dbg !5428
 
-if.else:                                          ; preds = %entry
-  %idxprom = sext i32 %b8mode to i64
-  %arrayidx = getelementptr inbounds [8 x i32]* @B8Mode2Value.b8start, i64 0, i64 %idxprom
-  %2 = load i32* %arrayidx, align 4, !tbaa !3
-  %arrayidx2 = getelementptr inbounds [8 x i32]* @B8Mode2Value.b8inc, i64 0, i64 %idxprom
-  %3 = load i32* %arrayidx2, align 4, !tbaa !3
-  %mul = mul nsw i32 %3, %b8pdir
-  %add = add nsw i32 %mul, %2
-  br label %return
+; <label>:7                                       ; preds = %0
+  %8 = sext i32 %b8mode to i64, !dbg !5429
+  %9 = getelementptr inbounds [8 x i32]* @B8Mode2Value.b8start, i64 0, i64 %8, !dbg !5429
+  %10 = load i32* %9, align 4, !dbg !5429, !tbaa !1719
+  %11 = getelementptr inbounds [8 x i32]* @B8Mode2Value.b8inc, i64 0, i64 %8, !dbg !5431
+  %12 = load i32* %11, align 4, !dbg !5431, !tbaa !1719
+  %13 = mul nsw i32 %12, %b8pdir, !dbg !5432
+  %14 = add nsw i32 %13, %10, !dbg !5433
+  br label %15, !dbg !5434
 
-return:                                           ; preds = %if.else, %if.then
-  %retval.0 = phi i32 [ %sub, %if.then ], [ %add, %if.else ]
-  ret i32 %retval.0
+; <label>:15                                      ; preds = %7, %5
+  %.0 = phi i32 [ %6, %5 ], [ %14, %7 ]
+  ret i32 %.0, !dbg !5435
 }

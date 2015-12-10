@@ -1,75 +1,80 @@
 define i32 @GCGBinaryToSequence(i8* nocapture %seq, i32 %len) #0 {
-entry:
-  %sub = add nsw i32 %len, -1
-  %cmp46 = icmp sgt i32 %sub, -4
-  br i1 %cmp46, label %for.body.lr.ph, label %for.end22
+  tail call void @llvm.dbg.value(metadata i8* %seq, i64 0, metadata !355, metadata !624), !dbg !2244
+  tail call void @llvm.dbg.value(metadata i32 %len, i64 0, metadata !356, metadata !624), !dbg !2245
+  %1 = add nsw i32 %len, -1, !dbg !2246
+  tail call void @llvm.dbg.value(metadata i32 %3, i64 0, metadata !357, metadata !624), !dbg !2248
+  %2 = icmp sgt i32 %1, -4, !dbg !2249
+  br i1 %2, label %.lr.ph, label %._crit_edge, !dbg !2251
 
-for.body.lr.ph:                                   ; preds = %entry
-  %div = sdiv i32 %sub, 4
-  %0 = sext i32 %div to i64
-  br label %for.body
+.lr.ph:                                           ; preds = %0
+  %3 = sdiv i32 %1, 4, !dbg !2252
+  %4 = sext i32 %3 to i64
+  br label %5, !dbg !2251
 
-for.body:                                         ; preds = %for.body.lr.ph, %for.inc20
-  %indvars.iv52 = phi i64 [ %0, %for.body.lr.ph ], [ %indvars.iv.next53, %for.inc20 ]
-  %arrayidx = getelementptr inbounds i8* %seq, i64 %indvars.iv52
-  %1 = load i8* %arrayidx, align 1, !tbaa !1
-  %2 = trunc i64 %indvars.iv52 to i32
-  %mul = shl nsw i32 %2, 2
-  %3 = sext i32 %mul to i64
-  br label %for.body3
+; <label>:5                                       ; preds = %.lr.ph, %30
+  %indvars.iv4 = phi i64 [ %4, %.lr.ph ], [ %indvars.iv.next5, %30 ]
+  %6 = getelementptr inbounds i8* %seq, i64 %indvars.iv4, !dbg !2253
+  %7 = load i8* %6, align 1, !dbg !2253, !tbaa !861
+  tail call void @llvm.dbg.value(metadata i8 %7, i64 0, metadata !359, metadata !624), !dbg !2255
+  %8 = trunc i64 %indvars.iv4 to i32, !dbg !2256
+  %9 = shl nsw i32 %8, 2, !dbg !2256
+  tail call void @llvm.dbg.value(metadata i32 %9, i64 0, metadata !358, metadata !624), !dbg !2257
+  tail call void @llvm.dbg.value(metadata i32 3, i64 0, metadata !360, metadata !624), !dbg !2258
+  %10 = sext i32 %9 to i64, !dbg !2259
+  br label %11, !dbg !2259
 
-for.body3:                                        ; preds = %for.body, %sw.epilog
-  %indvars.iv = phi i64 [ 3, %for.body ], [ %indvars.iv.next, %sw.epilog ]
-  %twobit.044 = phi i8 [ %1, %for.body ], [ %conv19, %sw.epilog ]
-  %conv = sext i8 %twobit.044 to i32
-  %and = and i32 %conv, 3
-  switch i32 %and, label %sw.epilog [
-    i32 0, label %sw.bb
-    i32 1, label %sw.bb6
-    i32 2, label %sw.bb10
-    i32 3, label %sw.bb14
-  ]
+; <label>:11                                      ; preds = %5, %26
+  %indvars.iv = phi i64 [ 3, %5 ], [ %indvars.iv.next, %26 ]
+  %twobit.01 = phi i8 [ %7, %5 ], [ %28, %26 ]
+  %12 = sext i8 %twobit.01 to i32, !dbg !2261
+  %13 = and i32 %12, 3, !dbg !2264
+  switch i32 %13, label %26 [
+    i32 0, label %14
+    i32 1, label %17
+    i32 2, label %20
+    i32 3, label %23
+  ], !dbg !2265
 
-sw.bb:                                            ; preds = %for.body3
-  %4 = add nsw i64 %indvars.iv, %3
-  %arrayidx5 = getelementptr inbounds i8* %seq, i64 %4
-  store i8 67, i8* %arrayidx5, align 1, !tbaa !1
-  br label %sw.epilog
+; <label>:14                                      ; preds = %11
+  %15 = add nsw i64 %indvars.iv, %10, !dbg !2266
+  %16 = getelementptr inbounds i8* %seq, i64 %15, !dbg !2268
+  store i8 67, i8* %16, align 1, !dbg !2269, !tbaa !861
+  br label %26, !dbg !2270
 
-sw.bb6:                                           ; preds = %for.body3
-  %5 = add nsw i64 %indvars.iv, %3
-  %arrayidx9 = getelementptr inbounds i8* %seq, i64 %5
-  store i8 84, i8* %arrayidx9, align 1, !tbaa !1
-  br label %sw.epilog
+; <label>:17                                      ; preds = %11
+  %18 = add nsw i64 %indvars.iv, %10, !dbg !2271
+  %19 = getelementptr inbounds i8* %seq, i64 %18, !dbg !2272
+  store i8 84, i8* %19, align 1, !dbg !2273, !tbaa !861
+  br label %26, !dbg !2274
 
-sw.bb10:                                          ; preds = %for.body3
-  %6 = add nsw i64 %indvars.iv, %3
-  %arrayidx13 = getelementptr inbounds i8* %seq, i64 %6
-  store i8 65, i8* %arrayidx13, align 1, !tbaa !1
-  br label %sw.epilog
+; <label>:20                                      ; preds = %11
+  %21 = add nsw i64 %indvars.iv, %10, !dbg !2275
+  %22 = getelementptr inbounds i8* %seq, i64 %21, !dbg !2276
+  store i8 65, i8* %22, align 1, !dbg !2277, !tbaa !861
+  br label %26, !dbg !2278
 
-sw.bb14:                                          ; preds = %for.body3
-  %7 = add nsw i64 %indvars.iv, %3
-  %arrayidx17 = getelementptr inbounds i8* %seq, i64 %7
-  store i8 71, i8* %arrayidx17, align 1, !tbaa !1
-  br label %sw.epilog
+; <label>:23                                      ; preds = %11
+  %24 = add nsw i64 %indvars.iv, %10, !dbg !2279
+  %25 = getelementptr inbounds i8* %seq, i64 %24, !dbg !2280
+  store i8 71, i8* %25, align 1, !dbg !2281, !tbaa !861
+  br label %26, !dbg !2282
 
-sw.epilog:                                        ; preds = %for.body3, %sw.bb14, %sw.bb10, %sw.bb6, %sw.bb
-  %shr43 = lshr i32 %conv, 2
-  %conv19 = trunc i32 %shr43 to i8
-  %indvars.iv.next = add i64 %indvars.iv, -1
-  %8 = trunc i64 %indvars.iv to i32
-  %cmp2 = icmp sgt i32 %8, 0
-  br i1 %cmp2, label %for.body3, label %for.inc20
+; <label>:26                                      ; preds = %11, %23, %20, %17, %14
+  %27 = lshr i32 %12, 2, !dbg !2283
+  %28 = trunc i32 %27 to i8, !dbg !2284
+  tail call void @llvm.dbg.value(metadata i8 %28, i64 0, metadata !359, metadata !624), !dbg !2255
+  %indvars.iv.next = add nsw i64 %indvars.iv, -1, !dbg !2259
+  %29 = icmp sgt i64 %indvars.iv, 0, !dbg !2285
+  br i1 %29, label %11, label %30, !dbg !2259
 
-for.inc20:                                        ; preds = %sw.epilog
-  %indvars.iv.next53 = add i64 %indvars.iv52, -1
-  %cmp = icmp sgt i32 %2, 0
-  br i1 %cmp, label %for.body, label %for.end22
+; <label>:30                                      ; preds = %26
+  %indvars.iv.next5 = add nsw i64 %indvars.iv4, -1, !dbg !2251
+  %31 = icmp sgt i64 %indvars.iv4, 0, !dbg !2249
+  br i1 %31, label %5, label %._crit_edge, !dbg !2251
 
-for.end22:                                        ; preds = %for.inc20, %entry
-  %idxprom23 = sext i32 %len to i64
-  %arrayidx24 = getelementptr inbounds i8* %seq, i64 %idxprom23
-  store i8 0, i8* %arrayidx24, align 1, !tbaa !1
-  ret i32 1
+._crit_edge:                                      ; preds = %30, %0
+  %32 = sext i32 %len to i64, !dbg !2286
+  %33 = getelementptr inbounds i8* %seq, i64 %32, !dbg !2286
+  store i8 0, i8* %33, align 1, !dbg !2287, !tbaa !861
+  ret i32 1, !dbg !2288
 }

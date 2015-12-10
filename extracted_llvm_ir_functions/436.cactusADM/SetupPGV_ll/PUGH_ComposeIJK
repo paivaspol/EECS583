@@ -1,30 +1,36 @@
 define i32 @PUGH_ComposeIJK(i32 %dim, i32* nocapture readonly %nprocs, i32* nocapture readonly %pos) #4 {
-  %1 = add nsw i32 %dim, -1
-  %2 = sext i32 %1 to i64
-  %3 = getelementptr inbounds i32* %pos, i64 %2
-  %4 = load i32* %3, align 4, !tbaa !20
-  %5 = add i32 %dim, -2
-  %6 = icmp sgt i32 %5, -1
-  br i1 %6, label %.lr.ph, label %._crit_edge
+  tail call void @llvm.dbg.value(metadata i32 %dim, i64 0, metadata !172, metadata !374), !dbg !1604
+  tail call void @llvm.dbg.value(metadata i32* %nprocs, i64 0, metadata !173, metadata !374), !dbg !1605
+  tail call void @llvm.dbg.value(metadata i32* %pos, i64 0, metadata !174, metadata !374), !dbg !1606
+  %1 = add nsw i32 %dim, -1, !dbg !1607
+  %2 = sext i32 %1 to i64, !dbg !1608
+  %3 = getelementptr inbounds i32* %pos, i64 %2, !dbg !1608
+  %4 = load i32* %3, align 4, !dbg !1608, !tbaa !814
+  tail call void @llvm.dbg.value(metadata i32 %4, i64 0, metadata !175, metadata !374), !dbg !1609
+  %5 = add i32 %dim, -2, !dbg !1610
+  tail call void @llvm.dbg.value(metadata i32 %5, i64 0, metadata !176, metadata !374), !dbg !1611
+  %6 = icmp sgt i32 %5, -1, !dbg !1612
+  br i1 %6, label %.lr.ph, label %._crit_edge, !dbg !1613
 
 .lr.ph:                                           ; preds = %0
   %7 = sext i32 %5 to i64
-  br label %8
+  br label %8, !dbg !1613
 
 ; <label>:8                                       ; preds = %.lr.ph, %8
   %indvars.iv = phi i64 [ %7, %.lr.ph ], [ %indvars.iv.next, %8 ]
   %ijk.01 = phi i32 [ %4, %.lr.ph ], [ %14, %8 ]
-  %9 = getelementptr inbounds i32* %pos, i64 %indvars.iv
-  %10 = load i32* %9, align 4, !tbaa !20
-  %11 = getelementptr inbounds i32* %nprocs, i64 %indvars.iv
-  %12 = load i32* %11, align 4, !tbaa !20
-  %13 = mul nsw i32 %12, %ijk.01
-  %14 = add nsw i32 %13, %10
-  %15 = icmp sgt i64 %indvars.iv, 0
-  %indvars.iv.next = add nsw i64 %indvars.iv, -1
-  br i1 %15, label %8, label %._crit_edge
+  %9 = getelementptr inbounds i32* %pos, i64 %indvars.iv, !dbg !1614
+  %10 = load i32* %9, align 4, !dbg !1614, !tbaa !814
+  %11 = getelementptr inbounds i32* %nprocs, i64 %indvars.iv, !dbg !1615
+  %12 = load i32* %11, align 4, !dbg !1615, !tbaa !814
+  %13 = mul nsw i32 %12, %ijk.01, !dbg !1616
+  %14 = add nsw i32 %13, %10, !dbg !1617
+  tail call void @llvm.dbg.value(metadata i32 %14, i64 0, metadata !175, metadata !374), !dbg !1609
+  %15 = icmp sgt i64 %indvars.iv, 0, !dbg !1612
+  %indvars.iv.next = add nsw i64 %indvars.iv, -1, !dbg !1613
+  br i1 %15, label %8, label %._crit_edge, !dbg !1613
 
 ._crit_edge:                                      ; preds = %8, %0
   %ijk.0.lcssa = phi i32 [ %4, %0 ], [ %14, %8 ]
-  ret i32 %ijk.0.lcssa
+  ret i32 %ijk.0.lcssa, !dbg !1618
 }

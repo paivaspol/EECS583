@@ -1,34 +1,44 @@
-define i32 @DChoose(double* nocapture %p, i32 %N) #0 {
-entry:
-  %call = tail call double @sre_random() #2
-  %cmp9 = icmp sgt i32 %N, 0
-  br i1 %cmp9, label %for.body, label %for.end
+define i32 @DChoose(double* nocapture readonly %p, i32 %N) #0 {
+  tail call void @llvm.dbg.value(metadata double* %p, i64 0, metadata !45, metadata !93), !dbg !333
+  tail call void @llvm.dbg.value(metadata i32 %N, i64 0, metadata !46, metadata !93), !dbg !334
+  %1 = tail call double @sre_random() #3, !dbg !335
+  tail call void @llvm.dbg.value(metadata double %1, i64 0, metadata !47, metadata !93), !dbg !336
+  tail call void @llvm.dbg.value(metadata double 0.000000e+00, i64 0, metadata !48, metadata !93), !dbg !337
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !49, metadata !93), !dbg !338
+  %2 = icmp sgt i32 %N, 0, !dbg !339
+  br i1 %2, label %.lr.ph, label %._crit_edge, !dbg !342
 
-for.cond:                                         ; preds = %for.body
-  %inc = add nsw i32 %i.011, 1
-  %0 = trunc i64 %indvars.iv.next to i32
-  %cmp = icmp slt i32 %0, %N
-  br i1 %cmp, label %for.body, label %for.end
+.lr.ph:                                           ; preds = %0
+  %3 = sext i32 %N to i64, !dbg !342
+  br label %4, !dbg !342
 
-for.body:                                         ; preds = %entry, %for.cond
-  %indvars.iv = phi i64 [ %indvars.iv.next, %for.cond ], [ 0, %entry ]
-  %i.011 = phi i32 [ %inc, %for.cond ], [ 0, %entry ]
-  %sum.010 = phi double [ %add, %for.cond ], [ 0.000000e+00, %entry ]
-  %arrayidx = getelementptr inbounds double* %p, i64 %indvars.iv
-  %1 = load double* %arrayidx, align 8, !tbaa !4
-  %add = fadd double %sum.010, %1
-  %cmp1 = fcmp olt double %call, %add
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  br i1 %cmp1, label %return, label %for.cond
+; <label>:4                                       ; preds = %.lr.ph, %9
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %9 ]
+  %sum.02 = phi double [ 0.000000e+00, %.lr.ph ], [ %7, %9 ]
+  %5 = getelementptr inbounds double* %p, i64 %indvars.iv, !dbg !343
+  %6 = load double* %5, align 8, !dbg !343, !tbaa !218
+  %7 = fadd double %sum.02, %6, !dbg !345
+  tail call void @llvm.dbg.value(metadata double %7, i64 0, metadata !48, metadata !93), !dbg !337
+  %8 = fcmp olt double %1, %7, !dbg !346
+  br i1 %8, label %.loopexit, label %9, !dbg !348
 
-for.end:                                          ; preds = %for.cond, %entry
-  %call2 = tail call double @sre_random() #2
-  %conv = sitofp i32 %N to double
-  %mul = fmul double %conv, %call2
-  %conv3 = fptosi double %mul to i32
-  br label %return
+; <label>:9                                       ; preds = %4
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !342
+  %10 = icmp slt i64 %indvars.iv.next, %3, !dbg !339
+  br i1 %10, label %4, label %._crit_edge, !dbg !342
 
-return:                                           ; preds = %for.body, %for.end
-  %retval.0 = phi i32 [ %conv3, %for.end ], [ %i.011, %for.body ]
-  ret i32 %retval.0
+._crit_edge:                                      ; preds = %9, %0
+  %11 = tail call double @sre_random() #3, !dbg !349
+  %12 = sitofp i32 %N to double, !dbg !350
+  %13 = fmul double %12, %11, !dbg !351
+  %14 = fptosi double %13 to i32, !dbg !352
+  br label %16, !dbg !353
+
+.loopexit:                                        ; preds = %4
+  %15 = trunc i64 %indvars.iv to i32
+  br label %16
+
+; <label>:16                                      ; preds = %.loopexit, %._crit_edge
+  %.0 = phi i32 [ %14, %._crit_edge ], [ %15, %.loopexit ]
+  ret i32 %.0, !dbg !354
 }

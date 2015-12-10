@@ -1,30 +1,34 @@
-define i32 @TophitsMaxName(%struct.tophit_s* nocapture %h) #3 {
-entry:
-  %num = getelementptr inbounds %struct.tophit_s* %h, i64 0, i32 3
-  %0 = load i32* %num, align 4, !tbaa !3
-  %cmp8 = icmp sgt i32 %0, 0
-  br i1 %cmp8, label %for.body.lr.ph, label %for.end
+define i32 @TophitsMaxName(%struct.tophit_s* nocapture readonly %h) #3 {
+  tail call void @llvm.dbg.value(metadata %struct.tophit_s* %h, i64 0, metadata !132, metadata !165), !dbg !547
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !135, metadata !165), !dbg !548
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !133, metadata !165), !dbg !549
+  %1 = getelementptr inbounds %struct.tophit_s* %h, i64 0, i32 3, !dbg !550
+  %2 = load i32* %1, align 4, !dbg !550, !tbaa !186
+  %3 = icmp sgt i32 %2, 0, !dbg !553
+  br i1 %3, label %.lr.ph, label %._crit_edge, !dbg !554
 
-for.body.lr.ph:                                   ; preds = %entry
-  %unsrt = getelementptr inbounds %struct.tophit_s* %h, i64 0, i32 1
-  %1 = load %struct.hit_s** %unsrt, align 8, !tbaa !0
-  br label %for.body
+.lr.ph:                                           ; preds = %0
+  %4 = getelementptr inbounds %struct.tophit_s* %h, i64 0, i32 1, !dbg !555
+  %5 = load %struct.hit_s** %4, align 8, !dbg !555, !tbaa !180
+  %6 = sext i32 %2 to i64, !dbg !554
+  br label %7, !dbg !554
 
-for.body:                                         ; preds = %for.body.lr.ph, %for.body
-  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
-  %maxlen.010 = phi i32 [ 0, %for.body.lr.ph ], [ %conv.maxlen.0, %for.body ]
-  %name = getelementptr inbounds %struct.hit_s* %1, i64 %indvars.iv, i32 5
-  %2 = load i8** %name, align 8, !tbaa !0
-  %call = tail call i64 @strlen(i8* %2) #8
-  %conv = trunc i64 %call to i32
-  %cmp1 = icmp sgt i32 %conv, %maxlen.010
-  %conv.maxlen.0 = select i1 %cmp1, i32 %conv, i32 %maxlen.010
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %3 = trunc i64 %indvars.iv.next to i32
-  %cmp = icmp slt i32 %3, %0
-  br i1 %cmp, label %for.body, label %for.end
+; <label>:7                                       ; preds = %.lr.ph, %7
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %7 ]
+  %maxlen.02 = phi i32 [ 0, %.lr.ph ], [ %.maxlen.0, %7 ]
+  %8 = getelementptr inbounds %struct.hit_s* %5, i64 %indvars.iv, i32 5, !dbg !557
+  %9 = load i8** %8, align 8, !dbg !557, !tbaa !218
+  %10 = tail call i64 @strlen(i8* %9) #7, !dbg !558
+  %11 = trunc i64 %10 to i32, !dbg !558
+  tail call void @llvm.dbg.value(metadata i32 %11, i64 0, metadata !134, metadata !165), !dbg !559
+  %12 = icmp sgt i32 %11, %maxlen.02, !dbg !560
+  tail call void @llvm.dbg.value(metadata i32 %11, i64 0, metadata !135, metadata !165), !dbg !548
+  %.maxlen.0 = select i1 %12, i32 %11, i32 %maxlen.02, !dbg !562
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !554
+  %13 = icmp slt i64 %indvars.iv.next, %6, !dbg !553
+  br i1 %13, label %7, label %._crit_edge, !dbg !554
 
-for.end:                                          ; preds = %for.body, %entry
-  %maxlen.0.lcssa = phi i32 [ 0, %entry ], [ %conv.maxlen.0, %for.body ]
-  ret i32 %maxlen.0.lcssa
+._crit_edge:                                      ; preds = %7, %0
+  %maxlen.0.lcssa = phi i32 [ 0, %0 ], [ %.maxlen.0, %7 ]
+  ret i32 %maxlen.0.lcssa, !dbg !563
 }

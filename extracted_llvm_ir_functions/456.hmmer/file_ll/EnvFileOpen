@@ -1,65 +1,73 @@
-define noalias %struct._IO_FILE* @EnvFileOpen(i8* %fname, i8* %env, i8** %ret_dir) #0 {
-entry:
+define %struct.__sFILE* @EnvFileOpen(i8* %fname, i8* readonly %env, i8** %ret_dir) #0 {
   %full = alloca [1024 x i8], align 16
-  %0 = getelementptr inbounds [1024 x i8]* %full, i64 0, i64 0
-  call void @llvm.lifetime.start(i64 1024, i8* %0) #4
-  %cmp = icmp eq i8* %env, null
-  br i1 %cmp, label %cleanup, label %if.end
+  tail call void @llvm.dbg.value(metadata i8* %fname, i64 0, metadata !111, metadata !131), !dbg !224
+  tail call void @llvm.dbg.value(metadata i8* %env, i64 0, metadata !112, metadata !131), !dbg !225
+  tail call void @llvm.dbg.value(metadata i8** %ret_dir, i64 0, metadata !113, metadata !131), !dbg !226
+  %1 = getelementptr inbounds [1024 x i8]* %full, i64 0, i64 0, !dbg !227
+  call void @llvm.lifetime.start(i64 1024, i8* %1) #5, !dbg !227
+  tail call void @llvm.dbg.declare(metadata [1024 x i8]* %full, metadata !117, metadata !131), !dbg !228
+  %2 = icmp eq i8* %env, null, !dbg !229
+  br i1 %2, label %29, label %3, !dbg !231
 
-if.end:                                           ; preds = %entry
-  %call = call i8* @getenv(i8* %env) #6
-  %call1 = call i8* @Strdup(i8* %call) #6
-  %cmp2 = icmp eq i8* %call1, null
-  br i1 %cmp2, label %cleanup, label %if.end4
+; <label>:3                                       ; preds = %0
+  %4 = tail call i8* @getenv(i8* %env) #6, !dbg !232
+  %5 = tail call i8* @Strdup(i8* %4) #6, !dbg !234
+  tail call void @llvm.dbg.value(metadata i8* %5, i64 0, metadata !115, metadata !131), !dbg !235
+  %6 = icmp eq i8* %5, null, !dbg !236
+  br i1 %6, label %29, label %7, !dbg !237
 
-if.end4:                                          ; preds = %if.end
-  %call5 = call i8* @strtok(i8* %call1, i8* getelementptr inbounds ([2 x i8]* @.str3, i64 0, i64 0)) #6
-  %cmp637 = icmp eq i8* %call5, null
-  br i1 %cmp637, label %while.end, label %while.body
+; <label>:7                                       ; preds = %3
+  tail call void @llvm.dbg.value(metadata %struct.__sFILE* null, i64 0, metadata !114, metadata !131), !dbg !238
+  %8 = tail call i8* @strtok(i8* %5, i8* getelementptr inbounds ([2 x i8]* @.str3, i64 0, i64 0)) #6, !dbg !239
+  tail call void @llvm.dbg.value(metadata i8* %8, i64 0, metadata !116, metadata !131), !dbg !240
+  %9 = icmp eq i8* %8, null, !dbg !241
+  br i1 %9, label %._crit_edge, label %.lr.ph, !dbg !242
 
-while.body:                                       ; preds = %if.end4, %if.end21
-  %s.038 = phi i8* [ %call22, %if.end21 ], [ %call5, %if.end4 ]
-  %call7 = call i64 @strlen(i8* %fname) #5
-  %conv = trunc i64 %call7 to i32
-  %call8 = call i64 @strlen(i8* %s.038) #5
-  %conv9 = trunc i64 %call8 to i32
-  %add = add i32 %conv, 2
-  %add10 = add i32 %add, %conv9
-  %cmp11 = icmp sgt i32 %add10, 1024
-  br i1 %cmp11, label %if.then13, label %if.end14
+.lr.ph:                                           ; preds = %7, %22
+  %s.02 = phi i8* [ %23, %22 ], [ %8, %7 ]
+  %10 = call i64 @strlen(i8* %fname) #6, !dbg !243
+  %11 = trunc i64 %10 to i32, !dbg !246
+  %12 = call i64 @strlen(i8* %s.02) #6, !dbg !247
+  %13 = trunc i64 %12 to i32, !dbg !248
+  %14 = add i32 %11, 2, !dbg !249
+  %15 = add i32 %14, %13, !dbg !250
+  %16 = icmp sgt i32 %15, 1024, !dbg !251
+  br i1 %16, label %17, label %18, !dbg !252
 
-if.then13:                                        ; preds = %while.body
-  call void @free(i8* %call1) #6
-  br label %cleanup
+; <label>:17                                      ; preds = %.lr.ph
+  call void @free(i8* %5) #7, !dbg !253
+  br label %29, !dbg !255
 
-if.end14:                                         ; preds = %while.body
-  %call15 = call i32 (i8*, i8*, ...)* @sprintf(i8* %0, i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* %s.038, i32 47, i8* %fname) #6
-  %call17 = call %struct._IO_FILE* @fopen(i8* %0, i8* getelementptr inbounds ([2 x i8]* @.str4, i64 0, i64 0)) #6
-  %cmp18 = icmp eq %struct._IO_FILE* %call17, null
-  br i1 %cmp18, label %if.end21, label %while.end
+; <label>:18                                      ; preds = %.lr.ph
+  %19 = call i32 (i8*, i32, i64, i8*, ...)* @__sprintf_chk(i8* %1, i32 0, i64 1024, i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* %s.02, i32 47, i8* %fname) #6, !dbg !256
+  %20 = call %struct.__sFILE* @"\01_fopen"(i8* %1, i8* getelementptr inbounds ([2 x i8]* @.str4, i64 0, i64 0)) #6, !dbg !257
+  call void @llvm.dbg.value(metadata %struct.__sFILE* %20, i64 0, metadata !114, metadata !131), !dbg !238
+  %21 = icmp eq %struct.__sFILE* %20, null, !dbg !259
+  br i1 %21, label %22, label %._crit_edge, !dbg !260
 
-if.end21:                                         ; preds = %if.end14
-  %call22 = call i8* @strtok(i8* null, i8* getelementptr inbounds ([2 x i8]* @.str3, i64 0, i64 0)) #6
-  %cmp6 = icmp eq i8* %call22, null
-  br i1 %cmp6, label %while.end, label %while.body
+; <label>:22                                      ; preds = %18
+  %23 = call i8* @strtok(i8* null, i8* getelementptr inbounds ([2 x i8]* @.str3, i64 0, i64 0)) #6, !dbg !261
+  call void @llvm.dbg.value(metadata i8* %23, i64 0, metadata !116, metadata !131), !dbg !240
+  %24 = icmp eq i8* %23, null, !dbg !241
+  br i1 %24, label %._crit_edge, label %.lr.ph, !dbg !242
 
-while.end:                                        ; preds = %if.end21, %if.end14, %if.end4
-  %s.0.lcssa = phi i8* [ null, %if.end4 ], [ %s.038, %if.end14 ], [ null, %if.end21 ]
-  %fp.1 = phi %struct._IO_FILE* [ null, %if.end4 ], [ %call17, %if.end14 ], [ null, %if.end21 ]
-  %cmp23 = icmp eq i8** %ret_dir, null
-  br i1 %cmp23, label %if.end27, label %if.then25
+._crit_edge:                                      ; preds = %22, %18, %7
+  %s.0.lcssa = phi i8* [ null, %7 ], [ null, %22 ], [ %s.02, %18 ]
+  %fp.1 = phi %struct.__sFILE* [ null, %7 ], [ null, %22 ], [ %20, %18 ]
+  %25 = icmp eq i8** %ret_dir, null, !dbg !262
+  br i1 %25, label %28, label %26, !dbg !264
 
-if.then25:                                        ; preds = %while.end
-  %call26 = call i8* @Strdup(i8* %s.0.lcssa) #6
-  store i8* %call26, i8** %ret_dir, align 8, !tbaa !2
-  br label %if.end27
+; <label>:26                                      ; preds = %._crit_edge
+  %27 = call i8* @Strdup(i8* %s.0.lcssa) #6, !dbg !265
+  store i8* %27, i8** %ret_dir, align 8, !dbg !266, !tbaa !267
+  br label %28, !dbg !269
 
-if.end27:                                         ; preds = %while.end, %if.then25
-  call void @free(i8* %call1) #6
-  br label %cleanup
+; <label>:28                                      ; preds = %._crit_edge, %26
+  call void @free(i8* %5) #7, !dbg !270
+  br label %29, !dbg !271
 
-cleanup:                                          ; preds = %if.end, %entry, %if.end27, %if.then13
-  %retval.0 = phi %struct._IO_FILE* [ null, %if.then13 ], [ %fp.1, %if.end27 ], [ null, %entry ], [ null, %if.end ]
-  call void @llvm.lifetime.end(i64 1024, i8* %0) #4
-  ret %struct._IO_FILE* %retval.0
+; <label>:29                                      ; preds = %3, %0, %28, %17
+  %.0 = phi %struct.__sFILE* [ null, %17 ], [ %fp.1, %28 ], [ null, %0 ], [ null, %3 ]
+  call void @llvm.lifetime.end(i64 1024, i8* %1) #5, !dbg !272
+  ret %struct.__sFILE* %.0, !dbg !272
 }

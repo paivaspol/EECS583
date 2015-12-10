@@ -1,27 +1,33 @@
 define void @get_serverdata(i8* nocapture %data, i32 %size) #0 {
-  %1 = icmp sgt i32 %size, 0
-  br i1 %1, label %.preheader, label %._crit_edge
+  tail call void @llvm.dbg.value(metadata i8* %data, i64 0, metadata !21, metadata !39), !dbg !56
+  tail call void @llvm.dbg.value(metadata i32 %size, i64 0, metadata !22, metadata !39), !dbg !57
+  tail call void @llvm.dbg.value(metadata i8* %data, i64 0, metadata !23, metadata !39), !dbg !58
+  %1 = icmp sgt i32 %size, 0, !dbg !59
+  br i1 %1, label %.preheader, label %._crit_edge, !dbg !62
 
 .preheader:                                       ; preds = %0, %get_serverbyte.exit
   %p.02 = phi i8* [ %7, %get_serverbyte.exit ], [ %data, %0 ]
   %.01 = phi i32 [ %8, %get_serverbyte.exit ], [ %size, %0 ]
-  br label %2
+  br label %2, !dbg !63
 
 ; <label>:2                                       ; preds = %.preheader, %2
-  %3 = load volatile i8* inttoptr (i64 2952794304 to i8*), align 64, !tbaa !2
-  %4 = and i8 %3, 1
-  %5 = icmp eq i8 %4, 0
-  br i1 %5, label %2, label %get_serverbyte.exit
+  %3 = load volatile i8* inttoptr (i64 2952794304 to i8*), align 64, !dbg !63, !tbaa !42
+  %4 = and i8 %3, 1, !dbg !65
+  %5 = icmp eq i8 %4, 0, !dbg !65
+  br i1 %5, label %2, label %get_serverbyte.exit, !dbg !66
 
 get_serverbyte.exit:                              ; preds = %2
-  %6 = load volatile i8* inttoptr (i64 2952794320 to i8*), align 16, !tbaa !2
-  store volatile i8 0, i8* inttoptr (i64 2952794304 to i8*), align 64, !tbaa !2
-  %7 = getelementptr inbounds i8* %p.02, i64 1
-  store i8 %6, i8* %p.02, align 1, !tbaa !2
-  %8 = add nsw i32 %.01, -1
-  %9 = icmp sgt i32 %.01, 1
-  br i1 %9, label %.preheader, label %._crit_edge
+  %6 = load volatile i8* inttoptr (i64 2952794320 to i8*), align 16, !dbg !67, !tbaa !42
+  tail call void @llvm.dbg.value(metadata i8 %6, i64 0, metadata !14, metadata !39), !dbg !68
+  store volatile i8 0, i8* inttoptr (i64 2952794304 to i8*), align 64, !dbg !69, !tbaa !42
+  %7 = getelementptr inbounds i8* %p.02, i64 1, !dbg !70
+  tail call void @llvm.dbg.value(metadata i8* %7, i64 0, metadata !23, metadata !39), !dbg !58
+  store i8 %6, i8* %p.02, align 1, !dbg !71, !tbaa !42
+  %8 = add nsw i32 %.01, -1, !dbg !72
+  tail call void @llvm.dbg.value(metadata i32 %8, i64 0, metadata !22, metadata !39), !dbg !57
+  %9 = icmp sgt i32 %.01, 1, !dbg !59
+  br i1 %9, label %.preheader, label %._crit_edge, !dbg !62
 
 ._crit_edge:                                      ; preds = %get_serverbyte.exit, %0
-  ret void
+  ret void, !dbg !73
 }

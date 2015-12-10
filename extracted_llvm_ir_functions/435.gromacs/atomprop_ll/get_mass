@@ -1,42 +1,48 @@
-define float @get_mass(i8* %resnm, i8* %atomnm) #3 {
+define float @get_mass(i8* %resnm, i8* %atomnm) #4 {
   %m = alloca float, align 4
-  %1 = load %struct.t_prop** @get_mass.mass, align 8, !tbaa !14
-  %2 = icmp eq %struct.t_prop* %1, null
-  br i1 %2, label %3, label %11
+  tail call void @llvm.dbg.value(metadata i8* %resnm, i64 0, metadata !88, metadata !203), !dbg !242
+  tail call void @llvm.dbg.value(metadata i8* %atomnm, i64 0, metadata !89, metadata !203), !dbg !243
+  %1 = load %struct.t_prop** @get_mass.mass, align 8, !dbg !244, !tbaa !246
+  %2 = icmp eq %struct.t_prop* %1, null, !dbg !244
+  br i1 %2, label %3, label %11, !dbg !247
 
 ; <label>:3                                       ; preds = %0
-  %4 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !14
-  %5 = tail call i64 @fwrite(i8* getelementptr inbounds ([131 x i8]* @.str, i64 0, i64 0), i64 130, i64 1, %struct.__sFILE* %4)
-  %6 = tail call fastcc i32 @read_props(i8* getelementptr inbounds ([13 x i8]* @.str1, i64 0, i64 0), %struct.t_prop** @get_mass.mass, i32* @get_mass.maxmass) #10
-  store i32 %6, i32* @get_mass.nmass, align 4, !tbaa !15
-  %7 = load %struct.__sFILE** @debug, align 8, !tbaa !14
-  %8 = icmp eq %struct.__sFILE* %7, null
-  br i1 %8, label %11, label %9
+  %4 = load %struct.__sFILE** @__stderrp, align 8, !dbg !248, !tbaa !246
+  %5 = tail call i64 @fwrite(i8* getelementptr inbounds ([131 x i8]* @.str, i64 0, i64 0), i64 130, i64 1, %struct.__sFILE* %4), !dbg !250
+  %6 = tail call fastcc i32 @read_props(i8* getelementptr inbounds ([13 x i8]* @.str1, i64 0, i64 0), %struct.t_prop** @get_mass.mass, i32* @get_mass.maxmass) #10, !dbg !251
+  store i32 %6, i32* @get_mass.nmass, align 4, !dbg !252, !tbaa !253
+  %7 = load %struct.__sFILE** @debug, align 8, !dbg !254, !tbaa !246
+  %8 = icmp eq %struct.__sFILE* %7, null, !dbg !254
+  br i1 %8, label %11, label %9, !dbg !256
 
 ; <label>:9                                       ; preds = %3
-  %10 = load %struct.t_prop** @get_mass.mass, align 8, !tbaa !14
-  tail call fastcc void @write_props(%struct.__sFILE* %7, i32 %6, %struct.t_prop* %10) #10
-  br label %11
+  %10 = load %struct.t_prop** @get_mass.mass, align 8, !dbg !257, !tbaa !246
+  tail call fastcc void @write_props(%struct.__sFILE* %7, i32 %6, %struct.t_prop* %10) #10, !dbg !258
+  br label %11, !dbg !258
 
 ; <label>:11                                      ; preds = %3, %0, %9
-  %12 = load i32* @get_mass.nmass, align 4, !tbaa !15
-  %13 = load %struct.t_prop** @get_mass.mass, align 8, !tbaa !14
-  %14 = call fastcc i32 @get_prop(float* %m, i8* %resnm, i8* %atomnm, i32 %12, %struct.t_prop* %13) #10
-  %15 = icmp eq i32 %14, 0
-  br i1 %15, label %16, label %._crit_edge
+  %12 = load i32* @get_mass.nmass, align 4, !dbg !259, !tbaa !253
+  %13 = load %struct.t_prop** @get_mass.mass, align 8, !dbg !261, !tbaa !246
+  tail call void @llvm.dbg.value(metadata float* %m, i64 0, metadata !90, metadata !203), !dbg !262
+  %14 = call fastcc i32 @get_prop(float* %m, i8* %resnm, i8* %atomnm, i32 %12, %struct.t_prop* %13) #10, !dbg !263
+  %15 = icmp eq i32 %14, 0, !dbg !263
+  br i1 %15, label %16, label %._crit_edge, !dbg !264
 
 ._crit_edge:                                      ; preds = %11
-  %.pre = load float* %m, align 4, !tbaa !16
-  br label %19
+  %.pre = load float* %m, align 4, !dbg !265, !tbaa !266
+  br label %19, !dbg !264
 
 ; <label>:16                                      ; preds = %11
-  store float 0x402805A1C0000000, float* %m, align 4, !tbaa !16
-  tail call fastcc void @add_prop(float 0x402805A1C0000000, i8* %resnm, i8* %atomnm, i32* @get_mass.nmass, %struct.t_prop** @get_mass.mass, i32* @get_mass.maxmass) #10
-  %17 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !14
-  %18 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %17, i8* getelementptr inbounds ([30 x i8]* @.str2, i64 0, i64 0), i8* %resnm, i8* %atomnm, double 0x402805A1C0000000) #9
-  br label %19
+  tail call void @llvm.dbg.value(metadata float 0x402805A1C0000000, i64 0, metadata !90, metadata !203), !dbg !262
+  store float 0x402805A1C0000000, float* %m, align 4, !dbg !268, !tbaa !266
+  tail call fastcc void @add_prop(float 0x402805A1C0000000, i8* %resnm, i8* %atomnm, i32* @get_mass.nmass, %struct.t_prop** @get_mass.mass, i32* @get_mass.maxmass) #10, !dbg !270
+  %17 = load %struct.__sFILE** @__stderrp, align 8, !dbg !271, !tbaa !246
+  tail call void @llvm.dbg.value(metadata float* %m, i64 0, metadata !90, metadata !203), !dbg !262
+  %18 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %17, i8* getelementptr inbounds ([30 x i8]* @.str2, i64 0, i64 0), i8* %resnm, i8* %atomnm, double 0x402805A1C0000000) #9, !dbg !272
+  br label %19, !dbg !273
 
 ; <label>:19                                      ; preds = %._crit_edge, %16
   %20 = phi float [ %.pre, %._crit_edge ], [ 0x402805A1C0000000, %16 ]
-  ret float %20
+  tail call void @llvm.dbg.value(metadata float* %m, i64 0, metadata !90, metadata !203), !dbg !262
+  ret float %20, !dbg !274
 }

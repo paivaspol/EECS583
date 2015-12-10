@@ -1,0 +1,65 @@
+define i32 @_obstack_begin_1(%struct.obstack* nocapture %h, i32 %size, i32 %alignment, i8* (i8*, i64)* %chunkfun, void (i8*, i8*)* %freefun, i8* %arg) #1 {
+  tail call void @llvm.dbg.value(metadata %struct.obstack* %h, i64 0, metadata !82, metadata !155), !dbg !216
+  tail call void @llvm.dbg.value(metadata i32 %size, i64 0, metadata !83, metadata !155), !dbg !217
+  tail call void @llvm.dbg.value(metadata i32 %alignment, i64 0, metadata !84, metadata !155), !dbg !218
+  tail call void @llvm.dbg.value(metadata i8* (i8*, i64)* %chunkfun, i64 0, metadata !85, metadata !155), !dbg !219
+  tail call void @llvm.dbg.value(metadata void (i8*, i8*)* %freefun, i64 0, metadata !86, metadata !155), !dbg !220
+  tail call void @llvm.dbg.value(metadata i8* %arg, i64 0, metadata !87, metadata !155), !dbg !221
+  %1 = icmp eq i32 %alignment, 0, !dbg !222
+  tail call void @llvm.dbg.value(metadata i32 ptrtoint (double* getelementptr inbounds (%struct.fooalign* null, i32 0, i32 1) to i32), i64 0, metadata !84, metadata !155), !dbg !218
+  %2 = icmp eq i32 %size, 0, !dbg !224
+  tail call void @llvm.dbg.value(metadata i32 24, i64 0, metadata !89, metadata !155), !dbg !225
+  tail call void @llvm.dbg.value(metadata i32 4072, i64 0, metadata !83, metadata !155), !dbg !217
+  %3 = getelementptr inbounds %struct.obstack* %h, i64 0, i32 7, !dbg !226
+  %4 = bitcast %struct._obstack_chunk* (i8*, i64)** %3 to i8* (i8*, i64)**, !dbg !227
+  store i8* (i8*, i64)* %chunkfun, i8* (i8*, i64)** %4, align 8, !dbg !227, !tbaa !167
+  %5 = getelementptr inbounds %struct.obstack* %h, i64 0, i32 8, !dbg !228
+  %6 = bitcast void (i8*, %struct._obstack_chunk*)** %5 to void (i8*, i8*)**, !dbg !229
+  store void (i8*, i8*)* %freefun, void (i8*, i8*)** %6, align 8, !dbg !229, !tbaa !172
+  %7 = sext i32 %size to i64, !dbg !230
+  %8 = select i1 %2, i64 4072, i64 %7, !dbg !230
+  %9 = getelementptr inbounds %struct.obstack* %h, i64 0, i32 0, !dbg !231
+  store i64 %8, i64* %9, align 8, !dbg !232, !tbaa !176
+  %alignment.op = add i32 %alignment, -1, !dbg !233
+  %10 = select i1 %1, i32 7, i32 %alignment.op, !dbg !233
+  %11 = getelementptr inbounds %struct.obstack* %h, i64 0, i32 6, !dbg !234
+  store i32 %10, i32* %11, align 4, !dbg !235, !tbaa !180
+  %12 = getelementptr inbounds %struct.obstack* %h, i64 0, i32 9, !dbg !236
+  store i8* %arg, i8** %12, align 8, !dbg !237, !tbaa !238
+  %13 = getelementptr inbounds %struct.obstack* %h, i64 0, i32 10, !dbg !239
+  %14 = load i8* %13, align 8, !dbg !240
+  %15 = or i8 %14, 1, !dbg !240
+  store i8 %15, i8* %13, align 8, !dbg !240
+  %16 = bitcast i8* (i8*, i64)* %chunkfun to %struct._obstack_chunk* (i8*, i64)*
+  %17 = tail call %struct._obstack_chunk* %16(i8* %arg, i64 %8) #6, !dbg !241
+  %18 = getelementptr inbounds %struct.obstack* %h, i64 0, i32 1, !dbg !242
+  store %struct._obstack_chunk* %17, %struct._obstack_chunk** %18, align 8, !dbg !243, !tbaa !186
+  tail call void @llvm.dbg.value(metadata %struct._obstack_chunk* %17, i64 0, metadata !88, metadata !155), !dbg !244
+  %19 = icmp eq %struct._obstack_chunk* %17, null, !dbg !245
+  br i1 %19, label %20, label %22, !dbg !247
+
+; <label>:20                                      ; preds = %0
+  %21 = load void ()** @obstack_alloc_failed_handler, align 8, !dbg !248, !tbaa !146
+  tail call void %21() #6, !dbg !249
+  br label %22, !dbg !249
+
+; <label>:22                                      ; preds = %0, %20
+  %23 = getelementptr inbounds %struct._obstack_chunk* %17, i64 0, i32 2, i64 0, !dbg !250
+  %24 = getelementptr inbounds %struct.obstack* %h, i64 0, i32 2, !dbg !251
+  store i8* %23, i8** %24, align 8, !dbg !252, !tbaa !196
+  %25 = getelementptr inbounds %struct.obstack* %h, i64 0, i32 3, !dbg !253
+  store i8* %23, i8** %25, align 8, !dbg !254, !tbaa !199
+  %26 = bitcast %struct._obstack_chunk* %17 to i8*, !dbg !255
+  %27 = load i64* %9, align 8, !dbg !256, !tbaa !176
+  %28 = getelementptr inbounds i8* %26, i64 %27, !dbg !257
+  %29 = getelementptr inbounds %struct._obstack_chunk* %17, i64 0, i32 0, !dbg !258
+  store i8* %28, i8** %29, align 8, !dbg !259, !tbaa !205
+  %30 = getelementptr inbounds %struct.obstack* %h, i64 0, i32 4, !dbg !260
+  store i8* %28, i8** %30, align 8, !dbg !261, !tbaa !209
+  %31 = getelementptr inbounds %struct._obstack_chunk* %17, i64 0, i32 1, !dbg !262
+  store %struct._obstack_chunk* null, %struct._obstack_chunk** %31, align 8, !dbg !263, !tbaa !212
+  %32 = load i8* %13, align 8, !dbg !264
+  %33 = and i8 %32, -7, !dbg !265
+  store i8 %33, i8* %13, align 8, !dbg !265
+  ret i32 1, !dbg !266
+}

@@ -1,24 +1,28 @@
 define void @CCTKi_CommandLineErrorLevel(i8* %argument) #1 {
   %endptr = alloca i8*, align 8
-  %1 = call i64 @strtol(i8* %argument, i8** %endptr, i32 10) #5
-  %2 = load i8** %endptr, align 8, !tbaa !2
-  %3 = icmp eq i8* %2, null
-  br i1 %3, label %10, label %4
+  tail call void @llvm.dbg.value(metadata i8* %argument, i64 0, metadata !75, metadata !130), !dbg !339
+  tail call void @llvm.dbg.value(metadata i8** %endptr, i64 0, metadata !76, metadata !130), !dbg !340
+  %1 = call i64 @strtol(i8* %argument, i8** %endptr, i32 10) #6, !dbg !341
+  tail call void @llvm.dbg.value(metadata i64 %1, i64 0, metadata !77, metadata !130), !dbg !342
+  tail call void @llvm.dbg.value(metadata i8** %endptr, i64 0, metadata !76, metadata !130), !dbg !340
+  %2 = load i8** %endptr, align 8, !dbg !343, !tbaa !136
+  %3 = icmp eq i8* %2, null, !dbg !343
+  br i1 %3, label %10, label %4, !dbg !345
 
 ; <label>:4                                       ; preds = %0
-  %5 = load i8* %2, align 1, !tbaa !6
-  %6 = icmp eq i8 %5, 0
-  br i1 %6, label %7, label %10
+  %5 = load i8* %2, align 1, !dbg !346, !tbaa !178
+  %6 = icmp eq i8 %5, 0, !dbg !347
+  br i1 %6, label %7, label %10, !dbg !348
 
 ; <label>:7                                       ; preds = %4
-  %8 = trunc i64 %1 to i32
-  %9 = tail call i32 @CCTKi_SetErrorLevel(i32 %8) #5
-  br label %11
+  %8 = trunc i64 %1 to i32, !dbg !349
+  %9 = tail call i32 @CCTKi_SetErrorLevel(i32 %8) #6, !dbg !351
+  br label %11, !dbg !352
 
 ; <label>:10                                      ; preds = %0, %4
-  tail call void @CCTKi_CommandLineUsage() #6
+  tail call void @CCTKi_CommandLineUsage() #7, !dbg !353
   br label %11
 
 ; <label>:11                                      ; preds = %10, %7
-  ret void
+  ret void, !dbg !355
 }

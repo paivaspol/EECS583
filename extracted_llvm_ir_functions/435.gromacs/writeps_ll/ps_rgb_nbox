@@ -1,43 +1,51 @@
 define void @ps_rgb_nbox(%struct.__sFILE* nocapture %ps, %struct.t_rgb* nocapture readonly %rgb, float %n) #1 {
-  %1 = fcmp ogt float %n, 2.000000e+00
-  br i1 %1, label %6, label %.preheader
+  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %ps, i64 0, metadata !148, metadata !356), !dbg !495
+  tail call void @llvm.dbg.value(metadata %struct.t_rgb* %rgb, i64 0, metadata !149, metadata !356), !dbg !496
+  tail call void @llvm.dbg.value(metadata float %n, i64 0, metadata !150, metadata !356), !dbg !497
+  %1 = fcmp ogt float %n, 2.000000e+00, !dbg !498
+  br i1 %1, label %6, label %.preheader, !dbg !500
 
 .preheader:                                       ; preds = %0
-  %2 = fcmp ogt float %n, 0.000000e+00
-  br i1 %2, label %.lr.ph, label %.loopexit
+  %2 = fcmp ogt float %n, 0.000000e+00, !dbg !501
+  br i1 %2, label %.lr.ph, label %.loopexit, !dbg !504
 
 .lr.ph:                                           ; preds = %.preheader
-  %3 = getelementptr inbounds %struct.t_rgb* %rgb, i64 0, i32 0
-  %4 = getelementptr inbounds %struct.t_rgb* %rgb, i64 0, i32 1
-  %5 = getelementptr inbounds %struct.t_rgb* %rgb, i64 0, i32 2
-  br label %17
+  %3 = getelementptr inbounds %struct.t_rgb* %rgb, i64 0, i32 0, !dbg !505
+  %4 = getelementptr inbounds %struct.t_rgb* %rgb, i64 0, i32 1, !dbg !507
+  %5 = getelementptr inbounds %struct.t_rgb* %rgb, i64 0, i32 2, !dbg !508
+  br label %17, !dbg !504
 
 ; <label>:6                                       ; preds = %0
-  %7 = getelementptr inbounds %struct.t_rgb* %rgb, i64 0, i32 0
-  %8 = load float* %7, align 4, !tbaa !8
-  %9 = getelementptr inbounds %struct.t_rgb* %rgb, i64 0, i32 1
-  %10 = load float* %9, align 4, !tbaa !11
-  %11 = getelementptr inbounds %struct.t_rgb* %rgb, i64 0, i32 2
-  %12 = load float* %11, align 4, !tbaa !12
-  tail call void @ps_color(%struct.__sFILE* %ps, float %8, float %10, float %12) #5
-  %13 = load float* @gen_ybox, align 4, !tbaa !13
-  %14 = fmul float %13, %n
-  %15 = fpext float %14 to double
-  %16 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %ps, i8* getelementptr inbounds ([10 x i8]* @.str16, i64 0, i64 0), double %15) #5
-  br label %.loopexit
+  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %ps, i64 0, metadata !135, metadata !356) #5, !dbg !509
+  tail call void @llvm.dbg.value(metadata %struct.t_rgb* %rgb, i64 0, metadata !136, metadata !356) #5, !dbg !512
+  %7 = getelementptr inbounds %struct.t_rgb* %rgb, i64 0, i32 0, !dbg !513
+  %8 = load float* %7, align 4, !dbg !513, !tbaa !429
+  %9 = getelementptr inbounds %struct.t_rgb* %rgb, i64 0, i32 1, !dbg !514
+  %10 = load float* %9, align 4, !dbg !514, !tbaa !437
+  %11 = getelementptr inbounds %struct.t_rgb* %rgb, i64 0, i32 2, !dbg !515
+  %12 = load float* %11, align 4, !dbg !515, !tbaa !443
+  tail call void @ps_color(%struct.__sFILE* %ps, float %8, float %10, float %12) #6, !dbg !516
+  %13 = load float* @gen_ybox, align 4, !dbg !517, !tbaa !490
+  %14 = fmul float %13, %n, !dbg !518
+  %15 = fpext float %14 to double, !dbg !519
+  %16 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %ps, i8* getelementptr inbounds ([10 x i8]* @.str16, i64 0, i64 0), double %15) #6, !dbg !520
+  br label %.loopexit, !dbg !521
 
 ; <label>:17                                      ; preds = %.lr.ph, %17
   %i.01 = phi i32 [ 0, %.lr.ph ], [ %23, %17 ]
-  %18 = load float* %3, align 4, !tbaa !8
-  %19 = load float* %4, align 4, !tbaa !11
-  %20 = load float* %5, align 4, !tbaa !12
-  %21 = tail call fastcc i32 @search_col(%struct.__sFILE* %ps, float %18, float %19, float %20) #5
-  %22 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %ps, i8* getelementptr inbounds ([5 x i8]* @.str18, i64 0, i64 0), i32 %21) #5
-  %23 = add nuw nsw i32 %i.01, 1
-  %24 = sitofp i32 %23 to float
-  %25 = fcmp olt float %24, %n
-  br i1 %25, label %17, label %.loopexit
+  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %ps, i64 0, metadata !159, metadata !356) #5, !dbg !522
+  tail call void @llvm.dbg.value(metadata %struct.t_rgb* %rgb, i64 0, metadata !160, metadata !356) #5, !dbg !523
+  %18 = load float* %3, align 4, !dbg !505, !tbaa !429
+  %19 = load float* %4, align 4, !dbg !507, !tbaa !437
+  %20 = load float* %5, align 4, !dbg !508, !tbaa !443
+  %21 = tail call fastcc i32 @search_col(%struct.__sFILE* %ps, float %18, float %19, float %20) #6, !dbg !524
+  %22 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %ps, i8* getelementptr inbounds ([5 x i8]* @.str18, i64 0, i64 0), i32 %21) #6, !dbg !525
+  %23 = add nuw nsw i32 %i.01, 1, !dbg !526
+  tail call void @llvm.dbg.value(metadata i32 %23, i64 0, metadata !151, metadata !356), !dbg !527
+  %24 = sitofp i32 %23 to float, !dbg !528
+  %25 = fcmp olt float %24, %n, !dbg !501
+  br i1 %25, label %17, label %.loopexit, !dbg !504
 
 .loopexit:                                        ; preds = %17, %.preheader, %6
-  ret void
+  ret void, !dbg !529
 }

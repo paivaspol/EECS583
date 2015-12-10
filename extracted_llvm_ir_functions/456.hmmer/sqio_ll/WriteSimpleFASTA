@@ -1,29 +1,39 @@
-define void @WriteSimpleFASTA(%struct._IO_FILE* nocapture %fp, i8* nocapture %seq, i8* %name, i8* %desc) #0 {
-entry:
+define void @WriteSimpleFASTA(%struct.__sFILE* nocapture %fp, i8* nocapture readonly %seq, i8* %name, i8* %desc) #0 {
   %buf = alloca [61 x i8], align 16
-  %0 = getelementptr inbounds [61 x i8]* %buf, i64 0, i64 0
-  call void @llvm.lifetime.start(i64 61, i8* %0) #5
-  %call = call i64 @strlen(i8* %seq) #9
-  %conv = trunc i64 %call to i32
-  %arrayidx = getelementptr inbounds [61 x i8]* %buf, i64 0, i64 60
-  store i8 0, i8* %arrayidx, align 4, !tbaa !1
-  %cmp = icmp ne i8* %desc, null
-  %cond = select i1 %cmp, i8* %desc, i8* getelementptr inbounds ([1 x i8]* @.str40, i64 0, i64 0)
-  %call2 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([8 x i8]* @.str39, i64 0, i64 0), i8* %name, i8* %cond) #8
-  %cmp313 = icmp sgt i32 %conv, 0
-  br i1 %cmp313, label %for.body, label %for.end
+  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %fp, i64 0, metadata !401, metadata !624), !dbg !2359
+  tail call void @llvm.dbg.value(metadata i8* %seq, i64 0, metadata !402, metadata !624), !dbg !2360
+  tail call void @llvm.dbg.value(metadata i8* %name, i64 0, metadata !403, metadata !624), !dbg !2361
+  tail call void @llvm.dbg.value(metadata i8* %desc, i64 0, metadata !404, metadata !624), !dbg !2362
+  %1 = getelementptr inbounds [61 x i8]* %buf, i64 0, i64 0, !dbg !2363
+  call void @llvm.lifetime.start(i64 61, i8* %1) #5, !dbg !2363
+  tail call void @llvm.dbg.declare(metadata [61 x i8]* %buf, metadata !405, metadata !624), !dbg !2364
+  %2 = tail call i64 @strlen(i8* %seq) #8, !dbg !2365
+  %3 = trunc i64 %2 to i32, !dbg !2365
+  tail call void @llvm.dbg.value(metadata i32 %3, i64 0, metadata !409, metadata !624), !dbg !2366
+  %4 = getelementptr inbounds [61 x i8]* %buf, i64 0, i64 60, !dbg !2367
+  store i8 0, i8* %4, align 4, !dbg !2368, !tbaa !861
+  %5 = icmp ne i8* %desc, null, !dbg !2369
+  %6 = select i1 %5, i8* %desc, i8* getelementptr inbounds ([1 x i8]* @.str40, i64 0, i64 0), !dbg !2370
+  %7 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %fp, i8* getelementptr inbounds ([8 x i8]* @.str39, i64 0, i64 0), i8* %name, i8* %6) #8, !dbg !2371
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !410, metadata !624), !dbg !2372
+  %8 = icmp sgt i32 %3, 0, !dbg !2373
+  br i1 %8, label %.lr.ph, label %._crit_edge, !dbg !2376
 
-for.body:                                         ; preds = %entry, %for.body
-  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %entry ]
-  %add.ptr = getelementptr inbounds i8* %seq, i64 %indvars.iv
-  %call5 = call i8* @strncpy(i8* %0, i8* %add.ptr, i64 60) #8
-  %call7 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([4 x i8]* @.str41, i64 0, i64 0), i8* %0) #8
-  %indvars.iv.next = add i64 %indvars.iv, 60
-  %1 = trunc i64 %indvars.iv.next to i32
-  %cmp3 = icmp slt i32 %1, %conv
-  br i1 %cmp3, label %for.body, label %for.end
+.lr.ph:                                           ; preds = %0
+  %sext = shl i64 %2, 32, !dbg !2376
+  %9 = ashr exact i64 %sext, 32, !dbg !2376
+  br label %10, !dbg !2376
 
-for.end:                                          ; preds = %for.body, %entry
-  call void @llvm.lifetime.end(i64 61, i8* %0) #5
-  ret void
+; <label>:10                                      ; preds = %.lr.ph, %10
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %10 ]
+  %11 = getelementptr inbounds i8* %seq, i64 %indvars.iv, !dbg !2377
+  %strncpy = call i8* @strncpy(i8* %1, i8* %11, i64 60), !dbg !2377
+  %12 = call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %fp, i8* getelementptr inbounds ([4 x i8]* @.str41, i64 0, i64 0), i8* %1) #8, !dbg !2379
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 60, !dbg !2376
+  %13 = icmp slt i64 %indvars.iv.next, %9, !dbg !2373
+  br i1 %13, label %10, label %._crit_edge, !dbg !2376
+
+._crit_edge:                                      ; preds = %10, %0
+  call void @llvm.lifetime.end(i64 61, i8* %1) #5, !dbg !2380
+  ret void, !dbg !2380
 }

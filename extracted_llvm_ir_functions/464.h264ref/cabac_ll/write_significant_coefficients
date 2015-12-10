@@ -1,87 +1,99 @@
-define void @write_significant_coefficients(%struct.macroblock* nocapture %currMB, %struct.EncodingEnvironment* %eep_dp, i32 %type, i32* nocapture %coeff) #0 {
-entry:
-  %idxprom = sext i32 %type to i64
-  %arrayidx = getelementptr inbounds [10 x i32]* @maxpos, i64 0, i64 %idxprom
-  %0 = load i32* %arrayidx, align 4, !tbaa !0
-  %arrayidx18 = getelementptr inbounds [10 x i32]* @type2ctx_abs, i64 0, i64 %idxprom
-  %arrayidx23 = getelementptr inbounds [10 x i32]* @max_c2, i64 0, i64 %idxprom
-  %arrayidx34 = getelementptr inbounds [10 x i32]* @type2ctx_abs, i64 0, i64 %idxprom
-  br label %for.cond.outer
+define void @write_significant_coefficients(%struct.macroblock* nocapture readnone %currMB, %struct.EncodingEnvironment* %eep_dp, i32 %type, i32* nocapture readonly %coeff) #0 {
+  tail call void @llvm.dbg.value(metadata %struct.macroblock* %currMB, i64 0, metadata !499, metadata !1011), !dbg !2576
+  tail call void @llvm.dbg.value(metadata %struct.EncodingEnvironment* %eep_dp, i64 0, metadata !500, metadata !1011), !dbg !2577
+  tail call void @llvm.dbg.value(metadata i32 %type, i64 0, metadata !501, metadata !1011), !dbg !2578
+  tail call void @llvm.dbg.value(metadata i32* %coeff, i64 0, metadata !502, metadata !1011), !dbg !2579
+  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !508, metadata !1011), !dbg !2580
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !509, metadata !1011), !dbg !2581
+  %1 = sext i32 %type to i64, !dbg !2582
+  %2 = getelementptr inbounds [10 x i32]* @maxpos, i64 0, i64 %1, !dbg !2582
+  %3 = load i32* %2, align 4, !dbg !2582, !tbaa !995
+  %4 = getelementptr inbounds [10 x i32]* @type2ctx_abs, i64 0, i64 %1, !dbg !2584
+  %5 = getelementptr inbounds [10 x i32]* @max_c2, i64 0, i64 %1, !dbg !2589
+  %6 = getelementptr inbounds [10 x i32]* @type2ctx_abs, i64 0, i64 %1, !dbg !2592
+  br label %.outer, !dbg !2593
 
-for.cond.outer:                                   ; preds = %if.end47, %entry
-  %i.0.in.ph = phi i32 [ %0, %entry ], [ %i.0, %if.end47 ]
-  %c1.0.ph = phi i32 [ 1, %entry ], [ %c1.1, %if.end47 ]
-  %c2.0.ph = phi i32 [ 0, %entry ], [ %c2.1, %if.end47 ]
-  %1 = sext i32 %i.0.in.ph to i64
-  br label %for.cond
+.outer:                                           ; preds = %49, %0
+  %i.0.in.ph = phi i32 [ %i.0, %49 ], [ %3, %0 ]
+  %c1.0.ph = phi i32 [ %c1.1, %49 ], [ 1, %0 ]
+  %c2.0.ph = phi i32 [ %c2.1, %49 ], [ 0, %0 ]
+  %7 = sext i32 %i.0.in.ph to i64
+  br label %8
 
-for.cond:                                         ; preds = %for.cond.outer, %for.body
-  %indvars.iv = phi i64 [ %1, %for.cond.outer ], [ %indvars.iv.next, %for.body ]
-  %i.0.in = phi i32 [ %i.0.in.ph, %for.cond.outer ], [ %i.0, %for.body ]
-  %indvars.iv.next = add i64 %indvars.iv, -1
-  %i.0 = add nsw i32 %i.0.in, -1
-  %2 = trunc i64 %indvars.iv to i32
-  %cmp = icmp sgt i32 %2, 0
-  br i1 %cmp, label %for.body, label %for.end
+; <label>:8                                       ; preds = %.outer, %10
+  %indvars.iv = phi i64 [ %7, %.outer ], [ %indvars.iv.next, %10 ]
+  %i.0.in = phi i32 [ %i.0.in.ph, %.outer ], [ %i.0, %10 ]
+  %i.0 = add nsw i32 %i.0.in, -1, !dbg !2594
+  %9 = icmp sgt i64 %indvars.iv, 0, !dbg !2595
+  br i1 %9, label %10, label %50, !dbg !2596
 
-for.body:                                         ; preds = %for.cond
-  %arrayidx2 = getelementptr inbounds i32* %coeff, i64 %indvars.iv.next
-  %3 = load i32* %arrayidx2, align 4, !tbaa !0
-  %cmp3 = icmp eq i32 %3, 0
-  br i1 %cmp3, label %for.cond, label %if.then
+; <label>:10                                      ; preds = %8
+  %11 = sext i32 %i.0 to i64, !dbg !2597
+  %12 = getelementptr inbounds i32* %coeff, i64 %11, !dbg !2597
+  %13 = load i32* %12, align 4, !dbg !2597, !tbaa !995
+  %14 = icmp eq i32 %13, 0, !dbg !2598
+  %indvars.iv.next = add nsw i64 %indvars.iv, -1, !dbg !2599
+  br i1 %14, label %8, label %15, !dbg !2599
 
-if.then:                                          ; preds = %for.body
-  %cmp6 = icmp sgt i32 %3, 0
-  %sub12 = sub nsw i32 0, %3
-  %absLevel.0 = select i1 %cmp6, i32 %3, i32 %sub12
-  %4 = zext i1 %cmp6 to i16
-  %sign.0 = xor i16 %4, 1
-  %cmp13 = icmp sgt i32 %absLevel.0, 1
-  %conv = zext i1 %cmp13 to i16
-  %cmp14 = icmp slt i32 %c1.0.ph, 4
-  %5 = load i32* %arrayidx18, align 4, !tbaa !0
-  %idxprom19 = sext i32 %5 to i64
-  %6 = load %struct.ImageParameters** @img, align 8, !tbaa !3
-  %currentSlice = getelementptr inbounds %struct.ImageParameters* %6, i64 0, i32 50
-  %7 = load %struct.Slice** %currentSlice, align 8, !tbaa !3
-  %tex_ctx = getelementptr inbounds %struct.Slice* %7, i64 0, i32 8
-  %8 = load %struct.TextureInfoContexts** %tex_ctx, align 8, !tbaa !3
-  %9 = sext i32 %c1.0.ph to i64
-  %idx.ext = select i1 %cmp14, i64 %9, i64 4
-  %add.ptr = getelementptr inbounds %struct.TextureInfoContexts* %8, i64 0, i32 6, i64 %idxprom19, i64 %idx.ext
-  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext %conv, %struct.BiContextType* %add.ptr) #5
-  br i1 %cmp13, label %if.then21, label %if.else42
+; <label>:15                                      ; preds = %10
+  %16 = icmp sgt i32 %13, 0, !dbg !2600
+  %17 = sub nsw i32 0, %13, !dbg !2602
+  tail call void @llvm.dbg.value(metadata i32 %17, i64 0, metadata !504, metadata !1011), !dbg !2604
+  tail call void @llvm.dbg.value(metadata i16 1, i64 0, metadata !506, metadata !1011), !dbg !2605
+  %absLevel.0 = select i1 %16, i32 %13, i32 %17, !dbg !2606
+  %18 = zext i1 %16 to i16, !dbg !2606
+  %sign.0 = xor i16 %18, 1, !dbg !2606
+  %19 = icmp sgt i32 %absLevel.0, 1, !dbg !2607
+  %20 = zext i1 %19 to i16, !dbg !2608
+  tail call void @llvm.dbg.value(metadata i16 %20, i64 0, metadata !507, metadata !1011), !dbg !2609
+  %21 = icmp slt i32 %c1.0.ph, 4, !dbg !2610
+  %22 = load i32* %4, align 4, !dbg !2584, !tbaa !995
+  %23 = sext i32 %22 to i64, !dbg !2611
+  %24 = load %struct.ImageParameters** @img, align 8, !dbg !2611, !tbaa !1001
+  %25 = getelementptr inbounds %struct.ImageParameters* %24, i64 0, i32 50, !dbg !2612
+  %26 = load %struct.Slice** %25, align 8, !dbg !2612, !tbaa !1106
+  %27 = getelementptr inbounds %struct.Slice* %26, i64 0, i32 8, !dbg !2613
+  %28 = load %struct.TextureInfoContexts** %27, align 8, !dbg !2613, !tbaa !1703
+  %29 = sext i32 %c1.0.ph to i64, !dbg !2614
+  %30 = select i1 %21, i64 %29, i64 4, !dbg !2614
+  %31 = getelementptr inbounds %struct.TextureInfoContexts* %28, i64 0, i32 6, i64 %23, i64 %30, !dbg !2614
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext %20, %struct.BiContextType* %31) #6, !dbg !2615
+  br i1 %19, label %32, label %46, !dbg !2616
 
-if.then21:                                        ; preds = %if.then
-  %10 = load i32* %arrayidx23, align 4, !tbaa !0
-  %cmp24 = icmp slt i32 %c2.0.ph, %10
-  %c2.0. = select i1 %cmp24, i32 %c2.0.ph, i32 %10
-  %sub32 = add nsw i32 %absLevel.0, -2
-  %11 = load i32* %arrayidx34, align 4, !tbaa !0
-  %idxprom35 = sext i32 %11 to i64
-  %12 = load %struct.ImageParameters** @img, align 8, !tbaa !3
-  %currentSlice36 = getelementptr inbounds %struct.ImageParameters* %12, i64 0, i32 50
-  %13 = load %struct.Slice** %currentSlice36, align 8, !tbaa !3
-  %tex_ctx37 = getelementptr inbounds %struct.Slice* %13, i64 0, i32 8
-  %14 = load %struct.TextureInfoContexts** %tex_ctx37, align 8, !tbaa !3
-  %idx.ext40 = sext i32 %c2.0. to i64
-  %add.ptr41 = getelementptr inbounds %struct.TextureInfoContexts* %14, i64 0, i32 7, i64 %idxprom35, i64 %idx.ext40
-  tail call void @unary_exp_golomb_level_encode(%struct.EncodingEnvironment* %eep_dp, i32 %sub32, %struct.BiContextType* %add.ptr41) #7
-  %inc = add nsw i32 %c2.0.ph, 1
-  br label %if.end47
+; <label>:32                                      ; preds = %15
+  %33 = load i32* %5, align 4, !dbg !2589, !tbaa !995
+  %34 = icmp slt i32 %c2.0.ph, %33, !dbg !2589
+  %c2.0. = select i1 %34, i32 %c2.0.ph, i32 %33, !dbg !2589
+  tail call void @llvm.dbg.value(metadata i32 %c2.0., i64 0, metadata !505, metadata !1011), !dbg !2617
+  %35 = add nsw i32 %absLevel.0, -2, !dbg !2618
+  %36 = load i32* %6, align 4, !dbg !2592, !tbaa !995
+  %37 = sext i32 %36 to i64, !dbg !2619
+  %38 = load %struct.ImageParameters** @img, align 8, !dbg !2619, !tbaa !1001
+  %39 = getelementptr inbounds %struct.ImageParameters* %38, i64 0, i32 50, !dbg !2620
+  %40 = load %struct.Slice** %39, align 8, !dbg !2620, !tbaa !1106
+  %41 = getelementptr inbounds %struct.Slice* %40, i64 0, i32 8, !dbg !2621
+  %42 = load %struct.TextureInfoContexts** %41, align 8, !dbg !2621, !tbaa !1703
+  %43 = sext i32 %c2.0. to i64, !dbg !2622
+  %44 = getelementptr inbounds %struct.TextureInfoContexts* %42, i64 0, i32 7, i64 %37, i64 %43, !dbg !2622
+  tail call void @unary_exp_golomb_level_encode(%struct.EncodingEnvironment* %eep_dp, i32 %35, %struct.BiContextType* %44) #7, !dbg !2623
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !508, metadata !1011), !dbg !2580
+  %45 = add nsw i32 %c2.0.ph, 1, !dbg !2624
+  tail call void @llvm.dbg.value(metadata i32 %45, i64 0, metadata !509, metadata !1011), !dbg !2581
+  br label %49, !dbg !2625
 
-if.else42:                                        ; preds = %if.then
-  %tobool43 = icmp eq i32 %c1.0.ph, 0
-  %inc45 = add nsw i32 %c1.0.ph, 1
-  %c1.0.inc45 = select i1 %tobool43, i32 0, i32 %inc45
-  br label %if.end47
+; <label>:46                                      ; preds = %15
+  %47 = icmp eq i32 %c1.0.ph, 0, !dbg !2626
+  %48 = add nsw i32 %c1.0.ph, 1, !dbg !2628
+  tail call void @llvm.dbg.value(metadata i32 %48, i64 0, metadata !508, metadata !1011), !dbg !2580
+  %c1.0. = select i1 %47, i32 0, i32 %48, !dbg !2630
+  br label %49, !dbg !2630
 
-if.end47:                                         ; preds = %if.else42, %if.then21
-  %c1.1 = phi i32 [ 0, %if.then21 ], [ %c1.0.inc45, %if.else42 ]
-  %c2.1 = phi i32 [ %inc, %if.then21 ], [ %c2.0.ph, %if.else42 ]
-  tail call void @biari_encode_symbol_eq_prob(%struct.EncodingEnvironment* %eep_dp, i16 signext %sign.0) #5
-  br label %for.cond.outer
+; <label>:49                                      ; preds = %46, %32
+  %c1.1 = phi i32 [ 0, %32 ], [ %c1.0., %46 ]
+  %c2.1 = phi i32 [ %45, %32 ], [ %c2.0.ph, %46 ]
+  tail call void @biari_encode_symbol_eq_prob(%struct.EncodingEnvironment* %eep_dp, i16 signext %sign.0) #6, !dbg !2631
+  br label %.outer, !dbg !2632
 
-for.end:                                          ; preds = %for.cond
-  ret void
+; <label>:50                                      ; preds = %8
+  ret void, !dbg !2633
 }

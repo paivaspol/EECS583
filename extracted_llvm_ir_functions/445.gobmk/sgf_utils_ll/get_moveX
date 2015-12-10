@@ -1,22 +1,25 @@
-define i32 @get_moveX(%struct.SGFProperty_t* nocapture %property, i32 %boardsize) #0 {
-entry:
-  %value = getelementptr inbounds %struct.SGFProperty_t* %property, i64 0, i32 2
-  %0 = load i8** %value, align 8, !tbaa !0
-  %call = tail call i64 @strlen(i8* %0) #5
-  %cmp = icmp ult i64 %call, 2
-  br i1 %cmp, label %return, label %if.end
+define i32 @get_moveX(%struct.SGFProperty_t* nocapture readonly %property, i32 %boardsize) #0 {
+  tail call void @llvm.dbg.value(metadata %struct.SGFProperty_t* %property, i64 0, metadata !22, metadata !90), !dbg !91
+  tail call void @llvm.dbg.value(metadata i32 %boardsize, i64 0, metadata !23, metadata !90), !dbg !92
+  %1 = getelementptr inbounds %struct.SGFProperty_t* %property, i64 0, i32 2, !dbg !93
+  %2 = load i8** %1, align 8, !dbg !93, !tbaa !95
+  %3 = tail call i64 @strlen(i8* %2) #7, !dbg !101
+  %4 = icmp ult i64 %3, 2, !dbg !102
+  br i1 %4, label %12, label %5, !dbg !103
 
-if.end:                                           ; preds = %entry
-  %arrayidx = getelementptr inbounds i8* %0, i64 1
-  %1 = load i8* %arrayidx, align 1, !tbaa !1
-  %conv = sext i8 %1 to i32
-  %call2 = tail call i32 @toupper(i32 %conv) #6
-  %sub = add nsw i32 %call2, -65
-  %cmp3 = icmp slt i32 %sub, %boardsize
-  %sub. = select i1 %cmp3, i32 %sub, i32 -1
-  br label %return
+; <label>:5                                       ; preds = %0
+  %6 = getelementptr inbounds i8* %2, i64 1, !dbg !104
+  %7 = load i8* %6, align 1, !dbg !104, !tbaa !105
+  %8 = sext i8 %7 to i32, !dbg !106
+  tail call void @llvm.dbg.value(metadata i32 %8, i64 0, metadata !85, metadata !90) #6, !dbg !107
+  %9 = tail call i32 @__toupper(i32 %8) #7, !dbg !109
+  %10 = add nsw i32 %9, -65, !dbg !110
+  tail call void @llvm.dbg.value(metadata i32 %10, i64 0, metadata !24, metadata !90), !dbg !111
+  %11 = icmp slt i32 %10, %boardsize, !dbg !112
+  %. = select i1 %11, i32 %10, i32 -1, !dbg !114
+  br label %12, !dbg !114
 
-return:                                           ; preds = %if.end, %entry
-  %retval.0 = phi i32 [ -1, %entry ], [ %sub., %if.end ]
-  ret i32 %retval.0
+; <label>:12                                      ; preds = %5, %0
+  %.0 = phi i32 [ -1, %0 ], [ %., %5 ]
+  ret i32 %.0, !dbg !115
 }

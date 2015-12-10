@@ -1,37 +1,40 @@
 define i8** @get_symtab_handle(%struct.t_symtab* nocapture readonly %symtab, i32 %name) #1 {
-  %1 = getelementptr inbounds %struct.t_symtab* %symtab, i64 0, i32 1
-  %symbuf.04 = load %struct.symbuf** %1, align 8
-  %2 = icmp eq %struct.symbuf* %symbuf.04, null
-  br i1 %2, label %._crit_edge, label %.lr.ph
+  tail call void @llvm.dbg.value(metadata %struct.t_symtab* %symtab, i64 0, metadata !44, metadata !172), !dbg !212
+  tail call void @llvm.dbg.value(metadata i32 %name, i64 0, metadata !45, metadata !172), !dbg !213
+  %1 = getelementptr inbounds %struct.t_symtab* %symtab, i64 0, i32 1, !dbg !214
+  %symbuf.04 = load %struct.symbuf** %1, align 8, !dbg !214
+  %2 = icmp eq %struct.symbuf* %symbuf.04, null, !dbg !215
+  br i1 %2, label %._crit_edge, label %.lr.ph, !dbg !216
 
 .lr.ph:                                           ; preds = %0, %11
   %symbuf.06 = phi %struct.symbuf* [ %symbuf.0, %11 ], [ %symbuf.04, %0 ]
   %.05 = phi i32 [ %12, %11 ], [ %name, %0 ]
-  %3 = getelementptr inbounds %struct.symbuf* %symbuf.06, i64 0, i32 0
-  %4 = load i32* %3, align 4, !tbaa !8
-  %5 = icmp slt i32 %.05, %4
-  br i1 %5, label %6, label %11
+  %3 = getelementptr inbounds %struct.symbuf* %symbuf.06, i64 0, i32 0, !dbg !217
+  %4 = load i32* %3, align 4, !dbg !217, !tbaa !199
+  %5 = icmp slt i32 %.05, %4, !dbg !220
+  br i1 %5, label %6, label %11, !dbg !221
 
 ; <label>:6                                       ; preds = %.lr.ph
-  %7 = sext i32 %.05 to i64
-  %8 = getelementptr inbounds %struct.symbuf* %symbuf.06, i64 0, i32 1
-  %9 = load i8*** %8, align 8, !tbaa !2
-  %10 = getelementptr inbounds i8** %9, i64 %7
-  br label %15
+  %7 = sext i32 %.05 to i64, !dbg !222
+  %8 = getelementptr inbounds %struct.symbuf* %symbuf.06, i64 0, i32 1, !dbg !223
+  %9 = load i8*** %8, align 8, !dbg !223, !tbaa !189
+  %10 = getelementptr inbounds i8** %9, i64 %7, !dbg !222
+  br label %15, !dbg !224
 
 ; <label>:11                                      ; preds = %.lr.ph
-  %12 = sub nsw i32 %.05, %4
-  %13 = getelementptr inbounds %struct.symbuf* %symbuf.06, i64 0, i32 2
-  %symbuf.0 = load %struct.symbuf** %13, align 8
-  %14 = icmp eq %struct.symbuf* %symbuf.0, null
-  br i1 %14, label %._crit_edge, label %.lr.ph
+  %12 = sub nsw i32 %.05, %4, !dbg !225
+  tail call void @llvm.dbg.value(metadata i32 %12, i64 0, metadata !45, metadata !172), !dbg !213
+  %13 = getelementptr inbounds %struct.symbuf* %symbuf.06, i64 0, i32 2, !dbg !227
+  %symbuf.0 = load %struct.symbuf** %13, align 8, !dbg !214
+  %14 = icmp eq %struct.symbuf* %symbuf.0, null, !dbg !215
+  br i1 %14, label %._crit_edge, label %.lr.ph, !dbg !216
 
 ._crit_edge:                                      ; preds = %11, %0
   %.0.lcssa = phi i32 [ %name, %0 ], [ %12, %11 ]
-  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([38 x i8]* @.str1, i64 0, i64 0), i32 %.0.lcssa) #6
-  br label %15
+  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([38 x i8]* @.str1, i64 0, i64 0), i32 %.0.lcssa) #7, !dbg !228
+  br label %15, !dbg !229
 
 ; <label>:15                                      ; preds = %._crit_edge, %6
   %.01 = phi i8** [ %10, %6 ], [ null, %._crit_edge ]
-  ret i8** %.01
+  ret i8** %.01, !dbg !230
 }

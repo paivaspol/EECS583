@@ -1,61 +1,74 @@
 define void @sum_lrforces([3 x float]* %f, %struct.t_forcerec* nocapture readonly %fr, i32 %start, i32 %homenr) #4 {
-  %1 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 33
-  %2 = load i32* %1, align 4, !tbaa !44
-  %.off = add i32 %2, -3
-  %switch = icmp ult i32 %.off, 4
-  br i1 %switch, label %3, label %sum_forces.exit
+  tail call void @llvm.dbg.value(metadata [3 x float]* %f, i64 0, metadata !1226, metadata !1624), !dbg !2208
+  tail call void @llvm.dbg.value(metadata %struct.t_forcerec* %fr, i64 0, metadata !1227, metadata !1624), !dbg !2209
+  tail call void @llvm.dbg.value(metadata i32 %start, i64 0, metadata !1228, metadata !1624), !dbg !2210
+  tail call void @llvm.dbg.value(metadata i32 %homenr, i64 0, metadata !1229, metadata !1624), !dbg !2211
+  %1 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 33, !dbg !2212
+  %2 = load i32* %1, align 4, !dbg !2212, !tbaa !2057
+  %.off = add i32 %2, -3, !dbg !2212
+  %switch = icmp ult i32 %.off, 4, !dbg !2212
+  br i1 %switch, label %3, label %sum_forces.exit, !dbg !2212
 
 ; <label>:3                                       ; preds = %0
-  %4 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 55
-  %5 = load [3 x float]** %4, align 8, !tbaa !45
-  %6 = load %struct.__sFILE** @debug, align 8, !tbaa !32
-  %7 = icmp eq %struct.__sFILE* %6, null
-  br i1 %7, label %.preheader.i, label %8
+  %4 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 55, !dbg !2214
+  %5 = load [3 x float]** %4, align 8, !dbg !2214, !tbaa !2059
+  tail call void @llvm.dbg.value(metadata i32 %start, i64 0, metadata !1578, metadata !1624) #5, !dbg !2215
+  tail call void @llvm.dbg.value(metadata i32 %15, i64 0, metadata !1579, metadata !1624) #5, !dbg !2217
+  tail call void @llvm.dbg.value(metadata [3 x float]* %f, i64 0, metadata !1580, metadata !1624) #5, !dbg !2218
+  tail call void @llvm.dbg.value(metadata [3 x float]* %5, i64 0, metadata !1581, metadata !1624) #5, !dbg !2219
+  %6 = load %struct.__sFILE** @debug, align 8, !dbg !2220, !tbaa !1945
+  %7 = icmp eq %struct.__sFILE* %6, null, !dbg !2220
+  br i1 %7, label %.preheader.i, label %8, !dbg !2222
 
 ; <label>:8                                       ; preds = %3
-  %9 = sext i32 %start to i64
-  %10 = getelementptr inbounds [3 x float]* %f, i64 %9
-  tail call void @pr_rvecs(%struct.__sFILE* %6, i32 0, i8* getelementptr inbounds ([4 x i8]* @.str20, i64 0, i64 0), [3 x float]* %10, i32 %homenr) #10
-  %11 = load %struct.__sFILE** @debug, align 8, !tbaa !32
-  %12 = getelementptr inbounds [3 x float]* %5, i64 %9
-  tail call void @pr_rvecs(%struct.__sFILE* %11, i32 0, i8* getelementptr inbounds ([4 x i8]* @.str21, i64 0, i64 0), [3 x float]* %12, i32 %homenr) #10
-  br label %.preheader.i
+  %9 = sext i32 %start to i64, !dbg !2223
+  %10 = getelementptr inbounds [3 x float]* %f, i64 %9, !dbg !2223
+  tail call void @pr_rvecs(%struct.__sFILE* %6, i32 0, i8* getelementptr inbounds ([4 x i8]* @.str20, i64 0, i64 0), [3 x float]* %10, i32 %homenr) #10, !dbg !2225
+  %11 = load %struct.__sFILE** @debug, align 8, !dbg !2226, !tbaa !1945
+  %12 = getelementptr inbounds [3 x float]* %5, i64 %9, !dbg !2227
+  tail call void @pr_rvecs(%struct.__sFILE* %11, i32 0, i8* getelementptr inbounds ([4 x i8]* @.str21, i64 0, i64 0), [3 x float]* %12, i32 %homenr) #10, !dbg !2228
+  br label %.preheader.i, !dbg !2229
 
 .preheader.i:                                     ; preds = %8, %3
-  %13 = icmp sgt i32 %homenr, 0
-  br i1 %13, label %.lr.ph.i, label %sum_forces.exit
+  %13 = icmp sgt i32 %homenr, 0, !dbg !2230
+  br i1 %13, label %.lr.ph.i, label %sum_forces.exit, !dbg !2233
 
 .lr.ph.i:                                         ; preds = %.preheader.i
-  %14 = sext i32 %start to i64
-  %15 = add i32 %start, -1
-  %16 = add i32 %15, %homenr
-  br label %17
+  %14 = sext i32 %start to i64, !dbg !2234
+  %15 = add i32 %start, -1, !dbg !2235
+  %16 = add i32 %15, %homenr, !dbg !2233
+  br label %17, !dbg !2233
 
 ; <label>:17                                      ; preds = %17, %.lr.ph.i
-  %indvars.iv.i = phi i64 [ %14, %.lr.ph.i ], [ %indvars.iv.next.i, %17 ]
-  %18 = getelementptr inbounds [3 x float]* %f, i64 %indvars.iv.i, i64 0
-  %19 = getelementptr inbounds [3 x float]* %5, i64 %indvars.iv.i, i64 0
-  %20 = load float* %18, align 4, !tbaa !2
-  %21 = load float* %19, align 4, !tbaa !2
-  %22 = fadd float %20, %21
-  %23 = getelementptr inbounds [3 x float]* %f, i64 %indvars.iv.i, i64 1
-  %24 = load float* %23, align 4, !tbaa !2
-  %25 = getelementptr inbounds [3 x float]* %5, i64 %indvars.iv.i, i64 1
-  %26 = load float* %25, align 4, !tbaa !2
-  %27 = fadd float %24, %26
-  %28 = getelementptr inbounds [3 x float]* %f, i64 %indvars.iv.i, i64 2
-  %29 = load float* %28, align 4, !tbaa !2
-  %30 = getelementptr inbounds [3 x float]* %5, i64 %indvars.iv.i, i64 2
-  %31 = load float* %30, align 4, !tbaa !2
-  %32 = fadd float %29, %31
-  store float %22, float* %18, align 4, !tbaa !2
-  store float %27, float* %23, align 4, !tbaa !2
-  store float %32, float* %28, align 4, !tbaa !2
-  %indvars.iv.next.i = add nsw i64 %indvars.iv.i, 1
-  %lftr.wideiv.i = trunc i64 %indvars.iv.i to i32
-  %exitcond.i = icmp eq i32 %lftr.wideiv.i, %16
-  br i1 %exitcond.i, label %sum_forces.exit, label %17
+  %indvars.iv.i = phi i64 [ %14, %.lr.ph.i ], [ %indvars.iv.next.i, %17 ], !dbg !2234
+  %18 = getelementptr inbounds [3 x float]* %f, i64 %indvars.iv.i, i64 0, !dbg !2236
+  %19 = getelementptr inbounds [3 x float]* %5, i64 %indvars.iv.i, i64 0, !dbg !2237
+  tail call void @llvm.dbg.value(metadata float* %18, i64 0, metadata !1587, metadata !1624) #5, !dbg !2238
+  tail call void @llvm.dbg.value(metadata float* %19, i64 0, metadata !1588, metadata !1624) #5, !dbg !2240
+  %20 = load float* %18, align 4, !dbg !2241, !tbaa !1720
+  %21 = load float* %19, align 4, !dbg !2242, !tbaa !1720
+  %22 = fadd float %20, %21, !dbg !2243
+  tail call void @llvm.dbg.value(metadata float %22, i64 0, metadata !1589, metadata !1624) #5, !dbg !2244
+  %23 = getelementptr inbounds [3 x float]* %f, i64 %indvars.iv.i, i64 1, !dbg !2245
+  %24 = load float* %23, align 4, !dbg !2245, !tbaa !1720
+  %25 = getelementptr inbounds [3 x float]* %5, i64 %indvars.iv.i, i64 1, !dbg !2246
+  %26 = load float* %25, align 4, !dbg !2246, !tbaa !1720
+  %27 = fadd float %24, %26, !dbg !2247
+  tail call void @llvm.dbg.value(metadata float %27, i64 0, metadata !1590, metadata !1624) #5, !dbg !2248
+  %28 = getelementptr inbounds [3 x float]* %f, i64 %indvars.iv.i, i64 2, !dbg !2249
+  %29 = load float* %28, align 4, !dbg !2249, !tbaa !1720
+  %30 = getelementptr inbounds [3 x float]* %5, i64 %indvars.iv.i, i64 2, !dbg !2250
+  %31 = load float* %30, align 4, !dbg !2250, !tbaa !1720
+  %32 = fadd float %29, %31, !dbg !2251
+  tail call void @llvm.dbg.value(metadata float %32, i64 0, metadata !1591, metadata !1624) #5, !dbg !2252
+  store float %22, float* %18, align 4, !dbg !2253, !tbaa !1720
+  store float %27, float* %23, align 4, !dbg !2254, !tbaa !1720
+  store float %32, float* %28, align 4, !dbg !2255, !tbaa !1720
+  %indvars.iv.next.i = add nsw i64 %indvars.iv.i, 1, !dbg !2233
+  %lftr.wideiv.i = trunc i64 %indvars.iv.i to i32, !dbg !2233
+  %exitcond.i = icmp eq i32 %lftr.wideiv.i, %16, !dbg !2233
+  br i1 %exitcond.i, label %sum_forces.exit, label %17, !dbg !2233
 
 sum_forces.exit:                                  ; preds = %17, %.preheader.i, %0
-  ret void
+  ret void, !dbg !2256
 }

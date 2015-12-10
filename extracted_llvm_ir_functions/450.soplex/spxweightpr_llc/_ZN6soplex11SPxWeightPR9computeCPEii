@@ -1,0 +1,40 @@
+define void @_ZN6soplex11SPxWeightPR9computeCPEii(%"class.soplex::SPxWeightPR"* %this, i32 %start, i32 %end) #2 align 2 {
+  tail call void @llvm.dbg.value(metadata %"class.soplex::SPxWeightPR"* %this, i64 0, metadata !5051, metadata !6282), !dbg !6525
+  tail call void @llvm.dbg.value(metadata i32 %start, i64 0, metadata !5052, metadata !6282), !dbg !6526
+  tail call void @llvm.dbg.value(metadata i32 %end, i64 0, metadata !5053, metadata !6282), !dbg !6527
+  tail call void @llvm.dbg.value(metadata i32 %start, i64 0, metadata !5054, metadata !6282), !dbg !6528
+  %1 = icmp slt i32 %start, %end, !dbg !6529
+  br i1 %1, label %.lr.ph, label %._crit_edge, !dbg !6531
+
+.lr.ph:                                           ; preds = %0
+  %2 = getelementptr inbounds %"class.soplex::SPxWeightPR"* %this, i64 0, i32 0, !dbg !6532
+  %3 = bitcast %"class.soplex::SPxWeightPR"* %this to %"class.soplex::SoPlex"* (%"class.soplex::SPxPricer"*)***, !dbg !6532
+  %4 = getelementptr inbounds %"class.soplex::SPxWeightPR"* %this, i64 0, i32 6, !dbg !6534
+  %5 = getelementptr inbounds %"class.soplex::SPxWeightPR"* %this, i64 0, i32 1, i32 0, i32 1, !dbg !6535
+  %6 = sext i32 %start to i64
+  %7 = add i32 %end, -1, !dbg !6531
+  br label %8, !dbg !6531
+
+; <label>:8                                       ; preds = %8, %.lr.ph
+  %indvars.iv = phi i64 [ %6, %.lr.ph ], [ %indvars.iv.next, %8 ]
+  %9 = load %"class.soplex::SoPlex"* (%"class.soplex::SPxPricer"*)*** %3, align 8, !dbg !6532, !tbaa !6366
+  %10 = getelementptr inbounds %"class.soplex::SoPlex"* (%"class.soplex::SPxPricer"*)** %9, i64 3, !dbg !6532
+  %11 = load %"class.soplex::SoPlex"* (%"class.soplex::SPxPricer"*)** %10, align 8, !dbg !6532
+  %12 = tail call %"class.soplex::SoPlex"* %11(%"class.soplex::SPxPricer"* %2) #11, !dbg !6532
+  %13 = getelementptr inbounds %"class.soplex::SoPlex"* %12, i64 0, i32 0, i32 2, i32 3, i32 0, i32 1, !dbg !6537
+  %14 = load double** %13, align 8, !dbg !6537, !tbaa !6291
+  %15 = getelementptr inbounds double* %14, i64 %indvars.iv, !dbg !6537
+  %16 = load double* %15, align 8, !dbg !6532, !tbaa !6407
+  %17 = load double* %4, align 8, !dbg !6534, !tbaa !6480
+  %18 = fmul double %16, %17, !dbg !6541
+  %19 = load double** %5, align 8, !dbg !6535, !tbaa !6291
+  %20 = getelementptr inbounds double* %19, i64 %indvars.iv, !dbg !6535
+  store double %18, double* %20, align 8, !dbg !6542, !tbaa !6407
+  %indvars.iv.next = add nsw i64 %indvars.iv, 1, !dbg !6531
+  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !6531
+  %exitcond = icmp eq i32 %lftr.wideiv, %7, !dbg !6531
+  br i1 %exitcond, label %._crit_edge, label %8, !dbg !6531
+
+._crit_edge:                                      ; preds = %8, %0
+  ret void, !dbg !6543
+}

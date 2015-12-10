@@ -1,43 +1,45 @@
 define void @IVL_init1(%struct._IVL* %ivl, i32 %type, i32 %maxnlist) #0 {
-entry:
-  %cmp = icmp eq %struct._IVL* %ivl, null
-  br i1 %cmp, label %if.then, label %lor.lhs.false
+  tail call void @llvm.dbg.value(metadata %struct._IVL* %ivl, i64 0, metadata !36, metadata !74), !dbg !75
+  tail call void @llvm.dbg.value(metadata i32 %type, i64 0, metadata !37, metadata !74), !dbg !76
+  tail call void @llvm.dbg.value(metadata i32 %maxnlist, i64 0, metadata !38, metadata !74), !dbg !77
+  %1 = icmp eq %struct._IVL* %ivl, null, !dbg !78
+  br i1 %1, label %5, label %2, !dbg !80
 
-lor.lhs.false:                                    ; preds = %entry
-  %type.off = add i32 %type, -1
-  %0 = icmp ugt i32 %type.off, 1
-  %cmp4 = icmp ne i32 %type, 3
-  %or.cond14 = and i1 %0, %cmp4
-  %cmp6 = icmp slt i32 %maxnlist, 0
-  %or.cond = or i1 %or.cond14, %cmp6
-  br i1 %or.cond, label %if.then, label %if.end
+; <label>:2                                       ; preds = %0
+  %type.off = add i32 %type, -1, !dbg !81
+  %type.cmp = icmp ugt i32 %type.off, 1, !dbg !81
+  %3 = icmp ne i32 %type, 3, !dbg !82
+  %or.cond3 = and i1 %3, %type.cmp, !dbg !81
+  %4 = icmp slt i32 %maxnlist, 0, !dbg !83
+  %or.cond5 = or i1 %4, %or.cond3, !dbg !81
+  br i1 %or.cond5, label %5, label %8, !dbg !81
 
-if.then:                                          ; preds = %lor.lhs.false, %entry
-  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([48 x i8]* @.str, i64 0, i64 0), %struct._IVL* %ivl, i32 %type, i32 %maxnlist) #4
-  tail call void @exit(i32 -1) #5
-  unreachable
+; <label>:5                                       ; preds = %2, %0
+  %6 = load %struct.__sFILE** @__stderrp, align 8, !dbg !84, !tbaa !86
+  %7 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %6, i8* getelementptr inbounds ([48 x i8]* @.str, i64 0, i64 0), %struct._IVL* %ivl, i32 %type, i32 %maxnlist) #5, !dbg !90
+  tail call void @exit(i32 -1) #6, !dbg !91
+  unreachable, !dbg !91
 
-if.end:                                           ; preds = %lor.lhs.false
-  tail call void @IVL_clearData(%struct._IVL* %ivl) #4
-  %type7 = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 0
-  store i32 %type, i32* %type7, align 4, !tbaa !3
-  %maxnlist8 = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 1
-  store i32 %maxnlist, i32* %maxnlist8, align 4, !tbaa !3
-  %nlist = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 2
-  store i32 %maxnlist, i32* %nlist, align 4, !tbaa !3
-  %cmp9 = icmp sgt i32 %maxnlist, 0
-  br i1 %cmp9, label %if.then10, label %if.end13
+; <label>:8                                       ; preds = %2
+  tail call void @IVL_clearData(%struct._IVL* %ivl) #5, !dbg !92
+  %9 = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 0, !dbg !93
+  store i32 %type, i32* %9, align 4, !dbg !94, !tbaa !95
+  %10 = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 1, !dbg !98
+  store i32 %maxnlist, i32* %10, align 4, !dbg !99, !tbaa !100
+  %11 = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 2, !dbg !101
+  store i32 %maxnlist, i32* %11, align 4, !dbg !102, !tbaa !103
+  %12 = icmp sgt i32 %maxnlist, 0, !dbg !104
+  br i1 %12, label %13, label %18, !dbg !106
 
-if.then10:                                        ; preds = %if.end
-  %call11 = tail call i32* @IVinit(i32 %maxnlist, i32 0) #4
-  %sizes = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 4
-  store i32* %call11, i32** %sizes, align 8, !tbaa !0
-  %call12 = tail call i32** @PIVinit(i32 %maxnlist) #4
-  %p_vec = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 5
-  store i32** %call12, i32*** %p_vec, align 8, !tbaa !0
-  br label %if.end13
+; <label>:13                                      ; preds = %8
+  %14 = tail call i32* @IVinit(i32 %maxnlist, i32 0) #5, !dbg !107
+  %15 = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 4, !dbg !109
+  store i32* %14, i32** %15, align 8, !dbg !110, !tbaa !111
+  %16 = tail call i32** @PIVinit(i32 %maxnlist) #5, !dbg !112
+  %17 = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 5, !dbg !113
+  store i32** %16, i32*** %17, align 8, !dbg !114, !tbaa !115
+  br label %18, !dbg !116
 
-if.end13:                                         ; preds = %if.then10, %if.end
-  ret void
+; <label>:18                                      ; preds = %13, %8
+  ret void, !dbg !117
 }

@@ -1,51 +1,55 @@
 define internal fastcc %struct.GKI* @gki_alloc(i32 %primelevel) #0 {
-entry:
-  %0 = icmp ugt i32 %primelevel, 3
-  br i1 %0, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata i32 %primelevel, i64 0, metadata !65, metadata !93), !dbg !96
+  %1 = icmp ugt i32 %primelevel, 3, !dbg !97
+  br i1 %1, label %2, label %3, !dbg !97
 
-if.then:                                          ; preds = %entry
-  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([30 x i8]* @.str7, i64 0, i64 0)) #6
-  br label %if.end
+; <label>:2                                       ; preds = %0
+  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([30 x i8]* @.str7, i64 0, i64 0)) #7, !dbg !99
+  br label %3, !dbg !99
 
-if.end:                                           ; preds = %entry, %if.then
-  %call = tail call i8* @sre_malloc(i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i32 294, i64 24) #6
-  %1 = bitcast i8* %call to %struct.GKI*
-  %primelevel2 = getelementptr inbounds i8* %call, i64 8
-  %2 = bitcast i8* %primelevel2 to i32*
-  store i32 %primelevel, i32* %2, align 4, !tbaa !0
-  %idxprom = sext i32 %primelevel to i64
-  %arrayidx = getelementptr inbounds [4 x i32]* @gki_primes, i64 0, i64 %idxprom
-  %3 = load i32* %arrayidx, align 4, !tbaa !0
-  %nhash = getelementptr inbounds i8* %call, i64 12
-  %4 = bitcast i8* %nhash to i32*
-  store i32 %3, i32* %4, align 4, !tbaa !0
-  %conv = sext i32 %3 to i64
-  %mul = mul i64 %conv, 24
-  %call5 = tail call i8* @sre_malloc(i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i32 298, i64 %mul) #6
-  %5 = bitcast i8* %call5 to %struct.gki_elem**
-  %table = bitcast i8* %call to %struct.gki_elem***
-  store %struct.gki_elem** %5, %struct.gki_elem*** %table, align 8, !tbaa !3
-  %6 = load i32* %4, align 4, !tbaa !0
-  %cmp724 = icmp sgt i32 %6, 0
-  br i1 %cmp724, label %for.body, label %for.end
+; <label>:3                                       ; preds = %0, %2
+  %4 = tail call i8* @sre_malloc(i8* getelementptr inbounds ([61 x i8]* @.str, i64 0, i64 0), i32 294, i64 24) #7, !dbg !100
+  %5 = bitcast i8* %4 to %struct.GKI*, !dbg !100
+  tail call void @llvm.dbg.value(metadata %struct.GKI* %5, i64 0, metadata !66, metadata !93), !dbg !101
+  %6 = getelementptr inbounds i8* %4, i64 8, !dbg !102
+  %7 = bitcast i8* %6 to i32*, !dbg !102
+  store i32 %primelevel, i32* %7, align 4, !dbg !103, !tbaa !104
+  %8 = sext i32 %primelevel to i64, !dbg !110
+  %9 = getelementptr inbounds [4 x i32]* @gki_primes, i64 0, i64 %8, !dbg !110
+  %10 = load i32* %9, align 4, !dbg !110, !tbaa !111
+  %11 = getelementptr inbounds i8* %4, i64 12, !dbg !112
+  %12 = bitcast i8* %11 to i32*, !dbg !112
+  store i32 %10, i32* %12, align 4, !dbg !113, !tbaa !114
+  %13 = sext i32 %10 to i64, !dbg !115
+  %14 = mul nsw i64 %13, 24, !dbg !115
+  %15 = tail call i8* @sre_malloc(i8* getelementptr inbounds ([61 x i8]* @.str, i64 0, i64 0), i32 298, i64 %14) #7, !dbg !115
+  %16 = bitcast i8* %4 to %struct.gki_elem***, !dbg !116
+  %17 = bitcast i8* %4 to i8**, !dbg !117
+  store i8* %15, i8** %17, align 8, !dbg !117, !tbaa !118
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !67, metadata !93), !dbg !119
+  %18 = load i32* %12, align 4, !dbg !120, !tbaa !114
+  %19 = icmp sgt i32 %18, 0, !dbg !123
+  br i1 %19, label %.lr.ph, label %._crit_edge, !dbg !124
 
-for.body:                                         ; preds = %if.end, %for.body.for.body_crit_edge
-  %7 = phi %struct.gki_elem** [ %.pre, %for.body.for.body_crit_edge ], [ %5, %if.end ]
-  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body.for.body_crit_edge ], [ 0, %if.end ]
-  %arrayidx11 = getelementptr inbounds %struct.gki_elem** %7, i64 %indvars.iv
-  store %struct.gki_elem* null, %struct.gki_elem** %arrayidx11, align 8, !tbaa !3
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %8 = trunc i64 %indvars.iv.next to i32
-  %cmp7 = icmp slt i32 %8, %6
-  br i1 %cmp7, label %for.body.for.body_crit_edge, label %for.end
+.lr.ph:                                           ; preds = %3
+  %20 = bitcast i8* %15 to %struct.gki_elem**
+  %21 = sext i32 %18 to i64, !dbg !124
+  store %struct.gki_elem* null, %struct.gki_elem** %20, align 8, !dbg !125, !tbaa !126
+  %22 = icmp sgt i32 %18, 1, !dbg !123
+  br i1 %22, label %._crit_edge3, label %._crit_edge, !dbg !124
 
-for.body.for.body_crit_edge:                      ; preds = %for.body
-  %.pre = load %struct.gki_elem*** %table, align 8, !tbaa !3
-  br label %for.body
+._crit_edge3:                                     ; preds = %.lr.ph, %._crit_edge3
+  %indvars.iv.next4 = phi i64 [ %indvars.iv.next, %._crit_edge3 ], [ 1, %.lr.ph ]
+  %.pre = load %struct.gki_elem*** %16, align 8, !dbg !127, !tbaa !118
+  %23 = getelementptr inbounds %struct.gki_elem** %.pre, i64 %indvars.iv.next4, !dbg !128
+  store %struct.gki_elem* null, %struct.gki_elem** %23, align 8, !dbg !125, !tbaa !126
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv.next4, 1, !dbg !124
+  %24 = icmp slt i64 %indvars.iv.next, %21, !dbg !123
+  br i1 %24, label %._crit_edge3, label %._crit_edge, !dbg !124
 
-for.end:                                          ; preds = %for.body, %if.end
-  %nkeys = getelementptr inbounds i8* %call, i64 16
-  %9 = bitcast i8* %nkeys to i32*
-  store i32 0, i32* %9, align 4, !tbaa !0
-  ret %struct.GKI* %1
+._crit_edge:                                      ; preds = %.lr.ph, %._crit_edge3, %3
+  %25 = getelementptr inbounds i8* %4, i64 16, !dbg !129
+  %26 = bitcast i8* %25 to i32*, !dbg !129
+  store i32 0, i32* %26, align 4, !dbg !130, !tbaa !131
+  ret %struct.GKI* %5, !dbg !132
 }

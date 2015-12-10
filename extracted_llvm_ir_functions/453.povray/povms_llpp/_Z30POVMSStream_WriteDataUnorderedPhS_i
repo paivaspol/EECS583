@@ -1,0 +1,26 @@
+define void @_Z30POVMSStream_WriteDataUnorderedPhS_i(i8* nocapture readonly %data, i8* nocapture %stream, i32 %datasize) #0 {
+  tail call void @llvm.dbg.value(metadata i8* %data, i64 0, metadata !391, metadata !1201), !dbg !2959
+  tail call void @llvm.dbg.value(metadata i8* %stream, i64 0, metadata !392, metadata !1201), !dbg !2960
+  tail call void @llvm.dbg.value(metadata i32 %datasize, i64 0, metadata !393, metadata !1201), !dbg !2961
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !394, metadata !1201), !dbg !2962
+  %1 = icmp sgt i32 %datasize, 0, !dbg !2963
+  br i1 %1, label %.lr.ph, label %._crit_edge, !dbg !2964
+
+.lr.ph:                                           ; preds = %0
+  %2 = add i32 %datasize, -1, !dbg !2964
+  br label %3, !dbg !2964
+
+; <label>:3                                       ; preds = %3, %.lr.ph
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %3 ]
+  %4 = getelementptr inbounds i8* %data, i64 %indvars.iv, !dbg !2965
+  %5 = load i8* %4, align 1, !dbg !2965, !tbaa !1562
+  %6 = getelementptr inbounds i8* %stream, i64 %indvars.iv, !dbg !2966
+  store i8 %5, i8* %6, align 1, !dbg !2967, !tbaa !1562
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !2964
+  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !2964
+  %exitcond = icmp eq i32 %lftr.wideiv, %2, !dbg !2964
+  br i1 %exitcond, label %._crit_edge, label %3, !dbg !2964
+
+._crit_edge:                                      ; preds = %3, %0
+  ret void, !dbg !2968
+}

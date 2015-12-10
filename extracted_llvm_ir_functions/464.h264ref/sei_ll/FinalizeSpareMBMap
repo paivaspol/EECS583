@@ -1,105 +1,112 @@
 define void @FinalizeSpareMBMap() #0 {
-entry:
   %sym = alloca %struct.syntaxelement, align 8
-  %0 = load %struct.ImageParameters** @img, align 8, !tbaa !0
-  %number = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 0
-  %1 = load i32* %number, align 4, !tbaa !3
-  %rem = srem i32 %1, 256
-  %2 = bitcast %struct.syntaxelement* %sym to i8*
-  call void @llvm.lifetime.start(i64 48, i8* %2) #4
-  %type = getelementptr inbounds %struct.syntaxelement* %sym, i64 0, i32 0
-  store i32 0, i32* %type, align 8, !tbaa !3
-  %mapping = getelementptr inbounds %struct.syntaxelement* %sym, i64 0, i32 8
-  store void (i32, i32, i32*, i32*)* @ue_linfo, void (i32, i32, i32*, i32*)** %mapping, align 8, !tbaa !0
-  %3 = load %struct.Bitstream** getelementptr inbounds (%struct.spare_picture_struct* @seiSparePicturePayload, i64 0, i32 3), align 8, !tbaa !0
-  %call = call noalias i8* @malloc(i64 48) #6
-  %4 = bitcast i8* %call to %struct.Bitstream*
-  %cmp = icmp eq i8* %call, null
-  br i1 %cmp, label %if.then, label %if.end
+  %1 = load %struct.ImageParameters** @img, align 8, !dbg !1472, !tbaa !968
+  %2 = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 0, !dbg !1473
+  %3 = load i32* %2, align 4, !dbg !1473, !tbaa !1045
+  %4 = srem i32 %3, 256, !dbg !1474
+  tail call void @llvm.dbg.value(metadata i32 %4, i64 0, metadata !215, metadata !931), !dbg !1475
+  %5 = bitcast %struct.syntaxelement* %sym to i8*, !dbg !1476
+  call void @llvm.lifetime.start(i64 48, i8* %5) #7, !dbg !1476
+  %6 = getelementptr inbounds %struct.syntaxelement* %sym, i64 0, i32 0, !dbg !1477
+  store i32 0, i32* %6, align 8, !dbg !1478, !tbaa !1249
+  %7 = getelementptr inbounds %struct.syntaxelement* %sym, i64 0, i32 8, !dbg !1479
+  store void (i32, i32, i32*, i32*)* @ue_linfo, void (i32, i32, i32*, i32*)** %7, align 8, !dbg !1480, !tbaa !1253
+  %8 = load %struct.Bitstream** getelementptr inbounds (%struct.spare_picture_struct* @seiSparePicturePayload, i64 0, i32 3), align 8, !dbg !1481, !tbaa !962
+  tail call void @llvm.dbg.value(metadata %struct.Bitstream* %8, i64 0, metadata !219, metadata !931), !dbg !1482
+  %9 = tail call i8* @malloc(i64 48) #8, !dbg !1483
+  %10 = bitcast i8* %9 to %struct.Bitstream*, !dbg !1483
+  tail call void @llvm.dbg.value(metadata %struct.Bitstream* %10, i64 0, metadata !218, metadata !931), !dbg !1484
+  %11 = icmp eq i8* %9, null, !dbg !1485
+  br i1 %11, label %12, label %13, !dbg !1487
 
-if.then:                                          ; preds = %entry
-  call void @no_mem_exit(i8* getelementptr inbounds ([25 x i8]* @.str3, i64 0, i64 0)) #6
-  br label %if.end
+; <label>:12                                      ; preds = %0
+  tail call void @no_mem_exit(i8* getelementptr inbounds ([25 x i8]* @.str5, i64 0, i64 0)) #8, !dbg !1488
+  br label %13, !dbg !1488
 
-if.end:                                           ; preds = %if.then, %entry
-  %call1 = call noalias i8* @malloc(i64 65496) #6
-  %streamBuffer = getelementptr inbounds i8* %call, i64 32
-  %5 = bitcast i8* %streamBuffer to i8**
-  store i8* %call1, i8** %5, align 8, !tbaa !0
-  %cmp3 = icmp eq i8* %call1, null
-  br i1 %cmp3, label %if.then4, label %if.end5
+; <label>:13                                      ; preds = %12, %0
+  %14 = tail call i8* @malloc(i64 65496) #8, !dbg !1489
+  %15 = getelementptr inbounds i8* %9, i64 32, !dbg !1490
+  %16 = bitcast i8* %15 to i8**, !dbg !1490
+  store i8* %14, i8** %16, align 8, !dbg !1491, !tbaa !1130
+  %17 = icmp eq i8* %14, null, !dbg !1492
+  br i1 %17, label %18, label %19, !dbg !1494
 
-if.then4:                                         ; preds = %if.end
-  call void @no_mem_exit(i8* getelementptr inbounds ([39 x i8]* @.str4, i64 0, i64 0)) #6
-  %.pre = load i8** %5, align 8, !tbaa !0
-  br label %if.end5
+; <label>:18                                      ; preds = %13
+  tail call void @no_mem_exit(i8* getelementptr inbounds ([39 x i8]* @.str6, i64 0, i64 0)) #8, !dbg !1495
+  %.pre = load i8** %16, align 8, !dbg !1496, !tbaa !1130
+  br label %19, !dbg !1495
 
-if.end5:                                          ; preds = %if.then4, %if.end
-  %6 = phi i8* [ %.pre, %if.then4 ], [ %call1, %if.end ]
-  %bits_to_go = getelementptr inbounds i8* %call, i64 4
-  %7 = bitcast i8* %bits_to_go to i32*
-  store i32 8, i32* %7, align 4, !tbaa !3
-  %byte_pos = bitcast i8* %call to i32*
-  store i32 0, i32* %byte_pos, align 4, !tbaa !3
-  %8 = getelementptr inbounds i8* %call, i64 8
-  store i8 0, i8* %8, align 1, !tbaa !1
-  call void @llvm.memset.p0i8.i64(i8* %6, i8 0, i64 65496, i32 1, i1 false)
-  %9 = load i32* getelementptr inbounds (%struct.spare_picture_struct* @seiSparePicturePayload, i64 0, i32 0), align 8, !tbaa !3
-  %sub = sub nsw i32 %rem, %9
-  %cmp7 = icmp slt i32 %sub, 0
-  %add = add nsw i32 %sub, 256
-  %add.sub = select i1 %cmp7, i32 %add, i32 %sub
-  %value1 = getelementptr inbounds %struct.syntaxelement* %sym, i64 0, i32 1
-  store i32 %add.sub, i32* %value1, align 4, !tbaa !3
-  %call10 = call i32 @writeSyntaxElement2Buf_UVLC(%struct.syntaxelement* %sym, %struct.Bitstream* %4) #6
-  %10 = load i32* getelementptr inbounds (%struct.spare_picture_struct* @seiSparePicturePayload, i64 0, i32 1), align 4, !tbaa !3
-  %sub11 = add nsw i32 %10, -1
-  store i32 %sub11, i32* %value1, align 4, !tbaa !3
-  %call13 = call i32 @writeSyntaxElement2Buf_UVLC(%struct.syntaxelement* %sym, %struct.Bitstream* %4) #6
-  call void @AppendTmpbits2Buf(%struct.Bitstream* %4, %struct.Bitstream* %3) #7
-  %11 = load i32* %7, align 4, !tbaa !3
-  %cmp15 = icmp eq i32 %11, 8
-  br i1 %cmp15, label %if.end38, label %if.then16
+; <label>:19                                      ; preds = %18, %13
+  %20 = phi i8* [ %.pre, %18 ], [ %14, %13 ]
+  %21 = getelementptr inbounds i8* %9, i64 4, !dbg !1497
+  %22 = bitcast i8* %21 to i32*, !dbg !1497
+  store i32 8, i32* %22, align 4, !dbg !1498, !tbaa !1138
+  %23 = bitcast i8* %9 to i32*, !dbg !1499
+  store i32 0, i32* %23, align 4, !dbg !1500, !tbaa !1111
+  %24 = getelementptr inbounds i8* %9, i64 8, !dbg !1501
+  store i8 0, i8* %24, align 1, !dbg !1502, !tbaa !1128
+  %25 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %20, i1 false), !dbg !1496
+  %26 = tail call i8* @__memset_chk(i8* %20, i32 0, i64 65496, i64 %25) #8, !dbg !1496
+  %27 = load i32* getelementptr inbounds (%struct.spare_picture_struct* @seiSparePicturePayload, i64 0, i32 0), align 8, !dbg !1503, !tbaa !1213
+  %28 = sub nsw i32 %4, %27, !dbg !1504
+  tail call void @llvm.dbg.value(metadata i32 %28, i64 0, metadata !216, metadata !931), !dbg !1505
+  %29 = icmp slt i32 %28, 0, !dbg !1506
+  %30 = add nsw i32 %28, 256, !dbg !1508
+  tail call void @llvm.dbg.value(metadata i32 %30, i64 0, metadata !216, metadata !931), !dbg !1505
+  %. = select i1 %29, i32 %30, i32 %28, !dbg !1509
+  %31 = getelementptr inbounds %struct.syntaxelement* %sym, i64 0, i32 1, !dbg !1510
+  store i32 %., i32* %31, align 4, !dbg !1511, !tbaa !1256
+  tail call void @llvm.dbg.value(metadata %struct.syntaxelement* %sym, i64 0, metadata !217, metadata !931), !dbg !1512
+  %32 = call i32 @writeSyntaxElement2Buf_UVLC(%struct.syntaxelement* %sym, %struct.Bitstream* %10) #8, !dbg !1513
+  %33 = load i32* getelementptr inbounds (%struct.spare_picture_struct* @seiSparePicturePayload, i64 0, i32 1), align 4, !dbg !1514, !tbaa !1211
+  %34 = add nsw i32 %33, -1, !dbg !1515
+  store i32 %34, i32* %31, align 4, !dbg !1516, !tbaa !1256
+  call void @llvm.dbg.value(metadata %struct.syntaxelement* %sym, i64 0, metadata !217, metadata !931), !dbg !1512
+  %35 = call i32 @writeSyntaxElement2Buf_UVLC(%struct.syntaxelement* %sym, %struct.Bitstream* %10) #8, !dbg !1517
+  call void @AppendTmpbits2Buf(%struct.Bitstream* %10, %struct.Bitstream* %8) #9, !dbg !1518
+  %36 = load i32* %22, align 4, !dbg !1519, !tbaa !1138
+  %37 = icmp eq i32 %36, 8, !dbg !1521
+  br i1 %37, label %55, label %38, !dbg !1522
 
-if.then16:                                        ; preds = %if.end5
-  %12 = load i8* %8, align 1, !tbaa !1
-  %shl = shl i8 %12, 1
-  %or = or i8 %shl, 1
-  store i8 %or, i8* %8, align 1, !tbaa !1
-  %dec = add nsw i32 %11, -1
-  store i32 %dec, i32* %7, align 4, !tbaa !3
-  %cmp24 = icmp eq i32 %dec, 0
-  br i1 %cmp24, label %if.end32, label %if.then26
+; <label>:38                                      ; preds = %19
+  %39 = load i8* %24, align 1, !dbg !1523, !tbaa !1128
+  %40 = shl i8 %39, 1, !dbg !1523
+  %41 = or i8 %40, 1, !dbg !1525
+  store i8 %41, i8* %24, align 1, !dbg !1525, !tbaa !1128
+  %42 = add nsw i32 %36, -1, !dbg !1526
+  store i32 %42, i32* %22, align 4, !dbg !1526, !tbaa !1138
+  %43 = icmp eq i32 %42, 0, !dbg !1527
+  br i1 %43, label %48, label %44, !dbg !1529
 
-if.then26:                                        ; preds = %if.then16
-  %conv29 = zext i8 %or to i32
-  %shl30 = shl i32 %conv29, %dec
-  %conv31 = trunc i32 %shl30 to i8
-  store i8 %conv31, i8* %8, align 1, !tbaa !1
-  br label %if.end32
+; <label>:44                                      ; preds = %38
+  %45 = zext i8 %41 to i32, !dbg !1530
+  %46 = shl i32 %45, %42, !dbg !1530
+  %47 = trunc i32 %46 to i8, !dbg !1530
+  store i8 %47, i8* %24, align 1, !dbg !1530, !tbaa !1128
+  br label %48, !dbg !1531
 
-if.end32:                                         ; preds = %if.then16, %if.then26
-  %13 = phi i8 [ %or, %if.then16 ], [ %conv31, %if.then26 ]
-  store i32 8, i32* %7, align 4, !tbaa !3
-  %14 = load i32* %byte_pos, align 4, !tbaa !3
-  %inc = add nsw i32 %14, 1
-  store i32 %inc, i32* %byte_pos, align 4, !tbaa !3
-  %idxprom = sext i32 %14 to i64
-  %15 = load i8** %5, align 8, !tbaa !0
-  %arrayidx = getelementptr inbounds i8* %15, i64 %idxprom
-  store i8 %13, i8* %arrayidx, align 1, !tbaa !1
-  store i8 0, i8* %8, align 1, !tbaa !1
-  br label %if.end38
+; <label>:48                                      ; preds = %38, %44
+  %49 = phi i8 [ %41, %38 ], [ %47, %44 ]
+  store i32 8, i32* %22, align 4, !dbg !1532, !tbaa !1138
+  %50 = load i32* %23, align 4, !dbg !1533, !tbaa !1111
+  %51 = add nsw i32 %50, 1, !dbg !1533
+  store i32 %51, i32* %23, align 4, !dbg !1533, !tbaa !1111
+  %52 = sext i32 %50 to i64, !dbg !1534
+  %53 = load i8** %16, align 8, !dbg !1535, !tbaa !1130
+  %54 = getelementptr inbounds i8* %53, i64 %52, !dbg !1534
+  store i8 %49, i8* %54, align 1, !dbg !1536, !tbaa !977
+  store i8 0, i8* %24, align 1, !dbg !1537, !tbaa !1128
+  br label %55, !dbg !1538
 
-if.end38:                                         ; preds = %if.end5, %if.end32
-  %16 = load i32* %byte_pos, align 4, !tbaa !3
-  store i32 %16, i32* getelementptr inbounds (%struct.spare_picture_struct* @seiSparePicturePayload, i64 0, i32 2), align 8, !tbaa !3
-  store %struct.Bitstream* %4, %struct.Bitstream** getelementptr inbounds (%struct.spare_picture_struct* @seiSparePicturePayload, i64 0, i32 3), align 8, !tbaa !0
-  %streamBuffer40 = getelementptr inbounds %struct.Bitstream* %3, i64 0, i32 9
-  %17 = load i8** %streamBuffer40, align 8, !tbaa !0
-  call void @free(i8* %17) #6
-  %18 = bitcast %struct.Bitstream* %3 to i8*
-  call void @free(i8* %18) #6
-  call void @llvm.lifetime.end(i64 48, i8* %2) #4
-  ret void
+; <label>:55                                      ; preds = %19, %48
+  %56 = load i32* %23, align 4, !dbg !1539, !tbaa !1111
+  store i32 %56, i32* getelementptr inbounds (%struct.spare_picture_struct* @seiSparePicturePayload, i64 0, i32 2), align 8, !dbg !1540, !tbaa !1541
+  store i8* %9, i8** bitcast (%struct.Bitstream** getelementptr inbounds (%struct.spare_picture_struct* @seiSparePicturePayload, i64 0, i32 3) to i8**), align 8, !dbg !1542, !tbaa !962
+  %57 = getelementptr inbounds %struct.Bitstream* %8, i64 0, i32 9, !dbg !1543
+  %58 = load i8** %57, align 8, !dbg !1543, !tbaa !1130
+  call void @free(i8* %58) #9, !dbg !1544
+  %59 = bitcast %struct.Bitstream* %8 to i8*, !dbg !1545
+  call void @free(i8* %59) #9, !dbg !1546
+  call void @llvm.lifetime.end(i64 48, i8* %5) #7, !dbg !1547
+  ret void, !dbg !1547
 }

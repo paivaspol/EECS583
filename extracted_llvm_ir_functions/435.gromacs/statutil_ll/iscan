@@ -1,44 +1,53 @@
-define i32 @iscan(i32 %argc, i8** nocapture readonly %argv, i32* nocapture %i) #1 {
+define i32 @iscan(i32 %argc, i8** nocapture readonly %argv, i32* nocapture %i) #2 {
   %var = alloca i32, align 4
-  %1 = load i32* %i, align 4, !tbaa !2
-  %2 = add nsw i32 %1, 1
-  %3 = icmp slt i32 %2, %argc
-  br i1 %3, label %4, label %18
+  tail call void @llvm.dbg.value(metadata i32 %argc, i64 0, metadata !665, metadata !852), !dbg !1344
+  tail call void @llvm.dbg.value(metadata i8** %argv, i64 0, metadata !666, metadata !852), !dbg !1345
+  tail call void @llvm.dbg.value(metadata i32* %i, i64 0, metadata !667, metadata !852), !dbg !1346
+  %1 = load i32* %i, align 4, !dbg !1347, !tbaa !860
+  %2 = add nsw i32 %1, 1, !dbg !1349
+  %3 = icmp slt i32 %2, %argc, !dbg !1350
+  br i1 %3, label %4, label %18, !dbg !1351
 
 ; <label>:4                                       ; preds = %0
-  store i32 %2, i32* %i, align 4, !tbaa !2
-  %5 = sext i32 %2 to i64
-  %6 = getelementptr inbounds i8** %argv, i64 %5
-  %7 = load i8** %6, align 8, !tbaa !19
-  %8 = call i32 (i8*, i8*, ...)* @sscanf(i8* %7, i8* getelementptr inbounds ([3 x i8]* @.str7, i64 0, i64 0), i32* %var) #12
-  %9 = icmp eq i32 %8, 0
-  br i1 %9, label %10, label %usage.exit
+  store i32 %2, i32* %i, align 4, !dbg !1352, !tbaa !860
+  %5 = sext i32 %2 to i64, !dbg !1355
+  %6 = getelementptr inbounds i8** %argv, i64 %5, !dbg !1355
+  %7 = load i8** %6, align 8, !dbg !1355, !tbaa !1132
+  tail call void @llvm.dbg.value(metadata i32* %var, i64 0, metadata !668, metadata !852), !dbg !1356
+  %8 = call i32 (i8*, i8*, ...)* @sscanf(i8* %7, i8* getelementptr inbounds ([3 x i8]* @.str7, i64 0, i64 0), i32* %var) #12, !dbg !1357
+  %9 = icmp eq i32 %8, 0, !dbg !1357
+  br i1 %9, label %10, label %usage.exit, !dbg !1358
 
 ; <label>:10                                      ; preds = %4
-  %11 = load i32* %i, align 4, !tbaa !2
-  %12 = add nsw i32 %11, -1
-  %13 = sext i32 %12 to i64
-  %14 = getelementptr inbounds i8** %argv, i64 %13
-  %15 = load i8** %14, align 8, !tbaa !19
-  %16 = icmp eq i8* %15, null
-  br i1 %16, label %usage.exit, label %17
+  %11 = load i32* %i, align 4, !dbg !1359, !tbaa !860
+  %12 = add nsw i32 %11, -1, !dbg !1360
+  %13 = sext i32 %12 to i64, !dbg !1361
+  %14 = getelementptr inbounds i8** %argv, i64 %13, !dbg !1361
+  %15 = load i8** %14, align 8, !dbg !1361, !tbaa !1132
+  call void @llvm.dbg.value(metadata i8* getelementptr inbounds ([11 x i8]* @.str8, i64 0, i64 0), i64 0, metadata !771, metadata !852) #10, !dbg !1362
+  call void @llvm.dbg.value(metadata i8* %15, i64 0, metadata !772, metadata !852) #10, !dbg !1364
+  %16 = icmp eq i8* %15, null, !dbg !1365
+  br i1 %16, label %usage.exit, label %17, !dbg !1367
 
 ; <label>:17                                      ; preds = %10
-  call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([36 x i8]* @.str79, i64 0, i64 0), i8* getelementptr inbounds ([11 x i8]* @.str8, i64 0, i64 0), i8* %15) #12
-  br label %usage.exit
+  call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([36 x i8]* @.str79, i64 0, i64 0), i8* getelementptr inbounds ([11 x i8]* @.str8, i64 0, i64 0), i8* %15) #12, !dbg !1368
+  br label %usage.exit, !dbg !1368
 
 ; <label>:18                                      ; preds = %0
-  %19 = sext i32 %1 to i64
-  %20 = getelementptr inbounds i8** %argv, i64 %19
-  %21 = load i8** %20, align 8, !tbaa !19
-  %22 = icmp eq i8* %21, null
-  br i1 %22, label %usage.exit, label %23
+  %19 = sext i32 %1 to i64, !dbg !1369
+  %20 = getelementptr inbounds i8** %argv, i64 %19, !dbg !1369
+  %21 = load i8** %20, align 8, !dbg !1369, !tbaa !1132
+  tail call void @llvm.dbg.value(metadata i8* getelementptr inbounds ([11 x i8]* @.str8, i64 0, i64 0), i64 0, metadata !771, metadata !852) #10, !dbg !1370
+  tail call void @llvm.dbg.value(metadata i8* %21, i64 0, metadata !772, metadata !852) #10, !dbg !1372
+  %22 = icmp eq i8* %21, null, !dbg !1373
+  br i1 %22, label %usage.exit, label %23, !dbg !1374
 
 ; <label>:23                                      ; preds = %18
-  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([36 x i8]* @.str79, i64 0, i64 0), i8* getelementptr inbounds ([11 x i8]* @.str8, i64 0, i64 0), i8* %21) #12
-  br label %usage.exit
+  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([36 x i8]* @.str79, i64 0, i64 0), i8* getelementptr inbounds ([11 x i8]* @.str8, i64 0, i64 0), i8* %21) #12, !dbg !1375
+  br label %usage.exit, !dbg !1375
 
 usage.exit:                                       ; preds = %23, %18, %17, %10, %4
-  %24 = load i32* %var, align 4, !tbaa !2
-  ret i32 %24
+  call void @llvm.dbg.value(metadata i32* %var, i64 0, metadata !668, metadata !852), !dbg !1356
+  %24 = load i32* %var, align 4, !dbg !1376, !tbaa !860
+  ret i32 %24, !dbg !1377
 }

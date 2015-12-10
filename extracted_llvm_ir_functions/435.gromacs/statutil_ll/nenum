@@ -1,35 +1,37 @@
-define i32 @nenum(i8** nocapture readonly %enumc) #3 {
-  %1 = getelementptr inbounds i8** %enumc, i64 1
-  %2 = load i8** %1, align 8, !tbaa !19
-  %3 = icmp eq i8* %2, null
-  br i1 %3, label %.critedge, label %.lr.ph
+define i32 @nenum(i8** nocapture readonly %enumc) #4 {
+  tail call void @llvm.dbg.value(metadata i8** %enumc, i64 0, metadata !688, metadata !852), !dbg !1280
+  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !689, metadata !852), !dbg !1281
+  %1 = getelementptr inbounds i8** %enumc, i64 1, !dbg !1282
+  %2 = load i8** %1, align 8, !dbg !1282, !tbaa !1132
+  %3 = icmp eq i8* %2, null, !dbg !1282
+  br i1 %3, label %.critedge, label %.lr.ph, !dbg !1283
 
 .lr.ph:                                           ; preds = %0
-  %4 = load i8** %enumc, align 8, !tbaa !19
-  br label %5
+  %4 = load i8** %enumc, align 8, !dbg !1284, !tbaa !1132
+  br label %5, !dbg !1283
 
 ; <label>:5                                       ; preds = %.lr.ph, %8
   %indvars.iv = phi i64 [ 1, %.lr.ph ], [ %indvars.iv.next, %8 ]
   %6 = phi i8* [ %2, %.lr.ph ], [ %10, %8 ]
-  %7 = icmp eq i8* %4, %6
-  br i1 %7, label %..critedge_crit_edge, label %8
+  %7 = icmp eq i8* %4, %6, !dbg !1285
+  br i1 %7, label %..critedge_crit_edge, label %8, !dbg !1286
 
 ; <label>:8                                       ; preds = %5
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %9 = getelementptr inbounds i8** %enumc, i64 %indvars.iv.next
-  %10 = load i8** %9, align 8, !tbaa !19
-  %11 = icmp eq i8* %10, null
-  br i1 %11, label %..critedge_crit_edge2, label %5
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !1283
+  %9 = getelementptr inbounds i8** %enumc, i64 %indvars.iv.next, !dbg !1282
+  %10 = load i8** %9, align 8, !dbg !1282, !tbaa !1132
+  %11 = icmp eq i8* %10, null, !dbg !1282
+  br i1 %11, label %..critedge_crit_edge2, label %5, !dbg !1283
 
 ..critedge_crit_edge:                             ; preds = %5
-  %12 = trunc i64 %indvars.iv to i32
-  br label %.critedge
+  %12 = trunc i64 %indvars.iv to i32, !dbg !1286
+  br label %.critedge, !dbg !1286
 
 ..critedge_crit_edge2:                            ; preds = %8
-  %13 = trunc i64 %indvars.iv.next to i32
-  br label %.critedge
+  %13 = trunc i64 %indvars.iv.next to i32, !dbg !1283
+  br label %.critedge, !dbg !1283
 
 .critedge:                                        ; preds = %..critedge_crit_edge2, %..critedge_crit_edge, %0
   %i.0.lcssa = phi i32 [ %12, %..critedge_crit_edge ], [ %13, %..critedge_crit_edge2 ], [ 1, %0 ]
-  ret i32 %i.0.lcssa
+  ret i32 %i.0.lcssa, !dbg !1287
 }

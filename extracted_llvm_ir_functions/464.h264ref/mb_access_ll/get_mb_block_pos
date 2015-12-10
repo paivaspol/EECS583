@@ -1,35 +1,35 @@
 define void @get_mb_block_pos(i32 %mb_addr, i32* nocapture %x, i32* nocapture %y) #1 {
-entry:
-  %0 = load %struct.ImageParameters** @img, align 8, !tbaa !0
-  %MbaffFrameFlag = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 90
-  %1 = load i32* %MbaffFrameFlag, align 4, !tbaa !3
-  %tobool = icmp eq i32 %1, 0
-  br i1 %tobool, label %if.else, label %if.then
+  tail call void @llvm.dbg.value(metadata i32 %mb_addr, i64 0, metadata !98, metadata !700), !dbg !855
+  tail call void @llvm.dbg.value(metadata i32* %x, i64 0, metadata !99, metadata !700), !dbg !856
+  tail call void @llvm.dbg.value(metadata i32* %y, i64 0, metadata !100, metadata !700), !dbg !857
+  %1 = load %struct.ImageParameters** @img, align 8, !dbg !858, !tbaa !707
+  %2 = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 90, !dbg !860
+  %3 = load i32* %2, align 4, !dbg !860, !tbaa !752
+  %4 = icmp eq i32 %3, 0, !dbg !858
+  %5 = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 106
+  %6 = load i32* %5, align 4
+  br i1 %4, label %15, label %7, !dbg !861
 
-if.then:                                          ; preds = %entry
-  %div = sdiv i32 %mb_addr, 2
-  %PicWidthInMbs = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 106
-  %2 = load i32* %PicWidthInMbs, align 4, !tbaa !3
-  %rem = urem i32 %div, %2
-  store i32 %rem, i32* %x, align 4, !tbaa !3
-  %3 = load i32* %PicWidthInMbs, align 4, !tbaa !3
-  %div3 = udiv i32 %div, %3
-  %mul = shl i32 %div3, 1
-  %rem4 = srem i32 %mb_addr, 2
-  %add = add i32 %mul, %rem4
-  br label %if.end
+; <label>:7                                       ; preds = %0
+  %8 = sdiv i32 %mb_addr, 2, !dbg !862
+  %9 = urem i32 %8, %6, !dbg !864
+  store i32 %9, i32* %x, align 4, !dbg !865, !tbaa !866
+  %10 = load i32* %5, align 4, !dbg !867, !tbaa !761
+  %11 = udiv i32 %8, %10, !dbg !868
+  %12 = shl i32 %11, 1, !dbg !869
+  %13 = srem i32 %mb_addr, 2, !dbg !870
+  %14 = add i32 %12, %13, !dbg !871
+  br label %19, !dbg !872
 
-if.else:                                          ; preds = %entry
-  %PicWidthInMbs5 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 106
-  %4 = load i32* %PicWidthInMbs5, align 4, !tbaa !3
-  %rem6 = urem i32 %mb_addr, %4
-  store i32 %rem6, i32* %x, align 4, !tbaa !3
-  %5 = load i32* %PicWidthInMbs5, align 4, !tbaa !3
-  %div8 = udiv i32 %mb_addr, %5
-  br label %if.end
+; <label>:15                                      ; preds = %0
+  %16 = urem i32 %mb_addr, %6, !dbg !873
+  store i32 %16, i32* %x, align 4, !dbg !875, !tbaa !866
+  %17 = load i32* %5, align 4, !dbg !876, !tbaa !761
+  %18 = udiv i32 %mb_addr, %17, !dbg !877
+  br label %19
 
-if.end:                                           ; preds = %if.else, %if.then
-  %storemerge = phi i32 [ %div8, %if.else ], [ %add, %if.then ]
-  store i32 %storemerge, i32* %y, align 4, !tbaa !3
-  ret void
+; <label>:19                                      ; preds = %15, %7
+  %storemerge = phi i32 [ %18, %15 ], [ %14, %7 ]
+  store i32 %storemerge, i32* %y, align 4, !dbg !878, !tbaa !866
+  ret void, !dbg !879
 }

@@ -1,31 +1,34 @@
-define %struct.t_3dview* @init_view([3 x float]* nocapture readonly %box) #3 {
-  %1 = tail call i8* @save_calloc(i8* getelementptr inbounds ([5 x i8]* @.str6, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str7, i64 0, i64 0), i32 305, i32 1, i32 204) #7
-  %2 = bitcast i8* %1 to [3 x [3 x float]]*
-  br label %.preheader
+define %struct.t_3dview* @init_view([3 x float]* nocapture readonly %box) #4 {
+  tail call void @llvm.dbg.value(metadata [3 x float]* %box, i64 0, metadata !228, metadata !259), !dbg !823
+  %1 = tail call i8* @save_calloc(i8* getelementptr inbounds ([5 x i8]* @.str6, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str7, i64 0, i64 0), i32 305, i32 1, i32 204) #8, !dbg !824
+  tail call void @llvm.dbg.value(metadata %struct.t_3dview* %11, i64 0, metadata !229, metadata !259), !dbg !825
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !230, metadata !259), !dbg !826
+  %2 = bitcast i8* %1 to [3 x [3 x float]]*, !dbg !827
+  br label %.preheader, !dbg !832
 
 .preheader:                                       ; preds = %9, %0
   %indvars.iv3 = phi i64 [ 0, %0 ], [ %indvars.iv.next4, %9 ]
-  br label %3
+  br label %3, !dbg !833
 
 ; <label>:3                                       ; preds = %3, %.preheader
   %indvars.iv = phi i64 [ 0, %.preheader ], [ %indvars.iv.next, %3 ]
-  %4 = getelementptr inbounds [3 x float]* %box, i64 %indvars.iv3, i64 %indvars.iv
-  %5 = bitcast float* %4 to i32*
-  %6 = load i32* %5, align 4, !tbaa !14
-  %7 = getelementptr inbounds [3 x [3 x float]]* %2, i64 0, i64 %indvars.iv3, i64 %indvars.iv
-  %8 = bitcast float* %7 to i32*
-  store i32 %6, i32* %8, align 4, !tbaa !14
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %exitcond = icmp eq i64 %indvars.iv.next, 3
-  br i1 %exitcond, label %9, label %3
+  %4 = getelementptr inbounds [3 x float]* %box, i64 %indvars.iv3, i64 %indvars.iv, !dbg !834
+  %5 = bitcast float* %4 to i32*, !dbg !834
+  %6 = load i32* %5, align 4, !dbg !834, !tbaa !308
+  %7 = getelementptr inbounds [3 x [3 x float]]* %2, i64 0, i64 %indvars.iv3, i64 %indvars.iv, !dbg !835
+  %8 = bitcast float* %7 to i32*, !dbg !836
+  store i32 %6, i32* %8, align 4, !dbg !836, !tbaa !308
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !833
+  %exitcond = icmp eq i64 %indvars.iv.next, 3, !dbg !833
+  br i1 %exitcond, label %9, label %3, !dbg !833
 
 ; <label>:9                                       ; preds = %3
-  %indvars.iv.next4 = add nuw nsw i64 %indvars.iv3, 1
-  %exitcond5 = icmp eq i64 %indvars.iv.next4, 3
-  br i1 %exitcond5, label %10, label %.preheader
+  %indvars.iv.next4 = add nuw nsw i64 %indvars.iv3, 1, !dbg !832
+  %exitcond5 = icmp eq i64 %indvars.iv.next4, 3, !dbg !832
+  br i1 %exitcond5, label %10, label %.preheader, !dbg !832
 
 ; <label>:10                                      ; preds = %9
-  %11 = bitcast i8* %1 to %struct.t_3dview*
-  tail call void @reset_view(%struct.t_3dview* %11) #9
-  ret %struct.t_3dview* %11
+  %11 = bitcast i8* %1 to %struct.t_3dview*, !dbg !824
+  tail call void @reset_view(%struct.t_3dview* %11) #10, !dbg !837
+  ret %struct.t_3dview* %11, !dbg !838
 }

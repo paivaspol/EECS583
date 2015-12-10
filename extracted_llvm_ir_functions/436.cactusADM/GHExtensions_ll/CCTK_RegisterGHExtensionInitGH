@@ -1,16 +1,19 @@
 define i32 @CCTK_RegisterGHExtensionInitGH(i32 %handle, i32 (%struct.cGH*)* %func) #1 {
-  %1 = load %struct.cHandledData** @GHExtensions, align 8, !tbaa !2
-  %2 = tail call i8* @Util_GetHandledData(%struct.cHandledData* %1, i32 %handle) #5
-  %3 = icmp eq i8* %2, null
-  br i1 %3, label %7, label %4
+  tail call void @llvm.dbg.value(metadata i32 %handle, i64 0, metadata !100, metadata !197), !dbg !258
+  tail call void @llvm.dbg.value(metadata i32 (%struct.cGH*)* %func, i64 0, metadata !101, metadata !197), !dbg !259
+  %1 = load %struct.cHandledData** @GHExtensions, align 8, !dbg !260, !tbaa !200
+  %2 = tail call i8* @Util_GetHandledData(%struct.cHandledData* %1, i32 %handle) #6, !dbg !261
+  %3 = icmp eq i8* %2, null, !dbg !262
+  br i1 %3, label %7, label %4, !dbg !264
 
 ; <label>:4                                       ; preds = %0
-  %5 = getelementptr inbounds i8* %2, i64 8
-  %6 = bitcast i8* %5 to i32 (%struct.cGH*)**
-  store i32 (%struct.cGH*)* %func, i32 (%struct.cGH*)** %6, align 8, !tbaa !10
-  br label %7
+  %5 = getelementptr inbounds i8* %2, i64 8, !dbg !265
+  %6 = bitcast i8* %5 to i32 (%struct.cGH*)**, !dbg !265
+  store i32 (%struct.cGH*)* %func, i32 (%struct.cGH*)** %6, align 8, !dbg !267, !tbaa !268
+  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !102, metadata !197), !dbg !269
+  br label %7, !dbg !270
 
 ; <label>:7                                       ; preds = %0, %4
   %return_code.0 = phi i32 [ 1, %4 ], [ 0, %0 ]
-  ret i32 %return_code.0
+  ret i32 %return_code.0, !dbg !271
 }

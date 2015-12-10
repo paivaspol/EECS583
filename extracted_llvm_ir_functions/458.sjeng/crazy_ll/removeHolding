@@ -1,51 +1,68 @@
 define void @removeHolding(i32 %what, i32 %who) #0 {
-entry:
-  %0 = load i32* @Variant, align 4, !tbaa !0
-  %cmp = icmp eq i32 %0, 0
-  %idxprom = sext i32 %what to i64
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata i32 %what, i64 0, metadata !41, metadata !77), !dbg !298
+  tail call void @llvm.dbg.value(metadata i32 %who, i64 0, metadata !42, metadata !77), !dbg !299
+  %1 = load i32* @Variant, align 4, !dbg !300, !tbaa !82
+  %2 = icmp eq i32 %1, 0, !dbg !302
+  %3 = sext i32 %what to i64, !dbg !303
+  br i1 %2, label %4, label %._crit_edge, !dbg !305
 
-if.then:                                          ; preds = %entry
-  %idxprom1 = sext i32 %who to i64
-  %arrayidx2 = getelementptr inbounds [2 x [16 x i32]]* @holding, i64 0, i64 %idxprom1, i64 %idxprom
-  %1 = load i32* %arrayidx2, align 4, !tbaa !0
-  %idxprom3 = sext i32 %1 to i64
-  %arrayidx6 = getelementptr inbounds [14 x [144 x i32]]* @zobrist, i64 0, i64 %idxprom, i64 %idxprom3
-  %2 = load i32* %arrayidx6, align 4, !tbaa !0
-  %3 = load i32* @hold_hash, align 4, !tbaa !0
-  %xor = xor i32 %3, %2
-  store i32 %xor, i32* @hold_hash, align 4, !tbaa !0
-  %dec = add nsw i32 %1, -1
-  store i32 %dec, i32* %arrayidx2, align 4, !tbaa !0
-  %arrayidx12 = getelementptr inbounds [2 x i32]* @num_holding, i64 0, i64 %idxprom1
-  %4 = load i32* %arrayidx12, align 4, !tbaa !0
-  %dec13 = add nsw i32 %4, -1
-  store i32 %dec13, i32* %arrayidx12, align 4, !tbaa !0
-  br label %if.end
+; <label>:4                                       ; preds = %0
+  %5 = sext i32 %who to i64, !dbg !303
+  %6 = getelementptr inbounds [2 x [16 x i32]]* @holding, i64 0, i64 %5, i64 %3, !dbg !303
+  %7 = load i32* %6, align 4, !dbg !303, !tbaa !82
+  %8 = icmp slt i32 %7, 1, !dbg !303
+  br i1 %8, label %9, label %10, !dbg !303, !prof !267
 
-if.end:                                           ; preds = %entry, %if.then
-  %cmp14 = icmp eq i32 %who, 0
-  %arrayidx17 = getelementptr inbounds [0 x i32]* @hand_value, i64 0, i64 %idxprom
-  %5 = load i32* %arrayidx17, align 4, !tbaa !0
-  br i1 %cmp14, label %if.then15, label %if.else
+; <label>:9                                       ; preds = %4
+  tail call void @__assert_rtn(i8* getelementptr inbounds ([14 x i8]* @__func__.removeHolding, i64 0, i64 0), i8* getelementptr inbounds ([63 x i8]* @.str, i64 0, i64 0), i32 245, i8* getelementptr inbounds ([23 x i8]* @.str2, i64 0, i64 0)) #8, !dbg !303
+  unreachable, !dbg !303
 
-if.then15:                                        ; preds = %if.end
-  %6 = load i32* @white_hand_eval, align 4, !tbaa !0
-  %sub = sub nsw i32 %6, %5
-  store i32 %sub, i32* @white_hand_eval, align 4, !tbaa !0
-  br label %if.end21
+; <label>:10                                      ; preds = %4
+  %11 = icmp sgt i32 %7, 19, !dbg !306
+  br i1 %11, label %12, label %13, !dbg !306, !prof !267
 
-if.else:                                          ; preds = %if.end
-  %7 = load i32* @black_hand_eval, align 4, !tbaa !0
-  %sub20 = sub nsw i32 %7, %5
-  store i32 %sub20, i32* @black_hand_eval, align 4, !tbaa !0
-  br label %if.end21
+; <label>:12                                      ; preds = %10
+  tail call void @__assert_rtn(i8* getelementptr inbounds ([14 x i8]* @__func__.removeHolding, i64 0, i64 0), i8* getelementptr inbounds ([63 x i8]* @.str, i64 0, i64 0), i32 246, i8* getelementptr inbounds ([24 x i8]* @.str3, i64 0, i64 0)) #8, !dbg !306
+  unreachable, !dbg !306
 
-if.end21:                                         ; preds = %if.else, %if.then15
-  %arrayidx23 = getelementptr inbounds [14 x i32]* @material, i64 0, i64 %idxprom
-  %8 = load i32* %arrayidx23, align 4, !tbaa !0
-  %9 = load i32* @Material, align 4, !tbaa !0
-  %sub24 = sub nsw i32 %9, %8
-  store i32 %sub24, i32* @Material, align 4, !tbaa !0
-  ret void
+; <label>:13                                      ; preds = %10
+  %14 = sext i32 %7 to i64, !dbg !307
+  %15 = getelementptr inbounds [14 x [144 x i32]]* @zobrist, i64 0, i64 %3, i64 %14, !dbg !307
+  %16 = load i32* %15, align 4, !dbg !307, !tbaa !82
+  %17 = load i32* @hold_hash, align 4, !dbg !307, !tbaa !82
+  %18 = xor i32 %17, %16, !dbg !307
+  store i32 %18, i32* @hold_hash, align 4, !dbg !307, !tbaa !82
+  %19 = add nsw i32 %7, -1, !dbg !308
+  store i32 %19, i32* %6, align 4, !dbg !308, !tbaa !82
+  %20 = getelementptr inbounds [2 x i32]* @num_holding, i64 0, i64 %5, !dbg !309
+  %21 = load i32* %20, align 4, !dbg !310, !tbaa !82
+  %22 = add nsw i32 %21, -1, !dbg !310
+  store i32 %22, i32* %20, align 4, !dbg !310, !tbaa !82
+  br label %._crit_edge, !dbg !311
+
+._crit_edge:                                      ; preds = %0, %13
+  %23 = icmp eq i32 %who, 0, !dbg !312
+  %24 = getelementptr inbounds [0 x i32]* @hand_value, i64 0, i64 %3, !dbg !314
+  %25 = load i32* %24, align 4, !dbg !314, !tbaa !82
+  br i1 %23, label %26, label %29, !dbg !315
+
+; <label>:26                                      ; preds = %._crit_edge
+  %27 = load i32* @white_hand_eval, align 4, !dbg !316, !tbaa !82
+  %28 = sub nsw i32 %27, %25, !dbg !316
+  store i32 %28, i32* @white_hand_eval, align 4, !dbg !316, !tbaa !82
+  br label %32, !dbg !317
+
+; <label>:29                                      ; preds = %._crit_edge
+  %30 = load i32* @black_hand_eval, align 4, !dbg !318, !tbaa !82
+  %31 = sub nsw i32 %30, %25, !dbg !318
+  store i32 %31, i32* @black_hand_eval, align 4, !dbg !318, !tbaa !82
+  br label %32
+
+; <label>:32                                      ; preds = %29, %26
+  %33 = getelementptr inbounds [14 x i32]* @material, i64 0, i64 %3, !dbg !319
+  %34 = load i32* %33, align 4, !dbg !319, !tbaa !82
+  %35 = load i32* @Material, align 4, !dbg !320, !tbaa !82
+  %36 = sub nsw i32 %35, %34, !dbg !320
+  store i32 %36, i32* @Material, align 4, !dbg !320, !tbaa !82
+  ret void, !dbg !321
 }

@@ -1,28 +1,31 @@
 define i32 @CCTKi_InitGHExtensions(%struct.cGH* %GH) #1 {
-  %1 = load i32* @num_extensions, align 4, !tbaa !6
-  %2 = icmp sgt i32 %1, 0
-  br i1 %2, label %.lr.ph, label %._crit_edge
+  tail call void @llvm.dbg.value(metadata %struct.cGH* %GH, i64 0, metadata !124, metadata !197), !dbg !371
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !125, metadata !197), !dbg !372
+  %1 = load i32* @num_extensions, align 4, !dbg !373, !tbaa !218
+  %2 = icmp sgt i32 %1, 0, !dbg !376
+  br i1 %2, label %.lr.ph, label %._crit_edge, !dbg !377
 
 .lr.ph:                                           ; preds = %0, %11
   %handle.01 = phi i32 [ %12, %11 ], [ 0, %0 ]
-  %3 = load %struct.cHandledData** @GHExtensions, align 8, !tbaa !2
-  %4 = tail call i8* @Util_GetHandledData(%struct.cHandledData* %3, i32 %handle.01) #5
-  %5 = icmp eq i8* %4, null
-  br i1 %5, label %11, label %6
+  %3 = load %struct.cHandledData** @GHExtensions, align 8, !dbg !378, !tbaa !200
+  %4 = tail call i8* @Util_GetHandledData(%struct.cHandledData* %3, i32 %handle.01) #6, !dbg !380
+  %5 = icmp eq i8* %4, null, !dbg !381
+  br i1 %5, label %11, label %6, !dbg !383
 
 ; <label>:6                                       ; preds = %.lr.ph
-  %7 = getelementptr inbounds i8* %4, i64 8
-  %8 = bitcast i8* %7 to i32 (%struct.cGH*)**
-  %9 = load i32 (%struct.cGH*)** %8, align 8, !tbaa !10
-  %10 = tail call i32 %9(%struct.cGH* %GH) #5
-  br label %11
+  %7 = getelementptr inbounds i8* %4, i64 8, !dbg !384
+  %8 = bitcast i8* %7 to i32 (%struct.cGH*)**, !dbg !384
+  %9 = load i32 (%struct.cGH*)** %8, align 8, !dbg !384, !tbaa !268
+  %10 = tail call i32 %9(%struct.cGH* %GH) #6, !dbg !386
+  br label %11, !dbg !387
 
 ; <label>:11                                      ; preds = %.lr.ph, %6
-  %12 = add nuw nsw i32 %handle.01, 1
-  %13 = load i32* @num_extensions, align 4, !tbaa !6
-  %14 = icmp slt i32 %12, %13
-  br i1 %14, label %.lr.ph, label %._crit_edge
+  %12 = add nuw nsw i32 %handle.01, 1, !dbg !388
+  tail call void @llvm.dbg.value(metadata i32 %12, i64 0, metadata !125, metadata !197), !dbg !372
+  %13 = load i32* @num_extensions, align 4, !dbg !373, !tbaa !218
+  %14 = icmp slt i32 %12, %13, !dbg !376
+  br i1 %14, label %.lr.ph, label %._crit_edge, !dbg !377
 
 ._crit_edge:                                      ; preds = %11, %0
-  ret i32 0
+  ret i32 0, !dbg !389
 }

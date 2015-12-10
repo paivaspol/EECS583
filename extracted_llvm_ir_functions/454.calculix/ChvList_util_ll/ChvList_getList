@@ -1,80 +1,83 @@
 define %struct._Chv* @ChvList_getList(%struct._ChvList* %chvlist, i32 %ilist) #0 {
-entry:
-  %cmp = icmp eq %struct._ChvList* %chvlist, null
-  %cmp1 = icmp slt i32 %ilist, 0
-  %or.cond = or i1 %cmp, %cmp1
-  br i1 %or.cond, label %if.then, label %lor.lhs.false2
+  tail call void @llvm.dbg.value(metadata %struct._ChvList* %chvlist, i64 0, metadata !77, metadata !84), !dbg !210
+  tail call void @llvm.dbg.value(metadata i32 %ilist, i64 0, metadata !78, metadata !84), !dbg !211
+  %1 = icmp eq %struct._ChvList* %chvlist, null, !dbg !212
+  %2 = icmp slt i32 %ilist, 0, !dbg !214
+  %or.cond = or i1 %1, %2, !dbg !215
+  br i1 %or.cond, label %7, label %3, !dbg !215
 
-lor.lhs.false2:                                   ; preds = %entry
-  %nlist = getelementptr inbounds %struct._ChvList* %chvlist, i64 0, i32 0
-  %0 = load i32* %nlist, align 4, !tbaa !0
-  %cmp3 = icmp sgt i32 %0, %ilist
-  br i1 %cmp3, label %if.end, label %if.then
+; <label>:3                                       ; preds = %0
+  %4 = getelementptr inbounds %struct._ChvList* %chvlist, i64 0, i32 0, !dbg !216
+  %5 = load i32* %4, align 4, !dbg !216, !tbaa !92
+  %6 = icmp sgt i32 %5, %ilist, !dbg !217
+  br i1 %6, label %10, label %7, !dbg !218
 
-if.then:                                          ; preds = %lor.lhs.false2, %entry
-  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([52 x i8]* @.str3, i64 0, i64 0), %struct._ChvList* %chvlist, i32 %ilist) #4
-  tail call void @exit(i32 -1) #5
-  unreachable
+; <label>:7                                       ; preds = %3, %0
+  %8 = load %struct.__sFILE** @__stderrp, align 8, !dbg !219, !tbaa !102
+  %9 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %8, i8* getelementptr inbounds ([52 x i8]* @.str3, i64 0, i64 0), %struct._ChvList* %chvlist, i32 %ilist) #5, !dbg !221
+  tail call void @exit(i32 -1) #6, !dbg !222
+  unreachable, !dbg !222
 
-if.end:                                           ; preds = %lor.lhs.false2
-  %idxprom = sext i32 %ilist to i64
-  %heads = getelementptr inbounds %struct._ChvList* %chvlist, i64 0, i32 1
-  %2 = load %struct._Chv*** %heads, align 8, !tbaa !3
-  %arrayidx = getelementptr inbounds %struct._Chv** %2, i64 %idxprom
-  %3 = load %struct._Chv** %arrayidx, align 8, !tbaa !3
-  %cmp4 = icmp eq %struct._Chv* %3, null
-  br i1 %cmp4, label %if.end40, label %if.then5
+; <label>:10                                      ; preds = %3
+  %11 = sext i32 %ilist to i64, !dbg !223
+  %12 = getelementptr inbounds %struct._ChvList* %chvlist, i64 0, i32 1, !dbg !225
+  %13 = load %struct._Chv*** %12, align 8, !dbg !225, !tbaa !107
+  %14 = getelementptr inbounds %struct._Chv** %13, i64 %11, !dbg !223
+  %15 = load %struct._Chv** %14, align 8, !dbg !223, !tbaa !102
+  %16 = icmp eq %struct._Chv* %15, null, !dbg !226
+  br i1 %16, label %46, label %17, !dbg !227
 
-if.then5:                                         ; preds = %if.end
-  %lock = getelementptr inbounds %struct._ChvList* %chvlist, i64 0, i32 3
-  %4 = load %struct._Lock** %lock, align 8, !tbaa !3
-  %cmp6 = icmp eq %struct._Lock* %4, null
-  br i1 %cmp6, label %if.then23, label %lor.lhs.false7
+; <label>:17                                      ; preds = %10
+  %18 = getelementptr inbounds %struct._ChvList* %chvlist, i64 0, i32 3, !dbg !228
+  %19 = load %struct._Lock** %18, align 8, !dbg !228, !tbaa !150
+  %20 = icmp eq %struct._Lock* %19, null, !dbg !231
+  br i1 %20, label %37, label %21, !dbg !232
 
-lor.lhs.false7:                                   ; preds = %if.then5
-  %flags = getelementptr inbounds %struct._ChvList* %chvlist, i64 0, i32 4
-  %5 = load i8** %flags, align 8, !tbaa !3
-  %cmp8 = icmp eq i8* %5, null
-  br i1 %cmp8, label %lor.lhs.false14, label %land.lhs.true
+; <label>:21                                      ; preds = %17
+  %22 = getelementptr inbounds %struct._ChvList* %chvlist, i64 0, i32 4, !dbg !233
+  %23 = load i8** %22, align 8, !dbg !233, !tbaa !154
+  %24 = icmp eq i8* %23, null, !dbg !234
+  br i1 %24, label %29, label %25, !dbg !235
 
-land.lhs.true:                                    ; preds = %lor.lhs.false7
-  %arrayidx11 = getelementptr inbounds i8* %5, i64 %idxprom
-  %6 = load i8* %arrayidx11, align 1, !tbaa !1
-  %cmp12 = icmp eq i8 %6, 78
-  br i1 %cmp12, label %if.then23, label %lor.lhs.false14
+; <label>:25                                      ; preds = %21
+  %26 = getelementptr inbounds i8* %23, i64 %11, !dbg !236
+  %27 = load i8* %26, align 1, !dbg !236, !tbaa !158
+  %28 = icmp eq i8 %27, 78, !dbg !237
+  br i1 %28, label %37, label %29, !dbg !238
 
-lor.lhs.false14:                                  ; preds = %lor.lhs.false7, %land.lhs.true
-  %counts = getelementptr inbounds %struct._ChvList* %chvlist, i64 0, i32 2
-  %7 = load i32** %counts, align 8, !tbaa !3
-  %cmp15 = icmp eq i32* %7, null
-  br i1 %cmp15, label %if.else, label %land.lhs.true17
+; <label>:29                                      ; preds = %21, %25
+  %30 = getelementptr inbounds %struct._ChvList* %chvlist, i64 0, i32 2, !dbg !239
+  %31 = load i32** %30, align 8, !dbg !239, !tbaa !125
+  %32 = icmp eq i32* %31, null, !dbg !240
+  br i1 %32, label %38, label %33, !dbg !241
 
-land.lhs.true17:                                  ; preds = %lor.lhs.false14
-  %arrayidx20 = getelementptr inbounds i32* %7, i64 %idxprom
-  %8 = load i32* %arrayidx20, align 4, !tbaa !0
-  %cmp21 = icmp eq i32 %8, 0
-  br i1 %cmp21, label %if.then23, label %if.else
+; <label>:33                                      ; preds = %29
+  %34 = getelementptr inbounds i32* %31, i64 %11, !dbg !242
+  %35 = load i32* %34, align 4, !dbg !242, !tbaa !130
+  %36 = icmp eq i32 %35, 0, !dbg !243
+  br i1 %36, label %37, label %38, !dbg !244
 
-if.then23:                                        ; preds = %land.lhs.true17, %land.lhs.true, %if.then5
-  store %struct._Chv* null, %struct._Chv** %arrayidx, align 8, !tbaa !3
-  br label %if.end40
+; <label>:37                                      ; preds = %33, %25, %17
+  tail call void @llvm.dbg.value(metadata %struct._Chv* %15, i64 0, metadata !79, metadata !84), !dbg !245
+  store %struct._Chv* null, %struct._Chv** %14, align 8, !dbg !246, !tbaa !102
+  br label %46, !dbg !248
 
-if.else:                                          ; preds = %lor.lhs.false14, %land.lhs.true17
-  tail call void @Lock_lock(%struct._Lock* %4) #4
-  %9 = load %struct._Chv*** %heads, align 8, !tbaa !3
-  %arrayidx33 = getelementptr inbounds %struct._Chv** %9, i64 %idxprom
-  %10 = load %struct._Chv** %arrayidx33, align 8, !tbaa !3
-  store %struct._Chv* null, %struct._Chv** %arrayidx33, align 8, !tbaa !3
-  %nlocks = getelementptr inbounds %struct._ChvList* %chvlist, i64 0, i32 5
-  %11 = load i32* %nlocks, align 4, !tbaa !0
-  %inc = add nsw i32 %11, 1
-  store i32 %inc, i32* %nlocks, align 4, !tbaa !0
-  %12 = load %struct._Lock** %lock, align 8, !tbaa !3
-  tail call void @Lock_unlock(%struct._Lock* %12) #4
-  br label %if.end40
+; <label>:38                                      ; preds = %29, %33
+  tail call void @Lock_lock(%struct._Lock* %19) #5, !dbg !249
+  %39 = load %struct._Chv*** %12, align 8, !dbg !251, !tbaa !107
+  %40 = getelementptr inbounds %struct._Chv** %39, i64 %11, !dbg !252
+  %41 = load %struct._Chv** %40, align 8, !dbg !252, !tbaa !102
+  tail call void @llvm.dbg.value(metadata %struct._Chv* %41, i64 0, metadata !79, metadata !84), !dbg !245
+  store %struct._Chv* null, %struct._Chv** %40, align 8, !dbg !253, !tbaa !102
+  %42 = getelementptr inbounds %struct._ChvList* %chvlist, i64 0, i32 5, !dbg !254
+  %43 = load i32* %42, align 4, !dbg !255, !tbaa !186
+  %44 = add nsw i32 %43, 1, !dbg !255
+  store i32 %44, i32* %42, align 4, !dbg !255, !tbaa !186
+  %45 = load %struct._Lock** %18, align 8, !dbg !256, !tbaa !150
+  tail call void @Lock_unlock(%struct._Lock* %45) #5, !dbg !257
+  br label %46
 
-if.end40:                                         ; preds = %if.end, %if.then23, %if.else
-  %chv.0 = phi %struct._Chv* [ %3, %if.then23 ], [ %10, %if.else ], [ null, %if.end ]
-  ret %struct._Chv* %chv.0
+; <label>:46                                      ; preds = %10, %37, %38
+  %chv.0 = phi %struct._Chv* [ %15, %37 ], [ %41, %38 ], [ null, %10 ]
+  ret %struct._Chv* %chv.0, !dbg !258
 }

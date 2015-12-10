@@ -1,50 +1,50 @@
 define noalias %struct.phylo_s* @AllocPhylo(i32 %N) #0 {
-entry:
-  %sub = add nsw i32 %N, -1
-  %conv = sext i32 %sub to i64
-  %mul = mul i64 %conv, 40
-  %call = tail call noalias i8* @malloc(i64 %mul) #4
-  %0 = bitcast i8* %call to %struct.phylo_s*
-  %cmp = icmp eq i8* %call, null
-  br i1 %cmp, label %return, label %for.cond.preheader
+  tail call void @llvm.dbg.value(metadata i32 %N, i64 0, metadata !58, metadata !220), !dbg !487
+  %1 = add nsw i32 %N, -1, !dbg !488
+  %2 = sext i32 %1 to i64, !dbg !490
+  %3 = mul nsw i64 %2, 40, !dbg !491
+  %4 = tail call i8* @malloc(i64 %3) #5, !dbg !492
+  %5 = bitcast i8* %4 to %struct.phylo_s*, !dbg !493
+  tail call void @llvm.dbg.value(metadata %struct.phylo_s* %5, i64 0, metadata !59, metadata !220), !dbg !494
+  %6 = icmp eq i8* %4, null, !dbg !495
+  br i1 %6, label %.loopexit, label %.preheader, !dbg !496
 
-for.cond.preheader:                               ; preds = %entry
-  %cmp344 = icmp sgt i32 %sub, 0
-  br i1 %cmp344, label %for.body.lr.ph, label %return
+.preheader:                                       ; preds = %0
+  %7 = icmp sgt i32 %N, 1, !dbg !497
+  br i1 %7, label %.lr.ph, label %.loopexit, !dbg !500
 
-for.body.lr.ph:                                   ; preds = %for.cond.preheader
-  %conv17 = sext i32 %N to i64
-  br label %for.body
+.lr.ph:                                           ; preds = %.preheader
+  %8 = sext i32 %N to i64, !dbg !501
+  br label %11, !dbg !500
 
-for.cond:                                         ; preds = %for.body
-  %1 = trunc i64 %indvars.iv.next to i32
-  %cmp3 = icmp slt i32 %1, %sub
-  br i1 %cmp3, label %for.body, label %return
+; <label>:9                                       ; preds = %11
+  %10 = icmp slt i64 %indvars.iv.next, %2, !dbg !497
+  br i1 %10, label %11, label %.loopexit, !dbg !500
 
-for.body:                                         ; preds = %for.body.lr.ph, %for.cond
-  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.cond ]
-  %diff = getelementptr inbounds %struct.phylo_s* %0, i64 %indvars.iv, i32 3
-  store float 0.000000e+00, float* %diff, align 4, !tbaa !3
-  %rblen = getelementptr inbounds %struct.phylo_s* %0, i64 %indvars.iv, i32 5
-  store float 0.000000e+00, float* %rblen, align 4, !tbaa !3
-  %lblen = getelementptr inbounds %struct.phylo_s* %0, i64 %indvars.iv, i32 4
-  store float 0.000000e+00, float* %lblen, align 4, !tbaa !3
-  %parent = getelementptr inbounds %struct.phylo_s* %0, i64 %indvars.iv, i32 0
-  store i32 -1, i32* %parent, align 4, !tbaa !4
-  %right = getelementptr inbounds %struct.phylo_s* %0, i64 %indvars.iv, i32 2
-  store i32 -1, i32* %right, align 4, !tbaa !4
-  %left = getelementptr inbounds %struct.phylo_s* %0, i64 %indvars.iv, i32 1
-  store i32 -1, i32* %left, align 4, !tbaa !4
-  %incnum = getelementptr inbounds %struct.phylo_s* %0, i64 %indvars.iv, i32 7
-  store i32 0, i32* %incnum, align 4, !tbaa !4
-  %call18 = tail call noalias i8* @calloc(i64 %conv17, i64 1) #4
-  %is_in = getelementptr inbounds %struct.phylo_s* %0, i64 %indvars.iv, i32 6
-  store i8* %call18, i8** %is_in, align 8, !tbaa !0
-  %cmp21 = icmp eq i8* %call18, null
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  br i1 %cmp21, label %return, label %for.cond
+; <label>:11                                      ; preds = %.lr.ph, %9
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %9 ]
+  %12 = getelementptr inbounds %struct.phylo_s* %5, i64 %indvars.iv, i32 3, !dbg !504
+  store float 0.000000e+00, float* %12, align 4, !dbg !505, !tbaa !320
+  %13 = getelementptr inbounds %struct.phylo_s* %5, i64 %indvars.iv, i32 5, !dbg !506
+  store float 0.000000e+00, float* %13, align 4, !dbg !507, !tbaa !325
+  %14 = getelementptr inbounds %struct.phylo_s* %5, i64 %indvars.iv, i32 4, !dbg !508
+  store float 0.000000e+00, float* %14, align 4, !dbg !509, !tbaa !328
+  %15 = getelementptr inbounds %struct.phylo_s* %5, i64 %indvars.iv, i32 0, !dbg !510
+  store i32 -1, i32* %15, align 4, !dbg !511, !tbaa !308
+  %16 = getelementptr inbounds %struct.phylo_s* %5, i64 %indvars.iv, i32 2, !dbg !512
+  store i32 -1, i32* %16, align 4, !dbg !513, !tbaa !298
+  %17 = getelementptr inbounds %struct.phylo_s* %5, i64 %indvars.iv, i32 1, !dbg !514
+  store i32 -1, i32* %17, align 4, !dbg !515, !tbaa !293
+  %18 = getelementptr inbounds %struct.phylo_s* %5, i64 %indvars.iv, i32 7, !dbg !516
+  store i32 0, i32* %18, align 4, !dbg !517, !tbaa !350
+  %19 = tail call i8* @calloc(i64 %8, i64 1) #5, !dbg !518
+  %20 = getelementptr inbounds %struct.phylo_s* %5, i64 %indvars.iv, i32 6, !dbg !519
+  store i8* %19, i8** %20, align 8, !dbg !520, !tbaa !354
+  %21 = icmp eq i8* %19, null, !dbg !521
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !500
+  br i1 %21, label %.loopexit, label %9, !dbg !522
 
-return:                                           ; preds = %for.cond.preheader, %for.body, %for.cond, %entry
-  %retval.0 = phi %struct.phylo_s* [ null, %entry ], [ %0, %for.cond.preheader ], [ null, %for.body ], [ %0, %for.cond ]
-  ret %struct.phylo_s* %retval.0
+.loopexit:                                        ; preds = %11, %9, %.preheader, %0
+  %.0 = phi %struct.phylo_s* [ null, %0 ], [ %5, %.preheader ], [ %5, %9 ], [ null, %11 ]
+  ret %struct.phylo_s* %.0, !dbg !523
 }

@@ -1,103 +1,107 @@
-define i64 @write_circulations(i8* nocapture %outfile, %struct.network* %net) #0 {
-entry:
-  %stop_arcs = getelementptr inbounds %struct.network* %net, i64 0, i32 24
-  %0 = load %struct.arc** %stop_arcs, align 8, !tbaa !0
-  %m_impl = getelementptr inbounds %struct.network* %net, i64 0, i32 7
-  %1 = load i64* %m_impl, align 8, !tbaa !3
-  %idx.neg = sub i64 0, %1
-  %add.ptr = getelementptr inbounds %struct.arc* %0, i64 %idx.neg
-  %call = tail call %struct._IO_FILE* @fopen(i8* %outfile, i8* getelementptr inbounds ([2 x i8]* @.str, i64 0, i64 0)) #4
-  %cmp = icmp eq %struct._IO_FILE* %call, null
-  br i1 %cmp, label %return, label %if.end
+define i64 @write_circulations(i8* %outfile, %struct.network* %net) #0 {
+  tail call void @llvm.dbg.value(metadata i8* %outfile, i64 0, metadata !85, metadata !158), !dbg !159
+  tail call void @llvm.dbg.value(metadata %struct.network* %net, i64 0, metadata !86, metadata !158), !dbg !160
+  tail call void @llvm.dbg.value(metadata %struct.__sFILE* null, i64 0, metadata !87, metadata !158), !dbg !161
+  %1 = getelementptr inbounds %struct.network* %net, i64 0, i32 24, !dbg !162
+  %2 = load %struct.arc** %1, align 8, !dbg !162, !tbaa !163
+  %3 = getelementptr inbounds %struct.network* %net, i64 0, i32 7, !dbg !170
+  %4 = load i64* %3, align 8, !dbg !170, !tbaa !171
+  %5 = sub i64 0, %4, !dbg !172
+  %6 = getelementptr inbounds %struct.arc* %2, i64 %5, !dbg !172
+  tail call void @llvm.dbg.value(metadata %struct.arc* %6, i64 0, metadata !153, metadata !158), !dbg !173
+  %7 = tail call %struct.__sFILE* @"\01_fopen"(i8* %outfile, i8* getelementptr inbounds ([2 x i8]* @.str, i64 0, i64 0)) #5, !dbg !174
+  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %7, i64 0, metadata !87, metadata !158), !dbg !161
+  %8 = icmp eq %struct.__sFILE* %7, null, !dbg !176
+  br i1 %8, label %53, label %9, !dbg !177
 
-if.end:                                           ; preds = %entry
-  tail call void @refresh_neighbour_lists(%struct.network* %net) #4
-  %n = getelementptr inbounds %struct.network* %net, i64 0, i32 2
-  %2 = load i64* %n, align 8, !tbaa !3
-  %nodes = getelementptr inbounds %struct.network* %net, i64 0, i32 21
-  %3 = load %struct.node** %nodes, align 8, !tbaa !0
-  %firstout = getelementptr inbounds %struct.node* %3, i64 %2, i32 7
-  %block.060 = load %struct.arc** %firstout, align 8
-  %tobool61 = icmp eq %struct.arc* %block.060, null
-  br i1 %tobool61, label %for.end32, label %for.body.lr.ph
+; <label>:9                                       ; preds = %0
+  tail call void @refresh_neighbour_lists(%struct.network* %net) #5, !dbg !178
+  %10 = getelementptr inbounds %struct.network* %net, i64 0, i32 2, !dbg !179
+  %11 = load i64* %10, align 8, !dbg !179, !tbaa !181
+  %12 = getelementptr inbounds %struct.network* %net, i64 0, i32 21, !dbg !182
+  %13 = load %struct.node** %12, align 8, !dbg !182, !tbaa !183
+  %14 = getelementptr inbounds %struct.node* %13, i64 %11, i32 7, !dbg !184
+  %block.07 = load %struct.arc** %14, align 8, !dbg !184
+  %15 = icmp eq %struct.arc* %block.07, null, !dbg !185
+  br i1 %15, label %._crit_edge, label %.lr.ph9, !dbg !185
 
-for.body.lr.ph:                                   ; preds = %if.end
-  %n_trips = getelementptr inbounds %struct.network* %net, i64 0, i32 3
-  br label %for.body
+.lr.ph9:                                          ; preds = %9
+  %16 = getelementptr inbounds %struct.network* %net, i64 0, i32 3, !dbg !186
+  br label %17, !dbg !185
 
-for.body:                                         ; preds = %for.body.lr.ph, %for.inc30
-  %block.062 = phi %struct.arc* [ %block.060, %for.body.lr.ph ], [ %block.0, %for.inc30 ]
-  %flow = getelementptr inbounds %struct.arc* %block.062, i64 0, i32 6
-  %4 = load i64* %flow, align 8, !tbaa !3
-  %tobool1 = icmp eq i64 %4, 0
-  br i1 %tobool1, label %for.inc30, label %if.then2
+; <label>:17                                      ; preds = %.lr.ph9, %.loopexit
+  %block.08 = phi %struct.arc* [ %block.07, %.lr.ph9 ], [ %block.0, %.loopexit ]
+  %18 = getelementptr inbounds %struct.arc* %block.08, i64 0, i32 6, !dbg !192
+  %19 = load i64* %18, align 8, !dbg !192, !tbaa !193
+  %20 = icmp eq i64 %19, 0, !dbg !196
+  br i1 %20, label %.loopexit, label %.lr.ph6, !dbg !197
 
-if.then2:                                         ; preds = %for.body
-  %5 = tail call i64 @fwrite(i8* getelementptr inbounds ([4 x i8]* @.str1, i64 0, i64 0), i64 3, i64 1, %struct._IO_FILE* %call)
-  %tobool458 = icmp eq %struct.arc* %block.062, null
-  br i1 %tobool458, label %for.inc30, label %while.body
+.lr.ph6:                                          ; preds = %17
+  %21 = tail call i64 @fwrite(i8* getelementptr inbounds ([4 x i8]* @.str1, i64 0, i64 0), i64 3, i64 1, %struct.__sFILE* %7), !dbg !198
+  tail call void @llvm.dbg.value(metadata %struct.arc* %block.0, i64 0, metadata !151, metadata !158), !dbg !199
+  br label %22, !dbg !200
 
-while.body:                                       ; preds = %if.then2, %if.end23
-  %arc.059 = phi %struct.arc* [ %.arc2.0, %if.end23 ], [ %block.062, %if.then2 ]
-  %cmp5 = icmp ult %struct.arc* %arc.059, %add.ptr
-  br i1 %cmp5, label %if.end8, label %if.then6
+; <label>:22                                      ; preds = %.lr.ph6, %select.unfold
+  %arc.05 = phi %struct.arc* [ %block.08, %.lr.ph6 ], [ %.arc2.0, %select.unfold ]
+  %23 = icmp ult %struct.arc* %arc.05, %6, !dbg !201
+  br i1 %23, label %26, label %24, !dbg !203
 
-if.then6:                                         ; preds = %while.body
-  %6 = tail call i64 @fwrite(i8* getelementptr inbounds ([5 x i8]* @.str2, i64 0, i64 0), i64 4, i64 1, %struct._IO_FILE* %call)
-  br label %if.end8
+; <label>:24                                      ; preds = %22
+  %25 = tail call i64 @fwrite(i8* getelementptr inbounds ([5 x i8]* @.str2, i64 0, i64 0), i64 4, i64 1, %struct.__sFILE* %7), !dbg !204
+  br label %26, !dbg !204
 
-if.end8:                                          ; preds = %while.body, %if.then6
-  %head = getelementptr inbounds %struct.arc* %arc.059, i64 0, i32 2
-  %7 = load %struct.node** %head, align 8, !tbaa !0
-  %number = getelementptr inbounds %struct.node* %7, i64 0, i32 12
-  %8 = load i32* %number, align 4, !tbaa !4
-  %sub = sub nsw i32 0, %8
-  %call9 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %call, i8* getelementptr inbounds ([4 x i8]* @.str3, i64 0, i64 0), i32 %sub) #4
-  %9 = load i64* %n_trips, align 8, !tbaa !3
-  %10 = load %struct.node** %head, align 8, !tbaa !0
-  %firstout12 = getelementptr inbounds %struct.node* %10, i64 %9, i32 7
-  %arc2.055 = load %struct.arc** %firstout12, align 8
-  %tobool1456 = icmp eq %struct.arc* %arc2.055, null
-  br i1 %tobool1456, label %if.then21, label %for.body15
+; <label>:26                                      ; preds = %22, %24
+  %27 = getelementptr inbounds %struct.arc* %arc.05, i64 0, i32 2, !dbg !205
+  %28 = load %struct.node** %27, align 8, !dbg !205, !tbaa !206
+  %29 = getelementptr inbounds %struct.node* %28, i64 0, i32 12, !dbg !207
+  %30 = load i32* %29, align 4, !dbg !207, !tbaa !208
+  %31 = sub nsw i32 0, %30, !dbg !210
+  %32 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %7, i8* getelementptr inbounds ([4 x i8]* @.str3, i64 0, i64 0), i32 %31) #5, !dbg !211
+  %33 = load i64* %16, align 8, !dbg !186, !tbaa !212
+  %34 = load %struct.node** %27, align 8, !dbg !213, !tbaa !206
+  %35 = getelementptr inbounds %struct.node* %34, i64 %33, i32 7, !dbg !214
+  %arc2.02 = load %struct.arc** %35, align 8, !dbg !214
+  %36 = icmp eq %struct.arc* %arc2.02, null, !dbg !215
+  br i1 %36, label %.critedge, label %.lr.ph, !dbg !215
 
-for.cond13:                                       ; preds = %for.body15
-  %nextout = getelementptr inbounds %struct.arc* %arc2.057, i64 0, i32 4
-  %arc2.0 = load %struct.arc** %nextout, align 8
-  %tobool14 = icmp eq %struct.arc* %arc2.0, null
-  br i1 %tobool14, label %if.then21, label %for.body15
+.lr.ph:                                           ; preds = %26, %40
+  %arc2.03 = phi %struct.arc* [ %arc2.0, %40 ], [ %arc2.02, %26 ]
+  %37 = getelementptr inbounds %struct.arc* %arc2.03, i64 0, i32 6, !dbg !217
+  %38 = load i64* %37, align 8, !dbg !217, !tbaa !193
+  %39 = icmp eq i64 %38, 0, !dbg !220
+  br i1 %39, label %40, label %select.unfold, !dbg !221
 
-for.body15:                                       ; preds = %if.end8, %for.cond13
-  %arc2.057 = phi %struct.arc* [ %arc2.0, %for.cond13 ], [ %arc2.055, %if.end8 ]
-  %flow16 = getelementptr inbounds %struct.arc* %arc2.057, i64 0, i32 6
-  %11 = load i64* %flow16, align 8, !tbaa !3
-  %tobool17 = icmp eq i64 %11, 0
-  br i1 %tobool17, label %for.cond13, label %if.end23
+; <label>:40                                      ; preds = %.lr.ph
+  %41 = getelementptr inbounds %struct.arc* %arc2.03, i64 0, i32 4, !dbg !222
+  %arc2.0 = load %struct.arc** %41, align 8, !dbg !214
+  %42 = icmp eq %struct.arc* %arc2.0, null, !dbg !215
+  br i1 %42, label %.critedge, label %.lr.ph, !dbg !215
 
-if.then21:                                        ; preds = %if.end8, %for.cond13
-  %call22 = tail call i32 @fclose(%struct._IO_FILE* %call) #4
-  br label %return
+.critedge:                                        ; preds = %26, %40
+  %43 = tail call i32 @fclose(%struct.__sFILE* %7) #5, !dbg !223
+  br label %53, !dbg !226
 
-if.end23:                                         ; preds = %for.body15
-  %head24 = getelementptr inbounds %struct.arc* %arc2.057, i64 0, i32 2
-  %12 = load %struct.node** %head24, align 8, !tbaa !0
-  %number25 = getelementptr inbounds %struct.node* %12, i64 0, i32 12
-  %13 = load i32* %number25, align 4, !tbaa !4
-  %tobool26 = icmp eq i32 %13, 0
-  %.arc2.0 = select i1 %tobool26, %struct.arc* null, %struct.arc* %arc2.057
-  %tobool4 = icmp eq %struct.arc* %.arc2.0, null
-  br i1 %tobool4, label %for.inc30, label %while.body
+select.unfold:                                    ; preds = %.lr.ph
+  %44 = getelementptr inbounds %struct.arc* %arc2.03, i64 0, i32 2, !dbg !227
+  %45 = load %struct.node** %44, align 8, !dbg !227, !tbaa !206
+  %46 = getelementptr inbounds %struct.node* %45, i64 0, i32 12, !dbg !229
+  %47 = load i32* %46, align 4, !dbg !229, !tbaa !208
+  %48 = icmp eq i32 %47, 0, !dbg !230
+  %.arc2.0 = select i1 %48, %struct.arc* null, %struct.arc* %arc2.03
+  %49 = icmp eq %struct.arc* %.arc2.0, null, !dbg !200
+  br i1 %49, label %.loopexit, label %22, !dbg !200
 
-for.inc30:                                        ; preds = %if.then2, %if.end23, %for.body
-  %nextout31 = getelementptr inbounds %struct.arc* %block.062, i64 0, i32 4
-  %block.0 = load %struct.arc** %nextout31, align 8
-  %tobool = icmp eq %struct.arc* %block.0, null
-  br i1 %tobool, label %for.end32, label %for.body
+.loopexit:                                        ; preds = %select.unfold, %17
+  %50 = getelementptr inbounds %struct.arc* %block.08, i64 0, i32 4, !dbg !231
+  %block.0 = load %struct.arc** %50, align 8, !dbg !184
+  %51 = icmp eq %struct.arc* %block.0, null, !dbg !185
+  br i1 %51, label %._crit_edge, label %17, !dbg !185
 
-for.end32:                                        ; preds = %for.inc30, %if.end
-  %call33 = tail call i32 @fclose(%struct._IO_FILE* %call) #4
-  br label %return
+._crit_edge:                                      ; preds = %.loopexit, %9
+  %52 = tail call i32 @fclose(%struct.__sFILE* %7) #5, !dbg !232
+  br label %53, !dbg !233
 
-return:                                           ; preds = %entry, %for.end32, %if.then21
-  %retval.0 = phi i64 [ -1, %if.then21 ], [ 0, %for.end32 ], [ -1, %entry ]
-  ret i64 %retval.0
+; <label>:53                                      ; preds = %0, %._crit_edge, %.critedge
+  %.0 = phi i64 [ -1, %.critedge ], [ 0, %._crit_edge ], [ -1, %0 ]
+  ret i64 %.0, !dbg !234
 }

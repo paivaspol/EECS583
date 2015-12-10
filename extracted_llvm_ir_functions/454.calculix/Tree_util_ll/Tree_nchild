@@ -1,57 +1,60 @@
 define i32 @Tree_nchild(%struct._Tree* %tree, i32 %v) #0 {
-entry:
-  %cmp = icmp eq %struct._Tree* %tree, null
-  br i1 %cmp, label %if.then, label %lor.lhs.false
+  tail call void @llvm.dbg.value(metadata %struct._Tree* %tree, i64 0, metadata !49, metadata !98), !dbg !243
+  tail call void @llvm.dbg.value(metadata i32 %v, i64 0, metadata !50, metadata !98), !dbg !244
+  %1 = icmp eq %struct._Tree* %tree, null, !dbg !245
+  br i1 %1, label %6, label %2, !dbg !247
 
-lor.lhs.false:                                    ; preds = %entry
-  %n = getelementptr inbounds %struct._Tree* %tree, i64 0, i32 0
-  %0 = load i32* %n, align 4, !tbaa !0
-  %cmp1 = icmp slt i32 %0, 1
-  br i1 %cmp1, label %if.then, label %if.end
+; <label>:2                                       ; preds = %0
+  %3 = getelementptr inbounds %struct._Tree* %tree, i64 0, i32 0, !dbg !248
+  %4 = load i32* %3, align 4, !dbg !248, !tbaa !104
+  %5 = icmp slt i32 %4, 1, !dbg !249
+  br i1 %5, label %6, label %9, !dbg !250
 
-if.then:                                          ; preds = %lor.lhs.false, %entry
-  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([48 x i8]* @.str6, i64 0, i64 0), %struct._Tree* %tree, i32 %v) #4
-  tail call void @exit(i32 -1) #5
-  unreachable
+; <label>:6                                       ; preds = %2, %0
+  %7 = load %struct.__sFILE** @__stderrp, align 8, !dbg !251, !tbaa !114
+  %8 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %7, i8* getelementptr inbounds ([48 x i8]* @.str6, i64 0, i64 0), %struct._Tree* %tree, i32 %v) #5, !dbg !253
+  tail call void @exit(i32 -1) #6, !dbg !254
+  unreachable, !dbg !254
 
-if.end:                                           ; preds = %lor.lhs.false
-  %cmp2 = icmp sgt i32 %v, -1
-  %cmp5 = icmp sgt i32 %0, %v
-  %or.cond = and i1 %cmp2, %cmp5
-  br i1 %or.cond, label %if.end9, label %if.then6
+; <label>:9                                       ; preds = %2
+  %10 = icmp sgt i32 %v, -1, !dbg !255
+  %11 = icmp sgt i32 %4, %v, !dbg !257
+  %or.cond = and i1 %10, %11, !dbg !258
+  br i1 %or.cond, label %15, label %12, !dbg !258
 
-if.then6:                                         ; preds = %if.end
-  %2 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
-  %call8 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([56 x i8]* @.str7, i64 0, i64 0), %struct._Tree* %tree, i32 %v, i32 %v, i32 %0) #4
-  tail call void @exit(i32 -1) #5
-  unreachable
+; <label>:12                                      ; preds = %9
+  %13 = load %struct.__sFILE** @__stderrp, align 8, !dbg !259, !tbaa !114
+  %14 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %13, i8* getelementptr inbounds ([56 x i8]* @.str7, i64 0, i64 0), %struct._Tree* %tree, i32 %v, i32 %v, i32 %4) #5, !dbg !261
+  tail call void @exit(i32 -1) #6, !dbg !262
+  unreachable, !dbg !262
 
-if.end9:                                          ; preds = %if.end
-  %idxprom = sext i32 %v to i64
-  %fch = getelementptr inbounds %struct._Tree* %tree, i64 0, i32 3
-  %3 = load i32** %fch, align 8, !tbaa !3
-  %arrayidx = getelementptr inbounds i32* %3, i64 %idxprom
-  %w.026 = load i32* %arrayidx, align 4
-  %cmp1027 = icmp eq i32 %w.026, -1
-  br i1 %cmp1027, label %for.end, label %for.body.lr.ph
+; <label>:15                                      ; preds = %9
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !51, metadata !98), !dbg !263
+  %16 = sext i32 %v to i64, !dbg !264
+  %17 = getelementptr inbounds %struct._Tree* %tree, i64 0, i32 3, !dbg !266
+  %18 = load i32** %17, align 8, !dbg !266, !tbaa !125
+  %19 = getelementptr inbounds i32* %18, i64 %16, !dbg !264
+  %w.01 = load i32* %19, align 4, !dbg !264
+  %20 = icmp eq i32 %w.01, -1, !dbg !267
+  br i1 %20, label %._crit_edge, label %.lr.ph, !dbg !269
 
-for.body.lr.ph:                                   ; preds = %if.end9
-  %sib = getelementptr inbounds %struct._Tree* %tree, i64 0, i32 4
-  %4 = load i32** %sib, align 8, !tbaa !3
-  br label %for.body
+.lr.ph:                                           ; preds = %15
+  %21 = getelementptr inbounds %struct._Tree* %tree, i64 0, i32 4, !dbg !270
+  %22 = load i32** %21, align 8, !dbg !270, !tbaa !146
+  br label %23, !dbg !269
 
-for.body:                                         ; preds = %for.body.lr.ph, %for.body
-  %w.029 = phi i32 [ %w.026, %for.body.lr.ph ], [ %w.0, %for.body ]
-  %nchild.028 = phi i32 [ 0, %for.body.lr.ph ], [ %inc, %for.body ]
-  %inc = add nsw i32 %nchild.028, 1
-  %idxprom11 = sext i32 %w.029 to i64
-  %arrayidx12 = getelementptr inbounds i32* %4, i64 %idxprom11
-  %w.0 = load i32* %arrayidx12, align 4
-  %cmp10 = icmp eq i32 %w.0, -1
-  br i1 %cmp10, label %for.end, label %for.body
+; <label>:23                                      ; preds = %.lr.ph, %23
+  %w.03 = phi i32 [ %w.01, %.lr.ph ], [ %w.0, %23 ]
+  %nchild.02 = phi i32 [ 0, %.lr.ph ], [ %24, %23 ]
+  %24 = add nuw nsw i32 %nchild.02, 1, !dbg !271
+  tail call void @llvm.dbg.value(metadata i32 %24, i64 0, metadata !51, metadata !98), !dbg !263
+  %25 = sext i32 %w.03 to i64, !dbg !273
+  %26 = getelementptr inbounds i32* %22, i64 %25, !dbg !273
+  %w.0 = load i32* %26, align 4, !dbg !264
+  %27 = icmp eq i32 %w.0, -1, !dbg !267
+  br i1 %27, label %._crit_edge, label %23, !dbg !269
 
-for.end:                                          ; preds = %for.body, %if.end9
-  %nchild.0.lcssa = phi i32 [ 0, %if.end9 ], [ %inc, %for.body ]
-  ret i32 %nchild.0.lcssa
+._crit_edge:                                      ; preds = %23, %15
+  %nchild.0.lcssa = phi i32 [ 0, %15 ], [ %24, %23 ]
+  ret i32 %nchild.0.lcssa, !dbg !274
 }

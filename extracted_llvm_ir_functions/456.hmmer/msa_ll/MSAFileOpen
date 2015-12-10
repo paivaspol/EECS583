@@ -1,134 +1,203 @@
 define %struct.msafile_struct* @MSAFileOpen(i8* %filename, i32 %format, i8* %env) #0 {
-entry:
+  %cmd = alloca [256 x i8], align 16
   %dir = alloca i8*, align 8
-  %call = call i8* @sre_malloc(i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i32 760, i64 64) #6
-  %0 = bitcast i8* %call to %struct.msafile_struct*
-  %call1 = call i32 @strcmp(i8* %filename, i8* getelementptr inbounds ([2 x i8]* @.str13, i64 0, i64 0)) #7
-  %cmp = icmp eq i32 %call1, 0
-  br i1 %cmp, label %if.then, label %if.else
+  tail call void @llvm.dbg.value(metadata i8* %filename, i64 0, metadata !290, metadata !481), !dbg !1428
+  tail call void @llvm.dbg.value(metadata i32 %format, i64 0, metadata !291, metadata !481), !dbg !1429
+  tail call void @llvm.dbg.value(metadata i8* %env, i64 0, metadata !292, metadata !481), !dbg !1430
+  %1 = tail call i8* @sre_malloc(i8* getelementptr inbounds ([61 x i8]* @.str, i64 0, i64 0), i32 760, i64 64) #7, !dbg !1431
+  %2 = bitcast i8* %1 to %struct.msafile_struct*, !dbg !1431
+  tail call void @llvm.dbg.value(metadata %struct.msafile_struct* %2, i64 0, metadata !293, metadata !481), !dbg !1432
+  %3 = tail call i32 @strcmp(i8* %filename, i8* getelementptr inbounds ([2 x i8]* @.str13, i64 0, i64 0)) #7, !dbg !1433
+  %4 = icmp eq i32 %3, 0, !dbg !1434
+  br i1 %4, label %5, label %17, !dbg !1435
 
-if.then:                                          ; preds = %entry
-  %1 = load %struct._IO_FILE** @stdin, align 8, !tbaa !0
-  %f = bitcast i8* %call to %struct._IO_FILE**
-  store %struct._IO_FILE* %1, %struct._IO_FILE** %f, align 8, !tbaa !0
-  %do_stdin = getelementptr inbounds i8* %call, i64 52
-  %2 = bitcast i8* %do_stdin to i32*
-  store i32 1, i32* %2, align 4, !tbaa !3
-  %do_gzip = getelementptr inbounds i8* %call, i64 48
-  %3 = bitcast i8* %do_gzip to i32*
-  store i32 0, i32* %3, align 4, !tbaa !3
-  %call2 = call i8* @sre_strdup(i8* getelementptr inbounds ([8 x i8]* @.str14, i64 0, i64 0), i32 -1) #6
-  %fname = getelementptr inbounds i8* %call, i64 8
-  %4 = bitcast i8* %fname to i8**
-  store i8* %call2, i8** %4, align 8, !tbaa !0
-  %ssi = getelementptr inbounds i8* %call, i64 40
-  %5 = bitcast i8* %ssi to %struct.ssifile_s**
-  store %struct.ssifile_s* null, %struct.ssifile_s** %5, align 8, !tbaa !0
-  br label %if.end32
+; <label>:5                                       ; preds = %0
+  %6 = load i64* bitcast (%struct.__sFILE** @__stdinp to i64*), align 8, !dbg !1436, !tbaa !519
+  %7 = bitcast i8* %1 to i64*, !dbg !1438
+  store i64 %6, i64* %7, align 8, !dbg !1438, !tbaa !1439
+  %8 = getelementptr inbounds i8* %1, i64 52, !dbg !1441
+  %9 = bitcast i8* %8 to i32*, !dbg !1441
+  store i32 1, i32* %9, align 4, !dbg !1442, !tbaa !1443
+  %10 = getelementptr inbounds i8* %1, i64 48, !dbg !1444
+  %11 = bitcast i8* %10 to i32*, !dbg !1444
+  store i32 0, i32* %11, align 4, !dbg !1445, !tbaa !1446
+  %12 = tail call i8* @sre_strdup(i8* getelementptr inbounds ([8 x i8]* @.str14, i64 0, i64 0), i32 -1) #7, !dbg !1447
+  %13 = getelementptr inbounds i8* %1, i64 8, !dbg !1448
+  %14 = bitcast i8* %13 to i8**, !dbg !1448
+  store i8* %12, i8** %14, align 8, !dbg !1449, !tbaa !1450
+  %15 = getelementptr inbounds i8* %1, i64 40, !dbg !1451
+  %16 = bitcast i8* %15 to %struct.ssifile_s**, !dbg !1451
+  store %struct.ssifile_s* null, %struct.ssifile_s** %16, align 8, !dbg !1452, !tbaa !1453
+  br label %80, !dbg !1454
 
-if.else:                                          ; preds = %entry
-  %call3 = call %struct._IO_FILE* @fopen(i8* %filename, i8* getelementptr inbounds ([2 x i8]* @.str15, i64 0, i64 0)) #6
-  %f4 = bitcast i8* %call to %struct._IO_FILE**
-  store %struct._IO_FILE* %call3, %struct._IO_FILE** %f4, align 8, !tbaa !0
-  %cmp5 = icmp eq %struct._IO_FILE* %call3, null
-  br i1 %cmp5, label %if.else10, label %if.then6
+; <label>:17                                      ; preds = %0
+  %18 = tail call i32 @Strparse(i8* getelementptr inbounds ([9 x i8]* @.str15, i64 0, i64 0), i8* %filename, i32 0) #7, !dbg !1455
+  %19 = icmp eq i32 %18, 0, !dbg !1455
+  br i1 %19, label %45, label %20, !dbg !1456
 
-if.then6:                                         ; preds = %if.else
-  %call7 = call i64 @strlen(i8* %filename) #7
-  %add = add i64 %call7, 5
-  %call8 = call i8* @sre_malloc(i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i32 806, i64 %add) #6
-  %call9 = call i32 (i8*, i8*, ...)* @sprintf(i8* %call8, i8* getelementptr inbounds ([7 x i8]* @.str16, i64 0, i64 0), i8* %filename) #6
-  br label %if.end24
+; <label>:20                                      ; preds = %17
+  %21 = getelementptr inbounds [256 x i8]* %cmd, i64 0, i64 0, !dbg !1457
+  call void @llvm.lifetime.start(i64 256, i8* %21) #5, !dbg !1457
+  tail call void @llvm.dbg.declare(metadata [256 x i8]* %cmd, metadata !294, metadata !481), !dbg !1458
+  %22 = tail call i32 @FileExists(i8* %filename) #7, !dbg !1459
+  %23 = icmp eq i32 %22, 0, !dbg !1459
+  br i1 %23, label %24, label %25, !dbg !1461
 
-if.else10:                                        ; preds = %if.else
-  %call11 = call %struct._IO_FILE* @EnvFileOpen(i8* %filename, i8* %env, i8** %dir) #6
-  store %struct._IO_FILE* %call11, %struct._IO_FILE** %f4, align 8, !tbaa !0
-  %cmp13 = icmp eq %struct._IO_FILE* %call11, null
-  br i1 %cmp13, label %return, label %if.then14
+; <label>:24                                      ; preds = %20
+  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([24 x i8]* @.str16, i64 0, i64 0), i8* %filename) #7, !dbg !1462
+  br label %25, !dbg !1462
 
-if.then14:                                        ; preds = %if.else10
-  %6 = load i8** %dir, align 8, !tbaa !0
-  %call15 = call i8* @FileConcat(i8* %6, i8* %filename) #6
-  %call16 = call i64 @strlen(i8* %call15) #7
-  %call17 = call i64 @strlen(i8* %filename) #7
-  %add18 = add i64 %call16, 5
-  %add19 = add i64 %add18, %call17
-  %call21 = call i8* @sre_malloc(i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i32 813, i64 %add19) #6
-  %call22 = call i32 (i8*, i8*, ...)* @sprintf(i8* %call21, i8* getelementptr inbounds ([7 x i8]* @.str16, i64 0, i64 0), i8* %call15) #6
-  %7 = load i8** %dir, align 8, !tbaa !0
-  call void @free(i8* %7) #6
-  br label %if.end24
+; <label>:25                                      ; preds = %20, %24
+  %26 = tail call i64 @strlen(i8* %filename) #7, !dbg !1463
+  %27 = add i64 %26, 9, !dbg !1465
+  %28 = icmp ugt i64 %27, 255, !dbg !1466
+  br i1 %28, label %29, label %30, !dbg !1467
 
-if.end24:                                         ; preds = %if.then14, %if.then6
-  %ssifile.0 = phi i8* [ %call8, %if.then6 ], [ %call21, %if.then14 ]
-  %do_stdin25 = getelementptr inbounds i8* %call, i64 52
-  %8 = bitcast i8* %do_stdin25 to i32*
-  store i32 0, i32* %8, align 4, !tbaa !3
-  %do_gzip26 = getelementptr inbounds i8* %call, i64 48
-  %9 = bitcast i8* %do_gzip26 to i32*
-  store i32 0, i32* %9, align 4, !tbaa !3
-  %call27 = call i8* @sre_strdup(i8* %filename, i32 -1) #6
-  %fname28 = getelementptr inbounds i8* %call, i64 8
-  %10 = bitcast i8* %fname28 to i8**
-  store i8* %call27, i8** %10, align 8, !tbaa !0
-  %ssi29 = getelementptr inbounds i8* %call, i64 40
-  %11 = bitcast i8* %ssi29 to %struct.ssifile_s**
-  store %struct.ssifile_s* null, %struct.ssifile_s** %11, align 8, !tbaa !0
-  %call31 = call i32 @SSIOpen(i8* %ssifile.0, %struct.ssifile_s** %11) #6
-  call void @free(i8* %ssifile.0) #6
-  br label %if.end32
+; <label>:29                                      ; preds = %25
+  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([37 x i8]* @.str17, i64 0, i64 0)) #7, !dbg !1468
+  br label %30, !dbg !1468
 
-if.end32:                                         ; preds = %if.end24, %if.then
-  %cmp33 = icmp eq i32 %format, 0
-  br i1 %cmp33, label %if.then34, label %if.end45
+; <label>:30                                      ; preds = %29, %25
+  %31 = call i32 (i8*, i32, i64, i8*, ...)* @__sprintf_chk(i8* %21, i32 0, i64 256, i8* getelementptr inbounds ([12 x i8]* @.str18, i64 0, i64 0), i8* %filename) #7, !dbg !1469
+  %32 = call %struct.__sFILE* @"\01_popen"(i8* %21, i8* getelementptr inbounds ([2 x i8]* @.str19, i64 0, i64 0)) #7, !dbg !1470
+  %33 = bitcast i8* %1 to %struct.__sFILE**, !dbg !1472
+  store %struct.__sFILE* %32, %struct.__sFILE** %33, align 8, !dbg !1473, !tbaa !1439
+  %34 = icmp eq %struct.__sFILE* %32, null, !dbg !1474
+  br i1 %34, label %44, label %.critedge, !dbg !1475
 
-if.then34:                                        ; preds = %if.end32
-  %do_stdin35 = getelementptr inbounds i8* %call, i64 52
-  %12 = bitcast i8* %do_stdin35 to i32*
-  %13 = load i32* %12, align 4, !tbaa !3
-  %cmp36 = icmp eq i32 %13, 1
-  br i1 %cmp36, label %if.then38, label %lor.lhs.false
+.critedge:                                        ; preds = %30
+  %35 = getelementptr inbounds i8* %1, i64 52, !dbg !1476
+  %36 = bitcast i8* %35 to i32*, !dbg !1476
+  store i32 0, i32* %36, align 4, !dbg !1477, !tbaa !1443
+  %37 = getelementptr inbounds i8* %1, i64 48, !dbg !1478
+  %38 = bitcast i8* %37 to i32*, !dbg !1478
+  store i32 1, i32* %38, align 4, !dbg !1479, !tbaa !1446
+  %39 = call i8* @sre_strdup(i8* %filename, i32 -1) #7, !dbg !1480
+  %40 = getelementptr inbounds i8* %1, i64 8, !dbg !1481
+  %41 = bitcast i8* %40 to i8**, !dbg !1481
+  store i8* %39, i8** %41, align 8, !dbg !1482, !tbaa !1450
+  %42 = getelementptr inbounds i8* %1, i64 40, !dbg !1483
+  %43 = bitcast i8* %42 to %struct.ssifile_s**, !dbg !1483
+  store %struct.ssifile_s* null, %struct.ssifile_s** %43, align 8, !dbg !1484, !tbaa !1453
+  call void @llvm.lifetime.end(i64 256, i8* %21) #5, !dbg !1485
+  br label %80
 
-lor.lhs.false:                                    ; preds = %if.then34
-  %do_gzip37 = getelementptr inbounds i8* %call, i64 48
-  %14 = bitcast i8* %do_gzip37 to i32*
-  %15 = load i32* %14, align 4, !tbaa !3
-  %tobool = icmp eq i32 %15, 0
-  br i1 %tobool, label %if.end39, label %if.then38
+; <label>:44                                      ; preds = %30
+  call void @llvm.lifetime.end(i64 256, i8* %21) #5, !dbg !1485
+  br label %109
 
-if.then38:                                        ; preds = %lor.lhs.false, %if.then34
-  call void (i8*, ...)* @Die(i8* getelementptr inbounds ([65 x i8]* @.str17, i64 0, i64 0)) #6
-  br label %if.end39
+; <label>:45                                      ; preds = %17
+  %46 = tail call %struct.__sFILE* @"\01_fopen"(i8* %filename, i8* getelementptr inbounds ([2 x i8]* @.str19, i64 0, i64 0)) #7, !dbg !1486
+  %47 = bitcast i8* %1 to %struct.__sFILE**, !dbg !1487
+  store %struct.__sFILE* %46, %struct.__sFILE** %47, align 8, !dbg !1488, !tbaa !1439
+  %48 = icmp eq %struct.__sFILE* %46, null, !dbg !1489
+  br i1 %48, label %55, label %49, !dbg !1490
 
-if.end39:                                         ; preds = %lor.lhs.false, %if.then38
-  %call40 = call i32 @MSAFileFormat(%struct.msafile_struct* %0) #8
-  %cmp41 = icmp eq i32 %call40, 0
-  br i1 %cmp41, label %if.then42, label %if.end45
+; <label>:49                                      ; preds = %45
+  %50 = tail call i64 @strlen(i8* %filename) #7, !dbg !1491
+  %51 = add i64 %50, 5, !dbg !1491
+  %52 = tail call i8* @sre_malloc(i8* getelementptr inbounds ([61 x i8]* @.str, i64 0, i64 0), i32 806, i64 %51) #7, !dbg !1491
+  tail call void @llvm.dbg.value(metadata i8* %52, i64 0, metadata !301, metadata !481), !dbg !1493
+  %53 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %52, i1 false), !dbg !1494
+  %54 = tail call i32 (i8*, i32, i64, i8*, ...)* @__sprintf_chk(i8* %52, i32 0, i64 %53, i8* getelementptr inbounds ([7 x i8]* @.str20, i64 0, i64 0), i8* %filename) #7, !dbg !1494
+  br label %69, !dbg !1495
 
-if.then42:                                        ; preds = %if.end39
-  %fname43 = getelementptr inbounds i8* %call, i64 8
-  %16 = bitcast i8* %fname43 to i8**
-  %17 = load i8** %16, align 8, !tbaa !0
-  call void (i8*, ...)* @Die(i8* getelementptr inbounds ([53 x i8]* @.str18, i64 0, i64 0), i8* %17) #6
-  br label %if.end45
+; <label>:55                                      ; preds = %45
+  tail call void @llvm.dbg.value(metadata i8** %dir, i64 0, metadata !303, metadata !481), !dbg !1496
+  %56 = call %struct.__sFILE* @EnvFileOpen(i8* %filename, i8* %env, i8** %dir) #7, !dbg !1497
+  store %struct.__sFILE* %56, %struct.__sFILE** %47, align 8, !dbg !1498, !tbaa !1439
+  %57 = icmp eq %struct.__sFILE* %56, null, !dbg !1499
+  br i1 %57, label %109, label %58, !dbg !1500
 
-if.end45:                                         ; preds = %if.end39, %if.then42, %if.end32
-  %format.addr.0 = phi i32 [ 0, %if.then42 ], [ %call40, %if.end39 ], [ %format, %if.end32 ]
-  %format46 = getelementptr inbounds i8* %call, i64 56
-  %18 = bitcast i8* %format46 to i32*
-  store i32 %format.addr.0, i32* %18, align 4, !tbaa !3
-  %linenumber = getelementptr inbounds i8* %call, i64 16
-  %19 = bitcast i8* %linenumber to i32*
-  store i32 0, i32* %19, align 4, !tbaa !3
-  %buf = getelementptr inbounds i8* %call, i64 24
-  %20 = bitcast i8* %buf to i8**
-  store i8* null, i8** %20, align 8, !tbaa !0
-  %buflen = getelementptr inbounds i8* %call, i64 32
-  %21 = bitcast i8* %buflen to i32*
-  store i32 0, i32* %21, align 4, !tbaa !3
-  br label %return
+; <label>:58                                      ; preds = %55
+  call void @llvm.dbg.value(metadata i8** %dir, i64 0, metadata !303, metadata !481), !dbg !1496
+  %59 = load i8** %dir, align 8, !dbg !1501, !tbaa !519
+  %60 = call i8* @FileConcat(i8* %59, i8* %filename) #7, !dbg !1502
+  call void @llvm.dbg.value(metadata i8* %60, i64 0, metadata !304, metadata !481), !dbg !1503
+  %61 = call i64 @strlen(i8* %60) #7, !dbg !1504
+  %62 = call i64 @strlen(i8* %filename) #7, !dbg !1504
+  %63 = add i64 %61, 5, !dbg !1504
+  %64 = add i64 %63, %62, !dbg !1504
+  %65 = call i8* @sre_malloc(i8* getelementptr inbounds ([61 x i8]* @.str, i64 0, i64 0), i32 813, i64 %64) #7, !dbg !1504
+  call void @llvm.dbg.value(metadata i8* %65, i64 0, metadata !301, metadata !481), !dbg !1493
+  %66 = call i64 @llvm.objectsize.i64.p0i8(i8* %65, i1 false), !dbg !1505
+  %67 = call i32 (i8*, i32, i64, i8*, ...)* @__sprintf_chk(i8* %65, i32 0, i64 %66, i8* getelementptr inbounds ([7 x i8]* @.str20, i64 0, i64 0), i8* %60) #7, !dbg !1505
+  call void @llvm.dbg.value(metadata i8** %dir, i64 0, metadata !303, metadata !481), !dbg !1496
+  %68 = load i8** %dir, align 8, !dbg !1506, !tbaa !519
+  call void @free(i8* %68) #8, !dbg !1507
+  br label %69
 
-return:                                           ; preds = %if.else10, %if.end45
-  %retval.0 = phi %struct.msafile_struct* [ %0, %if.end45 ], [ null, %if.else10 ]
-  ret %struct.msafile_struct* %retval.0
+; <label>:69                                      ; preds = %58, %49
+  %ssifile.0 = phi i8* [ %52, %49 ], [ %65, %58 ]
+  %70 = getelementptr inbounds i8* %1, i64 52, !dbg !1508
+  %71 = bitcast i8* %70 to i32*, !dbg !1508
+  store i32 0, i32* %71, align 4, !dbg !1509, !tbaa !1443
+  %72 = getelementptr inbounds i8* %1, i64 48, !dbg !1510
+  %73 = bitcast i8* %72 to i32*, !dbg !1510
+  store i32 0, i32* %73, align 4, !dbg !1511, !tbaa !1446
+  %74 = call i8* @sre_strdup(i8* %filename, i32 -1) #7, !dbg !1512
+  %75 = getelementptr inbounds i8* %1, i64 8, !dbg !1513
+  %76 = bitcast i8* %75 to i8**, !dbg !1513
+  store i8* %74, i8** %76, align 8, !dbg !1514, !tbaa !1450
+  %77 = getelementptr inbounds i8* %1, i64 40, !dbg !1515
+  %78 = bitcast i8* %77 to %struct.ssifile_s**, !dbg !1515
+  store %struct.ssifile_s* null, %struct.ssifile_s** %78, align 8, !dbg !1516, !tbaa !1453
+  %79 = call i32 @SSIOpen(i8* %ssifile.0, %struct.ssifile_s** %78) #7, !dbg !1517
+  call void @free(i8* %ssifile.0) #8, !dbg !1518
+  br label %80
+
+; <label>:80                                      ; preds = %.critedge, %69, %5
+  %81 = icmp eq i32 %format, 0, !dbg !1519
+  br i1 %81, label %82, label %100, !dbg !1521
+
+; <label>:82                                      ; preds = %80
+  %83 = getelementptr inbounds i8* %1, i64 52, !dbg !1522
+  %84 = bitcast i8* %83 to i32*, !dbg !1522
+  %85 = load i32* %84, align 4, !dbg !1522, !tbaa !1443
+  %86 = icmp eq i32 %85, 1, !dbg !1525
+  br i1 %86, label %92, label %87, !dbg !1526
+
+; <label>:87                                      ; preds = %82
+  %88 = getelementptr inbounds i8* %1, i64 48, !dbg !1527
+  %89 = bitcast i8* %88 to i32*, !dbg !1527
+  %90 = load i32* %89, align 4, !dbg !1527, !tbaa !1446
+  %91 = icmp eq i32 %90, 0, !dbg !1528
+  br i1 %91, label %93, label %92, !dbg !1529
+
+; <label>:92                                      ; preds = %87, %82
+  call void (i8*, ...)* @Die(i8* getelementptr inbounds ([65 x i8]* @.str21, i64 0, i64 0)) #7, !dbg !1530
+  br label %93, !dbg !1530
+
+; <label>:93                                      ; preds = %87, %92
+  %94 = call i32 @MSAFileFormat(%struct.msafile_struct* %2) #8, !dbg !1531
+  call void @llvm.dbg.value(metadata i32 %94, i64 0, metadata !291, metadata !481), !dbg !1429
+  %95 = icmp eq i32 %94, 0, !dbg !1532
+  br i1 %95, label %96, label %100, !dbg !1534
+
+; <label>:96                                      ; preds = %93
+  %97 = getelementptr inbounds i8* %1, i64 8, !dbg !1535
+  %98 = bitcast i8* %97 to i8**, !dbg !1535
+  %99 = load i8** %98, align 8, !dbg !1535, !tbaa !1450
+  call void (i8*, ...)* @Die(i8* getelementptr inbounds ([53 x i8]* @.str22, i64 0, i64 0), i8* %99) #7, !dbg !1536
+  br label %100, !dbg !1536
+
+; <label>:100                                     ; preds = %93, %96, %80
+  %.02 = phi i32 [ 0, %96 ], [ %94, %93 ], [ %format, %80 ]
+  %101 = getelementptr inbounds i8* %1, i64 56, !dbg !1537
+  %102 = bitcast i8* %101 to i32*, !dbg !1537
+  store i32 %.02, i32* %102, align 4, !dbg !1538, !tbaa !1539
+  %103 = getelementptr inbounds i8* %1, i64 16, !dbg !1540
+  %104 = bitcast i8* %103 to i32*, !dbg !1540
+  store i32 0, i32* %104, align 4, !dbg !1541, !tbaa !1542
+  %105 = getelementptr inbounds i8* %1, i64 24, !dbg !1543
+  %106 = bitcast i8* %105 to i8**, !dbg !1543
+  store i8* null, i8** %106, align 8, !dbg !1544, !tbaa !1545
+  %107 = getelementptr inbounds i8* %1, i64 32, !dbg !1546
+  %108 = bitcast i8* %107 to i32*, !dbg !1546
+  store i32 0, i32* %108, align 4, !dbg !1547, !tbaa !1548
+  br label %109, !dbg !1549
+
+; <label>:109                                     ; preds = %55, %44, %100
+  %.1 = phi %struct.msafile_struct* [ %2, %100 ], [ null, %44 ], [ null, %55 ]
+  ret %struct.msafile_struct* %.1, !dbg !1550
 }

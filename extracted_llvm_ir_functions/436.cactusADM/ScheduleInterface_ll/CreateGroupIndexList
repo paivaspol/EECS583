@@ -1,45 +1,47 @@
 define internal fastcc void @CreateGroupIndexList(i32 %n_items, i32* nocapture %array, [1 x %struct.__va_list_tag]* nocapture %ap) #1 {
-  %1 = icmp sgt i32 %n_items, 0
-  br i1 %1, label %.lr.ph, label %._crit_edge
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !367, metadata !498), !dbg !1792
+  %1 = icmp sgt i32 %n_items, 0, !dbg !1793
+  br i1 %1, label %.lr.ph, label %._crit_edge, !dbg !1796
 
 .lr.ph:                                           ; preds = %0
-  %2 = getelementptr inbounds [1 x %struct.__va_list_tag]* %ap, i64 0, i64 0, i32 0
-  %3 = getelementptr inbounds [1 x %struct.__va_list_tag]* %ap, i64 0, i64 0, i32 3
-  %4 = getelementptr inbounds [1 x %struct.__va_list_tag]* %ap, i64 0, i64 0, i32 2
-  %5 = add i32 %n_items, -1
-  br label %6
+  %2 = getelementptr inbounds [1 x %struct.__va_list_tag]* %ap, i64 0, i64 0, i32 0, !dbg !1797
+  %3 = getelementptr inbounds [1 x %struct.__va_list_tag]* %ap, i64 0, i64 0, i32 3, !dbg !1797
+  %4 = getelementptr inbounds [1 x %struct.__va_list_tag]* %ap, i64 0, i64 0, i32 2, !dbg !1797
+  %5 = add i32 %n_items, -1, !dbg !1796
+  br label %6, !dbg !1796
 
 ; <label>:6                                       ; preds = %17, %.lr.ph
   %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %17 ]
-  %7 = load i32* %2, align 4
-  %8 = icmp ult i32 %7, 41
-  br i1 %8, label %9, label %14
+  %7 = load i32* %2, align 4, !dbg !1797
+  %8 = icmp ult i32 %7, 41, !dbg !1797
+  br i1 %8, label %9, label %14, !dbg !1797
 
 ; <label>:9                                       ; preds = %6
-  %10 = load i8** %3, align 8
-  %11 = sext i32 %7 to i64
-  %12 = getelementptr i8* %10, i64 %11
-  %13 = add i32 %7, 8
-  store i32 %13, i32* %2, align 4
-  br label %17
+  %10 = load i8** %3, align 8, !dbg !1797
+  %11 = sext i32 %7 to i64, !dbg !1797
+  %12 = getelementptr i8* %10, i64 %11, !dbg !1797
+  %13 = add i32 %7, 8, !dbg !1797
+  store i32 %13, i32* %2, align 4, !dbg !1797
+  br label %17, !dbg !1797
 
 ; <label>:14                                      ; preds = %6
-  %15 = load i8** %4, align 8
-  %16 = getelementptr i8* %15, i64 8
-  store i8* %16, i8** %4, align 8
-  br label %17
+  %15 = load i8** %4, align 8, !dbg !1797
+  %16 = getelementptr i8* %15, i64 8, !dbg !1797
+  store i8* %16, i8** %4, align 8, !dbg !1797
+  br label %17, !dbg !1797
 
 ; <label>:17                                      ; preds = %14, %9
   %.in = phi i8* [ %12, %9 ], [ %15, %14 ]
-  %18 = bitcast i8* %.in to i8**
-  %19 = load i8** %18, align 8
-  %20 = tail call i32 @CCTK_GroupIndex(i8* %19) #8
-  %21 = getelementptr inbounds i32* %array, i64 %indvars.iv
-  store i32 %20, i32* %21, align 4, !tbaa !38
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %5
-  br i1 %exitcond, label %._crit_edge, label %6
+  %18 = bitcast i8* %.in to i8**, !dbg !1797
+  %19 = load i8** %18, align 8, !dbg !1797
+  tail call void @llvm.dbg.value(metadata i8* %19, i64 0, metadata !368, metadata !498), !dbg !1799
+  %20 = tail call i32 @CCTK_GroupIndex(i8* %19) #8, !dbg !1800
+  %21 = getelementptr inbounds i32* %array, i64 %indvars.iv, !dbg !1801
+  store i32 %20, i32* %21, align 4, !dbg !1802, !tbaa !873
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !1796
+  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !1796
+  %exitcond = icmp eq i32 %lftr.wideiv, %5, !dbg !1796
+  br i1 %exitcond, label %._crit_edge, label %6, !dbg !1796
 
 ._crit_edge:                                      ; preds = %17, %0
   ret void

@@ -1,33 +1,35 @@
-define i32 @DV_writeForHumanEye(%struct._DV* %dv, %struct._IO_FILE* %fp) #0 {
-entry:
-  %cmp = icmp eq %struct._DV* %dv, null
-  %cmp1 = icmp eq %struct._IO_FILE* %fp, null
-  %or.cond = or i1 %cmp, %cmp1
-  br i1 %or.cond, label %if.then, label %if.end
+define i32 @DV_writeForHumanEye(%struct._DV* %dv, %struct.__sFILE* %fp) #0 {
+  tail call void @llvm.dbg.value(metadata %struct._DV* %dv, i64 0, metadata !126, metadata !152), !dbg !442
+  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %fp, i64 0, metadata !127, metadata !152), !dbg !443
+  %1 = icmp eq %struct._DV* %dv, null, !dbg !444
+  %2 = icmp eq %struct.__sFILE* %fp, null, !dbg !446
+  %or.cond = or i1 %1, %2, !dbg !447
+  br i1 %or.cond, label %3, label %6, !dbg !447
 
-if.then:                                          ; preds = %entry
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([56 x i8]* @.str24, i64 0, i64 0), %struct._DV* %dv, %struct._IO_FILE* %fp) #5
-  tail call void @exit(i32 -1) #8
-  unreachable
+; <label>:3                                       ; preds = %0
+  %4 = load %struct.__sFILE** @__stderrp, align 8, !dbg !448, !tbaa !161
+  %5 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %4, i8* getelementptr inbounds ([56 x i8]* @.str24, i64 0, i64 0), %struct._DV* %dv, %struct.__sFILE* %fp) #6, !dbg !450
+  tail call void @exit(i32 -1) #8, !dbg !451
+  unreachable, !dbg !451
 
-if.end:                                           ; preds = %entry
-  %call2 = tail call i32 @DV_writeStats(%struct._DV* %dv, %struct._IO_FILE* %fp) #7
-  %cmp3 = icmp eq i32 %call2, 0
-  br i1 %cmp3, label %if.then4, label %if.end6
+; <label>:6                                       ; preds = %0
+  %7 = tail call i32 @DV_writeStats(%struct._DV* %dv, %struct.__sFILE* %fp) #7, !dbg !452
+  tail call void @llvm.dbg.value(metadata i32 %7, i64 0, metadata !128, metadata !152), !dbg !454
+  %8 = icmp eq i32 %7, 0, !dbg !455
+  br i1 %8, label %9, label %12, !dbg !456
 
-if.then4:                                         ; preds = %if.end
-  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call5 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([88 x i8]* @.str25, i64 0, i64 0), %struct._DV* %dv, %struct._IO_FILE* %fp, i32 0, %struct._DV* %dv, %struct._IO_FILE* %fp) #5
-  br label %return
+; <label>:9                                       ; preds = %6
+  %10 = load %struct.__sFILE** @__stderrp, align 8, !dbg !457, !tbaa !161
+  %11 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %10, i8* getelementptr inbounds ([88 x i8]* @.str25, i64 0, i64 0), %struct._DV* %dv, %struct.__sFILE* %fp, i32 0, %struct._DV* %dv, %struct.__sFILE* %fp) #6, !dbg !459
+  br label %15, !dbg !460
 
-if.end6:                                          ; preds = %if.end
-  %call7 = tail call i32 @DV_size(%struct._DV* %dv) #5
-  %call8 = tail call double* @DV_entries(%struct._DV* %dv) #5
-  tail call void @DVfprintf(%struct._IO_FILE* %fp, i32 %call7, double* %call8) #5
-  br label %return
+; <label>:12                                      ; preds = %6
+  %13 = tail call i32 @DV_size(%struct._DV* %dv) #6, !dbg !461
+  %14 = tail call double* @DV_entries(%struct._DV* %dv) #6, !dbg !462
+  tail call void @DVfprintf(%struct.__sFILE* %fp, i32 %13, double* %14) #6, !dbg !463
+  br label %15, !dbg !464
 
-return:                                           ; preds = %if.end6, %if.then4
-  %retval.0 = phi i32 [ 0, %if.then4 ], [ 1, %if.end6 ]
-  ret i32 %retval.0
+; <label>:15                                      ; preds = %12, %9
+  %.0 = phi i32 [ 0, %9 ], [ 1, %12 ]
+  ret i32 %.0, !dbg !465
 }

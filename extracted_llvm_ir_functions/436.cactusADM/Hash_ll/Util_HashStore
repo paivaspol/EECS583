@@ -1,18 +1,26 @@
 define i32 @Util_HashStore(%struct.T_HASH* nocapture %hash, i32 %klen, i8* nocapture readonly %key, i32 %hashval, i8* %data) #1 {
-  %1 = tail call fastcc %struct.T_HASH_ENTRY* @HashFind(%struct.T_HASH* %hash, i32 %klen, i8* %key, i32 %hashval) #6
-  %2 = icmp eq %struct.T_HASH_ENTRY* %1, null
-  br i1 %2, label %5, label %3
+  tail call void @llvm.dbg.value(metadata %struct.T_HASH* %hash, i64 0, metadata !60, metadata !143), !dbg !219
+  tail call void @llvm.dbg.value(metadata i32 %klen, i64 0, metadata !61, metadata !143), !dbg !220
+  tail call void @llvm.dbg.value(metadata i8* %key, i64 0, metadata !62, metadata !143), !dbg !221
+  tail call void @llvm.dbg.value(metadata i32 %hashval, i64 0, metadata !63, metadata !143), !dbg !222
+  tail call void @llvm.dbg.value(metadata i8* %data, i64 0, metadata !64, metadata !143), !dbg !223
+  %1 = tail call fastcc %struct.T_HASH_ENTRY* @HashFind(%struct.T_HASH* %hash, i32 %klen, i8* %key, i32 %hashval) #7, !dbg !224
+  tail call void @llvm.dbg.value(metadata %struct.T_HASH_ENTRY* %1, i64 0, metadata !66, metadata !143), !dbg !225
+  %2 = icmp eq %struct.T_HASH_ENTRY* %1, null, !dbg !226
+  br i1 %2, label %5, label %3, !dbg !228
 
 ; <label>:3                                       ; preds = %0
-  %4 = getelementptr inbounds %struct.T_HASH_ENTRY* %1, i64 0, i32 5
-  store i8* %data, i8** %4, align 8, !tbaa !15
-  br label %7
+  %4 = getelementptr inbounds %struct.T_HASH_ENTRY* %1, i64 0, i32 5, !dbg !229
+  store i8* %data, i8** %4, align 8, !dbg !231, !tbaa !211
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !65, metadata !143), !dbg !232
+  br label %7, !dbg !233
 
 ; <label>:5                                       ; preds = %0
-  %6 = tail call i32 @Util_HashAdd(%struct.T_HASH* %hash, i32 %klen, i8* %key, i32 %hashval, i8* %data) #6
+  %6 = tail call i32 @Util_HashAdd(%struct.T_HASH* %hash, i32 %klen, i8* %key, i32 %hashval, i8* %data) #7, !dbg !234
+  tail call void @llvm.dbg.value(metadata i32 %6, i64 0, metadata !65, metadata !143), !dbg !232
   br label %7
 
 ; <label>:7                                       ; preds = %5, %3
   %retval.0 = phi i32 [ 0, %3 ], [ %6, %5 ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !236
 }

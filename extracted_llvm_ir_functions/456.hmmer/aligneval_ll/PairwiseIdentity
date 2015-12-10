@@ -1,75 +1,83 @@
-define float @PairwiseIdentity(i8* nocapture %s1, i8* nocapture %s2) #2 {
-entry:
-  %0 = load i8* %s1, align 1, !tbaa !1
-  %cmp121 = icmp eq i8 %0, 0
-  br i1 %cmp121, label %for.end, label %land.rhs
+define float @PairwiseIdentity(i8* nocapture readonly %s1, i8* nocapture readonly %s2) #3 {
+  tail call void @llvm.dbg.value(metadata i8* %s1, i64 0, metadata !69, metadata !176), !dbg !432
+  tail call void @llvm.dbg.value(metadata i8* %s2, i64 0, metadata !70, metadata !176), !dbg !433
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !73, metadata !176), !dbg !434
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !72, metadata !176), !dbg !435
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !71, metadata !176), !dbg !436
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !74, metadata !176), !dbg !437
+  %1 = load i8* %s1, align 1, !dbg !438, !tbaa !228
+  %2 = icmp eq i8 %1, 0, !dbg !441
+  br i1 %2, label %.critedge, label %.lr.ph, !dbg !442
 
-land.rhs:                                         ; preds = %entry, %for.inc
-  %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc ], [ 0, %entry ]
-  %1 = phi i8 [ %3, %for.inc ], [ %0, %entry ]
-  %len2.0124 = phi i32 [ %len2.1, %for.inc ], [ 0, %entry ]
-  %len1.0123 = phi i32 [ %len1.1, %for.inc ], [ 0, %entry ]
-  %idents.0122 = phi i32 [ %idents.1, %for.inc ], [ 0, %entry ]
-  %arrayidx3 = getelementptr inbounds i8* %s2, i64 %indvars.iv
-  %2 = load i8* %arrayidx3, align 1, !tbaa !1
-  %cmp5 = icmp eq i8 %2, 0
-  br i1 %cmp5, label %for.end, label %for.body
+.lr.ph:                                           ; preds = %0, %15
+  %indvars.iv = phi i64 [ %indvars.iv.next, %15 ], [ 0, %0 ]
+  %3 = phi i8 [ %17, %15 ], [ %1, %0 ]
+  %len2.03 = phi i32 [ %len2.1, %15 ], [ 0, %0 ]
+  %len1.02 = phi i32 [ %len1.1, %15 ], [ 0, %0 ]
+  %idents.01 = phi i32 [ %idents.1, %15 ], [ 0, %0 ]
+  %4 = getelementptr inbounds i8* %s2, i64 %indvars.iv, !dbg !443
+  %5 = load i8* %4, align 1, !dbg !443, !tbaa !228
+  %6 = icmp eq i8 %5, 0, !dbg !444
+  br i1 %6, label %.critedge, label %7, !dbg !445
 
-for.body:                                         ; preds = %land.rhs
-  switch i8 %1, label %if.then [
-    i8 32, label %if.end45
-    i8 46, label %if.end45
-    i8 95, label %if.end45
-    i8 45, label %if.end45
-    i8 126, label %if.end45
-  ]
+; <label>:7                                       ; preds = %.lr.ph
+  switch i8 %3, label %8 [
+    i8 32, label %12
+    i8 46, label %12
+    i8 95, label %12
+    i8 45, label %12
+    i8 126, label %12
+  ], !dbg !446
 
-if.then:                                          ; preds = %for.body
-  %inc = add nsw i32 %len1.0123, 1
-  %cmp41 = icmp eq i8 %1, %2
-  %inc44 = zext i1 %cmp41 to i32
-  %inc44.idents.0 = add nsw i32 %inc44, %idents.0122
-  br label %if.end45
+; <label>:8                                       ; preds = %7
+  %9 = add nsw i32 %len1.02, 1, !dbg !449
+  tail call void @llvm.dbg.value(metadata i32 %9, i64 0, metadata !72, metadata !176), !dbg !435
+  %10 = icmp eq i8 %3, %5, !dbg !451
+  %11 = zext i1 %10 to i32, !dbg !453
+  %.idents.0 = add nsw i32 %11, %idents.01, !dbg !453
+  br label %12, !dbg !453
 
-if.end45:                                         ; preds = %if.then, %for.body, %for.body, %for.body, %for.body, %for.body
-  %idents.1 = phi i32 [ %idents.0122, %for.body ], [ %idents.0122, %for.body ], [ %idents.0122, %for.body ], [ %idents.0122, %for.body ], [ %idents.0122, %for.body ], [ %inc44.idents.0, %if.then ]
-  %len1.1 = phi i32 [ %len1.0123, %for.body ], [ %len1.0123, %for.body ], [ %len1.0123, %for.body ], [ %len1.0123, %for.body ], [ %len1.0123, %for.body ], [ %inc, %if.then ]
-  switch i8 %2, label %if.then75 [
-    i8 32, label %for.inc
-    i8 46, label %for.inc
-    i8 95, label %for.inc
-    i8 45, label %for.inc
-    i8 126, label %for.inc
-  ]
+; <label>:12                                      ; preds = %8, %7, %7, %7, %7, %7
+  %idents.1 = phi i32 [ %idents.01, %7 ], [ %idents.01, %7 ], [ %idents.01, %7 ], [ %idents.01, %7 ], [ %idents.01, %7 ], [ %.idents.0, %8 ]
+  %len1.1 = phi i32 [ %len1.02, %7 ], [ %len1.02, %7 ], [ %len1.02, %7 ], [ %len1.02, %7 ], [ %len1.02, %7 ], [ %9, %8 ]
+  switch i8 %5, label %13 [
+    i8 32, label %15
+    i8 46, label %15
+    i8 95, label %15
+    i8 45, label %15
+    i8 126, label %15
+  ], !dbg !454
 
-if.then75:                                        ; preds = %if.end45
-  %inc76 = add nsw i32 %len2.0124, 1
-  br label %for.inc
+; <label>:13                                      ; preds = %12
+  %14 = add nsw i32 %len2.03, 1, !dbg !456
+  tail call void @llvm.dbg.value(metadata i32 %14, i64 0, metadata !73, metadata !176), !dbg !434
+  br label %15, !dbg !457
 
-for.inc:                                          ; preds = %if.end45, %if.end45, %if.end45, %if.end45, %if.end45, %if.then75
-  %len2.1 = phi i32 [ %len2.0124, %if.end45 ], [ %inc76, %if.then75 ], [ %len2.0124, %if.end45 ], [ %len2.0124, %if.end45 ], [ %len2.0124, %if.end45 ], [ %len2.0124, %if.end45 ]
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %arrayidx = getelementptr inbounds i8* %s1, i64 %indvars.iv.next
-  %3 = load i8* %arrayidx, align 1, !tbaa !1
-  %cmp = icmp eq i8 %3, 0
-  br i1 %cmp, label %for.end, label %land.rhs
+; <label>:15                                      ; preds = %12, %12, %12, %12, %12, %13
+  %len2.1 = phi i32 [ %len2.03, %12 ], [ %14, %13 ], [ %len2.03, %12 ], [ %len2.03, %12 ], [ %len2.03, %12 ], [ %len2.03, %12 ]
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !442
+  %16 = getelementptr inbounds i8* %s1, i64 %indvars.iv.next, !dbg !438
+  %17 = load i8* %16, align 1, !dbg !438, !tbaa !228
+  %18 = icmp eq i8 %17, 0, !dbg !441
+  br i1 %18, label %.critedge, label %.lr.ph, !dbg !442
 
-for.end:                                          ; preds = %for.inc, %land.rhs, %entry
-  %len2.0.lcssa = phi i32 [ 0, %entry ], [ %len2.0124, %land.rhs ], [ %len2.1, %for.inc ]
-  %len1.0.lcssa = phi i32 [ 0, %entry ], [ %len1.0123, %land.rhs ], [ %len1.1, %for.inc ]
-  %idents.0.lcssa = phi i32 [ 0, %entry ], [ %idents.0122, %land.rhs ], [ %idents.1, %for.inc ]
-  %cmp79 = icmp slt i32 %len2.0.lcssa, %len1.0.lcssa
-  %len2.0.len1.0 = select i1 %cmp79, i32 %len2.0.lcssa, i32 %len1.0.lcssa
-  %cmp83 = icmp eq i32 %len2.0.len1.0, 0
-  br i1 %cmp83, label %cond.end, label %cond.false
+.critedge:                                        ; preds = %15, %.lr.ph, %0
+  %len2.0.lcssa = phi i32 [ 0, %0 ], [ %len2.1, %15 ], [ %len2.03, %.lr.ph ]
+  %len1.0.lcssa = phi i32 [ 0, %0 ], [ %len1.1, %15 ], [ %len1.02, %.lr.ph ]
+  %idents.0.lcssa = phi i32 [ 0, %0 ], [ %idents.1, %15 ], [ %idents.01, %.lr.ph ]
+  %19 = icmp slt i32 %len2.0.lcssa, %len1.0.lcssa, !dbg !458
+  tail call void @llvm.dbg.value(metadata i32 %len2.1, i64 0, metadata !72, metadata !176), !dbg !435
+  %len2.0.len1.0 = select i1 %19, i32 %len2.0.lcssa, i32 %len1.0.lcssa, !dbg !460
+  %20 = icmp eq i32 %len2.0.len1.0, 0, !dbg !461
+  br i1 %20, label %25, label %21, !dbg !462
 
-cond.false:                                       ; preds = %for.end
-  %conv85 = sitofp i32 %idents.0.lcssa to float
-  %conv86 = sitofp i32 %len2.0.len1.0 to float
-  %div = fdiv float %conv85, %conv86
-  br label %cond.end
+; <label>:21                                      ; preds = %.critedge
+  %22 = sitofp i32 %idents.0.lcssa to float, !dbg !463
+  %23 = sitofp i32 %len2.0.len1.0 to float, !dbg !464
+  %24 = fdiv float %22, %23, !dbg !465
+  br label %25, !dbg !462
 
-cond.end:                                         ; preds = %for.end, %cond.false
-  %cond = phi float [ %div, %cond.false ], [ 0.000000e+00, %for.end ]
-  ret float %cond
+; <label>:25                                      ; preds = %.critedge, %21
+  %26 = phi float [ %24, %21 ], [ 0.000000e+00, %.critedge ]
+  ret float %26, !dbg !466
 }

@@ -1,39 +1,45 @@
-define internal fastcc i32 @nbf_index(%struct.t_forcerec* nocapture readonly %fr, i32 %bvdw, i32 %bcoul, i32 %bFree, i32 %solopt) #4 {
-  %1 = icmp eq i32 %bcoul, 0
-  br i1 %1, label %11, label %2
+define internal fastcc i32 @nbf_index(%struct.t_forcerec* nocapture readonly %fr, i32 %bvdw, i32 %bcoul, i32 %bFree, i32 %solopt) #5 {
+  tail call void @llvm.dbg.value(metadata %struct.t_forcerec* %fr, i64 0, metadata !907, metadata !1411), !dbg !1825
+  tail call void @llvm.dbg.value(metadata i32 %bvdw, i64 0, metadata !908, metadata !1411), !dbg !1826
+  tail call void @llvm.dbg.value(metadata i32 %bcoul, i64 0, metadata !909, metadata !1411), !dbg !1827
+  tail call void @llvm.dbg.value(metadata i32 %bFree, i64 0, metadata !910, metadata !1411), !dbg !1828
+  tail call void @llvm.dbg.value(metadata i32 %solopt, i64 0, metadata !911, metadata !1411), !dbg !1829
+  tail call void @llvm.dbg.declare(metadata [20 x i32]* @nbf_index.inloop, metadata !912, metadata !1411), !dbg !1830
+  %1 = icmp eq i32 %bcoul, 0, !dbg !1831
+  br i1 %1, label %11, label %2, !dbg !1832
 
 ; <label>:2                                       ; preds = %0
-  %3 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 13
-  %4 = load i32* %3, align 4, !tbaa !30
-  %5 = or i32 %4, %bFree
-  %6 = icmp eq i32 %5, 0
-  br i1 %6, label %7, label %11
+  %3 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 13, !dbg !1833
+  %4 = load i32* %3, align 4, !dbg !1833, !tbaa !1679
+  %5 = or i32 %4, %bFree, !dbg !1834
+  %6 = icmp eq i32 %5, 0, !dbg !1834
+  br i1 %6, label %7, label %11, !dbg !1834
 
 ; <label>:7                                       ; preds = %2
-  %8 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 7
-  %9 = load i32* %8, align 4, !tbaa !31
-  %10 = icmp eq i32 %9, 0
+  %8 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 7, !dbg !1835
+  %9 = load i32* %8, align 4, !dbg !1835, !tbaa !1683
+  %10 = icmp eq i32 %9, 0, !dbg !1836
   %. = select i1 %10, i32 1, i32 2
   br label %11
 
 ; <label>:11                                      ; preds = %0, %7, %2
   %icoul.0 = phi i32 [ 3, %2 ], [ %., %7 ], [ 0, %0 ]
-  %12 = icmp eq i32 %bvdw, 0
-  br i1 %12, label %23, label %13
+  %12 = icmp eq i32 %bvdw, 0, !dbg !1837
+  br i1 %12, label %23, label %13, !dbg !1838
 
 ; <label>:13                                      ; preds = %11
-  %14 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 14
-  %15 = load i32* %14, align 4, !tbaa !28
-  %16 = or i32 %15, %bFree
-  %17 = icmp eq i32 %16, 0
-  %18 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 64
-  %19 = load i32* %18, align 4, !tbaa !29
-  %20 = icmp eq i32 %19, 0
-  br i1 %17, label %22, label %21
+  %14 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 14, !dbg !1839
+  %15 = load i32* %14, align 4, !dbg !1839, !tbaa !1654
+  %16 = or i32 %15, %bFree, !dbg !1840
+  %17 = icmp eq i32 %16, 0, !dbg !1840
+  %18 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 64, !dbg !1841
+  %19 = load i32* %18, align 4, !dbg !1841, !tbaa !1659
+  %20 = icmp eq i32 %19, 0, !dbg !1842
+  br i1 %17, label %22, label %21, !dbg !1840
 
 ; <label>:21                                      ; preds = %13
-  %.14 = select i1 %20, i32 3, i32 4
-  br label %23
+  %.14 = select i1 %20, i32 3, i32 4, !dbg !1843
+  br label %23, !dbg !1843
 
 ; <label>:22                                      ; preds = %13
   %.12 = select i1 %20, i32 1, i32 2
@@ -41,41 +47,45 @@ define internal fastcc i32 @nbf_index(%struct.t_forcerec* nocapture readonly %fr
 
 ; <label>:23                                      ; preds = %21, %11, %22
   %ivdw.0 = phi i32 [ %.12, %22 ], [ 0, %11 ], [ %.14, %21 ]
-  %24 = mul nuw nsw i32 %icoul.0, 5
-  %25 = add nuw nsw i32 %ivdw.0, %24
-  %26 = zext i32 %25 to i64
-  %27 = getelementptr inbounds [20 x i32]* @nbf_index.inloop, i64 0, i64 %26
-  %28 = load i32* %27, align 4, !tbaa !17
-  %29 = icmp eq i32 %bFree, 0
-  br i1 %29, label %37, label %30
+  %24 = mul nuw nsw i32 %icoul.0, 5, !dbg !1844
+  %25 = add nuw nsw i32 %ivdw.0, %24, !dbg !1845
+  %26 = zext i32 %25 to i64, !dbg !1846
+  %27 = getelementptr inbounds [20 x i32]* @nbf_index.inloop, i64 0, i64 %26, !dbg !1846
+  %28 = load i32* %27, align 4, !dbg !1846, !tbaa !1473
+  tail call void @llvm.dbg.value(metadata i32 %28, i64 0, metadata !916, metadata !1411), !dbg !1847
+  %29 = icmp eq i32 %bFree, 0, !dbg !1848
+  br i1 %29, label %37, label %30, !dbg !1849
 
 ; <label>:30                                      ; preds = %23
-  %31 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 30
-  %32 = load float* %31, align 4, !tbaa !33
-  %fabsf = tail call float @fabsf(float %32) #10
-  %33 = fpext float %fabsf to double
-  %34 = fcmp olt double %33, 1.200000e-38
-  %35 = select i1 %34, i32 1, i32 2
-  %36 = add i32 %35, %28
-  br label %47
+  %31 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 30, !dbg !1850
+  %32 = load float* %31, align 4, !dbg !1850, !tbaa !1742
+  %fabsf = tail call float @fabsf(float %32) #11, !dbg !1851
+  %33 = fpext float %fabsf to double, !dbg !1851
+  %34 = fcmp olt double %33, 1.200000e-38, !dbg !1852
+  %35 = select i1 %34, i32 1, i32 2, !dbg !1853
+  %36 = add i32 %35, %28, !dbg !1854
+  tail call void @llvm.dbg.value(metadata i32 %36, i64 0, metadata !916, metadata !1411), !dbg !1847
+  br label %47, !dbg !1855
 
 ; <label>:37                                      ; preds = %23
-  %38 = add i32 %28, %solopt
-  %39 = icmp sgt i32 %solopt, 0
-  %40 = icmp eq i32 %icoul.0, 3
-  %or.cond7 = and i1 %39, %40
-  br i1 %or.cond7, label %41, label %47
+  %38 = add i32 %28, %solopt, !dbg !1856
+  tail call void @llvm.dbg.value(metadata i32 %38, i64 0, metadata !916, metadata !1411), !dbg !1847
+  %39 = icmp sgt i32 %solopt, 0, !dbg !1858
+  %40 = icmp eq i32 %icoul.0, 3, !dbg !1860
+  %or.cond7 = and i1 %39, %40, !dbg !1861
+  br i1 %or.cond7, label %41, label %47, !dbg !1861
 
 ; <label>:41                                      ; preds = %37
-  %42 = icmp eq i32 %ivdw.0, 3
-  %43 = and i32 %ivdw.0, 3
-  %44 = icmp eq i32 %43, 0
-  %45 = or i1 %42, %44
-  %46 = add i32 %38, 2
-  %.13 = select i1 %45, i32 %46, i32 %38
-  ret i32 %.13
+  %42 = icmp eq i32 %ivdw.0, 3, !dbg !1862
+  %43 = and i32 %ivdw.0, 3, !dbg !1863
+  %44 = icmp eq i32 %43, 0, !dbg !1863
+  %45 = or i1 %42, %44, !dbg !1863
+  %46 = add i32 %38, 2, !dbg !1864
+  tail call void @llvm.dbg.value(metadata i32 %46, i64 0, metadata !916, metadata !1411), !dbg !1847
+  %.13 = select i1 %45, i32 %46, i32 %38, !dbg !1863
+  ret i32 %.13, !dbg !1863
 
 ; <label>:47                                      ; preds = %37, %30
   %nn.0 = phi i32 [ %36, %30 ], [ %38, %37 ]
-  ret i32 %nn.0
+  ret i32 %nn.0, !dbg !1865
 }

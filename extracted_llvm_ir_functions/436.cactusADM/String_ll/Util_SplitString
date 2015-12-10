@@ -1,77 +1,86 @@
 define i32 @Util_SplitString(i8** nocapture %before, i8** nocapture %after, i8* %string, i8* nocapture readonly %sep) #1 {
-  %1 = tail call i8* @strstr(i8* %string, i8* %sep) #7
-  %2 = icmp eq i8* %1, null
-  br i1 %2, label %20, label %3
+  tail call void @llvm.dbg.value(metadata i8** %before, i64 0, metadata !34, metadata !107), !dbg !159
+  tail call void @llvm.dbg.value(metadata i8** %after, i64 0, metadata !35, metadata !107), !dbg !160
+  tail call void @llvm.dbg.value(metadata i8* %string, i64 0, metadata !36, metadata !107), !dbg !161
+  tail call void @llvm.dbg.value(metadata i8* %sep, i64 0, metadata !37, metadata !107), !dbg !162
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !38, metadata !107), !dbg !163
+  %1 = tail call i8* @strstr(i8* %string, i8* %sep) #7, !dbg !164
+  tail call void @llvm.dbg.value(metadata i8* %1, i64 0, metadata !39, metadata !107), !dbg !165
+  %2 = icmp eq i8* %1, null, !dbg !166
+  br i1 %2, label %20, label %3, !dbg !168
 
 ; <label>:3                                       ; preds = %0
-  %4 = ptrtoint i8* %1 to i64
-  %5 = ptrtoint i8* %string to i64
-  %6 = sub i64 %4, %5
-  %7 = add nsw i64 %6, 1
-  %8 = tail call i8* @malloc(i64 %7) #7
-  store i8* %8, i8** %before, align 8, !tbaa !2
-  %9 = tail call i64 @strlen(i8* %string) #7
-  %10 = tail call i64 @strlen(i8* %sep) #7
-  %11 = sub i64 1, %6
-  %12 = add i64 %11, %9
-  %13 = sub i64 %12, %10
-  %14 = tail call i8* @malloc(i64 %13) #7
-  store i8* %14, i8** %after, align 8, !tbaa !2
-  %15 = load i8** %before, align 8, !tbaa !2
-  %16 = icmp eq i8* %15, null
-  %17 = icmp eq i8* %14, null
-  %or.cond = or i1 %17, %16
-  br i1 %or.cond, label %18, label %21
+  %4 = ptrtoint i8* %1 to i64, !dbg !169
+  %5 = ptrtoint i8* %string to i64, !dbg !169
+  %6 = sub i64 %4, %5, !dbg !169
+  %7 = add nsw i64 %6, 1, !dbg !171
+  %8 = tail call i8* @malloc(i64 %7) #7, !dbg !172
+  store i8* %8, i8** %before, align 8, !dbg !173, !tbaa !112
+  %9 = tail call i64 @strlen(i8* %string) #7, !dbg !174
+  %10 = tail call i64 @strlen(i8* %sep) #7, !dbg !175
+  %11 = sub i64 1, %6, !dbg !176
+  %12 = add i64 %11, %9, !dbg !177
+  %13 = sub i64 %12, %10, !dbg !178
+  %14 = tail call i8* @malloc(i64 %13) #7, !dbg !179
+  store i8* %14, i8** %after, align 8, !dbg !180, !tbaa !112
+  %15 = load i8** %before, align 8, !dbg !181, !tbaa !112
+  %16 = icmp eq i8* %15, null, !dbg !181
+  %17 = icmp eq i8* %14, null, !dbg !183
+  %or.cond = or i1 %17, %16, !dbg !184
+  br i1 %or.cond, label %18, label %21, !dbg !184
 
 ; <label>:18                                      ; preds = %3
-  tail call void @free(i8* %15) #8
-  store i8* null, i8** %before, align 8, !tbaa !2
-  %19 = load i8** %after, align 8, !tbaa !2
-  tail call void @free(i8* %19) #8
-  store i8* null, i8** %after, align 8, !tbaa !2
-  %.pr = load i8** %before, align 8, !tbaa !2
-  br label %21
+  tail call void @free(i8* %15) #8, !dbg !185
+  store i8* null, i8** %before, align 8, !dbg !187, !tbaa !112
+  %19 = load i8** %after, align 8, !dbg !188, !tbaa !112
+  tail call void @free(i8* %19) #8, !dbg !189
+  store i8* null, i8** %after, align 8, !dbg !190, !tbaa !112
+  tail call void @llvm.dbg.value(metadata i32 2, i64 0, metadata !38, metadata !107), !dbg !163
+  %.pr = load i8** %before, align 8, !dbg !191, !tbaa !112
+  br label %21, !dbg !193
 
 ; <label>:20                                      ; preds = %0
-  store i8* null, i8** %before, align 8, !tbaa !2
-  store i8* null, i8** %after, align 8, !tbaa !2
+  store i8* null, i8** %before, align 8, !dbg !194, !tbaa !112
+  store i8* null, i8** %after, align 8, !dbg !196, !tbaa !112
+  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !38, metadata !107), !dbg !163
   br label %45
 
 ; <label>:21                                      ; preds = %3, %18
   %22 = phi i8* [ %14, %3 ], [ null, %18 ]
-  %23 = phi i8* [ %15, %3 ], [ %.pr, %18 ]
+  %23 = phi i8* [ %15, %3 ], [ %.pr, %18 ], !dbg !191
   %retval.0.ph = phi i32 [ 3, %3 ], [ 2, %18 ]
-  %24 = icmp eq i8* %23, null
-  %25 = icmp eq i8* %22, null
-  %or.cond7 = or i1 %24, %25
-  br i1 %or.cond7, label %45, label %26
+  %24 = icmp eq i8* %23, null, !dbg !191
+  %25 = icmp eq i8* %22, null, !dbg !197
+  %or.cond7 = or i1 %24, %25, !dbg !198
+  br i1 %or.cond7, label %45, label %26, !dbg !198
 
 ; <label>:26                                      ; preds = %21
-  %sext = shl i64 %6, 32
-  %27 = ashr exact i64 %sext, 32
-  %28 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %23, i1 false)
-  %29 = tail call i8* @__strncpy_chk(i8* %23, i8* %string, i64 %27, i64 %28) #7
-  %30 = load i8** %before, align 8, !tbaa !2
-  %31 = getelementptr inbounds i8* %30, i64 %27
-  store i8 0, i8* %31, align 1, !tbaa !6
-  %32 = load i8** %after, align 8, !tbaa !2
-  %33 = tail call i64 @strlen(i8* %sep) #7
-  %34 = getelementptr inbounds i8* %1, i64 %33
-  %35 = tail call i64 @strlen(i8* %string) #7
-  %sum = add i64 %33, %27
-  %36 = sub i64 %35, %sum
-  %37 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %32, i1 false)
-  %38 = tail call i8* @__strncpy_chk(i8* %32, i8* %34, i64 %36, i64 %37) #7
-  %39 = tail call i64 @strlen(i8* %string) #7
-  %40 = sub i64 %39, %6
-  %41 = tail call i64 @strlen(i8* %sep) #7
-  %42 = sub i64 %40, %41
-  %43 = load i8** %after, align 8, !tbaa !2
-  %44 = getelementptr inbounds i8* %43, i64 %42
-  store i8 0, i8* %44, align 1, !tbaa !6
-  br label %45
+  %sext = shl i64 %6, 32, !dbg !199
+  %27 = ashr exact i64 %sext, 32, !dbg !199
+  %28 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %23, i1 false), !dbg !199
+  %29 = tail call i8* @__strncpy_chk(i8* %23, i8* %string, i64 %27, i64 %28) #7, !dbg !199
+  %30 = load i8** %before, align 8, !dbg !201, !tbaa !112
+  %31 = getelementptr inbounds i8* %30, i64 %27, !dbg !202
+  store i8 0, i8* %31, align 1, !dbg !203, !tbaa !148
+  %32 = load i8** %after, align 8, !dbg !204, !tbaa !112
+  %33 = tail call i64 @strlen(i8* %sep) #7, !dbg !204
+  %34 = getelementptr inbounds i8* %1, i64 %33, !dbg !204
+  %35 = tail call i64 @strlen(i8* %string) #7, !dbg !204
+  %sum = add i64 %33, %27, !dbg !204
+  %36 = sub i64 %35, %sum, !dbg !204
+  %37 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %32, i1 false), !dbg !204
+  %38 = tail call i8* @__strncpy_chk(i8* %32, i8* %34, i64 %36, i64 %37) #7, !dbg !204
+  %39 = tail call i64 @strlen(i8* %string) #7, !dbg !205
+  %40 = sub i64 %39, %6, !dbg !206
+  %41 = tail call i64 @strlen(i8* %sep) #7, !dbg !207
+  %42 = sub i64 %40, %41, !dbg !208
+  %43 = load i8** %after, align 8, !dbg !209, !tbaa !112
+  %44 = getelementptr inbounds i8* %43, i64 %42, !dbg !210
+  store i8 0, i8* %44, align 1, !dbg !211, !tbaa !148
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !38, metadata !107), !dbg !163
+  br label %45, !dbg !212
 
 ; <label>:45                                      ; preds = %20, %21, %26
   %retval.1 = phi i32 [ 0, %26 ], [ %retval.0.ph, %21 ], [ 1, %20 ]
-  ret i32 %retval.1
+  ret i32 %retval.1, !dbg !213
 }

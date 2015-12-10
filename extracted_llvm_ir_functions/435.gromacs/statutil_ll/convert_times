@@ -1,34 +1,36 @@
-define void @convert_times(i32 %n, float* nocapture %time) #1 {
-  tail call fastcc void @init_time_factor() #13
-  %1 = load float* @timefactor, align 4, !tbaa !15
-  %2 = fadd float %1, -1.000000e+00
-  %fabsf = tail call float @fabsf(float %2) #9
-  %3 = fpext float %fabsf to double
-  %4 = fcmp ogt double %3, 1.200000e-38
-  %5 = icmp sgt i32 %n, 0
-  %or.cond = and i1 %4, %5
-  br i1 %or.cond, label %.lr.ph, label %.loopexit
+define void @convert_times(i32 %n, float* nocapture %time) #2 {
+  tail call void @llvm.dbg.value(metadata i32 %n, i64 0, metadata !410, metadata !852), !dbg !1296
+  tail call void @llvm.dbg.value(metadata float* %time, i64 0, metadata !411, metadata !852), !dbg !1297
+  tail call fastcc void @init_time_factor() #13, !dbg !1298
+  %1 = load float* @timefactor, align 4, !dbg !1299, !tbaa !1095
+  %2 = fadd float %1, -1.000000e+00, !dbg !1301
+  %fabsf = tail call float @fabsf(float %2) #9, !dbg !1302
+  %3 = fpext float %fabsf to double, !dbg !1302
+  %4 = fcmp ogt double %3, 1.200000e-38, !dbg !1303
+  %5 = icmp sgt i32 %n, 0, !dbg !1304
+  %or.cond = and i1 %4, %5, !dbg !1307
+  br i1 %or.cond, label %.lr.ph, label %.loopexit, !dbg !1307
 
 .lr.ph:                                           ; preds = %0
-  %6 = add i32 %n, -1
-  %7 = load float* %time, align 4, !tbaa !15
-  %8 = fmul float %1, %7
-  store float %8, float* %time, align 4, !tbaa !15
-  %exitcond2 = icmp eq i32 %6, 0
-  br i1 %exitcond2, label %.loopexit, label %._crit_edge
+  %6 = add i32 %n, -1, !dbg !1308
+  %7 = load float* %time, align 4, !dbg !1309, !tbaa !1095
+  %8 = fmul float %1, %7, !dbg !1309
+  store float %8, float* %time, align 4, !dbg !1309, !tbaa !1095
+  %exitcond2 = icmp eq i32 %6, 0, !dbg !1308
+  br i1 %exitcond2, label %.loopexit, label %._crit_edge, !dbg !1308
 
 ._crit_edge:                                      ; preds = %.lr.ph, %._crit_edge
   %indvars.iv3 = phi i64 [ %indvars.iv.next, %._crit_edge ], [ 0, %.lr.ph ]
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv3, 1
-  %.pre = load float* @timefactor, align 4, !tbaa !15
-  %9 = getelementptr inbounds float* %time, i64 %indvars.iv.next
-  %10 = load float* %9, align 4, !tbaa !15
-  %11 = fmul float %.pre, %10
-  store float %11, float* %9, align 4, !tbaa !15
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %6
-  br i1 %exitcond, label %.loopexit, label %._crit_edge
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv3, 1, !dbg !1308
+  %.pre = load float* @timefactor, align 4, !dbg !1310, !tbaa !1095
+  %9 = getelementptr inbounds float* %time, i64 %indvars.iv.next, !dbg !1311
+  %10 = load float* %9, align 4, !dbg !1309, !tbaa !1095
+  %11 = fmul float %.pre, %10, !dbg !1309
+  store float %11, float* %9, align 4, !dbg !1309, !tbaa !1095
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !1308
+  %exitcond = icmp eq i32 %lftr.wideiv, %6, !dbg !1308
+  br i1 %exitcond, label %.loopexit, label %._crit_edge, !dbg !1308
 
 .loopexit:                                        ; preds = %.lr.ph, %._crit_edge, %0
-  ret void
+  ret void, !dbg !1312
 }

@@ -1,38 +1,42 @@
-define void @primal_update_flow(%struct.node* %iplus, %struct.node* %jplus, %struct.node* %w) #0 {
-entry:
-  %cmp26 = icmp eq %struct.node* %iplus, %w
-  br i1 %cmp26, label %for.cond2.preheader, label %for.body
+define void @primal_update_flow(%struct.node* %iplus, %struct.node* %jplus, %struct.node* readnone %w) #0 {
+  tail call void @llvm.dbg.value(metadata %struct.node* %iplus, i64 0, metadata !46, metadata !53), !dbg !54
+  tail call void @llvm.dbg.value(metadata %struct.node* %jplus, i64 0, metadata !47, metadata !53), !dbg !55
+  tail call void @llvm.dbg.value(metadata %struct.node* %w, i64 0, metadata !48, metadata !53), !dbg !56
+  %1 = icmp eq %struct.node* %iplus, %w, !dbg !57
+  br i1 %1, label %.preheader, label %.lr.ph7, !dbg !60
 
-for.cond2.preheader:                              ; preds = %for.body, %entry
-  %cmp324 = icmp eq %struct.node* %jplus, %w
-  br i1 %cmp324, label %for.end14, label %for.body4
+.preheader:                                       ; preds = %.lr.ph7, %0
+  %2 = icmp eq %struct.node* %jplus, %w, !dbg !61
+  br i1 %2, label %._crit_edge, label %.lr.ph, !dbg !64
 
-for.body:                                         ; preds = %entry, %for.body
-  %iplus.addr.027 = phi %struct.node* [ %1, %for.body ], [ %iplus, %entry ]
-  %orientation = getelementptr inbounds %struct.node* %iplus.addr.027, i64 0, i32 1
-  %0 = load i32* %orientation, align 4, !tbaa !0
-  %tobool = icmp eq i32 %0, 0
-  %flow = getelementptr inbounds %struct.node* %iplus.addr.027, i64 0, i32 10
-  %. = zext i1 %tobool to i64
-  store i64 %., i64* %flow, align 8, !tbaa !3
-  %pred = getelementptr inbounds %struct.node* %iplus.addr.027, i64 0, i32 3
-  %1 = load %struct.node** %pred, align 8, !tbaa !4
-  %cmp = icmp eq %struct.node* %1, %w
-  br i1 %cmp, label %for.cond2.preheader, label %for.body
+.lr.ph7:                                          ; preds = %0, %.lr.ph7
+  %.05 = phi %struct.node* [ %8, %.lr.ph7 ], [ %iplus, %0 ]
+  %3 = getelementptr inbounds %struct.node* %.05, i64 0, i32 1, !dbg !65
+  %4 = load i32* %3, align 4, !dbg !65, !tbaa !68
+  %5 = icmp eq i32 %4, 0, !dbg !75
+  %6 = getelementptr inbounds %struct.node* %.05, i64 0, i32 10, !dbg !76
+  %. = zext i1 %5 to i64
+  store i64 %., i64* %6, align 8, !dbg !77, !tbaa !78
+  %7 = getelementptr inbounds %struct.node* %.05, i64 0, i32 3, !dbg !79
+  %8 = load %struct.node** %7, align 8, !dbg !79, !tbaa !80
+  tail call void @llvm.dbg.value(metadata %struct.node* %8, i64 0, metadata !46, metadata !53), !dbg !54
+  %9 = icmp eq %struct.node* %8, %w, !dbg !57
+  br i1 %9, label %.preheader, label %.lr.ph7, !dbg !60
 
-for.body4:                                        ; preds = %for.cond2.preheader, %for.body4
-  %jplus.addr.025 = phi %struct.node* [ %3, %for.body4 ], [ %jplus, %for.cond2.preheader ]
-  %orientation5 = getelementptr inbounds %struct.node* %jplus.addr.025, i64 0, i32 1
-  %2 = load i32* %orientation5, align 4, !tbaa !0
-  %flow8 = getelementptr inbounds %struct.node* %jplus.addr.025, i64 0, i32 10
-  %not.tobool6 = icmp ne i32 %2, 0
-  %.23 = zext i1 %not.tobool6 to i64
-  store i64 %.23, i64* %flow8, align 8, !tbaa !3
-  %pred13 = getelementptr inbounds %struct.node* %jplus.addr.025, i64 0, i32 3
-  %3 = load %struct.node** %pred13, align 8, !tbaa !4
-  %cmp3 = icmp eq %struct.node* %3, %w
-  br i1 %cmp3, label %for.end14, label %for.body4
+.lr.ph:                                           ; preds = %.preheader, %.lr.ph
+  %.014 = phi %struct.node* [ %14, %.lr.ph ], [ %jplus, %.preheader ]
+  %10 = getelementptr inbounds %struct.node* %.014, i64 0, i32 1, !dbg !81
+  %11 = load i32* %10, align 4, !dbg !81, !tbaa !68
+  %12 = getelementptr inbounds %struct.node* %.014, i64 0, i32 10, !dbg !84
+  %not. = icmp ne i32 %11, 0
+  %.3 = zext i1 %not. to i64
+  store i64 %.3, i64* %12, align 8, !dbg !85, !tbaa !78
+  %13 = getelementptr inbounds %struct.node* %.014, i64 0, i32 3, !dbg !86
+  %14 = load %struct.node** %13, align 8, !dbg !86, !tbaa !80
+  tail call void @llvm.dbg.value(metadata %struct.node* %14, i64 0, metadata !47, metadata !53), !dbg !55
+  %15 = icmp eq %struct.node* %14, %w, !dbg !61
+  br i1 %15, label %._crit_edge, label %.lr.ph, !dbg !64
 
-for.end14:                                        ; preds = %for.body4, %for.cond2.preheader
-  ret void
+._crit_edge:                                      ; preds = %.lr.ph, %.preheader
+  ret void, !dbg !87
 }

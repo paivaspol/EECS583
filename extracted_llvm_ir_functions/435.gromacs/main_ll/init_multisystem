@@ -1,44 +1,51 @@
-define %struct.t_commrec* @init_multisystem(%struct.t_commrec* nocapture %cr, i32 %nfile, %struct.t_filenm* nocapture %fnm) #1 {
-  %1 = tail call i8* @save_calloc(i8* getelementptr inbounds ([4 x i8]* @.str16, i64 0, i64 0), i8* getelementptr inbounds ([64 x i8]* @.str6, i64 0, i64 0), i32 275, i32 1, i32 24) #6
-  %2 = bitcast i8* %1 to %struct.t_commrec*
-  %3 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 0
-  %4 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 1
-  %5 = bitcast %struct.t_commrec* %cr to <4 x i32>*
-  %6 = load <4 x i32>* %5, align 4, !tbaa !10
-  %7 = bitcast i8* %1 to <4 x i32>*
-  store <4 x i32> %6, <4 x i32>* %7, align 4, !tbaa !10
-  store i32 0, i32* %3, align 4, !tbaa !9
-  store i32 1, i32* %4, align 4, !tbaa !5
-  %8 = icmp sgt i32 %nfile, 0
-  br i1 %8, label %.lr.ph, label %._crit_edge
+define %struct.t_commrec* @init_multisystem(%struct.t_commrec* nocapture %cr, i32 %nfile, %struct.t_filenm* nocapture %fnm) #2 {
+  tail call void @llvm.dbg.value(metadata %struct.t_commrec* %cr, i64 0, metadata !179, metadata !236), !dbg !388
+  tail call void @llvm.dbg.value(metadata i32 %nfile, i64 0, metadata !180, metadata !236), !dbg !389
+  tail call void @llvm.dbg.value(metadata %struct.t_filenm* %fnm, i64 0, metadata !181, metadata !236), !dbg !390
+  %1 = tail call i8* @save_calloc(i8* getelementptr inbounds ([4 x i8]* @.str16, i64 0, i64 0), i8* getelementptr inbounds ([64 x i8]* @.str6, i64 0, i64 0), i32 275, i32 1, i32 24) #7, !dbg !391
+  %2 = bitcast i8* %1 to %struct.t_commrec*, !dbg !391
+  tail call void @llvm.dbg.value(metadata %struct.t_commrec* %2, i64 0, metadata !182, metadata !236), !dbg !392
+  %3 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 0, !dbg !393
+  %4 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 1, !dbg !394
+  %5 = bitcast %struct.t_commrec* %cr to <4 x i32>*, !dbg !393
+  %6 = load <4 x i32>* %5, align 4, !dbg !393, !tbaa !279
+  %7 = bitcast i8* %1 to <4 x i32>*, !dbg !395
+  store <4 x i32> %6, <4 x i32>* %7, align 4, !dbg !395, !tbaa !279
+  store i32 0, i32* %3, align 4, !dbg !396, !tbaa !262
+  store i32 1, i32* %4, align 4, !dbg !397, !tbaa !256
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !183, metadata !236), !dbg !398
+  %8 = icmp sgt i32 %nfile, 0, !dbg !399
+  br i1 %8, label %.lr.ph, label %._crit_edge, !dbg !402
 
 .lr.ph:                                           ; preds = %0
-  %9 = add i32 %nfile, -1
-  br label %10
+  %9 = add i32 %nfile, -1, !dbg !402
+  br label %10, !dbg !402
 
 ; <label>:10                                      ; preds = %20, %.lr.ph
   %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %20 ]
-  %11 = getelementptr inbounds %struct.t_filenm* %fnm, i64 %indvars.iv, i32 2
-  %12 = load i8** %11, align 8, !tbaa !16
-  %13 = tail call i32 @fn2ftp(i8* %12) #6
-  %14 = icmp eq i32 %13, 18
-  br i1 %14, label %20, label %15
+  %11 = getelementptr inbounds %struct.t_filenm* %fnm, i64 %indvars.iv, i32 2, !dbg !403
+  %12 = load i8** %11, align 8, !dbg !403, !tbaa !405
+  %13 = tail call i32 @fn2ftp(i8* %12) #7, !dbg !408
+  tail call void @llvm.dbg.value(metadata i32 %13, i64 0, metadata !184, metadata !236), !dbg !409
+  %14 = icmp eq i32 %13, 18, !dbg !410
+  br i1 %14, label %20, label %15, !dbg !412
 
 ; <label>:15                                      ; preds = %10
-  %16 = load i8** %11, align 8, !tbaa !16
-  %17 = tail call i8* @par_fn(i8* %16, i32 %13, %struct.t_commrec* %2) #7
-  %18 = load i8** %11, align 8, !tbaa !16
-  tail call void @save_free(i8* getelementptr inbounds ([10 x i8]* @.str17, i64 0, i64 0), i8* getelementptr inbounds ([64 x i8]* @.str6, i64 0, i64 0), i32 295, i8* %18) #6
-  %19 = tail call i8* @strdup(i8* getelementptr inbounds ([256 x i8]* @par_fn.buf, i64 0, i64 0)) #6
-  store i8* %19, i8** %11, align 8, !tbaa !16
-  br label %20
+  %16 = load i8** %11, align 8, !dbg !413, !tbaa !405
+  %17 = tail call i8* @par_fn(i8* %16, i32 %13, %struct.t_commrec* %2) #8, !dbg !415
+  tail call void @llvm.dbg.value(metadata !231, i64 0, metadata !185, metadata !236), !dbg !416
+  %18 = load i8** %11, align 8, !dbg !417, !tbaa !405
+  tail call void @save_free(i8* getelementptr inbounds ([10 x i8]* @.str17, i64 0, i64 0), i8* getelementptr inbounds ([64 x i8]* @.str6, i64 0, i64 0), i32 295, i8* %18) #7, !dbg !417
+  %19 = tail call i8* @strdup(i8* getelementptr inbounds ([256 x i8]* @par_fn.buf, i64 0, i64 0)) #7, !dbg !418
+  store i8* %19, i8** %11, align 8, !dbg !419, !tbaa !405
+  br label %20, !dbg !420
 
 ; <label>:20                                      ; preds = %10, %15
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %9
-  br i1 %exitcond, label %._crit_edge, label %10
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !402
+  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !402
+  %exitcond = icmp eq i32 %lftr.wideiv, %9, !dbg !402
+  br i1 %exitcond, label %._crit_edge, label %10, !dbg !402
 
 ._crit_edge:                                      ; preds = %20, %0
-  ret %struct.t_commrec* %2
+  ret %struct.t_commrec* %2, !dbg !421
 }

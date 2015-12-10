@@ -1,21 +1,28 @@
-define void @DAdd(double* nocapture %vec1, double* nocapture %vec2, i32 %n) #0 {
-entry:
-  %cmp6 = icmp sgt i32 %n, 0
-  br i1 %cmp6, label %for.body, label %for.end
+define void @DAdd(double* nocapture %vec1, double* nocapture readonly %vec2, i32 %n) #0 {
+  tail call void @llvm.dbg.value(metadata double* %vec1, i64 0, metadata !58, metadata !206), !dbg !279
+  tail call void @llvm.dbg.value(metadata double* %vec2, i64 0, metadata !59, metadata !206), !dbg !280
+  tail call void @llvm.dbg.value(metadata i32 %n, i64 0, metadata !60, metadata !206), !dbg !281
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !61, metadata !206), !dbg !282
+  %1 = icmp sgt i32 %n, 0, !dbg !283
+  br i1 %1, label %.lr.ph, label %._crit_edge, !dbg !286
 
-for.body:                                         ; preds = %entry, %for.body
-  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %entry ]
-  %arrayidx = getelementptr inbounds double* %vec2, i64 %indvars.iv
-  %0 = load double* %arrayidx, align 8, !tbaa !0
-  %arrayidx2 = getelementptr inbounds double* %vec1, i64 %indvars.iv
-  %1 = load double* %arrayidx2, align 8, !tbaa !0
-  %add = fadd double %0, %1
-  store double %add, double* %arrayidx2, align 8, !tbaa !0
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %n
-  br i1 %exitcond, label %for.end, label %for.body
+.lr.ph:                                           ; preds = %0
+  %2 = add i32 %n, -1, !dbg !286
+  br label %3, !dbg !286
 
-for.end:                                          ; preds = %for.body, %entry
-  ret void
+; <label>:3                                       ; preds = %3, %.lr.ph
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %3 ]
+  %4 = getelementptr inbounds double* %vec2, i64 %indvars.iv, !dbg !287
+  %5 = load double* %4, align 8, !dbg !287, !tbaa !217
+  %6 = getelementptr inbounds double* %vec1, i64 %indvars.iv, !dbg !288
+  %7 = load double* %6, align 8, !dbg !289, !tbaa !217
+  %8 = fadd double %5, %7, !dbg !289
+  store double %8, double* %6, align 8, !dbg !289, !tbaa !217
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !286
+  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !286
+  %exitcond = icmp eq i32 %lftr.wideiv, %2, !dbg !286
+  br i1 %exitcond, label %._crit_edge, label %3, !dbg !286
+
+._crit_edge:                                      ; preds = %3, %0
+  ret void, !dbg !290
 }

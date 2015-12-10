@@ -1,0 +1,115 @@
+define internal fastcc void @_ZN3povL23do_light_ray_atmosphereEPNS_10Ray_StructEPNS_10istk_entryEPfi(%"struct.pov::Ray_Struct"* %Light_Source_Ray, %"struct.pov::istk_entry"* %Ray_Intersection, float* %Colour, i32 %Valid_Object) #0 {
+  tail call void @llvm.dbg.value(metadata %"struct.pov::Ray_Struct"* %Light_Source_Ray, i64 0, metadata !2172, metadata !2666), !dbg !10238
+  tail call void @llvm.dbg.value(metadata %"struct.pov::istk_entry"* %Ray_Intersection, i64 0, metadata !2173, metadata !2666), !dbg !10239
+  tail call void @llvm.dbg.value(metadata float* %Colour, i64 0, metadata !2174, metadata !2666), !dbg !10240
+  tail call void @llvm.dbg.value(metadata i32 %Valid_Object, i64 0, metadata !2175, metadata !2666), !dbg !10241
+  %1 = load float* %Colour, align 4, !dbg !10242, !tbaa !3269
+  %2 = fpext float %1 to double, !dbg !10242
+  %3 = fcmp olt double %2, 1.000000e-07, !dbg !10244
+  br i1 %3, label %4, label %.preheader, !dbg !10245
+
+; <label>:4                                       ; preds = %0
+  %5 = getelementptr inbounds float* %Colour, i64 1, !dbg !10246
+  %6 = load float* %5, align 4, !dbg !10246, !tbaa !3269
+  %7 = fpext float %6 to double, !dbg !10246
+  %8 = fcmp olt double %7, 1.000000e-07, !dbg !10247
+  br i1 %8, label %9, label %.preheader, !dbg !10248
+
+; <label>:9                                       ; preds = %4
+  %10 = getelementptr inbounds float* %Colour, i64 2, !dbg !10249
+  %11 = load float* %10, align 4, !dbg !10249, !tbaa !3269
+  %12 = fpext float %11 to double, !dbg !10249
+  %13 = fcmp olt double %12, 1.000000e-07, !dbg !10250
+  br i1 %13, label %52, label %.preheader, !dbg !10251
+
+.preheader:                                       ; preds = %9, %4, %0
+  %14 = getelementptr inbounds %"struct.pov::Ray_Struct"* %Light_Source_Ray, i64 0, i32 2, !dbg !10252
+  %15 = load i32* %14, align 4, !dbg !10252, !tbaa !3972
+  %16 = icmp slt i32 %15, 0, !dbg !10255
+  br i1 %16, label %._crit_edge, label %.lr.ph, !dbg !10256
+
+; <label>:17                                      ; preds = %.lr.ph
+  %indvars.iv.next = add nuw i64 %indvars.iv, 1, !dbg !10256
+  %18 = sext i32 %15 to i64, !dbg !10255
+  %19 = icmp slt i64 %indvars.iv, %18, !dbg !10255
+  br i1 %19, label %.lr.ph, label %._crit_edge, !dbg !10256
+
+.lr.ph:                                           ; preds = %.preheader, %17
+  %indvars.iv = phi i64 [ %indvars.iv.next, %17 ], [ 0, %.preheader ]
+  %20 = getelementptr inbounds %"struct.pov::Ray_Struct"* %Light_Source_Ray, i64 0, i32 4, i64 %indvars.iv, !dbg !10257
+  %21 = load %"struct.pov::Interior_Struct"** %20, align 8, !dbg !10257, !tbaa !2657
+  %22 = getelementptr inbounds %"struct.pov::Interior_Struct"* %21, i64 0, i32 1, !dbg !10260
+  %23 = load i32* %22, align 4, !dbg !10260, !tbaa !3985
+  %24 = icmp eq i32 %23, 0, !dbg !10257
+  br i1 %24, label %._crit_edge, label %17, !dbg !10261
+
+._crit_edge:                                      ; preds = %17, %.lr.ph, %.preheader
+  %all_hollow.0 = phi i32 [ 1, %.preheader ], [ 1, %17 ], [ 0, %.lr.ph ]
+  %25 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 13), align 8, !dbg !10262, !tbaa !3797
+  %26 = and i32 %25, 128, !dbg !10264
+  %27 = icmp eq i32 %26, 0, !dbg !10264
+  br i1 %27, label %38, label %28, !dbg !10265
+
+; <label>:28                                      ; preds = %._crit_edge
+  %29 = icmp eq i32 %all_hollow.0, 0, !dbg !10266
+  br i1 %29, label %30, label %37, !dbg !10267
+
+; <label>:30                                      ; preds = %28
+  %cond = icmp eq i32 %Valid_Object, 0, !dbg !10268
+  br i1 %cond, label %52, label %31, !dbg !10268
+
+; <label>:31                                      ; preds = %30
+  %32 = getelementptr inbounds %"struct.pov::istk_entry"* %Ray_Intersection, i64 0, i32 5, !dbg !10269
+  %33 = load %"struct.pov::Object_Struct"** %32, align 8, !dbg !10269, !tbaa !3151
+  %34 = getelementptr inbounds %"struct.pov::Object_Struct"* %33, i64 0, i32 5, !dbg !10270
+  %35 = load %"struct.pov::Interior_Struct"** %34, align 8, !dbg !10270, !tbaa !3723
+  %36 = icmp eq %"struct.pov::Interior_Struct"* %35, null, !dbg !10271
+  br i1 %36, label %.thread, label %37, !dbg !10272
+
+; <label>:37                                      ; preds = %31, %28
+  tail call void @_ZN3pov20Do_Finite_AtmosphereEPNS_10Ray_StructEPNS_10istk_entryEPfi(%"struct.pov::Ray_Struct"* %Light_Source_Ray, %"struct.pov::istk_entry"* %Ray_Intersection, float* %Colour, i32 1) #6, !dbg !10273
+  br label %38, !dbg !10275
+
+; <label>:38                                      ; preds = %._crit_edge, %37
+  %39 = icmp eq i32 %Valid_Object, 0, !dbg !10276
+  br i1 %39, label %52, label %..thread_crit_edge, !dbg !10278
+
+..thread_crit_edge:                               ; preds = %38
+  %.pre = load i32* %14, align 4, !dbg !10279, !tbaa !3972
+  %.phi.trans.insert = getelementptr inbounds %"struct.pov::istk_entry"* %Ray_Intersection, i64 0, i32 5
+  %.pre6 = load %"struct.pov::Object_Struct"** %.phi.trans.insert, align 8, !dbg !10282, !tbaa !3151
+  %.phi.trans.insert7 = getelementptr inbounds %"struct.pov::Object_Struct"* %.pre6, i64 0, i32 5
+  %.pre8 = load %"struct.pov::Interior_Struct"** %.phi.trans.insert7, align 8, !dbg !10284, !tbaa !3723
+  br label %.thread, !dbg !10278
+
+.thread:                                          ; preds = %..thread_crit_edge, %31
+  %.pre-phi = phi %"struct.pov::Object_Struct"** [ %.phi.trans.insert, %..thread_crit_edge ], [ %32, %31 ], !dbg !10282
+  %40 = phi %"struct.pov::Interior_Struct"* [ %.pre8, %..thread_crit_edge ], [ null, %31 ]
+  %41 = phi i32 [ %.pre, %..thread_crit_edge ], [ %15, %31 ]
+  %42 = icmp eq i32 %41, -1, !dbg !10285
+  br i1 %42, label %43, label %44, !dbg !10286
+
+; <label>:43                                      ; preds = %.thread
+  tail call void @_ZN3pov9Ray_EnterEPNS_10Ray_StructEPNS_15Interior_StructE(%"struct.pov::Ray_Struct"* %Light_Source_Ray, %"struct.pov::Interior_Struct"* %40) #6, !dbg !10287
+  br label %52, !dbg !10288
+
+; <label>:44                                      ; preds = %.thread
+  %45 = tail call i32 @_ZN3pov25Interior_In_Ray_ContainerEPNS_10Ray_StructEPNS_15Interior_StructE(%"struct.pov::Ray_Struct"* %Light_Source_Ray, %"struct.pov::Interior_Struct"* %40) #6, !dbg !10289
+  tail call void @llvm.dbg.value(metadata i32 %45, i64 0, metadata !2176, metadata !2666), !dbg !10292
+  %46 = icmp sgt i32 %45, -1, !dbg !10293
+  br i1 %46, label %47, label %48, !dbg !10294
+
+; <label>:47                                      ; preds = %44
+  tail call void @_ZN3pov8Ray_ExitEPNS_10Ray_StructEi(%"struct.pov::Ray_Struct"* %Light_Source_Ray, i32 %45) #6, !dbg !10295
+  br label %52, !dbg !10297
+
+; <label>:48                                      ; preds = %44
+  %49 = load %"struct.pov::Object_Struct"** %.pre-phi, align 8, !dbg !10298, !tbaa !3151
+  %50 = getelementptr inbounds %"struct.pov::Object_Struct"* %49, i64 0, i32 5, !dbg !10300
+  %51 = load %"struct.pov::Interior_Struct"** %50, align 8, !dbg !10300, !tbaa !3723
+  tail call void @_ZN3pov9Ray_EnterEPNS_10Ray_StructEPNS_15Interior_StructE(%"struct.pov::Ray_Struct"* %Light_Source_Ray, %"struct.pov::Interior_Struct"* %51) #6, !dbg !10301
+  br label %52
+
+; <label>:52                                      ; preds = %30, %38, %43, %48, %47, %9
+  ret void, !dbg !10302
+}

@@ -1,0 +1,44 @@
+define internal fastcc zeroext i16 @_ZN3povL10readUSHORTEPN8pov_base7IStreamEiPKc(%"class.pov_base::IStream"* nocapture readonly %infile, i32 %line) #0 {
+  tail call void @llvm.dbg.value(metadata !3259, i64 0, metadata !1450, metadata !2177), !dbg !4611
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !1452, metadata !2177), !dbg !4612
+  tail call void @llvm.dbg.value(metadata %"class.pov_base::IStream"* %infile, i64 0, metadata !1432, metadata !2177) #4, !dbg !4613
+  %1 = getelementptr inbounds %"class.pov_base::IStream"* %infile, i64 0, i32 0, i32 1, !dbg !4616
+  %2 = load i8* %1, align 1, !dbg !4616, !tbaa !3249, !range !3251
+  %3 = icmp eq i8 %2, 0, !dbg !4616
+  br i1 %3, label %_ZN8pov_base7IStream9Read_ByteEv.exit, label %_ZN8pov_base7IStream9Read_ByteEv.exit.thread, !dbg !4616
+
+_ZN8pov_base7IStream9Read_ByteEv.exit:            ; preds = %0
+  %4 = getelementptr inbounds %"class.pov_base::IStream"* %infile, i64 0, i32 0, i32 2, !dbg !4617
+  %5 = load %struct.__sFILE** %4, align 8, !dbg !4617, !tbaa !3795
+  %6 = tail call i32 @fgetc(%struct.__sFILE* %5) #10, !dbg !4618
+  tail call void @llvm.dbg.value(metadata i32 %6, i64 0, metadata !1451, metadata !2177), !dbg !4619
+  %7 = icmp eq i32 %6, -1, !dbg !4620
+  br i1 %7, label %_ZN8pov_base7IStream9Read_ByteEv.exit.thread, label %8, !dbg !4621
+
+; <label>:8                                       ; preds = %_ZN8pov_base7IStream9Read_ByteEv.exit
+  tail call void @llvm.dbg.value(metadata %"class.pov_base::IStream"* %infile, i64 0, metadata !1432, metadata !2177) #4, !dbg !4622
+  %9 = load i8* %1, align 1, !dbg !4624, !tbaa !3249, !range !3251
+  %10 = icmp eq i8 %9, 0, !dbg !4624
+  br i1 %10, label %_ZN8pov_base7IStream9Read_ByteEv.exit1, label %_ZN8pov_base7IStream9Read_ByteEv.exit.thread, !dbg !4624
+
+_ZN8pov_base7IStream9Read_ByteEv.exit1:           ; preds = %8
+  %11 = load %struct.__sFILE** %4, align 8, !dbg !4625, !tbaa !3795
+  %12 = tail call i32 @fgetc(%struct.__sFILE* %11) #10, !dbg !4626
+  tail call void @llvm.dbg.value(metadata i32 %12, i64 0, metadata !1452, metadata !2177), !dbg !4612
+  %13 = icmp eq i32 %12, -1, !dbg !4627
+  br i1 %13, label %_ZN8pov_base7IStream9Read_ByteEv.exit.thread, label %16, !dbg !4628
+
+_ZN8pov_base7IStream9Read_ByteEv.exit.thread:     ; preds = %8, %0, %_ZN8pov_base7IStream9Read_ByteEv.exit1, %_ZN8pov_base7IStream9Read_ByteEv.exit
+  %14 = phi i32 [ -1, %_ZN8pov_base7IStream9Read_ByteEv.exit ], [ %6, %_ZN8pov_base7IStream9Read_ByteEv.exit1 ], [ -1, %0 ], [ %6, %8 ]
+  %i1.0 = phi i32 [ 0, %_ZN8pov_base7IStream9Read_ByteEv.exit ], [ -1, %_ZN8pov_base7IStream9Read_ByteEv.exit1 ], [ 0, %0 ], [ -1, %8 ]
+  %15 = tail call i32 (i8*, ...)* @_ZN3pov5ErrorEPKcz(i8* getelementptr inbounds ([48 x i8]* @.str8, i64 0, i64 0), i32 %line, i8* getelementptr inbounds ([69 x i8]* @.str1, i64 0, i64 0)) #8, !dbg !4629
+  br label %16, !dbg !4631
+
+; <label>:16                                      ; preds = %_ZN8pov_base7IStream9Read_ByteEv.exit.thread, %_ZN8pov_base7IStream9Read_ByteEv.exit1
+  %17 = phi i32 [ %14, %_ZN8pov_base7IStream9Read_ByteEv.exit.thread ], [ %6, %_ZN8pov_base7IStream9Read_ByteEv.exit1 ]
+  %i1.1 = phi i32 [ %i1.0, %_ZN8pov_base7IStream9Read_ByteEv.exit.thread ], [ %12, %_ZN8pov_base7IStream9Read_ByteEv.exit1 ]
+  %18 = shl i32 %17, 8, !dbg !4632
+  %19 = or i32 %18, %i1.1, !dbg !4633
+  %20 = trunc i32 %19 to i16, !dbg !4634
+  ret i16 %20, !dbg !4635
+}

@@ -1,52 +1,54 @@
 define void @IVL_init2(%struct._IVL* %ivl, i32 %type, i32 %maxnlist, i32 %tsize) #0 {
-entry:
-  %notlhs = icmp eq %struct._IVL* %ivl, null
-  %notrhs = icmp ne i32 %type, 1
-  %or.cond.not = or i1 %notrhs, %notlhs
-  %cmp3 = icmp slt i32 %maxnlist, 0
-  %or.cond31 = or i1 %or.cond.not, %cmp3
-  br i1 %or.cond31, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata %struct._IVL* %ivl, i64 0, metadata !43, metadata !74), !dbg !118
+  tail call void @llvm.dbg.value(metadata i32 %type, i64 0, metadata !44, metadata !74), !dbg !119
+  tail call void @llvm.dbg.value(metadata i32 %maxnlist, i64 0, metadata !45, metadata !74), !dbg !120
+  tail call void @llvm.dbg.value(metadata i32 %tsize, i64 0, metadata !46, metadata !74), !dbg !121
+  %1 = icmp eq %struct._IVL* %ivl, null, !dbg !122
+  %2 = icmp ne i32 %type, 1, !dbg !124
+  %or.cond = or i1 %1, %2, !dbg !125
+  %3 = icmp slt i32 %maxnlist, 0, !dbg !126
+  %or.cond3 = or i1 %or.cond, %3, !dbg !125
+  br i1 %or.cond3, label %4, label %7, !dbg !125
 
-if.then:                                          ; preds = %entry
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([51 x i8]* @.str1, i64 0, i64 0), %struct._IVL* %ivl, i32 %type, i32 %maxnlist, i32 %tsize) #4
-  tail call void @exit(i32 -1) #5
-  unreachable
+; <label>:4                                       ; preds = %0
+  %5 = load %struct.__sFILE** @__stderrp, align 8, !dbg !127, !tbaa !86
+  %6 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %5, i8* getelementptr inbounds ([51 x i8]* @.str1, i64 0, i64 0), %struct._IVL* %ivl, i32 %type, i32 %maxnlist, i32 %tsize) #5, !dbg !129
+  tail call void @exit(i32 -1) #6, !dbg !130
+  unreachable, !dbg !130
 
-if.end:                                           ; preds = %entry
-  tail call void @IVL_init1(%struct._IVL* %ivl, i32 1, i32 %maxnlist) #6
-  %cmp4 = icmp sgt i32 %tsize, 0
-  br i1 %cmp4, label %if.then5, label %if.end16
+; <label>:7                                       ; preds = %0
+  tail call void @IVL_init1(%struct._IVL* %ivl, i32 1, i32 %maxnlist) #7, !dbg !131
+  %8 = icmp sgt i32 %tsize, 0, !dbg !132
+  br i1 %8, label %9, label %25, !dbg !134
 
-if.then5:                                         ; preds = %if.end
-  %call6 = tail call noalias i8* @malloc(i64 24) #4
-  %1 = bitcast i8* %call6 to %struct._Ichunk*
-  %chunk = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 7
-  store %struct._Ichunk* %1, %struct._Ichunk** %chunk, align 8, !tbaa !0
-  %cmp7 = icmp eq i8* %call6, null
-  br i1 %cmp7, label %if.then8, label %if.end10
+; <label>:9                                       ; preds = %7
+  %10 = tail call i8* @malloc(i64 24) #5, !dbg !135
+  %11 = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 7, !dbg !135
+  %12 = bitcast %struct._Ichunk** %11 to i8**, !dbg !135
+  store i8* %10, i8** %12, align 8, !dbg !135, !tbaa !140
+  %13 = icmp eq i8* %10, null, !dbg !135
+  br i1 %13, label %14, label %17, !dbg !141
 
-if.then8:                                         ; preds = %if.then5
-  %2 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call9 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([49 x i8]* @.str2, i64 0, i64 0), i64 24, i32 93, i8* getelementptr inbounds ([73 x i8]* @.str3, i64 0, i64 0)) #4
-  tail call void @exit(i32 -1) #5
-  unreachable
+; <label>:14                                      ; preds = %9
+  %15 = load %struct.__sFILE** @__stderrp, align 8, !dbg !142, !tbaa !86
+  %16 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %15, i8* getelementptr inbounds ([49 x i8]* @.str2, i64 0, i64 0), i64 24, i32 93, i8* getelementptr inbounds ([85 x i8]* @.str3, i64 0, i64 0)) #5, !dbg !142
+  tail call void @exit(i32 -1) #6, !dbg !142
+  unreachable, !dbg !142
 
-if.end10:                                         ; preds = %if.then5
-  %size = bitcast i8* %call6 to i32*
-  store i32 %tsize, i32* %size, align 4, !tbaa !3
-  %inuse = getelementptr inbounds i8* %call6, i64 4
-  %3 = bitcast i8* %inuse to i32*
-  store i32 0, i32* %3, align 4, !tbaa !3
-  %call13 = tail call i32* @IVinit(i32 %tsize, i32 -1) #4
-  %4 = load %struct._Ichunk** %chunk, align 8, !tbaa !0
-  %base = getelementptr inbounds %struct._Ichunk* %4, i64 0, i32 2
-  store i32* %call13, i32** %base, align 8, !tbaa !0
-  %5 = load %struct._Ichunk** %chunk, align 8, !tbaa !0
-  %next = getelementptr inbounds %struct._Ichunk* %5, i64 0, i32 3
-  store %struct._Ichunk* null, %struct._Ichunk** %next, align 8, !tbaa !0
-  br label %if.end16
+; <label>:17                                      ; preds = %9
+  %18 = bitcast i8* %10 to i32*, !dbg !144
+  store i32 %tsize, i32* %18, align 4, !dbg !145, !tbaa !146
+  %19 = getelementptr inbounds i8* %10, i64 4, !dbg !148
+  %20 = bitcast i8* %19 to i32*, !dbg !148
+  store i32 0, i32* %20, align 4, !dbg !149, !tbaa !150
+  %21 = tail call i32* @IVinit(i32 %tsize, i32 -1) #5, !dbg !151
+  %22 = load %struct._Ichunk** %11, align 8, !dbg !152, !tbaa !140
+  %23 = getelementptr inbounds %struct._Ichunk* %22, i64 0, i32 2, !dbg !153
+  store i32* %21, i32** %23, align 8, !dbg !154, !tbaa !155
+  %24 = getelementptr inbounds %struct._Ichunk* %22, i64 0, i32 3, !dbg !156
+  store %struct._Ichunk* null, %struct._Ichunk** %24, align 8, !dbg !157, !tbaa !158
+  br label %25, !dbg !159
 
-if.end16:                                         ; preds = %if.end10, %if.end
-  ret void
+; <label>:25                                      ; preds = %17, %7
+  ret void, !dbg !160
 }

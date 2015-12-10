@@ -1,94 +1,111 @@
-define internal fastcc i32 @binary_search(%struct.ssifile_s* nocapture %sfp, i8* nocapture %key, i32 %klen, %struct.ssioffset_s* nocapture %base, i32 %recsize, i32 %maxidx) #0 {
-entry:
-  %cmp1 = icmp eq i32 %maxidx, 0
-  br i1 %cmp1, label %return, label %if.end
+define internal fastcc i32 @binary_search(%struct.ssifile_s* nocapture readonly %sfp, i8* nocapture readonly %key, i32 %klen, %struct.ssioffset_s* nocapture readonly %base, i32 %recsize, i32 %maxidx) #0 {
+  tail call void @llvm.dbg.value(metadata %struct.ssifile_s* %sfp, i64 0, metadata !491, metadata !535), !dbg !828
+  tail call void @llvm.dbg.value(metadata i8* %key, i64 0, metadata !492, metadata !535), !dbg !829
+  tail call void @llvm.dbg.value(metadata i32 %klen, i64 0, metadata !493, metadata !535), !dbg !830
+  tail call void @llvm.dbg.value(metadata %struct.ssioffset_s* %base, i64 0, metadata !494, metadata !535), !dbg !831
+  tail call void @llvm.dbg.value(metadata i32 %recsize, i64 0, metadata !495, metadata !535), !dbg !832
+  tail call void @llvm.dbg.value(metadata i32 %maxidx, i64 0, metadata !496, metadata !535), !dbg !833
+  %1 = icmp eq i32 %maxidx, 0, !dbg !834
+  br i1 %1, label %42, label %2, !dbg !836
 
-if.end:                                           ; preds = %entry
-  %conv = sext i32 %klen to i64
-  %call = tail call noalias i8* @malloc(i64 %conv) #8
-  %cmp2 = icmp eq i8* %call, null
-  br i1 %cmp2, label %return, label %if.end5
+; <label>:2                                       ; preds = %0
+  %3 = sext i32 %klen to i64, !dbg !837
+  %4 = tail call i8* @malloc(i64 %3) #9, !dbg !839
+  tail call void @llvm.dbg.value(metadata i8* %4, i64 0, metadata !497, metadata !535), !dbg !840
+  %5 = icmp eq i8* %4, null, !dbg !841
+  br i1 %5, label %42, label %6, !dbg !842
 
-if.end5:                                          ; preds = %if.end
-  %sub = add i32 %maxidx, -1
-  %div7282 = lshr i32 %sub, 1
-  %call67383 = tail call fastcc i32 @indexfile_position(%struct.ssifile_s* %sfp, %struct.ssioffset_s* %base, i32 %recsize, i32 %div7282) #9
-  %cmp77484 = icmp eq i32 %call67383, 0
-  br i1 %cmp77484, label %if.end10.lr.ph.lr.ph, label %if.then9
+; <label>:6                                       ; preds = %2
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !498, metadata !535), !dbg !843
+  %7 = add i32 %maxidx, -1, !dbg !844
+  tail call void @llvm.dbg.value(metadata i32 %7, i64 0, metadata !499, metadata !535), !dbg !845
+  %8 = lshr i32 %7, 1, !dbg !846
+  tail call void @llvm.dbg.value(metadata i32 %8, i64 0, metadata !500, metadata !535), !dbg !848
+  %9 = tail call fastcc i32 @indexfile_position(%struct.ssifile_s* %sfp, %struct.ssioffset_s* %base, i32 %recsize, i32 %8) #10, !dbg !849
+  tail call void @llvm.dbg.value(metadata i32 %9, i64 0, metadata !502, metadata !535), !dbg !851
+  %10 = icmp eq i32 %9, 0, !dbg !852
+  br i1 %10, label %.lr.ph.lr.ph, label %.outer._crit_edge, !dbg !853
 
-if.end10.lr.ph.lr.ph:                             ; preds = %if.end5
-  %fp = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 0
-  br label %if.end10.lr.ph
+.lr.ph.lr.ph:                                     ; preds = %6
+  %11 = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 0, !dbg !854
+  br label %.lr.ph, !dbg !853
 
-while.body.outer:                                 ; preds = %if.then33
-  %add71 = add i32 %left.075, %sub38
-  %div72 = lshr i32 %add71, 1
-  %call673 = tail call fastcc i32 @indexfile_position(%struct.ssifile_s* %sfp, %struct.ssioffset_s* %base, i32 %recsize, i32 %div72) #9
-  %cmp774 = icmp eq i32 %call673, 0
-  br i1 %cmp774, label %if.end10.lr.ph, label %if.then9
+.outer:                                           ; preds = %37
+  %12 = add i32 %left.013, %39, !dbg !856
+  %13 = lshr i32 %12, 1, !dbg !846
+  tail call void @llvm.dbg.value(metadata i32 %13, i64 0, metadata !500, metadata !535), !dbg !848
+  %14 = tail call fastcc i32 @indexfile_position(%struct.ssifile_s* %sfp, %struct.ssioffset_s* %base, i32 %recsize, i32 %13) #10, !dbg !849
+  tail call void @llvm.dbg.value(metadata i32 %14, i64 0, metadata !502, metadata !535), !dbg !851
+  %15 = icmp eq i32 %14, 0, !dbg !852
+  br i1 %15, label %.lr.ph, label %.outer._crit_edge, !dbg !853
 
-if.end10.lr.ph:                                   ; preds = %if.end10.lr.ph.lr.ph, %while.body.outer
-  %div7287 = phi i32 [ %div7282, %if.end10.lr.ph.lr.ph ], [ %div72, %while.body.outer ]
-  %left.0.ph86 = phi i32 [ 0, %if.end10.lr.ph.lr.ph ], [ %left.075, %while.body.outer ]
-  %right.0.ph85 = phi i32 [ %sub, %if.end10.lr.ph.lr.ph ], [ %sub38, %while.body.outer ]
-  br label %if.end10
+.lr.ph:                                           ; preds = %.lr.ph.lr.ph, %.outer
+  %16 = phi i32 [ %8, %.lr.ph.lr.ph ], [ %13, %.outer ]
+  %left.0.ph16 = phi i32 [ 0, %.lr.ph.lr.ph ], [ %left.013, %.outer ]
+  %right.0.ph15 = phi i32 [ %7, %.lr.ph.lr.ph ], [ %39, %.outer ]
+  br label %17, !dbg !853
 
-while.body:                                       ; preds = %if.else25
-  %add = add i32 %add29, %right.0.ph85
-  %div = lshr i32 %add, 1
-  %call6 = tail call fastcc i32 @indexfile_position(%struct.ssifile_s* %sfp, %struct.ssioffset_s* %base, i32 %recsize, i32 %div) #9
-  %cmp7 = icmp eq i32 %call6, 0
-  br i1 %cmp7, label %if.end10, label %if.then9
+.outer._crit_edge:                                ; preds = %.outer, %31, %6
+  %.lcssa = phi i32 [ %9, %6 ], [ %35, %31 ], [ %14, %.outer ]
+  tail call void @free(i8* %4) #10, !dbg !857
+  br label %42, !dbg !859
 
-if.then9:                                         ; preds = %if.end5, %while.body.outer, %while.body
-  %call6.lcssa = phi i32 [ %call6, %while.body ], [ %call67383, %if.end5 ], [ %call673, %while.body.outer ]
-  tail call void @free(i8* %call) #8
-  br label %return
+; <label>:17                                      ; preds = %.lr.ph, %31
+  %18 = phi i32 [ %16, %.lr.ph ], [ %34, %31 ]
+  %left.013 = phi i32 [ %left.0.ph16, %.lr.ph ], [ %32, %31 ]
+  %19 = load %struct.__sFILE** %11, align 8, !dbg !854, !tbaa !547
+  %20 = tail call i64 @fread(i8* %4, i64 1, i64 %3, %struct.__sFILE* %19) #9, !dbg !860
+  %21 = icmp eq i64 %20, %3, !dbg !861
+  br i1 %21, label %23, label %22, !dbg !862
 
-if.end10:                                         ; preds = %if.end10.lr.ph, %while.body
-  %div76 = phi i32 [ %div7287, %if.end10.lr.ph ], [ %div, %while.body ]
-  %left.075 = phi i32 [ %left.0.ph86, %if.end10.lr.ph ], [ %add29, %while.body ]
-  %0 = load %struct._IO_FILE** %fp, align 8, !tbaa !0
-  %call12 = tail call i64 @fread(i8* %call, i64 1, i64 %conv, %struct._IO_FILE* %0) #8
-  %cmp14 = icmp eq i64 %call12, %conv
-  br i1 %cmp14, label %if.end17, label %if.then16
+; <label>:22                                      ; preds = %17
+  tail call void @free(i8* %4) #10, !dbg !863
+  br label %42, !dbg !865
 
-if.then16:                                        ; preds = %if.end10
-  tail call void @free(i8* %call) #8
-  br label %return
+; <label>:23                                      ; preds = %17
+  %24 = tail call i32 @strcmp(i8* %4, i8* %key) #9, !dbg !866
+  tail call void @llvm.dbg.value(metadata i32 %24, i64 0, metadata !501, metadata !535), !dbg !867
+  %25 = icmp eq i32 %24, 0, !dbg !868
+  br i1 %25, label %41, label %26, !dbg !870
 
-if.end17:                                         ; preds = %if.end10
-  %call18 = tail call i32 @strcmp(i8* %call, i8* %key) #10
-  %cmp19 = icmp eq i32 %call18, 0
-  br i1 %cmp19, label %while.end, label %if.else
+; <label>:26                                      ; preds = %23
+  %27 = icmp ult i32 %left.013, %right.0.ph15, !dbg !871
+  br i1 %27, label %29, label %28, !dbg !873
 
-if.else:                                          ; preds = %if.end17
-  %cmp22 = icmp ult i32 %left.075, %right.0.ph85
-  br i1 %cmp22, label %if.else25, label %if.then24
+; <label>:28                                      ; preds = %26
+  tail call void @free(i8* %4) #10, !dbg !874
+  br label %42, !dbg !876
 
-if.then24:                                        ; preds = %if.else
-  tail call void @free(i8* %call) #8
-  br label %return
+; <label>:29                                      ; preds = %26
+  %30 = icmp slt i32 %24, 0, !dbg !877
+  br i1 %30, label %31, label %37, !dbg !879
 
-if.else25:                                        ; preds = %if.else
-  %cmp26 = icmp slt i32 %call18, 0
-  %add29 = add i32 %div76, 1
-  br i1 %cmp26, label %while.body, label %if.then33
+; <label>:31                                      ; preds = %29
+  %32 = add nuw i32 %18, 1, !dbg !880
+  tail call void @llvm.dbg.value(metadata i32 %32, i64 0, metadata !498, metadata !535), !dbg !843
+  %33 = add i32 %32, %right.0.ph15, !dbg !856
+  %34 = lshr i32 %33, 1, !dbg !846
+  tail call void @llvm.dbg.value(metadata i32 %34, i64 0, metadata !500, metadata !535), !dbg !848
+  %35 = tail call fastcc i32 @indexfile_position(%struct.ssifile_s* %sfp, %struct.ssioffset_s* %base, i32 %recsize, i32 %34) #10, !dbg !849
+  tail call void @llvm.dbg.value(metadata i32 %35, i64 0, metadata !502, metadata !535), !dbg !851
+  %36 = icmp eq i32 %35, 0, !dbg !852
+  br i1 %36, label %17, label %.outer._crit_edge, !dbg !853
 
-if.then33:                                        ; preds = %if.else25
-  %cmp34 = icmp eq i32 %div76, 0
-  %sub38 = add i32 %div76, -1
-  br i1 %cmp34, label %if.then36, label %while.body.outer
+; <label>:37                                      ; preds = %29
+  %38 = icmp eq i32 %18, 0, !dbg !881
+  %39 = add nsw i32 %18, -1, !dbg !885
+  tail call void @llvm.dbg.value(metadata i32 %39, i64 0, metadata !499, metadata !535), !dbg !845
+  br i1 %38, label %40, label %.outer, !dbg !886
 
-if.then36:                                        ; preds = %if.then33
-  tail call void @free(i8* %call) #8
-  br label %return
+; <label>:40                                      ; preds = %37
+  tail call void @free(i8* %4) #10, !dbg !887
+  br label %42, !dbg !889
 
-while.end:                                        ; preds = %if.end17
-  tail call void @free(i8* %call) #8
-  br label %return
+; <label>:41                                      ; preds = %23
+  tail call void @free(i8* %4) #10, !dbg !890
+  br label %42, !dbg !891
 
-return:                                           ; preds = %if.end, %entry, %while.end, %if.then36, %if.then24, %if.then16, %if.then9
-  %retval.0 = phi i32 [ %call6.lcssa, %if.then9 ], [ 1, %if.then16 ], [ 0, %while.end ], [ 2, %if.then24 ], [ 2, %if.then36 ], [ 2, %entry ], [ 3, %if.end ]
-  ret i32 %retval.0
+; <label>:42                                      ; preds = %2, %0, %41, %40, %28, %22, %.outer._crit_edge
+  %.0 = phi i32 [ %.lcssa, %.outer._crit_edge ], [ 1, %22 ], [ 0, %41 ], [ 2, %28 ], [ 2, %40 ], [ 2, %0 ], [ 3, %2 ]
+  ret i32 %.0, !dbg !892
 }

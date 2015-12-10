@@ -1,40 +1,45 @@
-define void @DVfprintf(%struct._IO_FILE* %fp, i32 %size, double* %y) #0 {
-entry:
-  %cmp = icmp ne %struct._IO_FILE* %fp, null
-  %cmp1 = icmp sgt i32 %size, 0
-  %or.cond = and i1 %cmp, %cmp1
-  br i1 %or.cond, label %if.then, label %if.end10
+define void @DVfprintf(%struct.__sFILE* %fp, i32 %size, double* %y) #0 {
+  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %fp, i64 0, metadata !175, metadata !696), !dbg !988
+  tail call void @llvm.dbg.value(metadata i32 %size, i64 0, metadata !176, metadata !696), !dbg !989
+  tail call void @llvm.dbg.value(metadata double* %y, i64 0, metadata !177, metadata !696), !dbg !990
+  %1 = icmp ne %struct.__sFILE* %fp, null, !dbg !991
+  %2 = icmp sgt i32 %size, 0, !dbg !992
+  %or.cond = and i1 %1, %2, !dbg !993
+  br i1 %or.cond, label %3, label %.loopexit, !dbg !993
 
-if.then:                                          ; preds = %entry
-  %cmp2 = icmp eq double* %y, null
-  br i1 %cmp2, label %if.then3, label %for.body
+; <label>:3                                       ; preds = %0
+  %4 = icmp eq double* %y, null, !dbg !994
+  br i1 %4, label %6, label %.lr.ph, !dbg !995
 
-if.then3:                                         ; preds = %if.then
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([71 x i8]* @.str8, i64 0, i64 0), %struct._IO_FILE* %fp, i32 %size, double* null) #5
-  tail call void @exit(i32 -1) #6
-  unreachable
+.lr.ph:                                           ; preds = %3
+  %5 = add i32 %size, -1, !dbg !996
+  br label %9, !dbg !996
 
-for.body:                                         ; preds = %if.then, %if.end
-  %indvars.iv = phi i64 [ %indvars.iv.next, %if.end ], [ 0, %if.then ]
-  %1 = trunc i64 %indvars.iv to i32
-  %rem = srem i32 %1, 6
-  %cmp5 = icmp eq i32 %rem, 0
-  br i1 %cmp5, label %if.then6, label %if.end
+; <label>:6                                       ; preds = %3
+  %7 = load %struct.__sFILE** @__stderrp, align 8, !dbg !998, !tbaa !709
+  %8 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %7, i8* getelementptr inbounds ([71 x i8]* @.str8, i64 0, i64 0), %struct.__sFILE* %fp, i32 %size, double* null) #7, !dbg !1000
+  tail call void @exit(i32 -1) #8, !dbg !1001
+  unreachable, !dbg !1001
 
-if.then6:                                         ; preds = %for.body
-  %2 = tail call i64 @fwrite(i8* getelementptr inbounds ([3 x i8]* @.str9, i64 0, i64 0), i64 2, i64 1, %struct._IO_FILE* %fp)
-  br label %if.end
+; <label>:9                                       ; preds = %15, %.lr.ph
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %15 ]
+  %10 = trunc i64 %indvars.iv to i32, !dbg !1002
+  %11 = srem i32 %10, 6, !dbg !1002
+  %12 = icmp eq i32 %11, 0, !dbg !1006
+  br i1 %12, label %13, label %15, !dbg !1007
 
-if.end:                                           ; preds = %if.then6, %for.body
-  %arrayidx = getelementptr inbounds double* %y, i64 %indvars.iv
-  %3 = load double* %arrayidx, align 8, !tbaa !3
-  %call8 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([7 x i8]* @.str10, i64 0, i64 0), double %3) #5
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %size
-  br i1 %exitcond, label %if.end10, label %for.body
+; <label>:13                                      ; preds = %9
+  %14 = tail call i64 @fwrite(i8* getelementptr inbounds ([3 x i8]* @.str9, i64 0, i64 0), i64 2, i64 1, %struct.__sFILE* %fp), !dbg !1008
+  br label %15, !dbg !1008
 
-if.end10:                                         ; preds = %if.end, %entry
-  ret void
+; <label>:15                                      ; preds = %13, %9
+  %16 = getelementptr inbounds double* %y, i64 %indvars.iv, !dbg !1009
+  %17 = load double* %16, align 8, !dbg !1009, !tbaa !718
+  %18 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %fp, i8* getelementptr inbounds ([7 x i8]* @.str10, i64 0, i64 0), double %17) #7, !dbg !1010
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !996
+  %exitcond = icmp eq i32 %10, %5, !dbg !996
+  br i1 %exitcond, label %.loopexit, label %9, !dbg !996
+
+.loopexit:                                        ; preds = %15, %0
+  ret void, !dbg !1011
 }

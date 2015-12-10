@@ -1,0 +1,40 @@
+define void @_ZN3pov16POVFPU_SetGlobalEjd(i32 %k, double %v) #2 {
+  tail call void @llvm.dbg.value(metadata i32 %k, i64 0, metadata !517, metadata !1171), !dbg !1385
+  tail call void @llvm.dbg.value(metadata double %v, i64 0, metadata !518, metadata !1171), !dbg !1386
+  %1 = load double** @_ZN3pov14POVFPU_GlobalsE, align 8, !dbg !1387, !tbaa !1183
+  %2 = icmp eq double* %1, null, !dbg !1389
+  %3 = bitcast double* %1 to i8*
+  br i1 %2, label %4, label %10, !dbg !1390
+
+; <label>:4                                       ; preds = %0
+  %5 = add i32 %k, 1, !dbg !1391
+  store i32 %5, i32* @_ZN3pov16POVFPU_GlobalCntE, align 4, !dbg !1393, !tbaa !1189
+  %6 = zext i32 %5 to i64, !dbg !1394
+  %7 = shl nuw nsw i64 %6, 3, !dbg !1394
+  %8 = tail call i8* @_ZN3pov10pov_mallocEmPKciS1_(i64 %7, i8* getelementptr inbounds ([69 x i8]* @.str51, i64 0, i64 0), i32 862, i8* getelementptr inbounds ([12 x i8]* @.str53, i64 0, i64 0)) #8, !dbg !1394
+  store i8* %8, i8** bitcast (double** @_ZN3pov14POVFPU_GlobalsE to i8**), align 8, !dbg !1395, !tbaa !1183
+  %9 = bitcast i8* %8 to double*
+  br label %19, !dbg !1396
+
+; <label>:10                                      ; preds = %0
+  %11 = load i32* @_ZN3pov16POVFPU_GlobalCntE, align 4, !dbg !1397, !tbaa !1189
+  %12 = add i32 %k, 1, !dbg !1399
+  %13 = icmp ult i32 %11, %12, !dbg !1400
+  br i1 %13, label %14, label %19, !dbg !1401
+
+; <label>:14                                      ; preds = %10
+  store i32 %12, i32* @_ZN3pov16POVFPU_GlobalCntE, align 4, !dbg !1402, !tbaa !1189
+  %15 = zext i32 %12 to i64, !dbg !1404
+  %16 = shl nuw nsw i64 %15, 3, !dbg !1404
+  %17 = tail call i8* @_ZN3pov11pov_reallocEPvmPKciS2_(i8* %3, i64 %16, i8* getelementptr inbounds ([69 x i8]* @.str51, i64 0, i64 0), i32 867, i8* getelementptr inbounds ([12 x i8]* @.str53, i64 0, i64 0)) #8, !dbg !1404
+  store i8* %17, i8** bitcast (double** @_ZN3pov14POVFPU_GlobalsE to i8**), align 8, !dbg !1405, !tbaa !1183
+  %18 = bitcast i8* %17 to double*
+  br label %19, !dbg !1406
+
+; <label>:19                                      ; preds = %10, %14, %4
+  %20 = phi double* [ %1, %10 ], [ %18, %14 ], [ %9, %4 ]
+  %21 = zext i32 %k to i64, !dbg !1407
+  %22 = getelementptr inbounds double* %20, i64 %21, !dbg !1407
+  store double %v, double* %22, align 8, !dbg !1408, !tbaa !1235
+  ret void, !dbg !1409
+}

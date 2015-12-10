@@ -1,19 +1,27 @@
 define void @byterevn(i32* nocapture %w, i32 %n) #0 {
-entry:
-  %cmp22 = icmp sgt i32 %n, 0
-  br i1 %cmp22, label %for.body, label %for.end
+  tail call void @llvm.dbg.value(metadata i32* %w, i64 0, metadata !12, metadata !21), !dbg !22
+  tail call void @llvm.dbg.value(metadata i32 %n, i64 0, metadata !13, metadata !21), !dbg !23
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !16, metadata !21), !dbg !24
+  %1 = icmp sgt i32 %n, 0, !dbg !25
+  br i1 %1, label %.lr.ph, label %._crit_edge, !dbg !28
 
-for.body:                                         ; preds = %entry, %for.body
-  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %entry ]
-  %arrayidx = getelementptr inbounds i32* %w, i64 %indvars.iv
-  %0 = load i32* %arrayidx, align 4, !tbaa !0
-  %or7 = tail call i32 @llvm.bswap.i32(i32 %0)
-  store i32 %or7, i32* %arrayidx, align 4, !tbaa !0
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %n
-  br i1 %exitcond, label %for.end, label %for.body
+.lr.ph:                                           ; preds = %0
+  %2 = add i32 %n, -1, !dbg !28
+  br label %3, !dbg !28
 
-for.end:                                          ; preds = %for.body, %entry
-  ret void
+; <label>:3                                       ; preds = %3, %.lr.ph
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %3 ]
+  %4 = getelementptr inbounds i32* %w, i64 %indvars.iv, !dbg !29
+  %5 = load i32* %4, align 4, !dbg !29, !tbaa !31
+  tail call void @llvm.dbg.value(metadata i32 %5, i64 0, metadata !14, metadata !21), !dbg !35
+  %6 = tail call i32 @llvm.bswap.i32(i32 %5), !dbg !36
+  tail call void @llvm.dbg.value(metadata i32 %6, i64 0, metadata !15, metadata !21), !dbg !37
+  store i32 %6, i32* %4, align 4, !dbg !38, !tbaa !31
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !28
+  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !28
+  %exitcond = icmp eq i32 %lftr.wideiv, %2, !dbg !28
+  br i1 %exitcond, label %._crit_edge, label %3, !dbg !28
+
+._crit_edge:                                      ; preds = %3, %0
+  ret void, !dbg !39
 }

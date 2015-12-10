@@ -2,36 +2,49 @@ define internal i32 @xdrstdio_putint32(%struct.XDR* nocapture readonly %xdrs, i3
   %1 = alloca i32, align 4
   %y.i.i = alloca i32, align 4
   %mycopy = alloca i32, align 4
-  %2 = load i32* %ip, align 4, !tbaa !8
-  %3 = bitcast i32* %1 to i8*
-  call void @llvm.lifetime.start(i64 4, i8* %3) #1
-  %4 = bitcast i32* %y.i.i to i8*
-  call void @llvm.lifetime.start(i64 4, i8* %4) #1
-  store i32 %2, i32* %1, align 4, !tbaa !8
-  br label %5
+  tail call void @llvm.dbg.value(metadata %struct.XDR* %xdrs, i64 0, metadata !344, metadata !360), !dbg !870
+  tail call void @llvm.dbg.value(metadata i32* %ip, i64 0, metadata !345, metadata !360), !dbg !871
+  %2 = load i32* %ip, align 4, !dbg !872, !tbaa !382
+  tail call void @llvm.dbg.value(metadata i32 %2, i64 0, metadata !311, metadata !360) #2, !dbg !873
+  tail call void @llvm.dbg.declare(metadata i16* undef, metadata !312, metadata !360) #2, !dbg !875
+  tail call void @llvm.dbg.value(metadata i8 0, i64 0, metadata !312, metadata !741) #2, !dbg !875
+  tail call void @llvm.dbg.value(metadata i8 15, i64 0, metadata !312, metadata !742) #2, !dbg !875
+  %3 = bitcast i32* %1 to i8*, !dbg !876
+  call void @llvm.lifetime.start(i64 4, i8* %3) #2, !dbg !876
+  %4 = bitcast i32* %y.i.i to i8*, !dbg !876
+  call void @llvm.lifetime.start(i64 4, i8* %4) #2, !dbg !876
+  tail call void @llvm.dbg.value(metadata i32 %2, i64 0, metadata !299, metadata !360) #2, !dbg !876
+  store i32 %2, i32* %1, align 4, !dbg !878, !tbaa !382
+  tail call void @llvm.dbg.value(metadata i8* %3, i64 0, metadata !302, metadata !360) #2, !dbg !879
+  tail call void @llvm.dbg.value(metadata i8* %4, i64 0, metadata !303, metadata !360) #2, !dbg !880
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !301, metadata !360) #2, !dbg !881
+  br label %5, !dbg !882
 
 ; <label>:5                                       ; preds = %5, %0
-  %indvars.iv.i.i = phi i64 [ 0, %0 ], [ %indvars.iv.next.i.i, %5 ]
-  %6 = sub nsw i64 3, %indvars.iv.i.i
-  %7 = getelementptr inbounds i8* %3, i64 %6
-  %8 = load i8* %7, align 1, !tbaa !17
-  %9 = getelementptr inbounds i8* %4, i64 %indvars.iv.i.i
-  store i8 %8, i8* %9, align 1, !tbaa !17
-  %indvars.iv.next.i.i = add nuw nsw i64 %indvars.iv.i.i, 1
-  %exitcond.i.i = icmp eq i64 %indvars.iv.next.i.i, 4
-  br i1 %exitcond.i.i, label %xdr_htonl.exit, label %5
+  %indvars.iv.i.i = phi i64 [ 0, %0 ], [ %indvars.iv.next.i.i, %5 ], !dbg !878
+  %6 = sub nsw i64 3, %indvars.iv.i.i, !dbg !883
+  %7 = getelementptr inbounds i8* %3, i64 %6, !dbg !884
+  %8 = load i8* %7, align 1, !dbg !884, !tbaa !505
+  %9 = getelementptr inbounds i8* %4, i64 %indvars.iv.i.i, !dbg !885
+  store i8 %8, i8* %9, align 1, !dbg !886, !tbaa !505
+  %indvars.iv.next.i.i = add nuw nsw i64 %indvars.iv.i.i, 1, !dbg !882
+  %exitcond.i.i = icmp eq i64 %indvars.iv.next.i.i, 4, !dbg !882
+  br i1 %exitcond.i.i, label %xdr_htonl.exit, label %5, !dbg !882
 
 xdr_htonl.exit:                                   ; preds = %5
-  %10 = load i32* %y.i.i, align 4, !tbaa !8
-  call void @llvm.lifetime.end(i64 4, i8* %3) #1
-  call void @llvm.lifetime.end(i64 4, i8* %4) #1
-  store i32 %10, i32* %mycopy, align 4, !tbaa !8
-  %11 = bitcast i32* %mycopy to i8*
-  %12 = getelementptr inbounds %struct.XDR* %xdrs, i64 0, i32 3
-  %13 = bitcast i8** %12 to %struct.__sFILE**
-  %14 = load %struct.__sFILE** %13, align 8, !tbaa !21
-  %15 = call i64 @"\01_fwrite"(i8* %11, i64 4, i64 1, %struct.__sFILE* %14) #6
-  %16 = icmp eq i64 %15, 1
-  %. = zext i1 %16 to i32
-  ret i32 %.
+  tail call void @llvm.dbg.value(metadata i32* %y.i.i, i64 0, metadata !300, metadata !360) #2, !dbg !887
+  %10 = load i32* %y.i.i, align 4, !dbg !888, !tbaa !382
+  call void @llvm.lifetime.end(i64 4, i8* %3) #2, !dbg !889
+  call void @llvm.lifetime.end(i64 4, i8* %4) #2, !dbg !889
+  tail call void @llvm.dbg.value(metadata i32 %10, i64 0, metadata !346, metadata !360), !dbg !890
+  store i32 %10, i32* %mycopy, align 4, !dbg !890, !tbaa !382
+  tail call void @llvm.dbg.value(metadata i32* %mycopy, i64 0, metadata !345, metadata !360), !dbg !871
+  %11 = bitcast i32* %mycopy to i8*, !dbg !891
+  %12 = getelementptr inbounds %struct.XDR* %xdrs, i64 0, i32 3, !dbg !893
+  %13 = bitcast i8** %12 to %struct.__sFILE**, !dbg !893
+  %14 = load %struct.__sFILE** %13, align 8, !dbg !893, !tbaa !720
+  %15 = call i64 @"\01_fwrite"(i8* %11, i64 4, i64 1, %struct.__sFILE* %14) #7, !dbg !894
+  %16 = icmp eq i64 %15, 1, !dbg !895
+  %. = zext i1 %16 to i32, !dbg !896
+  ret i32 %., !dbg !897
 }

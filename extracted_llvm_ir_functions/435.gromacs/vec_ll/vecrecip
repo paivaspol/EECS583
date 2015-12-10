@@ -1,23 +1,27 @@
 define void @vecrecip(float* nocapture readonly %in, float* nocapture %out, i32 %n) #4 {
-  %1 = icmp sgt i32 %n, 0
-  br i1 %1, label %.lr.ph, label %._crit_edge
+  tail call void @llvm.dbg.value(metadata float* %in, i64 0, metadata !211, metadata !219), !dbg !397
+  tail call void @llvm.dbg.value(metadata float* %out, i64 0, metadata !212, metadata !219), !dbg !398
+  tail call void @llvm.dbg.value(metadata i32 %n, i64 0, metadata !213, metadata !219), !dbg !399
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !214, metadata !219), !dbg !400
+  %1 = icmp sgt i32 %n, 0, !dbg !401
+  br i1 %1, label %.lr.ph, label %._crit_edge, !dbg !404
 
 .lr.ph:                                           ; preds = %0
-  %2 = add i32 %n, -1
-  br label %3
+  %2 = add i32 %n, -1, !dbg !404
+  br label %3, !dbg !404
 
 ; <label>:3                                       ; preds = %3, %.lr.ph
   %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %3 ]
-  %4 = getelementptr inbounds float* %in, i64 %indvars.iv
-  %5 = load float* %4, align 4, !tbaa !14
-  %6 = fdiv float 1.000000e+00, %5
-  %7 = getelementptr inbounds float* %out, i64 %indvars.iv
-  store float %6, float* %7, align 4, !tbaa !14
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %2
-  br i1 %exitcond, label %._crit_edge, label %3
+  %4 = getelementptr inbounds float* %in, i64 %indvars.iv, !dbg !405
+  %5 = load float* %4, align 4, !dbg !405, !tbaa !347
+  %6 = fdiv float 1.000000e+00, %5, !dbg !406
+  %7 = getelementptr inbounds float* %out, i64 %indvars.iv, !dbg !407
+  store float %6, float* %7, align 4, !dbg !408, !tbaa !347
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !404
+  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !404
+  %exitcond = icmp eq i32 %lftr.wideiv, %2, !dbg !404
+  br i1 %exitcond, label %._crit_edge, label %3, !dbg !404
 
 ._crit_edge:                                      ; preds = %3, %0
-  ret void
+  ret void, !dbg !409
 }

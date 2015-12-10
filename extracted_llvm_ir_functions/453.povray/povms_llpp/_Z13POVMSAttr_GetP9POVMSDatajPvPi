@@ -1,0 +1,46 @@
+define i32 @_Z13POVMSAttr_GetP9POVMSDatajPvPi(%struct.POVMSData* readonly %attr, i32 %type, i8* %data, i32* %maxdatasize) #0 {
+  tail call void @llvm.dbg.value(metadata %struct.POVMSData* %attr, i64 0, metadata !615, metadata !1201), !dbg !3164
+  tail call void @llvm.dbg.value(metadata i32 %type, i64 0, metadata !616, metadata !1201), !dbg !3165
+  tail call void @llvm.dbg.value(metadata i8* %data, i64 0, metadata !617, metadata !1201), !dbg !3166
+  tail call void @llvm.dbg.value(metadata i32* %maxdatasize, i64 0, metadata !618, metadata !1201), !dbg !3167
+  %1 = icmp eq %struct.POVMSData* %attr, null, !dbg !3168
+  %2 = icmp eq i8* %data, null, !dbg !3170
+  %or.cond = or i1 %1, %2, !dbg !3172
+  %3 = icmp eq i32* %maxdatasize, null, !dbg !3173
+  %or.cond1 = or i1 %or.cond, %3, !dbg !3172
+  br i1 %or.cond1, label %21, label %4, !dbg !3172
+
+; <label>:4                                       ; preds = %0
+  %5 = load i32* %maxdatasize, align 4, !dbg !3175, !tbaa !1260
+  %6 = icmp slt i32 %5, 0, !dbg !3177
+  br i1 %6, label %21, label %7, !dbg !3178
+
+; <label>:7                                       ; preds = %4
+  %8 = getelementptr inbounds %struct.POVMSData* %attr, i64 0, i32 1, !dbg !3179
+  %9 = load i32* %8, align 4, !dbg !3179, !tbaa !1542
+  %10 = icmp slt i32 %5, %9, !dbg !3180
+  br i1 %10, label %11, label %12, !dbg !3181
+
+; <label>:11                                      ; preds = %7
+  store i32 %9, i32* %maxdatasize, align 4, !dbg !3182, !tbaa !1260
+  br label %21, !dbg !3184
+
+; <label>:12                                      ; preds = %7
+  %13 = getelementptr inbounds %struct.POVMSData* %attr, i64 0, i32 0, !dbg !3185
+  %14 = load i32* %13, align 4, !dbg !3185, !tbaa !1539
+  %15 = icmp eq i32 %14, %type, !dbg !3186
+  br i1 %15, label %16, label %21, !dbg !3187
+
+; <label>:16                                      ; preds = %12
+  %17 = getelementptr inbounds %struct.POVMSData* %attr, i64 0, i32 2, i32 0, !dbg !3188
+  %18 = load i8** %17, align 8, !dbg !3188, !tbaa !1210
+  %19 = sext i32 %9 to i64, !dbg !3188
+  tail call void @llvm.memmove.p0i8.p0i8.i64(i8* %data, i8* %18, i64 %19, i32 1, i1 false), !dbg !3188
+  %20 = load i32* %8, align 4, !dbg !3189, !tbaa !1542
+  store i32 %20, i32* %maxdatasize, align 4, !dbg !3190, !tbaa !1260
+  br label %21, !dbg !3191
+
+; <label>:21                                      ; preds = %12, %4, %0, %16, %11
+  %.0 = phi i32 [ -3, %11 ], [ 0, %16 ], [ -1, %0 ], [ -1, %4 ], [ -19, %12 ]
+  ret i32 %.0, !dbg !3192
+}

@@ -1,68 +1,78 @@
 define void @mem_dump(%struct.__sFILE* %log, i8* %title, i8* nocapture readonly %mem, i32 %len) #0 {
   %s = alloca [17 x i8], align 16
-  %1 = getelementptr inbounds [17 x i8]* %s, i64 0, i64 0
-  store i8 0, i8* %1, align 16, !tbaa !2
-  %2 = icmp ne i32 %len, 0
-  %3 = icmp ne %struct.__sFILE* %log, null
-  %or.cond = and i1 %3, %2
-  br i1 %or.cond, label %4, label %.preheader
+  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %log, i64 0, metadata !74, metadata !103), !dbg !104
+  tail call void @llvm.dbg.value(metadata i8* %title, i64 0, metadata !75, metadata !103), !dbg !105
+  tail call void @llvm.dbg.value(metadata i8* %mem, i64 0, metadata !76, metadata !103), !dbg !106
+  tail call void @llvm.dbg.value(metadata i32 %len, i64 0, metadata !77, metadata !103), !dbg !107
+  tail call void @llvm.dbg.declare(metadata [17 x i8]* %s, metadata !80, metadata !103), !dbg !108
+  tail call void @llvm.dbg.value(metadata i8* %mem, i64 0, metadata !84, metadata !103), !dbg !109
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !79, metadata !103), !dbg !110
+  %1 = getelementptr inbounds [17 x i8]* %s, i64 0, i64 0, !dbg !111
+  store i8 0, i8* %1, align 16, !dbg !112, !tbaa !113
+  %2 = icmp ne i32 %len, 0, !dbg !116
+  %3 = icmp ne %struct.__sFILE* %log, null, !dbg !118
+  %or.cond = and i1 %3, %2, !dbg !119
+  br i1 %or.cond, label %4, label %.preheader, !dbg !119
 
 ; <label>:4                                       ; preds = %0
-  %5 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %log, i8* getelementptr inbounds ([16 x i8]* @.str, i64 0, i64 0), i8* %title) #3
-  br label %.preheader
+  %5 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %log, i8* getelementptr inbounds ([16 x i8]* @.str, i64 0, i64 0), i8* %title) #4, !dbg !120
+  br label %.preheader, !dbg !120
 
 .preheader:                                       ; preds = %4, %0
-  %6 = icmp sgt i32 %len, 0
-  br i1 %6, label %.lr.ph, label %._crit_edge
+  %6 = icmp sgt i32 %len, 0, !dbg !121
+  br i1 %6, label %.lr.ph, label %._crit_edge, !dbg !124
 
 .lr.ph:                                           ; preds = %.preheader
-  %7 = add i32 %len, -1
-  br label %8
+  %7 = add i32 %len, -1, !dbg !124
+  br label %8, !dbg !124
 
 ; <label>:8                                       ; preds = %.thread6, %.lr.ph
   %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %.thread6 ]
   %index.07 = phi i32 [ 0, %.lr.ph ], [ %21, %.thread6 ]
-  %9 = getelementptr inbounds i8* %mem, i64 %indvars.iv
-  %10 = load i8* %9, align 1, !tbaa !2
-  %11 = and i32 %index.07, -17
-  %12 = icmp eq i32 %11, 0
-  br i1 %12, label %13, label %16
+  %9 = getelementptr inbounds i8* %mem, i64 %indvars.iv, !dbg !125
+  %10 = load i8* %9, align 1, !dbg !125, !tbaa !113
+  call void @llvm.dbg.value(metadata i8 %10, i64 0, metadata !85, metadata !103), !dbg !127
+  %11 = and i32 %index.07, -17, !dbg !128
+  %12 = icmp eq i32 %11, 0, !dbg !128
+  br i1 %12, label %13, label %16, !dbg !128
 
 ; <label>:13                                      ; preds = %8
-  call fastcc void @print_chars(%struct.__sFILE* %log, i8* %1, i32 %index.07) #4
-  br i1 %3, label %.thread, label %.thread6
+  call fastcc void @print_chars(%struct.__sFILE* %log, i8* %1, i32 %index.07) #5, !dbg !130
+  br i1 %3, label %.thread, label %.thread6, !dbg !132
 
 .thread:                                          ; preds = %13
-  %14 = trunc i64 %indvars.iv to i32
-  %15 = call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %log, i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i32 %14) #3
-  br label %17
+  %14 = trunc i64 %indvars.iv to i32, !dbg !133
+  %15 = call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %log, i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i32 %14) #4, !dbg !133
+  br label %17, !dbg !135
 
 ; <label>:16                                      ; preds = %8
-  br i1 %3, label %17, label %.thread6
+  br i1 %3, label %17, label %.thread6, !dbg !135
 
 ; <label>:17                                      ; preds = %.thread, %16
   %index.15 = phi i32 [ 0, %.thread ], [ %index.07, %16 ]
-  %18 = zext i8 %10 to i32
-  %19 = call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %log, i8* getelementptr inbounds ([6 x i8]* @.str2, i64 0, i64 0), i32 %18) #3
-  br label %.thread6
+  %18 = zext i8 %10 to i32, !dbg !136
+  %19 = call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %log, i8* getelementptr inbounds ([6 x i8]* @.str2, i64 0, i64 0), i32 %18) #4, !dbg !138
+  br label %.thread6, !dbg !138
 
 .thread6:                                         ; preds = %13, %17, %16
   %index.14 = phi i32 [ %index.15, %17 ], [ %index.07, %16 ], [ 0, %13 ]
-  %b.off.i = add i8 %10, -32
-  %20 = icmp ugt i8 %b.off.i, 94
-  %.0.i = select i1 %20, i8 46, i8 %10
-  %21 = add nsw i32 %index.14, 1
-  %22 = sext i32 %index.14 to i64
-  %23 = getelementptr inbounds [17 x i8]* %s, i64 0, i64 %22
-  store i8 %.0.i, i8* %23, align 1, !tbaa !2
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %7
-  br i1 %exitcond, label %._crit_edge, label %8
+  tail call void @llvm.dbg.value(metadata i8 %10, i64 0, metadata !98, metadata !103), !dbg !139
+  %b.off.i = add i8 %10, -32, !dbg !141
+  %20 = icmp ugt i8 %b.off.i, 94, !dbg !141
+  %.0.i = select i1 %20, i8 46, i8 %10, !dbg !141
+  %21 = add nsw i32 %index.14, 1, !dbg !143
+  call void @llvm.dbg.value(metadata i32 %21, i64 0, metadata !79, metadata !103), !dbg !110
+  %22 = sext i32 %index.14 to i64, !dbg !144
+  %23 = getelementptr inbounds [17 x i8]* %s, i64 0, i64 %22, !dbg !144
+  store i8 %.0.i, i8* %23, align 1, !dbg !145, !tbaa !113
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !124
+  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !124
+  %exitcond = icmp eq i32 %lftr.wideiv, %7, !dbg !124
+  br i1 %exitcond, label %._crit_edge, label %8, !dbg !124
 
 ._crit_edge:                                      ; preds = %.thread6, %.preheader
   %index.0.lcssa = phi i32 [ 0, %.preheader ], [ %21, %.thread6 ]
-  call fastcc void @print_chars(%struct.__sFILE* %log, i8* %1, i32 %index.0.lcssa) #4
-  %24 = call i32 @fflush(%struct.__sFILE* %log) #3
-  ret void
+  call fastcc void @print_chars(%struct.__sFILE* %log, i8* %1, i32 %index.0.lcssa) #5, !dbg !146
+  %24 = call i32 @fflush(%struct.__sFILE* %log) #4, !dbg !147
+  ret void, !dbg !148
 }

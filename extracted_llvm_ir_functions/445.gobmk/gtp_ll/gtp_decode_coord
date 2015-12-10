@@ -1,71 +1,93 @@
-define i32 @gtp_decode_coord(i8* nocapture %s, i32* %i, i32* %j) #0 {
-entry:
+define i32 @gtp_decode_coord(i8* nocapture readonly %s, i32* %i, i32* %j) #0 {
   %column = alloca i8, align 1
   %row = alloca i32, align 4
   %n = alloca i32, align 4
-  %call = call i32 (i8*, i8*, ...)* @__isoc99_sscanf(i8* %s, i8* getelementptr inbounds ([8 x i8]* @.str18, i64 0, i64 0), i8* %column, i32* %row, i32* %n) #4
-  %cmp = icmp eq i32 %call, 2
-  br i1 %cmp, label %if.end, label %return
+  tail call void @llvm.dbg.value(metadata i8* %s, i64 0, metadata !192, metadata !262), !dbg !501
+  tail call void @llvm.dbg.value(metadata i32* %i, i64 0, metadata !193, metadata !262), !dbg !502
+  tail call void @llvm.dbg.value(metadata i32* %j, i64 0, metadata !194, metadata !262), !dbg !503
+  %1 = load i32* @gtp_boardsize, align 4, !dbg !504, !tbaa !303
+  %2 = icmp slt i32 %1, 1, !dbg !504
+  br i1 %2, label %3, label %4, !dbg !504, !prof !463
 
-if.end:                                           ; preds = %entry
-  %0 = load i8* %column, align 1, !tbaa !0
-  %conv = sext i8 %0 to i32
-  %call1 = call i32 @tolower(i32 %conv) #4
-  %cmp2 = icmp eq i32 %call1, 105
-  br i1 %cmp2, label %return, label %if.end5
+; <label>:3                                       ; preds = %0
+  tail call void @__assert_rtn(i8* getelementptr inbounds ([17 x i8]* @__func__.gtp_decode_coord, i64 0, i64 0), i8* getelementptr inbounds ([71 x i8]* @.str15, i64 0, i64 0), i32 344, i8* getelementptr inbounds ([18 x i8]* @.str16, i64 0, i64 0)) #9, !dbg !504
+  unreachable, !dbg !504
 
-if.end5:                                          ; preds = %if.end
-  %1 = load i8* %column, align 1, !tbaa !0
-  %conv7 = sext i8 %1 to i32
-  %call8 = call i32 @tolower(i32 %conv7) #4
-  %sub = add nsw i32 %call8, -97
-  store i32 %sub, i32* %j, align 4, !tbaa !2
-  %2 = load i8* %column, align 1, !tbaa !0
-  %conv10 = sext i8 %2 to i32
-  %call11 = call i32 @tolower(i32 %conv10) #4
-  %cmp12 = icmp sgt i32 %call11, 105
-  br i1 %cmp12, label %if.then14, label %if.end15
+; <label>:4                                       ; preds = %0
+  tail call void @llvm.dbg.value(metadata i8* %column, i64 0, metadata !195, metadata !262), !dbg !505
+  tail call void @llvm.dbg.value(metadata i32* %row, i64 0, metadata !196, metadata !262), !dbg !506
+  tail call void @llvm.dbg.value(metadata i32* %n, i64 0, metadata !197, metadata !262), !dbg !507
+  %5 = call i32 (i8*, i8*, ...)* @sscanf(i8* %s, i8* getelementptr inbounds ([8 x i8]* @.str20, i64 0, i64 0), i8* %column, i32* %row, i32* %n) #7, !dbg !508
+  %6 = icmp eq i32 %5, 2, !dbg !510
+  br i1 %6, label %7, label %42, !dbg !511
 
-if.then14:                                        ; preds = %if.end5
-  %3 = load i32* %j, align 4, !tbaa !2
-  %dec = add nsw i32 %3, -1
-  store i32 %dec, i32* %j, align 4, !tbaa !2
-  br label %if.end15
+; <label>:7                                       ; preds = %4
+  call void @llvm.dbg.value(metadata i8* %column, i64 0, metadata !195, metadata !262), !dbg !505
+  %8 = load i8* %column, align 1, !dbg !512, !tbaa !277
+  %9 = sext i8 %8 to i32, !dbg !514
+  call void @llvm.dbg.value(metadata i32 %9, i64 0, metadata !236, metadata !262) #2, !dbg !515
+  %10 = call i32 @__tolower(i32 %9) #7, !dbg !517
+  %11 = icmp eq i32 %10, 105, !dbg !518
+  br i1 %11, label %42, label %12, !dbg !519
 
-if.end15:                                         ; preds = %if.then14, %if.end5
-  %4 = load i32* @gtp_boardsize, align 4, !tbaa !2
-  %5 = load i32* %row, align 4, !tbaa !2
-  %sub16 = sub nsw i32 %4, %5
-  store i32 %sub16, i32* %i, align 4, !tbaa !2
-  %cmp17 = icmp slt i32 %sub16, 0
-  br i1 %cmp17, label %return, label %lor.lhs.false
+; <label>:12                                      ; preds = %7
+  call void @llvm.dbg.value(metadata i8* %column, i64 0, metadata !195, metadata !262), !dbg !505
+  %13 = load i8* %column, align 1, !dbg !520, !tbaa !277
+  %14 = sext i8 %13 to i32, !dbg !521
+  call void @llvm.dbg.value(metadata i32 %14, i64 0, metadata !236, metadata !262) #2, !dbg !522
+  %15 = call i32 @__tolower(i32 %14) #7, !dbg !524
+  %16 = add nsw i32 %15, -97, !dbg !525
+  store i32 %16, i32* %j, align 4, !dbg !526, !tbaa !303
+  call void @llvm.dbg.value(metadata i8* %column, i64 0, metadata !195, metadata !262), !dbg !505
+  %17 = load i8* %column, align 1, !dbg !527, !tbaa !277
+  %18 = sext i8 %17 to i32, !dbg !529
+  call void @llvm.dbg.value(metadata i32 %18, i64 0, metadata !236, metadata !262) #2, !dbg !530
+  %19 = call i32 @__tolower(i32 %18) #7, !dbg !532
+  %20 = icmp sgt i32 %19, 105, !dbg !533
+  br i1 %20, label %21, label %24, !dbg !534
 
-lor.lhs.false:                                    ; preds = %if.end15
-  %6 = load i32* @gtp_boardsize, align 4, !tbaa !2
-  %cmp19 = icmp slt i32 %sub16, %6
-  br i1 %cmp19, label %lor.lhs.false21, label %return
+; <label>:21                                      ; preds = %12
+  %22 = load i32* %j, align 4, !dbg !535, !tbaa !303
+  %23 = add nsw i32 %22, -1, !dbg !535
+  store i32 %23, i32* %j, align 4, !dbg !535, !tbaa !303
+  br label %24, !dbg !535
 
-lor.lhs.false21:                                  ; preds = %lor.lhs.false
-  %7 = load i32* %j, align 4, !tbaa !2
-  %cmp22 = icmp sgt i32 %7, -1
-  %cmp25 = icmp slt i32 %7, %6
-  %or.cond = and i1 %cmp22, %cmp25
-  br i1 %or.cond, label %if.end28, label %return
+; <label>:24                                      ; preds = %21, %12
+  %25 = load i32* @gtp_boardsize, align 4, !dbg !536, !tbaa !303
+  call void @llvm.dbg.value(metadata i32* %row, i64 0, metadata !196, metadata !262), !dbg !506
+  %26 = load i32* %row, align 4, !dbg !537, !tbaa !303
+  %27 = sub nsw i32 %25, %26, !dbg !538
+  store i32 %27, i32* %i, align 4, !dbg !539, !tbaa !303
+  %28 = icmp slt i32 %27, 0, !dbg !540
+  br i1 %28, label %42, label %29, !dbg !542
 
-if.end28:                                         ; preds = %lor.lhs.false21
-  %8 = load void (i32, i32, i32*, i32*)** @vertex_transform_input_hook, align 8, !tbaa !3
-  %cmp29 = icmp eq void (i32, i32, i32*, i32*)* %8, null
-  br i1 %cmp29, label %if.end32, label %if.then31
+; <label>:29                                      ; preds = %24
+  %30 = load i32* @gtp_boardsize, align 4, !dbg !543, !tbaa !303
+  %31 = icmp slt i32 %27, %30, !dbg !544
+  br i1 %31, label %32, label %42, !dbg !545
 
-if.then31:                                        ; preds = %if.end28
-  call void %8(i32 %sub16, i32 %7, i32* %i, i32* %j) #4
-  br label %if.end32
+; <label>:32                                      ; preds = %29
+  %33 = load i32* %j, align 4, !dbg !546, !tbaa !303
+  %34 = icmp sgt i32 %33, -1, !dbg !547
+  %35 = icmp slt i32 %33, %30, !dbg !548
+  %or.cond = and i1 %34, %35, !dbg !549
+  br i1 %or.cond, label %36, label %42, !dbg !549
 
-if.end32:                                         ; preds = %if.end28, %if.then31
-  %9 = load i32* %n, align 4, !tbaa !2
-  br label %return
+; <label>:36                                      ; preds = %32
+  %37 = load void (i32, i32, i32*, i32*)** @vertex_transform_input_hook, align 8, !dbg !550, !tbaa !344
+  %38 = icmp eq void (i32, i32, i32*, i32*)* %37, null, !dbg !552
+  br i1 %38, label %40, label %39, !dbg !553
 
-return:                                           ; preds = %if.end15, %lor.lhs.false, %lor.lhs.false21, %if.end, %entry, %if.end32
-  %retval.0 = phi i32 [ %9, %if.end32 ], [ 0, %entry ], [ 0, %if.end ], [ 0, %lor.lhs.false21 ], [ 0, %lor.lhs.false ], [ 0, %if.end15 ]
-  ret i32 %retval.0
+; <label>:39                                      ; preds = %36
+  call void %37(i32 %27, i32 %33, i32* %i, i32* %j) #7, !dbg !554
+  br label %40, !dbg !554
+
+; <label>:40                                      ; preds = %36, %39
+  call void @llvm.dbg.value(metadata i32* %n, i64 0, metadata !197, metadata !262), !dbg !507
+  %41 = load i32* %n, align 4, !dbg !555, !tbaa !303
+  br label %42, !dbg !556
+
+; <label>:42                                      ; preds = %24, %29, %32, %7, %4, %40
+  %.0 = phi i32 [ %41, %40 ], [ 0, %4 ], [ 0, %7 ], [ 0, %32 ], [ 0, %29 ], [ 0, %24 ]
+  ret i32 %.0, !dbg !557
 }

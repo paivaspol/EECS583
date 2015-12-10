@@ -1,41 +1,42 @@
-define i32 @main(i32 %argc, i8** nocapture %argv) #0 {
-entry:
-  %cmp = icmp slt i32 %argc, 2
-  br i1 %cmp, label %return, label %if.end
+define i32 @main(i32 %argc, i8** nocapture readonly %argv) #0 {
+  tail call void @llvm.dbg.value(metadata i32 %argc, i64 0, metadata !23, metadata !99), !dbg !149
+  tail call void @llvm.dbg.value(metadata i8** %argv, i64 0, metadata !24, metadata !99), !dbg !150
+  %1 = icmp slt i32 %argc, 2, !dbg !151
+  br i1 %1, label %17, label %2, !dbg !153
 
-if.end:                                           ; preds = %entry
-  %puts = tail call i32 @puts(i8* getelementptr inbounds ([31 x i8]* @str16, i64 0, i64 0))
-  %puts21 = tail call i32 @puts(i8* getelementptr inbounds ([51 x i8]* @str17, i64 0, i64 0))
-  %puts22 = tail call i32 @puts(i8* getelementptr inbounds ([45 x i8]* @str18, i64 0, i64 0))
-  %puts23 = tail call i32 @puts(i8* getelementptr inbounds ([39 x i8]* @str19, i64 0, i64 0))
-  %putchar = tail call i32 @putchar(i32 10) #4
-  tail call void @llvm.memset.p0i8.i64(i8* getelementptr inbounds (%struct.network* @net, i64 0, i32 0, i64 0), i8 0, i64 624, i32 8, i1 false)
-  store i64 10000000, i64* getelementptr inbounds (%struct.network* @net, i64 0, i32 18), align 8, !tbaa !0
-  %arrayidx = getelementptr inbounds i8** %argv, i64 1
-  %0 = load i8** %arrayidx, align 8, !tbaa !3
-  %call5 = tail call i8* @strcpy(i8* getelementptr inbounds (%struct.network* @net, i64 0, i32 0, i64 0), i8* %0) #5
-  %call6 = tail call i64 @read_min(%struct.network* @net) #5
-  %tobool = icmp eq i64 %call6, 0
-  br i1 %tobool, label %if.end10, label %if.then7
+; <label>:2                                       ; preds = %0
+  %puts = tail call i32 @puts(i8* getelementptr inbounds ([31 x i8]* @str16, i64 0, i64 0)), !dbg !154
+  %puts1 = tail call i32 @puts(i8* getelementptr inbounds ([51 x i8]* @str17, i64 0, i64 0)), !dbg !155
+  %puts2 = tail call i32 @puts(i8* getelementptr inbounds ([45 x i8]* @str18, i64 0, i64 0)), !dbg !156
+  %puts3 = tail call i32 @puts(i8* getelementptr inbounds ([39 x i8]* @str19, i64 0, i64 0)), !dbg !157
+  %putchar = tail call i32 @putchar(i32 10) #4, !dbg !158
+  tail call void @llvm.memset.p0i8.i64(i8* getelementptr inbounds (%struct.network* @net, i64 0, i32 0, i64 0), i8 0, i64 624, i32 8, i1 false), !dbg !159
+  store i64 10000000, i64* getelementptr inbounds (%struct.network* @net, i64 0, i32 18), align 8, !dbg !160, !tbaa !161
+  %3 = getelementptr inbounds i8** %argv, i64 1, !dbg !162
+  %4 = load i8** %3, align 8, !dbg !162, !tbaa !163
+  %5 = tail call i8* @__strcpy_chk(i8* getelementptr inbounds (%struct.network* @net, i64 0, i32 0, i64 0), i8* %4, i64 624) #6, !dbg !162
+  %6 = tail call i64 @read_min(%struct.network* @net) #6, !dbg !164
+  %7 = icmp eq i64 %6, 0, !dbg !164
+  br i1 %7, label %10, label %8, !dbg !166
 
-if.then7:                                         ; preds = %if.end
-  %puts25 = tail call i32 @puts(i8* getelementptr inbounds ([17 x i8]* @str21, i64 0, i64 0))
-  %call9 = tail call i64 @getfree(%struct.network* @net) #5
-  br label %return
+; <label>:8                                       ; preds = %2
+  %puts5 = tail call i32 @puts(i8* getelementptr inbounds ([17 x i8]* @str21, i64 0, i64 0)), !dbg !167
+  %9 = tail call i64 @getfree(%struct.network* @net) #6, !dbg !169
+  br label %17, !dbg !170
 
-if.end10:                                         ; preds = %if.end
-  %1 = load i64* getelementptr inbounds (%struct.network* @net, i64 0, i32 3), align 8, !tbaa !0
-  %call11 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([34 x i8]* @.str13, i64 0, i64 0), i64 %1) #5
-  %call12 = tail call i64 @primal_start_artificial(%struct.network* @net) #5
-  %call13 = tail call i64 @global_opt() #7
-  %puts24 = tail call i32 @puts(i8* getelementptr inbounds ([5 x i8]* @str20, i64 0, i64 0))
-  %call15 = tail call i64 @write_circulations(i8* getelementptr inbounds ([8 x i8]* @.str15, i64 0, i64 0), %struct.network* @net) #5
-  %call18 = tail call i64 @getfree(%struct.network* @net) #5
-  %not.tobool16 = icmp ne i64 %call15, 0
-  %. = sext i1 %not.tobool16 to i32
-  br label %return
+; <label>:10                                      ; preds = %2
+  %11 = load i64* getelementptr inbounds (%struct.network* @net, i64 0, i32 3), align 8, !dbg !171, !tbaa !172
+  %12 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([34 x i8]* @.str13, i64 0, i64 0), i64 %11) #6, !dbg !173
+  %13 = tail call i64 @primal_start_artificial(%struct.network* @net) #6, !dbg !174
+  %14 = tail call i64 @global_opt() #8, !dbg !175
+  %puts4 = tail call i32 @puts(i8* getelementptr inbounds ([5 x i8]* @str20, i64 0, i64 0)), !dbg !176
+  %15 = tail call i64 @write_circulations(i8* getelementptr inbounds ([8 x i8]* @.str15, i64 0, i64 0), %struct.network* @net) #6, !dbg !177
+  %16 = tail call i64 @getfree(%struct.network* @net) #6, !dbg !179
+  %not. = icmp ne i64 %15, 0, !dbg !181
+  %. = sext i1 %not. to i32, !dbg !181
+  br label %17, !dbg !181
 
-return:                                           ; preds = %if.end10, %entry, %if.then7
-  %retval.0 = phi i32 [ -1, %if.then7 ], [ -1, %entry ], [ %., %if.end10 ]
-  ret i32 %retval.0
+; <label>:17                                      ; preds = %10, %0, %8
+  %.0 = phi i32 [ -1, %8 ], [ -1, %0 ], [ %., %10 ]
+  ret i32 %.0, !dbg !182
 }

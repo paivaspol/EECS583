@@ -1,21 +1,22 @@
-define i32 @SSISetFilePosition(%struct._IO_FILE* nocapture %fp, %struct.ssioffset_s* nocapture %offset) #0 {
-entry:
-  %mode = getelementptr inbounds %struct.ssioffset_s* %offset, i64 0, i32 0
-  %0 = load i8* %mode, align 1, !tbaa !1
-  %cmp = icmp eq i8 %0, 0
-  br i1 %cmp, label %if.then, label %return
+define i32 @SSISetFilePosition(%struct.__sFILE* nocapture %fp, %struct.ssioffset_s* nocapture readonly %offset) #0 {
+  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %fp, i64 0, metadata !185, metadata !535), !dbg !1138
+  tail call void @llvm.dbg.value(metadata %struct.ssioffset_s* %offset, i64 0, metadata !186, metadata !535), !dbg !1139
+  %1 = getelementptr inbounds %struct.ssioffset_s* %offset, i64 0, i32 0, !dbg !1140
+  %2 = load i8* %1, align 1, !dbg !1140, !tbaa !914
+  %3 = icmp eq i8 %2, 0, !dbg !1141
+  br i1 %3, label %4, label %11, !dbg !1142
 
-if.then:                                          ; preds = %entry
-  %off = getelementptr inbounds %struct.ssioffset_s* %offset, i64 0, i32 1
-  %i32 = bitcast %union.anon* %off to i32*
-  %1 = load i32* %i32, align 4, !tbaa !4
-  %conv2 = zext i32 %1 to i64
-  %call = tail call i32 @fseek(%struct._IO_FILE* %fp, i64 %conv2, i32 0) #8
-  %cmp3 = icmp eq i32 %call, 0
-  %. = select i1 %cmp3, i32 0, i32 8
-  br label %return
+; <label>:4                                       ; preds = %0
+  %5 = getelementptr inbounds %struct.ssioffset_s* %offset, i64 0, i32 1, !dbg !1143
+  %6 = bitcast %union.anon* %5 to i32*, !dbg !1144
+  %7 = load i32* %6, align 4, !dbg !1144, !tbaa !578
+  %8 = zext i32 %7 to i64, !dbg !1145
+  %9 = tail call i32 @fseek(%struct.__sFILE* %fp, i64 %8, i32 0) #9, !dbg !1146
+  %10 = icmp eq i32 %9, 0, !dbg !1147
+  %. = select i1 %10, i32 0, i32 8, !dbg !1148
+  br label %11, !dbg !1148
 
-return:                                           ; preds = %entry, %if.then
-  %retval.0 = phi i32 [ %., %if.then ], [ 7, %entry ]
-  ret i32 %retval.0
+; <label>:11                                      ; preds = %0, %4
+  %.0 = phi i32 [ %., %4 ], [ 7, %0 ]
+  ret i32 %.0, !dbg !1149
 }

@@ -1,36 +1,48 @@
-define i32 @DVfscanf(%struct._IO_FILE* %fp, i32 %size, double* %y) #0 {
-entry:
-  %cmp = icmp ne %struct._IO_FILE* %fp, null
-  %cmp1 = icmp sgt i32 %size, 0
-  %or.cond = and i1 %cmp, %cmp1
-  br i1 %or.cond, label %if.then, label %if.end9
+define i32 @DVfscanf(%struct.__sFILE* %fp, i32 %size, double* %y) #0 {
+  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %fp, i64 0, metadata !192, metadata !696), !dbg !1012
+  tail call void @llvm.dbg.value(metadata i32 %size, i64 0, metadata !193, metadata !696), !dbg !1013
+  tail call void @llvm.dbg.value(metadata double* %y, i64 0, metadata !194, metadata !696), !dbg !1014
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !195, metadata !696), !dbg !1015
+  %1 = icmp ne %struct.__sFILE* %fp, null, !dbg !1016
+  %2 = icmp sgt i32 %size, 0, !dbg !1018
+  %or.cond = and i1 %1, %2, !dbg !1019
+  br i1 %or.cond, label %3, label %.loopexit, !dbg !1019
 
-if.then:                                          ; preds = %entry
-  %cmp2 = icmp eq double* %y, null
-  br i1 %cmp2, label %if.then3, label %for.body
+; <label>:3                                       ; preds = %0
+  %4 = icmp eq double* %y, null, !dbg !1020
+  br i1 %4, label %6, label %.lr.ph, !dbg !1023
 
-if.then3:                                         ; preds = %if.then
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([70 x i8]* @.str11, i64 0, i64 0), %struct._IO_FILE* %fp, i32 %size, double* null) #5
-  tail call void @exit(i32 -1) #6
-  unreachable
+.lr.ph:                                           ; preds = %3
+  %5 = sext i32 %size to i64, !dbg !1024
+  br label %9, !dbg !1024
 
-for.cond:                                         ; preds = %for.body
-  %1 = trunc i64 %indvars.iv.next to i32
-  %cmp4 = icmp slt i32 %1, %size
-  br i1 %cmp4, label %for.body, label %if.end9
+; <label>:6                                       ; preds = %3
+  %7 = load %struct.__sFILE** @__stderrp, align 8, !dbg !1026, !tbaa !709
+  %8 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %7, i8* getelementptr inbounds ([70 x i8]* @.str11, i64 0, i64 0), %struct.__sFILE* %fp, i32 %size, double* null) #7, !dbg !1028
+  tail call void @exit(i32 -1) #8, !dbg !1029
+  unreachable, !dbg !1029
 
-for.body:                                         ; preds = %if.then, %for.cond
-  %indvars.iv = phi i64 [ %indvars.iv.next, %for.cond ], [ 0, %if.then ]
-  %i.020 = phi i32 [ %inc, %for.cond ], [ 0, %if.then ]
-  %add.ptr = getelementptr inbounds double* %y, i64 %indvars.iv
-  %call5 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @__isoc99_fscanf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([5 x i8]* @.str12, i64 0, i64 0), double* %add.ptr) #5
-  %cmp6 = icmp eq i32 %call5, 1
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %inc = add nsw i32 %i.020, 1
-  br i1 %cmp6, label %for.cond, label %if.end9
+; <label>:9                                       ; preds = %.lr.ph, %13
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %13 ]
+  %10 = getelementptr inbounds double* %y, i64 %indvars.iv, !dbg !1030
+  %11 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fscanf(%struct.__sFILE* %fp, i8* getelementptr inbounds ([5 x i8]* @.str12, i64 0, i64 0), double* %10) #7, !dbg !1034
+  %12 = icmp eq i32 %11, 1, !dbg !1035
+  br i1 %12, label %13, label %..loopexit_crit_edge3, !dbg !1036
 
-if.end9:                                          ; preds = %for.body, %for.cond, %entry
-  %i.1 = phi i32 [ 0, %entry ], [ %i.020, %for.body ], [ %inc, %for.cond ]
-  ret i32 %i.1
+; <label>:13                                      ; preds = %9
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !1024
+  %14 = icmp slt i64 %indvars.iv.next, %5, !dbg !1037
+  br i1 %14, label %9, label %..loopexit_crit_edge, !dbg !1024
+
+..loopexit_crit_edge:                             ; preds = %13
+  %15 = trunc i64 %indvars.iv.next to i32, !dbg !1024
+  br label %.loopexit, !dbg !1024
+
+..loopexit_crit_edge3:                            ; preds = %9
+  %16 = trunc i64 %indvars.iv to i32, !dbg !1036
+  br label %.loopexit, !dbg !1036
+
+.loopexit:                                        ; preds = %..loopexit_crit_edge, %..loopexit_crit_edge3, %0
+  %i.1 = phi i32 [ 0, %0 ], [ %15, %..loopexit_crit_edge ], [ %16, %..loopexit_crit_edge3 ]
+  ret i32 %i.1, !dbg !1038
 }

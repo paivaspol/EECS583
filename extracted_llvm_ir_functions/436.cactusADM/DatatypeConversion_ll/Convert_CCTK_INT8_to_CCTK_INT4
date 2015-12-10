@@ -1,27 +1,38 @@
 define internal void @Convert_CCTK_INT8_to_CCTK_INT4(i8* nocapture readonly %src, i8* nocapture %dst, i32 %nelems, i32 %src_stride, i32 %dst_stride) #1 {
-  %1 = icmp eq i32 %nelems, 0
-  br i1 %1, label %._crit_edge, label %.lr.ph
+  tail call void @llvm.dbg.value(metadata i8* %src, i64 0, metadata !86, metadata !159), !dbg !226
+  tail call void @llvm.dbg.value(metadata i8* %dst, i64 0, metadata !87, metadata !159), !dbg !226
+  tail call void @llvm.dbg.value(metadata i32 %nelems, i64 0, metadata !88, metadata !159), !dbg !226
+  tail call void @llvm.dbg.value(metadata i32 %src_stride, i64 0, metadata !89, metadata !159), !dbg !226
+  tail call void @llvm.dbg.value(metadata i32 %dst_stride, i64 0, metadata !90, metadata !159), !dbg !226
+  tail call void @llvm.dbg.value(metadata i32* %3, i64 0, metadata !91, metadata !159), !dbg !226
+  tail call void @llvm.dbg.value(metadata i64* %2, i64 0, metadata !92, metadata !159), !dbg !226
+  tail call void @llvm.dbg.value(metadata i32 %7, i64 0, metadata !88, metadata !159), !dbg !226
+  %1 = icmp eq i32 %nelems, 0, !dbg !226
+  br i1 %1, label %._crit_edge, label %.lr.ph, !dbg !226
 
 .lr.ph:                                           ; preds = %0
-  %2 = bitcast i8* %src to i64*
-  %3 = bitcast i8* %dst to i32*
-  %4 = sext i32 %src_stride to i64
-  %5 = sext i32 %dst_stride to i64
-  br label %6
+  %2 = bitcast i8* %src to i64*, !dbg !226
+  %3 = bitcast i8* %dst to i32*, !dbg !226
+  %4 = sext i32 %src_stride to i64, !dbg !227
+  %5 = sext i32 %dst_stride to i64, !dbg !227
+  br label %6, !dbg !226
 
 ; <label>:6                                       ; preds = %.lr.ph, %6
   %_src.03 = phi i64* [ %2, %.lr.ph ], [ %10, %6 ]
   %_dst.02 = phi i32* [ %3, %.lr.ph ], [ %11, %6 ]
   %.01 = phi i32 [ %nelems, %.lr.ph ], [ %7, %6 ]
-  %7 = add nsw i32 %.01, -1
-  %8 = load i64* %_src.03, align 8, !tbaa !8
-  %9 = trunc i64 %8 to i32
-  store i32 %9, i32* %_dst.02, align 4, !tbaa !2
-  %10 = getelementptr inbounds i64* %_src.03, i64 %4
-  %11 = getelementptr inbounds i32* %_dst.02, i64 %5
-  %12 = icmp eq i32 %7, 0
-  br i1 %12, label %._crit_edge, label %6
+  %7 = add nsw i32 %.01, -1, !dbg !226
+  %8 = load i64* %_src.03, align 8, !dbg !227, !tbaa !224
+  %9 = trunc i64 %8 to i32, !dbg !227
+  store i32 %9, i32* %_dst.02, align 4, !dbg !227, !tbaa !215
+  %10 = getelementptr inbounds i64* %_src.03, i64 %4, !dbg !227
+  tail call void @llvm.dbg.value(metadata i64* %10, i64 0, metadata !92, metadata !159), !dbg !226
+  %11 = getelementptr inbounds i32* %_dst.02, i64 %5, !dbg !227
+  tail call void @llvm.dbg.value(metadata i32* %11, i64 0, metadata !91, metadata !159), !dbg !226
+  tail call void @llvm.dbg.value(metadata i32 %7, i64 0, metadata !88, metadata !159), !dbg !226
+  %12 = icmp eq i32 %7, 0, !dbg !226
+  br i1 %12, label %._crit_edge, label %6, !dbg !226
 
 ._crit_edge:                                      ; preds = %6, %0
-  ret void
+  ret void, !dbg !226
 }

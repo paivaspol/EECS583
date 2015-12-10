@@ -1,88 +1,102 @@
-define void @open_log(i8* %lognm, %struct.t_commrec* nocapture readonly %cr) #1 {
+define void @open_log(i8* %lognm, %struct.t_commrec* nocapture readonly %cr) #2 {
   %len = alloca i32, align 4
   %testlen = alloca i32, align 4
-  %1 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 1
-  %2 = load i32* %1, align 4, !tbaa !5
-  %3 = icmp sgt i32 %2, 1
-  br i1 %3, label %4, label %42
+  tail call void @llvm.dbg.value(metadata i8* %lognm, i64 0, metadata !159, metadata !236), !dbg !318
+  tail call void @llvm.dbg.value(metadata %struct.t_commrec* %cr, i64 0, metadata !160, metadata !236), !dbg !319
+  %1 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 1, !dbg !320
+  %2 = load i32* %1, align 4, !dbg !320, !tbaa !256
+  %3 = icmp sgt i32 %2, 1, !dbg !322
+  br i1 %3, label %4, label %42, !dbg !323
 
 ; <label>:4                                       ; preds = %0
-  %5 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 0
-  %6 = load i32* %5, align 4, !tbaa !9
-  %7 = icmp eq i32 %6, 0
-  br i1 %7, label %8, label %30
+  %5 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 0, !dbg !324
+  %6 = load i32* %5, align 4, !dbg !324, !tbaa !262
+  %7 = icmp eq i32 %6, 0, !dbg !324
+  br i1 %7, label %8, label %30, !dbg !324
 
 ; <label>:8                                       ; preds = %4
-  %9 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 4
-  %10 = load i32* %9, align 4, !tbaa !11
-  %11 = icmp eq i32 %10, 0
-  br i1 %11, label %12, label %30
+  %9 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 4, !dbg !324
+  %10 = load i32* %9, align 4, !dbg !324, !tbaa !327
+  %11 = icmp eq i32 %10, 0, !dbg !324
+  br i1 %11, label %12, label %30, !dbg !328
 
 ; <label>:12                                      ; preds = %8
-  %13 = tail call i64 @strlen(i8* %lognm) #6
-  %14 = add i64 %13, 1
-  %15 = trunc i64 %14 to i32
-  store i32 %15, i32* %len, align 4, !tbaa !10
-  %16 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 3
-  %17 = load i32* %16, align 4, !tbaa !12
-  %18 = bitcast i32* %len to i8*
-  call void @gmx_txs(i32 %17, i8* %18, i32 4) #6
-  %19 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 2
-  %20 = load i32* %19, align 4, !tbaa !13
-  %21 = bitcast i32* %testlen to i8*
-  call void @gmx_rxs(i32 %20, i8* %21, i32 4) #6
-  %22 = load i32* %16, align 4, !tbaa !12
-  %23 = load i32* %len, align 4, !tbaa !10
-  call void @gmx_txs(i32 %22, i8* %lognm, i32 %23) #6
-  %24 = load i32* %19, align 4, !tbaa !13
-  %25 = load i32* %len, align 4, !tbaa !10
-  call void @gmx_rxs(i32 %24, i8* %lognm, i32 %25) #6
-  %26 = load i32* %len, align 4, !tbaa !10
-  %27 = load i32* %testlen, align 4, !tbaa !10
-  %28 = icmp eq i32 %26, %27
-  br i1 %28, label %42, label %29
+  %13 = tail call i64 @strlen(i8* %lognm) #7, !dbg !329
+  %14 = add i64 %13, 1, !dbg !331
+  %15 = trunc i64 %14 to i32, !dbg !329
+  tail call void @llvm.dbg.value(metadata i32 %15, i64 0, metadata !161, metadata !236), !dbg !332
+  store i32 %15, i32* %len, align 4, !dbg !333, !tbaa !279
+  %16 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 3, !dbg !334
+  %17 = load i32* %16, align 4, !dbg !334, !tbaa !335
+  %18 = bitcast i32* %len to i8*, !dbg !336
+  call void @gmx_txs(i32 %17, i8* %18, i32 4) #7, !dbg !337
+  %19 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 2, !dbg !338
+  %20 = load i32* %19, align 4, !dbg !338, !tbaa !339
+  %21 = bitcast i32* %testlen to i8*, !dbg !340
+  call void @gmx_rxs(i32 %20, i8* %21, i32 4) #7, !dbg !341
+  %22 = load i32* %16, align 4, !dbg !342, !tbaa !335
+  call void @llvm.dbg.value(metadata i32* %len, i64 0, metadata !161, metadata !236), !dbg !332
+  %23 = load i32* %len, align 4, !dbg !343, !tbaa !279
+  call void @gmx_txs(i32 %22, i8* %lognm, i32 %23) #7, !dbg !344
+  %24 = load i32* %19, align 4, !dbg !345, !tbaa !339
+  call void @llvm.dbg.value(metadata i32* %len, i64 0, metadata !161, metadata !236), !dbg !332
+  %25 = load i32* %len, align 4, !dbg !346, !tbaa !279
+  call void @gmx_rxs(i32 %24, i8* %lognm, i32 %25) #7, !dbg !347
+  call void @llvm.dbg.value(metadata i32* %len, i64 0, metadata !161, metadata !236), !dbg !332
+  %26 = load i32* %len, align 4, !dbg !348, !tbaa !279
+  call void @llvm.dbg.value(metadata i32* %testlen, i64 0, metadata !162, metadata !236), !dbg !350
+  %27 = load i32* %testlen, align 4, !dbg !351, !tbaa !279
+  %28 = icmp eq i32 %26, %27, !dbg !352
+  br i1 %28, label %42, label %29, !dbg !353
 
 ; <label>:29                                      ; preds = %12
-  call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([31 x i8]* @.str11, i64 0, i64 0)) #6
-  br label %42
+  call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([31 x i8]* @.str11, i64 0, i64 0)) #7, !dbg !354
+  br label %42, !dbg !354
 
 ; <label>:30                                      ; preds = %8, %4
-  %31 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 2
-  %32 = load i32* %31, align 4, !tbaa !13
-  %33 = bitcast i32* %len to i8*
-  call void @gmx_rxs(i32 %32, i8* %33, i32 4) #6
-  %34 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 3
-  %35 = load i32* %34, align 4, !tbaa !12
-  call void @gmx_txs(i32 %35, i8* %33, i32 4) #6
-  %36 = load i32* %len, align 4, !tbaa !10
-  %37 = call i8* @save_calloc(i8* getelementptr inbounds ([6 x i8]* @.str12, i64 0, i64 0), i8* getelementptr inbounds ([64 x i8]* @.str6, i64 0, i64 0), i32 195, i32 %36, i32 1) #6
-  %38 = load i32* %31, align 4, !tbaa !13
-  %39 = load i32* %len, align 4, !tbaa !10
-  call void @gmx_rxs(i32 %38, i8* %37, i32 %39) #6
-  %40 = load i32* %34, align 4, !tbaa !12
-  %41 = load i32* %len, align 4, !tbaa !10
-  call void @gmx_txs(i32 %40, i8* %37, i32 %41) #6
+  %31 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 2, !dbg !355
+  %32 = load i32* %31, align 4, !dbg !355, !tbaa !339
+  %33 = bitcast i32* %len to i8*, !dbg !357
+  call void @gmx_rxs(i32 %32, i8* %33, i32 4) #7, !dbg !358
+  %34 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 3, !dbg !359
+  %35 = load i32* %34, align 4, !dbg !359, !tbaa !335
+  call void @gmx_txs(i32 %35, i8* %33, i32 4) #7, !dbg !360
+  call void @llvm.dbg.value(metadata i32* %len, i64 0, metadata !161, metadata !236), !dbg !332
+  %36 = load i32* %len, align 4, !dbg !361, !tbaa !279
+  %37 = call i8* @save_calloc(i8* getelementptr inbounds ([6 x i8]* @.str12, i64 0, i64 0), i8* getelementptr inbounds ([64 x i8]* @.str6, i64 0, i64 0), i32 195, i32 %36, i32 1) #7, !dbg !361
+  call void @llvm.dbg.value(metadata i8* %37, i64 0, metadata !159, metadata !236), !dbg !318
+  %38 = load i32* %31, align 4, !dbg !362, !tbaa !339
+  call void @llvm.dbg.value(metadata i32* %len, i64 0, metadata !161, metadata !236), !dbg !332
+  %39 = load i32* %len, align 4, !dbg !363, !tbaa !279
+  call void @gmx_rxs(i32 %38, i8* %37, i32 %39) #7, !dbg !364
+  %40 = load i32* %34, align 4, !dbg !365, !tbaa !335
+  call void @llvm.dbg.value(metadata i32* %len, i64 0, metadata !161, metadata !236), !dbg !332
+  %41 = load i32* %len, align 4, !dbg !366, !tbaa !279
+  call void @gmx_txs(i32 %40, i8* %37, i32 %41) #7, !dbg !367
   br label %42
 
 ; <label>:42                                      ; preds = %12, %30, %29, %0
   %.0 = phi i8* [ %lognm, %29 ], [ %lognm, %12 ], [ %37, %30 ], [ %lognm, %0 ]
-  %43 = call i8* @par_fn(i8* %.0, i32 18, %struct.t_commrec* %cr) #7
-  %44 = call %struct.__sFILE* @ffopen(i8* getelementptr inbounds ([256 x i8]* @par_fn.buf, i64 0, i64 0), i8* getelementptr inbounds ([2 x i8]* @.str13, i64 0, i64 0)) #6
-  store %struct.__sFILE* %44, %struct.__sFILE** @stdlog, align 8, !tbaa !14
-  %45 = call i32 @getpid() #6
-  %46 = load %struct.__sFILE** @stdlog, align 8, !tbaa !14
-  %47 = icmp eq %struct.__sFILE* %46, null
-  br i1 %47, label %55, label %48
+  %43 = call i8* @par_fn(i8* %.0, i32 18, %struct.t_commrec* %cr) #8, !dbg !368
+  call void @llvm.dbg.value(metadata !231, i64 0, metadata !164, metadata !236), !dbg !369
+  %44 = call %struct.__sFILE* @ffopen(i8* getelementptr inbounds ([256 x i8]* @par_fn.buf, i64 0, i64 0), i8* getelementptr inbounds ([2 x i8]* @.str13, i64 0, i64 0)) #7, !dbg !370
+  store %struct.__sFILE* %44, %struct.__sFILE** @stdlog, align 8, !dbg !371, !tbaa !372
+  call void @llvm.dbg.value(metadata i8* null, i64 0, metadata !165, metadata !236), !dbg !374
+  %45 = call i32 @getpid() #7, !dbg !375
+  call void @llvm.dbg.value(metadata i32 %45, i64 0, metadata !163, metadata !236), !dbg !376
+  %46 = load %struct.__sFILE** @stdlog, align 8, !dbg !377, !tbaa !372
+  %47 = icmp eq %struct.__sFILE* %46, null, !dbg !377
+  br i1 %47, label %55, label %48, !dbg !379
 
 ; <label>:48                                      ; preds = %42
-  %49 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 0
-  %50 = load i32* %49, align 4, !tbaa !9
-  %51 = load i32* %1, align 4, !tbaa !5
-  %52 = call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %46, i8* getelementptr inbounds ([66 x i8]* @.str14, i64 0, i64 0), i32 %50, i32 %51, i8* getelementptr inbounds ([8 x i8]* @.str15, i64 0, i64 0), i32 %45) #6
-  %53 = load %struct.__sFILE** @stdlog, align 8, !tbaa !14
-  %54 = call i32 @fflush(%struct.__sFILE* %53) #6
-  br label %55
+  %49 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 0, !dbg !380
+  %50 = load i32* %49, align 4, !dbg !380, !tbaa !262
+  %51 = load i32* %1, align 4, !dbg !382, !tbaa !256
+  %52 = call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %46, i8* getelementptr inbounds ([66 x i8]* @.str14, i64 0, i64 0), i32 %50, i32 %51, i8* getelementptr inbounds ([8 x i8]* @.str15, i64 0, i64 0), i32 %45) #7, !dbg !383
+  %53 = load %struct.__sFILE** @stdlog, align 8, !dbg !384, !tbaa !372
+  %54 = call i32 @fflush(%struct.__sFILE* %53) #7, !dbg !385
+  br label %55, !dbg !386
 
 ; <label>:55                                      ; preds = %42, %48
-  ret void
+  ret void, !dbg !387
 }

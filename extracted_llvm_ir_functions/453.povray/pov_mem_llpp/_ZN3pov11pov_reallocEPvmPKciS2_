@@ -1,0 +1,106 @@
+define i8* @_ZN3pov11pov_reallocEPvmPKciS2_(i8* %ptr, i64 %size, i8* %file, i32 %line, i8* %msg) #1 {
+  tail call void @llvm.dbg.value(metadata i8* %ptr, i64 0, metadata !293, metadata !689), !dbg !795
+  tail call void @llvm.dbg.value(metadata i64 %size, i64 0, metadata !294, metadata !689), !dbg !796
+  tail call void @llvm.dbg.value(metadata i8* %file, i64 0, metadata !295, metadata !689), !dbg !797
+  tail call void @llvm.dbg.value(metadata i32 %line, i64 0, metadata !296, metadata !689), !dbg !798
+  tail call void @llvm.dbg.value(metadata i8* %msg, i64 0, metadata !297, metadata !689), !dbg !799
+  %1 = icmp eq i64 %size, 0, !dbg !800
+  %2 = icmp eq i8* %ptr, null, !dbg !802
+  br i1 %1, label %3, label %5, !dbg !805
+
+; <label>:3                                       ; preds = %0
+  br i1 %2, label %50, label %4, !dbg !806
+
+; <label>:4                                       ; preds = %3
+  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %ptr, i8* %file, i32 %line) #8, !dbg !807
+  br label %50, !dbg !807
+
+; <label>:5                                       ; preds = %0
+  br i1 %2, label %6, label %8, !dbg !808
+
+; <label>:6                                       ; preds = %5
+  %7 = tail call i8* @_ZN3pov10pov_mallocEmPKciS1_(i64 %size, i8* %file, i32 %line, i8* %msg) #8, !dbg !809
+  br label %50, !dbg !811
+
+; <label>:8                                       ; preds = %5
+  %9 = getelementptr inbounds i8* %ptr, i64 -48, !dbg !812
+  tail call void @llvm.dbg.value(metadata i8* %9, i64 0, metadata !298, metadata !689), !dbg !813
+  %10 = getelementptr inbounds i8* %ptr, i64 -40, !dbg !814
+  %11 = bitcast i8* %10 to %"struct.pov::mem_node"**, !dbg !814
+  %12 = load %"struct.pov::mem_node"** %11, align 8, !dbg !814, !tbaa !733
+  tail call void @llvm.dbg.value(metadata %"struct.pov::mem_node"* %12, i64 0, metadata !301, metadata !689), !dbg !815
+  %13 = getelementptr inbounds i8* %ptr, i64 -32, !dbg !816
+  %14 = bitcast i8* %13 to %"struct.pov::mem_node"**, !dbg !816
+  %15 = load %"struct.pov::mem_node"** %14, align 8, !dbg !816, !tbaa !740
+  tail call void @llvm.dbg.value(metadata %"struct.pov::mem_node"* %15, i64 0, metadata !302, metadata !689), !dbg !817
+  %16 = bitcast i8* %9 to i64*, !dbg !818
+  %17 = load i64* %16, align 8, !dbg !818, !tbaa !710
+  tail call void @llvm.dbg.value(metadata i64 %17, i64 0, metadata !299, metadata !689), !dbg !819
+  %18 = add i64 %size, 48, !dbg !820
+  %19 = tail call i8* @realloc(i8* %9, i64 %18) #8, !dbg !821
+  tail call void @llvm.dbg.value(metadata i8* %19, i64 0, metadata !298, metadata !689), !dbg !813
+  %20 = icmp eq i8* %19, null, !dbg !822
+  br i1 %20, label %21, label %22, !dbg !824
+
+; <label>:21                                      ; preds = %8
+  tail call void @_ZN3pov7MAErrorEPKcl(i8* %msg, i64 %size) #8, !dbg !825
+  br label %22, !dbg !825
+
+; <label>:22                                      ; preds = %21, %8
+  tail call void @llvm.dbg.value(metadata i64 %17, i64 0, metadata !374, metadata !689), !dbg !826
+  %23 = load i64* @_ZN3povL9mem_statsE.2, align 8, !dbg !828, !tbaa !685
+  %24 = sub i64 %23, %17, !dbg !828
+  store i64 %24, i64* @_ZN3povL9mem_statsE.2, align 8, !dbg !828, !tbaa !685
+  tail call fastcc void @_ZN3povL15mem_stats_allocEmPKci(i64 %18) #8, !dbg !829
+  %25 = bitcast i8* %19 to i64*, !dbg !830
+  store i64 %18, i64* %25, align 8, !dbg !831, !tbaa !710
+  %26 = getelementptr inbounds i8* %19, i64 32, !dbg !832
+  %27 = bitcast i8* %26 to i8**, !dbg !832
+  store i8* %file, i8** %27, align 8, !dbg !833, !tbaa !714
+  %28 = getelementptr inbounds i8* %19, i64 40, !dbg !834
+  %29 = bitcast i8* %28 to i32*, !dbg !834
+  store i32 %line, i32* %29, align 4, !dbg !835, !tbaa !717
+  %30 = icmp eq %"struct.pov::mem_node"* %12, null, !dbg !836
+  br i1 %30, label %31, label %32, !dbg !838
+
+; <label>:31                                      ; preds = %22
+  store i8* %19, i8** bitcast (%"struct.pov::mem_node"** @_ZN3povL7memlistE to i8**), align 8, !dbg !839, !tbaa !676
+  br label %35, !dbg !840
+
+; <label>:32                                      ; preds = %22
+  %33 = getelementptr inbounds %"struct.pov::mem_node"* %12, i64 0, i32 2, !dbg !841
+  %34 = bitcast %"struct.pov::mem_node"** %33 to i8**, !dbg !842
+  store i8* %19, i8** %34, align 8, !dbg !842, !tbaa !740
+  br label %35
+
+; <label>:35                                      ; preds = %32, %31
+  %36 = getelementptr inbounds i8* %19, i64 16, !dbg !843
+  %37 = bitcast i8* %36 to %"struct.pov::mem_node"**, !dbg !843
+  %38 = load %"struct.pov::mem_node"** %37, align 8, !dbg !843, !tbaa !740
+  %39 = icmp eq %"struct.pov::mem_node"* %38, null, !dbg !845
+  br i1 %39, label %43, label %40, !dbg !846
+
+; <label>:40                                      ; preds = %35
+  %41 = getelementptr inbounds %"struct.pov::mem_node"* %38, i64 0, i32 1, !dbg !847
+  %42 = bitcast %"struct.pov::mem_node"** %41 to i8**, !dbg !848
+  store i8* %19, i8** %42, align 8, !dbg !848, !tbaa !733
+  br label %43, !dbg !849
+
+; <label>:43                                      ; preds = %35, %40
+  %44 = icmp eq %"struct.pov::mem_node"* %15, null, !dbg !850
+  br i1 %44, label %48, label %45, !dbg !852
+
+; <label>:45                                      ; preds = %43
+  %46 = getelementptr inbounds %"struct.pov::mem_node"* %15, i64 0, i32 1, !dbg !853
+  %47 = bitcast %"struct.pov::mem_node"** %46 to i8**, !dbg !854
+  store i8* %19, i8** %47, align 8, !dbg !854, !tbaa !733
+  br label %48, !dbg !855
+
+; <label>:48                                      ; preds = %43, %45
+  %49 = getelementptr inbounds i8* %19, i64 48, !dbg !856
+  br label %50, !dbg !857
+
+; <label>:50                                      ; preds = %4, %3, %48, %6
+  %.0 = phi i8* [ %7, %6 ], [ %49, %48 ], [ null, %3 ], [ null, %4 ]
+  ret i8* %.0, !dbg !858
+}

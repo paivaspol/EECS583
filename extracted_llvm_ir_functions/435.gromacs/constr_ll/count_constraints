@@ -1,31 +1,36 @@
 define i32 @count_constraints(%struct.t_topology* nocapture readonly %top, %struct.t_commrec* %cr) #4 {
   %nc = alloca i32, align 4
-  %1 = getelementptr inbounds %struct.t_topology* %top, i64 0, i32 1, i32 5, i64 29, i32 0
-  %2 = load i32* %1, align 4, !tbaa !22
-  %3 = mul nsw i32 %2, 3
-  %4 = sdiv i32 %3, 2
-  %5 = getelementptr inbounds %struct.t_topology* %top, i64 0, i32 1, i32 5, i64 27, i32 0
-  %6 = load i32* %5, align 4, !tbaa !22
-  %7 = sdiv i32 %6, 3
-  %8 = add nsw i32 %7, %4
-  store i32 %8, i32* %nc, align 4, !tbaa !24
-  %9 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 1
-  %10 = load i32* %9, align 4, !tbaa !46
-  %11 = icmp sgt i32 %10, 1
-  br i1 %11, label %16, label %12
+  tail call void @llvm.dbg.value(metadata %struct.t_topology* %top, i64 0, metadata !851, metadata !1159), !dbg !1662
+  tail call void @llvm.dbg.value(metadata %struct.t_commrec* %cr, i64 0, metadata !852, metadata !1159), !dbg !1663
+  %1 = getelementptr inbounds %struct.t_topology* %top, i64 0, i32 1, i32 5, i64 29, i32 0, !dbg !1664
+  %2 = load i32* %1, align 4, !dbg !1664, !tbaa !1379
+  %3 = mul nsw i32 %2, 3, !dbg !1665
+  %4 = sdiv i32 %3, 2, !dbg !1666
+  %5 = getelementptr inbounds %struct.t_topology* %top, i64 0, i32 1, i32 5, i64 27, i32 0, !dbg !1667
+  %6 = load i32* %5, align 4, !dbg !1667, !tbaa !1379
+  %7 = sdiv i32 %6, 3, !dbg !1668
+  %8 = add nsw i32 %7, %4, !dbg !1669
+  tail call void @llvm.dbg.value(metadata i32 %8, i64 0, metadata !853, metadata !1159), !dbg !1670
+  store i32 %8, i32* %nc, align 4, !dbg !1671, !tbaa !1383
+  %9 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 1, !dbg !1672
+  %10 = load i32* %9, align 4, !dbg !1672, !tbaa !1674
+  %11 = icmp sgt i32 %10, 1, !dbg !1672
+  br i1 %11, label %16, label %12, !dbg !1672
 
 ; <label>:12                                      ; preds = %0
-  %13 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 5
-  %14 = load i32* %13, align 4, !tbaa !48
-  %15 = icmp sgt i32 %14, 1
-  br i1 %15, label %16, label %17
+  %13 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 5, !dbg !1672
+  %14 = load i32* %13, align 4, !dbg !1672, !tbaa !1676
+  %15 = icmp sgt i32 %14, 1, !dbg !1672
+  br i1 %15, label %16, label %17, !dbg !1677
 
 ; <label>:16                                      ; preds = %12, %0
-  call void @gmx_sumi(i32 1, i32* %nc, %struct.t_commrec* %cr) #9
-  %.pre = load i32* %nc, align 4, !tbaa !24
-  br label %17
+  tail call void @llvm.dbg.value(metadata i32* %nc, i64 0, metadata !853, metadata !1159), !dbg !1670
+  call void @gmx_sumi(i32 1, i32* %nc, %struct.t_commrec* %cr) #9, !dbg !1678
+  %.pre = load i32* %nc, align 4, !dbg !1679, !tbaa !1383
+  br label %17, !dbg !1678
 
 ; <label>:17                                      ; preds = %16, %12
   %18 = phi i32 [ %.pre, %16 ], [ %8, %12 ]
-  ret i32 %18
+  call void @llvm.dbg.value(metadata i32* %nc, i64 0, metadata !853, metadata !1159), !dbg !1670
+  ret i32 %18, !dbg !1680
 }

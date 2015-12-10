@@ -1,15 +1,19 @@
 define i32 @CCTK_EnableGroupCommI(%struct.cGH* %GH, i32 %group) #1 {
-  %1 = tail call i8* @CCTK_GroupName(i32 %group) #6
-  %2 = icmp eq i8* %1, null
-  br i1 %2, label %6, label %3
+  tail call void @llvm.dbg.value(metadata %struct.cGH* %GH, i64 0, metadata !82, metadata !553), !dbg !602
+  tail call void @llvm.dbg.value(metadata i32 %group, i64 0, metadata !83, metadata !553), !dbg !603
+  %1 = tail call i8* @CCTK_GroupName(i32 %group) #6, !dbg !604
+  tail call void @llvm.dbg.value(metadata i8* %1, i64 0, metadata !85, metadata !553), !dbg !605
+  %2 = icmp eq i8* %1, null, !dbg !606
+  br i1 %2, label %6, label %3, !dbg !608
 
 ; <label>:3                                       ; preds = %0
-  %4 = load i32 (%struct.cGH*, i8*)** @CCTK_EnableGroupComm, align 8, !tbaa !9
-  %5 = tail call i32 %4(%struct.cGH* %GH, i8* %1) #6
-  tail call void @free(i8* %1) #7
-  br label %6
+  %4 = load i32 (%struct.cGH*, i8*)** @CCTK_EnableGroupComm, align 8, !dbg !609, !tbaa !572
+  %5 = tail call i32 %4(%struct.cGH* %GH, i8* %1) #6, !dbg !609
+  tail call void @llvm.dbg.value(metadata i32 %5, i64 0, metadata !84, metadata !553), !dbg !611
+  tail call void @free(i8* %1) #7, !dbg !612
+  br label %6, !dbg !613
 
 ; <label>:6                                       ; preds = %0, %3
   %retcode.0 = phi i32 [ %5, %3 ], [ 0, %0 ]
-  ret i32 %retcode.0
+  ret i32 %retcode.0, !dbg !614
 }

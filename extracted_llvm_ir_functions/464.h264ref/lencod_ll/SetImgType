@@ -1,71 +1,70 @@
 define void @SetImgType() #0 {
-entry:
-  %0 = load %struct.InputParameters** @input, align 8, !tbaa !3
-  %intra_period = getelementptr inbounds %struct.InputParameters* %0, i64 0, i32 31
-  %1 = load i32* %intra_period, align 4, !tbaa !0
-  %cmp = icmp eq i32 %1, 0
-  %2 = load %struct.ImageParameters** @img, align 8, !tbaa !3
-  %number = getelementptr inbounds %struct.ImageParameters* %2, i64 0, i32 0
-  %3 = load i32* %number, align 4, !tbaa !0
-  %4 = load i32* @start_frame_no_in_this_IGOP, align 4, !tbaa !0
-  br i1 %cmp, label %if.then, label %if.else13
+  %1 = load %struct.InputParameters** @input, align 8, !dbg !5030, !tbaa !1439
+  %2 = getelementptr inbounds %struct.InputParameters* %1, i64 0, i32 31, !dbg !5032
+  %3 = load i32* %2, align 4, !dbg !5032, !tbaa !1572
+  %4 = icmp eq i32 %3, 0, !dbg !5033
+  %5 = load %struct.ImageParameters** @img, align 8, !dbg !5034, !tbaa !1439
+  %6 = getelementptr inbounds %struct.ImageParameters* %5, i64 0, i32 0, !dbg !5034
+  %7 = load i32* %6, align 4, !dbg !5034, !tbaa !1562
+  %8 = load i32* @start_frame_no_in_this_IGOP, align 4, !dbg !5034, !tbaa !1433
+  br i1 %4, label %9, label %23, !dbg !5037
 
-if.then:                                          ; preds = %entry
-  %cmp1 = icmp eq i32 %3, %4
-  %type = getelementptr inbounds %struct.ImageParameters* %2, i64 0, i32 6
-  br i1 %cmp1, label %if.then2, label %if.else
+; <label>:9                                       ; preds = %0
+  %10 = icmp eq i32 %7, %8, !dbg !5038
+  %11 = getelementptr inbounds %struct.ImageParameters* %5, i64 0, i32 6, !dbg !5039
+  br i1 %10, label %12, label %13, !dbg !5041
 
-if.then2:                                         ; preds = %if.then
-  store i32 2, i32* %type, align 4, !tbaa !0
-  br label %if.end36
+; <label>:12                                      ; preds = %9
+  store i32 2, i32* %11, align 4, !dbg !5042, !tbaa !1706
+  br label %39, !dbg !5043
 
-if.else:                                          ; preds = %if.then
-  store i32 0, i32* %type, align 4, !tbaa !0
-  %sp_periodicity = getelementptr inbounds %struct.InputParameters* %0, i64 0, i32 43
-  %5 = load i32* %sp_periodicity, align 4, !tbaa !0
-  %tobool = icmp eq i32 %5, 0
-  br i1 %tobool, label %if.end36, label %if.then4
+; <label>:13                                      ; preds = %9
+  store i32 0, i32* %11, align 4, !dbg !5044, !tbaa !1706
+  %14 = getelementptr inbounds %struct.InputParameters* %1, i64 0, i32 43, !dbg !5046
+  %15 = load i32* %14, align 4, !dbg !5046, !tbaa !3349
+  %16 = icmp eq i32 %15, 0, !dbg !5048
+  br i1 %16, label %39, label %17, !dbg !5049
 
-if.then4:                                         ; preds = %if.else
-  %6 = load i32* @start_frame_no_in_this_IGOP, align 4, !tbaa !0
-  %sub6 = sub nsw i32 %3, %6
-  %rem = srem i32 %sub6, %5
-  %cmp8 = icmp eq i32 %rem, 0
-  br i1 %cmp8, label %if.then9, label %if.end36
+; <label>:17                                      ; preds = %13
+  %18 = load i32* @start_frame_no_in_this_IGOP, align 4, !dbg !5050, !tbaa !1433
+  %19 = sub nsw i32 %7, %18, !dbg !5050
+  %20 = srem i32 %19, %15, !dbg !5053
+  %21 = icmp eq i32 %20, 0, !dbg !5054
+  br i1 %21, label %22, label %39, !dbg !5055
 
-if.then9:                                         ; preds = %if.then4
-  store i32 3, i32* %type, align 4, !tbaa !0
-  br label %if.end36
+; <label>:22                                      ; preds = %17
+  store i32 3, i32* %11, align 4, !dbg !5056, !tbaa !1706
+  br label %39, !dbg !5058
 
-if.else13:                                        ; preds = %entry
-  %sub = sub nsw i32 %3, %4
-  %rem17 = srem i32 %sub, %1
-  %cmp18 = icmp eq i32 %rem17, 0
-  %type20 = getelementptr inbounds %struct.ImageParameters* %2, i64 0, i32 6
-  br i1 %cmp18, label %if.then19, label %if.else21
+; <label>:23                                      ; preds = %0
+  %24 = sub nsw i32 %7, %8, !dbg !5034
+  %25 = srem i32 %24, %3, !dbg !5059
+  %26 = icmp eq i32 %25, 0, !dbg !5062
+  %27 = getelementptr inbounds %struct.ImageParameters* %5, i64 0, i32 6, !dbg !5063
+  br i1 %26, label %28, label %29, !dbg !5065
 
-if.then19:                                        ; preds = %if.else13
-  store i32 2, i32* %type20, align 4, !tbaa !0
-  br label %if.end36
+; <label>:28                                      ; preds = %23
+  store i32 2, i32* %27, align 4, !dbg !5066, !tbaa !1706
+  br label %39, !dbg !5067
 
-if.else21:                                        ; preds = %if.else13
-  store i32 0, i32* %type20, align 4, !tbaa !0
-  %sp_periodicity23 = getelementptr inbounds %struct.InputParameters* %0, i64 0, i32 43
-  %7 = load i32* %sp_periodicity23, align 4, !tbaa !0
-  %tobool24 = icmp eq i32 %7, 0
-  br i1 %tobool24, label %if.end36, label %if.then25
+; <label>:29                                      ; preds = %23
+  store i32 0, i32* %27, align 4, !dbg !5068, !tbaa !1706
+  %30 = getelementptr inbounds %struct.InputParameters* %1, i64 0, i32 43, !dbg !5070
+  %31 = load i32* %30, align 4, !dbg !5070, !tbaa !3349
+  %32 = icmp eq i32 %31, 0, !dbg !5072
+  br i1 %32, label %39, label %33, !dbg !5073
 
-if.then25:                                        ; preds = %if.else21
-  %8 = load i32* @start_frame_no_in_this_IGOP, align 4, !tbaa !0
-  %sub27 = sub nsw i32 %3, %8
-  %rem29 = srem i32 %sub27, %7
-  %cmp30 = icmp eq i32 %rem29, 0
-  br i1 %cmp30, label %if.then31, label %if.end36
+; <label>:33                                      ; preds = %29
+  %34 = load i32* @start_frame_no_in_this_IGOP, align 4, !dbg !5074, !tbaa !1433
+  %35 = sub nsw i32 %7, %34, !dbg !5074
+  %36 = srem i32 %35, %31, !dbg !5077
+  %37 = icmp eq i32 %36, 0, !dbg !5078
+  br i1 %37, label %38, label %39, !dbg !5079
 
-if.then31:                                        ; preds = %if.then25
-  store i32 3, i32* %type20, align 4, !tbaa !0
-  br label %if.end36
+; <label>:38                                      ; preds = %33
+  store i32 3, i32* %27, align 4, !dbg !5080, !tbaa !1706
+  br label %39, !dbg !5081
 
-if.end36:                                         ; preds = %if.else, %if.else21, %if.then19, %if.then25, %if.then31, %if.then2, %if.then4, %if.then9
-  ret void
+; <label>:39                                      ; preds = %13, %29, %28, %33, %38, %12, %17, %22
+  ret void, !dbg !5082
 }

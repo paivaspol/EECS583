@@ -1,21 +1,26 @@
-define i32 @BZ2_bzread(i8* %b, i8* %buf, i32 %len) #4 {
-entry:
+define i32 @BZ2_bzread(i8* %b, i8* %buf, i32 %len) #5 {
   %bzerr = alloca i32, align 4
-  %lastErr = getelementptr inbounds i8* %b, i64 5096
-  %0 = bitcast i8* %lastErr to i32*
-  %1 = load i32* %0, align 4, !tbaa !3
-  %cmp = icmp eq i32 %1, 4
-  br i1 %cmp, label %return, label %if.end
+  tail call void @llvm.dbg.value(metadata i8* %b, i64 0, metadata !454, metadata !626), !dbg !2825
+  tail call void @llvm.dbg.value(metadata i8* %buf, i64 0, metadata !455, metadata !626), !dbg !2826
+  tail call void @llvm.dbg.value(metadata i32 %len, i64 0, metadata !456, metadata !626), !dbg !2827
+  %1 = getelementptr inbounds i8* %b, i64 5096, !dbg !2828
+  %2 = bitcast i8* %1 to i32*, !dbg !2828
+  %3 = load i32* %2, align 4, !dbg !2828, !tbaa !2008
+  %4 = icmp eq i32 %3, 4, !dbg !2830
+  br i1 %4, label %10, label %5, !dbg !2831
 
-if.end:                                           ; preds = %entry
-  %call = call i32 @BZ2_bzRead(i32* %bzerr, i8* %b, i8* %buf, i32 %len) #13
-  %2 = load i32* %bzerr, align 4, !tbaa !3
-  %3 = and i32 %2, -5
-  %4 = icmp eq i32 %3, 0
-  %call. = select i1 %4, i32 %call, i32 -1
-  br label %return
+; <label>:5                                       ; preds = %0
+  tail call void @llvm.dbg.value(metadata i32* %bzerr, i64 0, metadata !457, metadata !626), !dbg !2832
+  %6 = call i32 @BZ2_bzRead(i32* %bzerr, i8* %b, i8* %buf, i32 %len) #12, !dbg !2833
+  call void @llvm.dbg.value(metadata i32 %6, i64 0, metadata !458, metadata !626), !dbg !2834
+  call void @llvm.dbg.value(metadata i32* %bzerr, i64 0, metadata !457, metadata !626), !dbg !2832
+  %7 = load i32* %bzerr, align 4, !dbg !2835, !tbaa !1029
+  %8 = and i32 %7, -5, !dbg !2837
+  %9 = icmp eq i32 %8, 0, !dbg !2837
+  %. = select i1 %9, i32 %6, i32 -1, !dbg !2838
+  br label %10, !dbg !2838
 
-return:                                           ; preds = %if.end, %entry
-  %retval.0 = phi i32 [ 0, %entry ], [ %call., %if.end ]
-  ret i32 %retval.0
+; <label>:10                                      ; preds = %5, %0
+  %.0 = phi i32 [ 0, %0 ], [ %., %5 ]
+  ret i32 %.0, !dbg !2840
 }

@@ -1,61 +1,64 @@
-define void @quit_gmx(i32 %fatal_errno, i8* %msg) #7 {
+define void @quit_gmx(i32 %fatal_errno, i8* %msg) #8 {
+  tail call void @llvm.dbg.value(metadata i32 %fatal_errno, i64 0, metadata !194, metadata !336), !dbg !506
+  tail call void @llvm.dbg.value(metadata i8* %msg, i64 0, metadata !195, metadata !336), !dbg !507
   switch i32 %fatal_errno, label %9 [
     i32 0, label %1
     i32 -1, label %11
-  ]
+  ], !dbg !508
 
 ; <label>:1                                       ; preds = %0
-  %2 = load %struct.__sFILE** @stdlog, align 8, !tbaa !15
-  %3 = icmp eq %struct.__sFILE* %2, null
-  br i1 %3, label %6, label %4
+  %2 = load %struct.__sFILE** @stdlog, align 8, !dbg !509, !tbaa !503
+  %3 = icmp eq %struct.__sFILE* %2, null, !dbg !509
+  br i1 %3, label %6, label %4, !dbg !513
 
 ; <label>:4                                       ; preds = %1
-  %5 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %2, i8* getelementptr inbounds ([4 x i8]* @.str2, i64 0, i64 0), i8* %msg) #12
-  br label %6
+  %5 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %2, i8* getelementptr inbounds ([4 x i8]* @.str2, i64 0, i64 0), i8* %msg) #12, !dbg !514
+  br label %6, !dbg !514
 
 ; <label>:6                                       ; preds = %1, %4
-  %7 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !15
-  %8 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %7, i8* getelementptr inbounds ([4 x i8]* @.str2, i64 0, i64 0), i8* %msg) #12
-  br label %12
+  %7 = load %struct.__sFILE** @__stderrp, align 8, !dbg !515, !tbaa !503
+  %8 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %7, i8* getelementptr inbounds ([4 x i8]* @.str2, i64 0, i64 0), i8* %msg) #12, !dbg !516
+  br label %12, !dbg !517
 
 ; <label>:9                                       ; preds = %0
-  %10 = tail call i32* @__error() #12
-  store i32 %fatal_errno, i32* %10, align 4, !tbaa !14
-  br label %11
+  %10 = tail call i32* @__error() #12, !dbg !518
+  store i32 %fatal_errno, i32* %10, align 4, !dbg !521, !tbaa !382
+  br label %11, !dbg !518
 
 ; <label>:11                                      ; preds = %0, %9
-  tail call void @perror(i8* %msg) #15
+  tail call void @perror(i8* %msg) #15, !dbg !522
   br label %12
 
 ; <label>:12                                      ; preds = %11, %6
-  %13 = load %struct.__sFILE** @debug, align 8, !tbaa !15
-  %14 = icmp eq %struct.__sFILE* %13, null
-  br i1 %14, label %17, label %15
+  %13 = load %struct.__sFILE** @debug, align 8, !dbg !523, !tbaa !503
+  %14 = icmp eq %struct.__sFILE* %13, null, !dbg !523
+  br i1 %14, label %17, label %15, !dbg !525
 
 ; <label>:15                                      ; preds = %12
-  %16 = tail call i32 @fflush(%struct.__sFILE* %13) #12
-  br label %17
+  %16 = tail call i32 @fflush(%struct.__sFILE* %13) #12, !dbg !526
+  br label %17, !dbg !526
 
 ; <label>:17                                      ; preds = %12, %15
   %.b = load i1* @bDebug, align 1
-  br i1 %.b, label %18, label %28
+  br i1 %.b, label %18, label %28, !dbg !527
 
 ; <label>:18                                      ; preds = %17
-  %19 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !15
-  %20 = tail call i64 @fwrite(i8* getelementptr inbounds ([17 x i8]* @.str3, i64 0, i64 0), i64 16, i64 1, %struct.__sFILE* %19)
-  %21 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !15
-  %22 = tail call i32 @fflush(%struct.__sFILE* %21) #12
-  %23 = load %struct.__sFILE** @__stdinp, align 8, !tbaa !15
-  %24 = tail call i32 @getc(%struct.__sFILE* %23) #12
-  %25 = tail call i32 @__toupper(i32 %24) #12
-  %26 = icmp eq i32 %25, 78
-  br i1 %26, label %28, label %27
+  %19 = load %struct.__sFILE** @__stderrp, align 8, !dbg !528, !tbaa !503
+  %20 = tail call i64 @fwrite(i8* getelementptr inbounds ([17 x i8]* @.str3, i64 0, i64 0), i64 16, i64 1, %struct.__sFILE* %19), !dbg !531
+  %21 = load %struct.__sFILE** @__stderrp, align 8, !dbg !532, !tbaa !503
+  %22 = tail call i32 @fflush(%struct.__sFILE* %21) #12, !dbg !533
+  %23 = load %struct.__sFILE** @__stdinp, align 8, !dbg !534, !tbaa !503
+  %24 = tail call i32 @getc(%struct.__sFILE* %23) #12, !dbg !536
+  tail call void @llvm.dbg.value(metadata i32 %24, i64 0, metadata !150, metadata !336) #11, !dbg !537
+  %25 = tail call i32 @__toupper(i32 %24) #12, !dbg !539
+  %26 = icmp eq i32 %25, 78, !dbg !540
+  br i1 %26, label %28, label %27, !dbg !541
 
 ; <label>:27                                      ; preds = %18
-  tail call void @abort() #14
-  unreachable
+  tail call void @abort() #14, !dbg !542
+  unreachable, !dbg !542
 
 ; <label>:28                                      ; preds = %18, %17
-  tail call void @exit(i32 -1) #14
-  unreachable
+  tail call void @exit(i32 -1) #14, !dbg !543
+  unreachable, !dbg !543
 }

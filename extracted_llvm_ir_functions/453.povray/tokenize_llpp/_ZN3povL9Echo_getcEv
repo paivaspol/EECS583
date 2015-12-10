@@ -1,0 +1,39 @@
+define internal fastcc i32 @_ZN3povL9Echo_getcEv() #0 {
+  %1 = load %"struct.pov::InputFileData"** @_ZN3pov10Input_FileE, align 8, !dbg !2329, !tbaa !2174
+  %2 = icmp eq %"struct.pov::InputFileData"* %1, null, !dbg !2331
+  br i1 %2, label %10, label %3, !dbg !2332
+
+; <label>:3                                       ; preds = %0
+  %4 = getelementptr inbounds %"struct.pov::InputFileData"* %1, i64 0, i32 0, !dbg !2333
+  %5 = load %"class.pov_base::ITextStream"** %4, align 8, !dbg !2333, !tbaa !2176
+  %6 = icmp eq %"class.pov_base::ITextStream"* %5, null, !dbg !2334
+  br i1 %6, label %10, label %7, !dbg !2335
+
+; <label>:7                                       ; preds = %3
+  %8 = tail call i32 @_ZN8pov_base11ITextStream7getcharEv(%"class.pov_base::ITextStream"* %5) #11, !dbg !2336
+  tail call void @llvm.dbg.value(metadata i32 %8, i64 0, metadata !1468, metadata !2141), !dbg !2337
+  %9 = icmp eq i32 %8, -1, !dbg !2338
+  br i1 %9, label %10, label %14, !dbg !2339
+
+; <label>:10                                      ; preds = %7, %3, %0
+  %11 = load i32* @_ZN3pov7Got_EOFE, align 4, !dbg !2340, !tbaa !2146
+  %12 = icmp eq i32 %11, 0, !dbg !2340
+  br i1 %12, label %13, label %18, !dbg !2343
+
+; <label>:13                                      ; preds = %10
+  store i32 1, i32* @_ZN3pov7Got_EOFE, align 4, !dbg !2344, !tbaa !2146
+  store i32 0, i32* @_ZN3pov9Echo_IndxE, align 4, !dbg !2345, !tbaa !2146
+  br label %18, !dbg !2346
+
+; <label>:14                                      ; preds = %7
+  %15 = load i32* @_ZN3pov9Echo_IndxE, align 4, !dbg !2347, !tbaa !2146
+  %16 = add nsw i32 %15, 1, !dbg !2347
+  %17 = icmp eq i32 %8, 10, !dbg !2348
+  %. = select i1 %17, i32 0, i32 %16, !dbg !2350
+  store i32 %., i32* @_ZN3pov9Echo_IndxE, align 4, !dbg !2351, !tbaa !2146
+  br label %18, !dbg !2352
+
+; <label>:18                                      ; preds = %10, %14, %13
+  %.0 = phi i32 [ 10, %13 ], [ %8, %14 ], [ -1, %10 ]
+  ret i32 %.0, !dbg !2353
+}

@@ -1,0 +1,50 @@
+define i32 @_ZN8pov_base11pov_stricmpEPKcS1_(i8* nocapture readonly %s1, i8* nocapture readonly %s2) #0 {
+  tail call void @llvm.dbg.value(metadata i8* %s1, i64 0, metadata !94, metadata !555), !dbg !556
+  tail call void @llvm.dbg.value(metadata i8* %s2, i64 0, metadata !95, metadata !555), !dbg !557
+  br label %1, !dbg !558
+
+; <label>:1                                       ; preds = %15, %0
+  %.01 = phi i8* [ %s1, %0 ], [ %17, %15 ]
+  %.0 = phi i8* [ %s2, %0 ], [ %16, %15 ]
+  %2 = load i8* %.01, align 1, !dbg !559, !tbaa !560
+  %3 = icmp eq i8 %2, 0, !dbg !563
+  %4 = load i8* %.0, align 1, !dbg !564, !tbaa !560
+  br i1 %3, label %19, label %5, !dbg !568
+
+; <label>:5                                       ; preds = %1
+  %6 = icmp eq i8 %4, 0, !dbg !569
+  br i1 %6, label %.thread, label %7, !dbg !558
+
+; <label>:7                                       ; preds = %5
+  tail call void @llvm.dbg.value(metadata i8* %17, i64 0, metadata !94, metadata !555), !dbg !556
+  tail call void @llvm.dbg.value(metadata i8 %2, i64 0, metadata !96, metadata !555), !dbg !570
+  tail call void @llvm.dbg.value(metadata i8* %16, i64 0, metadata !95, metadata !555), !dbg !557
+  tail call void @llvm.dbg.value(metadata i8 %4, i64 0, metadata !97, metadata !555), !dbg !571
+  %8 = sext i8 %2 to i32, !dbg !572
+  tail call void @llvm.dbg.value(metadata i32 %8, i64 0, metadata !115, metadata !555), !dbg !574
+  %9 = tail call i32 @__toupper(i32 %8) #6, !dbg !576
+  %10 = sext i8 %4 to i32, !dbg !577
+  tail call void @llvm.dbg.value(metadata i32 %10, i64 0, metadata !115, metadata !555), !dbg !578
+  %11 = tail call i32 @__toupper(i32 %10) #6, !dbg !580
+  %sext = shl i32 %9, 24, !dbg !581
+  %12 = ashr exact i32 %sext, 24, !dbg !581
+  %sext3 = shl i32 %11, 24, !dbg !583
+  %13 = ashr exact i32 %sext3, 24, !dbg !583
+  %14 = icmp slt i32 %12, %13, !dbg !584
+  br i1 %14, label %.thread, label %15, !dbg !585
+
+; <label>:15                                      ; preds = %7
+  %16 = getelementptr inbounds i8* %.0, i64 1, !dbg !586
+  %17 = getelementptr inbounds i8* %.01, i64 1, !dbg !587
+  %18 = icmp sgt i32 %12, %13, !dbg !588
+  br i1 %18, label %.thread, label %1, !dbg !590
+
+; <label>:19                                      ; preds = %1
+  %not. = icmp ne i8 %4, 0, !dbg !591
+  %. = sext i1 %not. to i32, !dbg !591
+  br label %.thread, !dbg !591
+
+.thread:                                          ; preds = %15, %7, %5, %19
+  %.02 = phi i32 [ %., %19 ], [ -1, %7 ], [ 1, %15 ], [ 1, %5 ]
+  ret i32 %.02, !dbg !592
+}

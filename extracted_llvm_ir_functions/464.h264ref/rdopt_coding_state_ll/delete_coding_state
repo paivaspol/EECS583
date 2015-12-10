@@ -1,41 +1,42 @@
 define void @delete_coding_state(%struct.CSobj* %cs) #0 {
-entry:
-  %cmp = icmp eq %struct.CSobj* %cs, null
-  br i1 %cmp, label %if.end8, label %if.then
+  tail call void @llvm.dbg.value(metadata %struct.CSobj* %cs, i64 0, metadata !162, metadata !678), !dbg !679
+  %1 = icmp eq %struct.CSobj* %cs, null, !dbg !680
+  br i1 %1, label %20, label %2, !dbg !682
 
-if.then:                                          ; preds = %entry
-  %encenv = getelementptr inbounds %struct.CSobj* %cs, i64 0, i32 1
-  %0 = load %struct.EncodingEnvironment** %encenv, align 8, !tbaa !0
-  %cmp1 = icmp eq %struct.EncodingEnvironment* %0, null
-  br i1 %cmp1, label %if.end, label %if.then2
+; <label>:2                                       ; preds = %0
+  %3 = getelementptr inbounds %struct.CSobj* %cs, i64 0, i32 1, !dbg !683
+  %4 = load %struct.EncodingEnvironment** %3, align 8, !dbg !683, !tbaa !686
+  %5 = icmp eq %struct.EncodingEnvironment* %4, null, !dbg !693
+  br i1 %5, label %8, label %6, !dbg !694
 
-if.then2:                                         ; preds = %if.then
-  %1 = bitcast %struct.EncodingEnvironment* %0 to i8*
-  tail call void @free(i8* %1) #4
-  br label %if.end
+; <label>:6                                       ; preds = %2
+  %7 = bitcast %struct.EncodingEnvironment* %4 to i8*, !dbg !695
+  tail call void @free(i8* %7) #5, !dbg !696
+  br label %8, !dbg !696
 
-if.end:                                           ; preds = %if.then, %if.then2
-  %bitstream = getelementptr inbounds %struct.CSobj* %cs, i64 0, i32 2
-  %2 = load %struct.Bitstream** %bitstream, align 8, !tbaa !0
-  %cmp4 = icmp eq %struct.Bitstream* %2, null
-  br i1 %cmp4, label %if.end7, label %if.then5
+; <label>:8                                       ; preds = %2, %6
+  %9 = getelementptr inbounds %struct.CSobj* %cs, i64 0, i32 2, !dbg !697
+  %10 = load %struct.Bitstream** %9, align 8, !dbg !697, !tbaa !699
+  %11 = icmp eq %struct.Bitstream* %10, null, !dbg !700
+  br i1 %11, label %14, label %12, !dbg !701
 
-if.then5:                                         ; preds = %if.end
-  %3 = bitcast %struct.Bitstream* %2 to i8*
-  tail call void @free(i8* %3) #4
-  br label %if.end7
+; <label>:12                                      ; preds = %8
+  %13 = bitcast %struct.Bitstream* %10 to i8*, !dbg !702
+  tail call void @free(i8* %13) #5, !dbg !703
+  br label %14, !dbg !703
 
-if.end7:                                          ; preds = %if.end, %if.then5
-  %mot_ctx = getelementptr inbounds %struct.CSobj* %cs, i64 0, i32 4
-  %4 = load %struct.MotionInfoContexts** %mot_ctx, align 8, !tbaa !0
-  tail call void @delete_contexts_MotionInfo(%struct.MotionInfoContexts* %4) #4
-  %tex_ctx = getelementptr inbounds %struct.CSobj* %cs, i64 0, i32 5
-  %5 = load %struct.TextureInfoContexts** %tex_ctx, align 8, !tbaa !0
-  tail call void @delete_contexts_TextureInfo(%struct.TextureInfoContexts* %5) #4
-  %6 = bitcast %struct.CSobj* %cs to i8*
-  tail call void @free(i8* %6) #4
-  br label %if.end8
+; <label>:14                                      ; preds = %8, %12
+  %15 = getelementptr inbounds %struct.CSobj* %cs, i64 0, i32 4, !dbg !704
+  %16 = load %struct.MotionInfoContexts** %15, align 8, !dbg !704, !tbaa !705
+  tail call void @delete_contexts_MotionInfo(%struct.MotionInfoContexts* %16) #6, !dbg !706
+  %17 = getelementptr inbounds %struct.CSobj* %cs, i64 0, i32 5, !dbg !707
+  %18 = load %struct.TextureInfoContexts** %17, align 8, !dbg !707, !tbaa !708
+  tail call void @delete_contexts_TextureInfo(%struct.TextureInfoContexts* %18) #6, !dbg !709
+  %19 = bitcast %struct.CSobj* %cs to i8*, !dbg !710
+  tail call void @free(i8* %19) #5, !dbg !711
+  tail call void @llvm.dbg.value(metadata %struct.CSobj* null, i64 0, metadata !162, metadata !678), !dbg !679
+  br label %20, !dbg !712
 
-if.end8:                                          ; preds = %entry, %if.end7
-  ret void
+; <label>:20                                      ; preds = %0, %14
+  ret void, !dbg !713
 }

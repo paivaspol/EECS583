@@ -1,91 +1,95 @@
 define void @reset_piece_square() #0 {
-entry:
   %promoted_board = alloca [144 x i32], align 16
-  %0 = bitcast [144 x i32]* %promoted_board to i8*
-  call void @llvm.lifetime.start(i64 576, i8* %0) #1
-  call void @llvm.memset.p0i8.i64(i8* %0, i8 0, i64 576, i32 16, i1 false)
-  %1 = load i32* @piece_count, align 4, !tbaa !0
-  %cmp50 = icmp slt i32 %1, 1
-  br i1 %cmp50, label %for.end, label %for.body
+  %1 = bitcast [144 x i32]* %promoted_board to i8*, !dbg !821
+  call void @llvm.lifetime.start(i64 576, i8* %1) #2, !dbg !821
+  tail call void @llvm.dbg.declare(metadata [144 x i32]* %promoted_board, metadata !262, metadata !388), !dbg !822
+  call void @llvm.memset.p0i8.i64(i8* %1, i8 0, i64 576, i32 16, i1 false), !dbg !823
+  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !261, metadata !388), !dbg !824
+  %2 = load i32* @piece_count, align 4, !dbg !825, !tbaa !393
+  %3 = icmp slt i32 %2, 1, !dbg !828
+  br i1 %3, label %._crit_edge, label %.lr.ph, !dbg !829
 
-for.body:                                         ; preds = %entry, %for.inc
-  %indvars.iv52 = phi i64 [ %indvars.iv.next53, %for.inc ], [ 1, %entry ]
-  %arrayidx = getelementptr inbounds [62 x i32]* @is_promoted, i64 0, i64 %indvars.iv52
-  %2 = load i32* %arrayidx, align 4, !tbaa !0
-  %tobool = icmp eq i32 %2, 0
-  br i1 %tobool, label %for.inc, label %if.then
+.lr.ph:                                           ; preds = %0
+  %4 = sext i32 %2 to i64, !dbg !829
+  br label %5, !dbg !829
 
-if.then:                                          ; preds = %for.body
-  %arrayidx2 = getelementptr inbounds [62 x i32]* @pieces, i64 0, i64 %indvars.iv52
-  %3 = load i32* %arrayidx2, align 4, !tbaa !0
-  %idxprom3 = sext i32 %3 to i64
-  %arrayidx4 = getelementptr inbounds [144 x i32]* %promoted_board, i64 0, i64 %idxprom3
-  store i32 1, i32* %arrayidx4, align 4, !tbaa !0
-  br label %for.inc
+; <label>:5                                       ; preds = %14, %.lr.ph
+  %indvars.iv3 = phi i64 [ %indvars.iv.next4, %14 ], [ 1, %.lr.ph ]
+  %6 = getelementptr inbounds [62 x i32]* @is_promoted, i64 0, i64 %indvars.iv3, !dbg !830
+  %7 = load i32* %6, align 4, !dbg !830, !tbaa !393
+  %8 = icmp eq i32 %7, 0, !dbg !830
+  br i1 %8, label %14, label %9, !dbg !832
 
-for.inc:                                          ; preds = %for.body, %if.then
-  %indvars.iv.next53 = add i64 %indvars.iv52, 1
-  %4 = trunc i64 %indvars.iv52 to i32
-  %cmp = icmp slt i32 %4, %1
-  br i1 %cmp, label %for.body, label %for.end
+; <label>:9                                       ; preds = %5
+  %10 = getelementptr inbounds [62 x i32]* @pieces, i64 0, i64 %indvars.iv3, !dbg !833
+  %11 = load i32* %10, align 4, !dbg !833, !tbaa !393
+  %12 = sext i32 %11 to i64, !dbg !834
+  %13 = getelementptr inbounds [144 x i32]* %promoted_board, i64 0, i64 %12, !dbg !834
+  store i32 1, i32* %13, align 4, !dbg !835, !tbaa !393
+  br label %14, !dbg !834
 
-for.end:                                          ; preds = %for.inc, %entry
-  store i32 0, i32* @Material, align 4, !tbaa !0
-  store i32 0, i32* @piece_count, align 4, !tbaa !0
-  call void @llvm.memset.p0i8.i64(i8* bitcast ([62 x i32]* @pieces to i8*), i8 0, i64 248, i32 16, i1 false)
-  call void @llvm.memset.p0i8.i64(i8* bitcast ([62 x i32]* @is_promoted to i8*), i8 0, i64 248, i32 16, i1 false)
-  store i32 0, i32* getelementptr inbounds ([62 x i32]* @pieces, i64 0, i64 0), align 4, !tbaa !0
-  br label %for.body7
+; <label>:14                                      ; preds = %5, %9
+  %indvars.iv.next4 = add nuw nsw i64 %indvars.iv3, 1, !dbg !829
+  %15 = icmp slt i64 %indvars.iv3, %4, !dbg !828
+  br i1 %15, label %5, label %._crit_edge, !dbg !829
 
-for.body7:                                        ; preds = %for.inc34, %for.end
-  %5 = phi i32 [ 0, %for.end ], [ %11, %for.inc34 ]
-  %6 = phi i32 [ 0, %for.end ], [ %12, %for.inc34 ]
-  %indvars.iv = phi i64 [ 26, %for.end ], [ %indvars.iv.next, %for.inc34 ]
-  %arrayidx9 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %indvars.iv
-  %7 = load i32* %arrayidx9, align 4, !tbaa !0
-  %tobool10 = icmp ne i32 %7, 0
-  %cmp13 = icmp slt i32 %7, 13
-  %or.cond = and i1 %tobool10, %cmp13
-  br i1 %or.cond, label %if.then14, label %if.else
+._crit_edge:                                      ; preds = %14, %0
+  store i32 0, i32* @Material, align 4, !dbg !836, !tbaa !393
+  store i32 0, i32* @piece_count, align 4, !dbg !837, !tbaa !393
+  tail call void @llvm.memset.p0i8.i64(i8* bitcast ([62 x i32]* @pieces to i8*), i8 0, i64 248, i32 16, i1 false), !dbg !838
+  tail call void @llvm.memset.p0i8.i64(i8* bitcast ([62 x i32]* @is_promoted to i8*), i8 0, i64 248, i32 16, i1 false), !dbg !839
+  store i32 0, i32* getelementptr inbounds ([62 x i32]* @pieces, i64 0, i64 0), align 4, !dbg !840, !tbaa !393
+  tail call void @llvm.dbg.value(metadata i32 26, i64 0, metadata !261, metadata !388), !dbg !824
+  br label %16, !dbg !841
 
-if.then14:                                        ; preds = %for.body7
-  %idxprom17 = sext i32 %7 to i64
-  %arrayidx18 = getelementptr inbounds [14 x i32]* @material, i64 0, i64 %idxprom17
-  %8 = load i32* %arrayidx18, align 4, !tbaa !0
-  %add = add nsw i32 %6, %8
-  store i32 %add, i32* @Material, align 4, !tbaa !0
-  %add19 = add nsw i32 %5, 1
-  store i32 %add19, i32* @piece_count, align 4, !tbaa !0
-  %idxprom20 = sext i32 %add19 to i64
-  %arrayidx21 = getelementptr inbounds [62 x i32]* @pieces, i64 0, i64 %idxprom20
-  %9 = trunc i64 %indvars.iv to i32
-  store i32 %9, i32* %arrayidx21, align 4, !tbaa !0
-  %arrayidx23 = getelementptr inbounds [144 x i32]* @squares, i64 0, i64 %indvars.iv
-  store i32 %add19, i32* %arrayidx23, align 4, !tbaa !0
-  %arrayidx25 = getelementptr inbounds [144 x i32]* %promoted_board, i64 0, i64 %indvars.iv
-  %10 = load i32* %arrayidx25, align 4, !tbaa !0
-  %tobool26 = icmp eq i32 %10, 0
-  br i1 %tobool26, label %for.inc34, label %if.then27
+; <label>:16                                      ; preds = %40, %._crit_edge
+  %17 = phi i32 [ 0, %._crit_edge ], [ %41, %40 ]
+  %18 = phi i32 [ 0, %._crit_edge ], [ %42, %40 ]
+  %indvars.iv = phi i64 [ 26, %._crit_edge ], [ %indvars.iv.next, %40 ]
+  %19 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %indvars.iv, !dbg !843
+  %20 = load i32* %19, align 4, !dbg !843, !tbaa !393
+  %21 = icmp ne i32 %20, 0, !dbg !843
+  %22 = icmp slt i32 %20, 13, !dbg !846
+  %or.cond = and i1 %21, %22, !dbg !847
+  br i1 %or.cond, label %23, label %38, !dbg !847
 
-if.then27:                                        ; preds = %if.then14
-  %arrayidx29 = getelementptr inbounds [62 x i32]* @is_promoted, i64 0, i64 %idxprom20
-  store i32 1, i32* %arrayidx29, align 4, !tbaa !0
-  br label %for.inc34
+; <label>:23                                      ; preds = %16
+  %24 = sext i32 %20 to i64, !dbg !848
+  %25 = getelementptr inbounds [14 x i32]* @material, i64 0, i64 %24, !dbg !848
+  %26 = load i32* %25, align 4, !dbg !848, !tbaa !393
+  %27 = add nsw i32 %18, %26, !dbg !848
+  store i32 %27, i32* @Material, align 4, !dbg !848, !tbaa !393
+  %28 = add nsw i32 %17, 1, !dbg !850
+  store i32 %28, i32* @piece_count, align 4, !dbg !850, !tbaa !393
+  %29 = sext i32 %28 to i64, !dbg !851
+  %30 = getelementptr inbounds [62 x i32]* @pieces, i64 0, i64 %29, !dbg !851
+  %31 = trunc i64 %indvars.iv to i32, !dbg !852
+  store i32 %31, i32* %30, align 4, !dbg !852, !tbaa !393
+  %32 = getelementptr inbounds [144 x i32]* @squares, i64 0, i64 %indvars.iv, !dbg !853
+  store i32 %28, i32* %32, align 4, !dbg !854, !tbaa !393
+  %33 = getelementptr inbounds [144 x i32]* %promoted_board, i64 0, i64 %indvars.iv, !dbg !855
+  %34 = load i32* %33, align 4, !dbg !855, !tbaa !393
+  %35 = icmp eq i32 %34, 0, !dbg !855
+  br i1 %35, label %40, label %36, !dbg !857
 
-if.else:                                          ; preds = %for.body7
-  %arrayidx32 = getelementptr inbounds [144 x i32]* @squares, i64 0, i64 %indvars.iv
-  store i32 0, i32* %arrayidx32, align 4, !tbaa !0
-  br label %for.inc34
+; <label>:36                                      ; preds = %23
+  %37 = getelementptr inbounds [62 x i32]* @is_promoted, i64 0, i64 %29, !dbg !858
+  store i32 1, i32* %37, align 4, !dbg !859, !tbaa !393
+  br label %40, !dbg !858
 
-for.inc34:                                        ; preds = %if.then14, %if.else, %if.then27
-  %11 = phi i32 [ %add19, %if.then14 ], [ %5, %if.else ], [ %add19, %if.then27 ]
-  %12 = phi i32 [ %add, %if.then14 ], [ %6, %if.else ], [ %add, %if.then27 ]
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, 118
-  br i1 %exitcond, label %for.end36, label %for.body7
+; <label>:38                                      ; preds = %16
+  %39 = getelementptr inbounds [144 x i32]* @squares, i64 0, i64 %indvars.iv, !dbg !860
+  store i32 0, i32* %39, align 4, !dbg !861, !tbaa !393
+  br label %40
 
-for.end36:                                        ; preds = %for.inc34
-  call void @llvm.lifetime.end(i64 576, i8* %0) #1
-  ret void
+; <label>:40                                      ; preds = %23, %38, %36
+  %41 = phi i32 [ %28, %23 ], [ %17, %38 ], [ %28, %36 ]
+  %42 = phi i32 [ %27, %23 ], [ %18, %38 ], [ %27, %36 ]
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !841
+  %exitcond = icmp eq i64 %indvars.iv.next, 118, !dbg !841
+  br i1 %exitcond, label %43, label %16, !dbg !841
+
+; <label>:43                                      ; preds = %40
+  call void @llvm.lifetime.end(i64 576, i8* %1) #2, !dbg !862
+  ret void, !dbg !862
 }

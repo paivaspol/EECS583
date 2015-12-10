@@ -1,84 +1,93 @@
 define void @FrontMtx_initialFrontDimensions(%struct._FrontMtx* %frontmtx, i32 %J, i32* %pnD, i32* %pnL, i32* %pnU, i32* %pnbytes) #0 {
-entry:
-  %cmp = icmp eq %struct._FrontMtx* %frontmtx, null
-  %cmp1 = icmp slt i32 %J, 0
-  %or.cond = or i1 %cmp, %cmp1
-  br i1 %or.cond, label %if.then, label %lor.lhs.false2
+  tail call void @llvm.dbg.value(metadata %struct._FrontMtx* %frontmtx, i64 0, metadata !193, metadata !284), !dbg !324
+  tail call void @llvm.dbg.value(metadata i32 %J, i64 0, metadata !194, metadata !284), !dbg !325
+  tail call void @llvm.dbg.value(metadata i32* %pnD, i64 0, metadata !195, metadata !284), !dbg !326
+  tail call void @llvm.dbg.value(metadata i32* %pnL, i64 0, metadata !196, metadata !284), !dbg !327
+  tail call void @llvm.dbg.value(metadata i32* %pnU, i64 0, metadata !197, metadata !284), !dbg !328
+  tail call void @llvm.dbg.value(metadata i32* %pnbytes, i64 0, metadata !198, metadata !284), !dbg !329
+  %1 = icmp eq %struct._FrontMtx* %frontmtx, null, !dbg !330
+  %2 = icmp slt i32 %J, 0, !dbg !332
+  %or.cond = or i1 %1, %2, !dbg !333
+  br i1 %or.cond, label %11, label %3, !dbg !333
 
-lor.lhs.false2:                                   ; preds = %entry
-  %nfront = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 0
-  %0 = load i32* %nfront, align 4, !tbaa !3
-  %cmp3 = icmp sle i32 %0, %J
-  %cmp5 = icmp eq i32* %pnD, null
-  %or.cond52 = or i1 %cmp3, %cmp5
-  %cmp7 = icmp eq i32* %pnL, null
-  %or.cond53 = or i1 %or.cond52, %cmp7
-  %cmp9 = icmp eq i32* %pnU, null
-  %or.cond54 = or i1 %or.cond53, %cmp9
-  %cmp11 = icmp eq i32* %pnbytes, null
-  %or.cond55 = or i1 %or.cond54, %cmp11
-  br i1 %or.cond55, label %if.then, label %if.end
+; <label>:3                                       ; preds = %0
+  %4 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 0, !dbg !334
+  %5 = load i32* %4, align 4, !dbg !334, !tbaa !298
+  %6 = icmp sle i32 %5, %J, !dbg !335
+  %7 = icmp eq i32* %pnD, null, !dbg !336
+  %or.cond3 = or i1 %7, %6, !dbg !337
+  %8 = icmp eq i32* %pnL, null, !dbg !338
+  %or.cond5 = or i1 %8, %or.cond3, !dbg !337
+  %9 = icmp eq i32* %pnU, null, !dbg !339
+  %or.cond7 = or i1 %9, %or.cond5, !dbg !337
+  %10 = icmp eq i32* %pnbytes, null, !dbg !340
+  %or.cond9 = or i1 %10, %or.cond7, !dbg !337
+  br i1 %or.cond9, label %11, label %14, !dbg !337
 
-if.then:                                          ; preds = %lor.lhs.false2, %entry
-  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([118 x i8]* @.str3, i64 0, i64 0), %struct._FrontMtx* %frontmtx, i32 %J, i32* %pnD, i32* %pnL, i32* %pnU, i32* %pnbytes) #5
-  tail call void @exit(i32 -1) #6
-  unreachable
+; <label>:11                                      ; preds = %3, %0
+  %12 = load %struct.__sFILE** @__stderrp, align 8, !dbg !341, !tbaa !291
+  %13 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %12, i8* getelementptr inbounds ([118 x i8]* @.str3, i64 0, i64 0), %struct._FrontMtx* %frontmtx, i32 %J, i32* %pnD, i32* %pnL, i32* %pnU, i32* %pnbytes) #6, !dbg !343
+  tail call void @exit(i32 -1) #7, !dbg !344
+  unreachable, !dbg !344
 
-if.end:                                           ; preds = %lor.lhs.false2
-  %type = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 2
-  %2 = load i32* %type, align 4, !tbaa !3
-  switch i32 %2, label %sw.default18 [
-    i32 1, label %sw.bb
-    i32 2, label %if.end.sw.epilog20_crit_edge
-  ]
+; <label>:14                                      ; preds = %3
+  %15 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 2, !dbg !345
+  %16 = load i32* %15, align 4, !dbg !345, !tbaa !346
+  switch i32 %16, label %23 [
+    i32 1, label %17
+    i32 2, label %._crit_edge
+  ], !dbg !347
 
-if.end.sw.epilog20_crit_edge:                     ; preds = %if.end
-  %symmetryflag26.phi.trans.insert = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 3
-  %.pre = load i32* %symmetryflag26.phi.trans.insert, align 4, !tbaa !3
-  br label %sw.epilog20
+._crit_edge:                                      ; preds = %14
+  %.phi.trans.insert = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 3
+  %.pre = load i32* %.phi.trans.insert, align 4, !dbg !348, !tbaa !349
+  br label %26, !dbg !347
 
-sw.bb:                                            ; preds = %if.end
-  %symmetryflag = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 3
-  %3 = load i32* %symmetryflag, align 4, !tbaa !3
-  switch i32 %3, label %sw.default [
-    i32 0, label %sw.epilog20
-    i32 2, label %sw.epilog20
-  ]
+; <label>:17                                      ; preds = %14
+  %18 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 3, !dbg !350
+  %19 = load i32* %18, align 4, !dbg !350, !tbaa !349
+  switch i32 %19, label %20 [
+    i32 0, label %26
+    i32 2, label %26
+  ], !dbg !352
 
-sw.default:                                       ; preds = %sw.bb
-  %4 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %5 = tail call i64 @fwrite(i8* getelementptr inbounds ([98 x i8]* @.str4, i64 0, i64 0), i64 97, i64 1, %struct._IO_FILE* %4)
-  tail call void @exit(i32 -1) #6
-  unreachable
+; <label>:20                                      ; preds = %17
+  %21 = load %struct.__sFILE** @__stderrp, align 8, !dbg !353, !tbaa !291
+  %22 = tail call i64 @fwrite(i8* getelementptr inbounds ([98 x i8]* @.str4, i64 0, i64 0), i64 97, i64 1, %struct.__sFILE* %21), !dbg !355
+  tail call void @exit(i32 -1) #7, !dbg !356
+  unreachable, !dbg !356
 
-sw.default18:                                     ; preds = %if.end
-  %6 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %7 = tail call i64 @fwrite(i8* getelementptr inbounds ([86 x i8]* @.str5, i64 0, i64 0), i64 85, i64 1, %struct._IO_FILE* %6)
-  tail call void @exit(i32 -1) #6
-  unreachable
+; <label>:23                                      ; preds = %14
+  %24 = load %struct.__sFILE** @__stderrp, align 8, !dbg !357, !tbaa !291
+  %25 = tail call i64 @fwrite(i8* getelementptr inbounds ([86 x i8]* @.str5, i64 0, i64 0), i64 85, i64 1, %struct.__sFILE* %24), !dbg !358
+  tail call void @exit(i32 -1) #7, !dbg !359
+  unreachable, !dbg !359
 
-sw.epilog20:                                      ; preds = %if.end.sw.epilog20_crit_edge, %sw.bb, %sw.bb
-  %8 = phi i32 [ %.pre, %if.end.sw.epilog20_crit_edge ], [ %3, %sw.bb ], [ %3, %sw.bb ]
-  %idxprom = sext i32 %J to i64
-  %frontETree = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 11
-  %9 = load %struct._ETree** %frontETree, align 8, !tbaa !0
-  %nodwghtsIV = getelementptr inbounds %struct._ETree* %9, i64 0, i32 3
-  %10 = load %struct._IV** %nodwghtsIV, align 8, !tbaa !0
-  %vec = getelementptr inbounds %struct._IV* %10, i64 0, i32 3
-  %11 = load i32** %vec, align 8, !tbaa !0
-  %arrayidx = getelementptr inbounds i32* %11, i64 %idxprom
-  %12 = load i32* %arrayidx, align 4, !tbaa !3
-  %bndwghtsIV = getelementptr inbounds %struct._ETree* %9, i64 0, i32 4
-  %13 = load %struct._IV** %bndwghtsIV, align 8, !tbaa !0
-  %vec23 = getelementptr inbounds %struct._IV* %13, i64 0, i32 3
-  %14 = load i32** %vec23, align 8, !tbaa !0
-  %arrayidx24 = getelementptr inbounds i32* %14, i64 %idxprom
-  %15 = load i32* %arrayidx24, align 4, !tbaa !3
-  %call27 = tail call i32 @Chv_nbytesNeeded(i32 %12, i32 %15, i32 %15, i32 %2, i32 %8) #5
-  store i32 %12, i32* %pnD, align 4, !tbaa !3
-  store i32 %15, i32* %pnL, align 4, !tbaa !3
-  store i32 %15, i32* %pnU, align 4, !tbaa !3
-  store i32 %call27, i32* %pnbytes, align 4, !tbaa !3
-  ret void
+; <label>:26                                      ; preds = %._crit_edge, %17, %17
+  %27 = phi i32 [ %.pre, %._crit_edge ], [ %19, %17 ], [ %19, %17 ]
+  %28 = sext i32 %J to i64, !dbg !360
+  %29 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 11, !dbg !361
+  %30 = load %struct._ETree** %29, align 8, !dbg !361, !tbaa !362
+  %31 = getelementptr inbounds %struct._ETree* %30, i64 0, i32 3, !dbg !363
+  %32 = load %struct._IV** %31, align 8, !dbg !363, !tbaa !364
+  %33 = getelementptr inbounds %struct._IV* %32, i64 0, i32 3, !dbg !366
+  %34 = load i32** %33, align 8, !dbg !366, !tbaa !367
+  %35 = getelementptr inbounds i32* %34, i64 %28, !dbg !360
+  %36 = load i32* %35, align 4, !dbg !360, !tbaa !369
+  tail call void @llvm.dbg.value(metadata i32 %36, i64 0, metadata !200, metadata !284), !dbg !370
+  %37 = getelementptr inbounds %struct._ETree* %30, i64 0, i32 4, !dbg !371
+  %38 = load %struct._IV** %37, align 8, !dbg !371, !tbaa !372
+  %39 = getelementptr inbounds %struct._IV* %38, i64 0, i32 3, !dbg !373
+  %40 = load i32** %39, align 8, !dbg !373, !tbaa !367
+  %41 = getelementptr inbounds i32* %40, i64 %28, !dbg !374
+  %42 = load i32* %41, align 4, !dbg !374, !tbaa !369
+  tail call void @llvm.dbg.value(metadata i32 %42, i64 0, metadata !202, metadata !284), !dbg !375
+  tail call void @llvm.dbg.value(metadata i32 %42, i64 0, metadata !201, metadata !284), !dbg !376
+  %43 = tail call i32 @Chv_nbytesNeeded(i32 %36, i32 %42, i32 %42, i32 %16, i32 %27) #6, !dbg !377
+  tail call void @llvm.dbg.value(metadata i32 %43, i64 0, metadata !199, metadata !284), !dbg !378
+  store i32 %36, i32* %pnD, align 4, !dbg !379, !tbaa !369
+  store i32 %42, i32* %pnL, align 4, !dbg !380, !tbaa !369
+  store i32 %42, i32* %pnU, align 4, !dbg !381, !tbaa !369
+  store i32 %43, i32* %pnbytes, align 4, !dbg !382, !tbaa !369
+  ret void, !dbg !383
 }

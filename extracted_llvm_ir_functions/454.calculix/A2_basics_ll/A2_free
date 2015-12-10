@@ -1,17 +1,18 @@
 define void @A2_free(%struct._A2* %mtx) #0 {
-entry:
-  %cmp = icmp eq %struct._A2* %mtx, null
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata %struct._A2* %mtx, i64 0, metadata !40, metadata !49), !dbg !98
+  %1 = icmp eq %struct._A2* %mtx, null, !dbg !99
+  br i1 %1, label %2, label %5, !dbg !101
 
-if.then:                                          ; preds = %entry
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([41 x i8]* @.str4, i64 0, i64 0), %struct._A2* null) #5
-  tail call void @exit(i32 -1) #6
-  unreachable
+; <label>:2                                       ; preds = %0
+  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !102, !tbaa !54
+  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([41 x i8]* @.str4, i64 0, i64 0), %struct._A2* null) #6, !dbg !104
+  tail call void @exit(i32 -1) #7, !dbg !105
+  unreachable, !dbg !105
 
-if.end:                                           ; preds = %entry
-  tail call void @A2_clearData(%struct._A2* %mtx) #7
-  %1 = bitcast %struct._A2* %mtx to i8*
-  tail call void @free(i8* %1) #5
-  ret void
+; <label>:5                                       ; preds = %0
+  tail call void @A2_clearData(%struct._A2* %mtx) #8, !dbg !106
+  %6 = bitcast %struct._A2* %mtx to i8*, !dbg !107
+  tail call void @free(i8* %6) #8, !dbg !107
+  tail call void @llvm.dbg.value(metadata %struct._A2* null, i64 0, metadata !40, metadata !49), !dbg !98
+  ret void, !dbg !110
 }

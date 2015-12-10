@@ -1,36 +1,43 @@
-define i32 @is_pass_node(%struct.SGFNode_t* nocapture %node, i32 %boardsize) #0 {
-entry:
-  %props = getelementptr inbounds %struct.SGFNode_t* %node, i64 0, i32 0
-  %0 = load %struct.SGFProperty_t** %props, align 8, !tbaa !0
-  %tobool = icmp eq %struct.SGFProperty_t* %0, null
-  br i1 %tobool, label %return, label %while.body
+define i32 @is_pass_node(%struct.SGFNode_t* nocapture readonly %node, i32 %boardsize) #0 {
+  tail call void @llvm.dbg.value(metadata %struct.SGFNode_t* %node, i64 0, metadata !71, metadata !90), !dbg !232
+  tail call void @llvm.dbg.value(metadata i32 %boardsize, i64 0, metadata !72, metadata !90), !dbg !233
+  %1 = getelementptr inbounds %struct.SGFNode_t* %node, i64 0, i32 0, !dbg !234
+  %2 = load %struct.SGFProperty_t** %1, align 8, !dbg !234, !tbaa !153
+  %3 = icmp eq %struct.SGFProperty_t* %2, null, !dbg !236
+  br i1 %3, label %.loopexit, label %.lr.ph, !dbg !237
 
-while.body:                                       ; preds = %entry, %sw.epilog
-  %sgf_prop.010 = phi %struct.SGFProperty_t* [ %2, %sw.epilog ], [ %0, %entry ]
-  %name = getelementptr inbounds %struct.SGFProperty_t* %sgf_prop.010, i64 0, i32 1
-  %1 = load i16* %name, align 2, !tbaa !4
-  %conv = sext i16 %1 to i32
-  switch i32 %conv, label %sw.epilog [
-    i32 8258, label %sw.bb
-    i32 8279, label %sw.bb
-  ]
+.lr.ph:                                           ; preds = %0, %13
+  %sgf_prop.02 = phi %struct.SGFProperty_t* [ %15, %13 ], [ %2, %0 ]
+  %4 = getelementptr inbounds %struct.SGFProperty_t* %sgf_prop.02, i64 0, i32 1, !dbg !238
+  %5 = load i16* %4, align 2, !dbg !238, !tbaa !163
+  %6 = sext i16 %5 to i32, !dbg !240
+  switch i32 %6, label %13 [
+    i32 8258, label %7
+    i32 8279, label %7
+  ], !dbg !241
 
-sw.bb:                                            ; preds = %while.body, %while.body
-  %call.i = tail call i32 @get_moveX(%struct.SGFProperty_t* %sgf_prop.010, i32 %boardsize) #6
-  %call1.i = tail call i32 @get_moveY(%struct.SGFProperty_t* %sgf_prop.010, i32 %boardsize) #6
-  %cmp.i = icmp eq i32 %call.i, -1
-  %cmp2.i = icmp eq i32 %call1.i, -1
-  %or.cond.i = and i1 %cmp.i, %cmp2.i
-  %lnot.ext = zext i1 %or.cond.i to i32
-  br label %return
+; <label>:7                                       ; preds = %.lr.ph, %.lr.ph
+  tail call void @llvm.dbg.value(metadata %struct.SGFProperty_t* %15, i64 0, metadata !35, metadata !90) #6, !dbg !242
+  tail call void @llvm.dbg.value(metadata i32 %boardsize, i64 0, metadata !38, metadata !90) #6, !dbg !245
+  %8 = tail call i32 @get_moveX(%struct.SGFProperty_t* %sgf_prop.02, i32 %boardsize) #7, !dbg !246
+  tail call void @llvm.dbg.value(metadata i32 %8, i64 0, metadata !36, metadata !90), !dbg !247
+  tail call void @llvm.dbg.value(metadata i32 %8, i64 0, metadata !74, metadata !90), !dbg !248
+  %9 = tail call i32 @get_moveY(%struct.SGFProperty_t* %sgf_prop.02, i32 %boardsize) #7, !dbg !249
+  tail call void @llvm.dbg.value(metadata i32 %9, i64 0, metadata !37, metadata !90), !dbg !250
+  tail call void @llvm.dbg.value(metadata i32 %9, i64 0, metadata !75, metadata !90), !dbg !251
+  %10 = and i32 %9, %8, !dbg !252
+  %11 = icmp eq i32 %10, -1, !dbg !253
+  %12 = zext i1 %11 to i32, !dbg !253
+  br label %.loopexit, !dbg !254
 
-sw.epilog:                                        ; preds = %while.body
-  %next = getelementptr inbounds %struct.SGFProperty_t* %sgf_prop.010, i64 0, i32 0
-  %2 = load %struct.SGFProperty_t** %next, align 8, !tbaa !0
-  %tobool2 = icmp eq %struct.SGFProperty_t* %2, null
-  br i1 %tobool2, label %return, label %while.body
+; <label>:13                                      ; preds = %.lr.ph
+  %14 = getelementptr inbounds %struct.SGFProperty_t* %sgf_prop.02, i64 0, i32 0, !dbg !255
+  %15 = load %struct.SGFProperty_t** %14, align 8, !dbg !255, !tbaa !169
+  tail call void @llvm.dbg.value(metadata %struct.SGFProperty_t* %15, i64 0, metadata !73, metadata !90), !dbg !256
+  %16 = icmp eq %struct.SGFProperty_t* %15, null, !dbg !257
+  br i1 %16, label %.loopexit, label %.lr.ph, !dbg !257
 
-return:                                           ; preds = %sw.epilog, %entry, %sw.bb
-  %retval.0 = phi i32 [ %lnot.ext, %sw.bb ], [ 0, %entry ], [ 0, %sw.epilog ]
-  ret i32 %retval.0
+.loopexit:                                        ; preds = %13, %0, %7
+  %.0 = phi i32 [ %12, %7 ], [ 0, %0 ], [ 0, %13 ]
+  ret i32 %.0, !dbg !258
 }

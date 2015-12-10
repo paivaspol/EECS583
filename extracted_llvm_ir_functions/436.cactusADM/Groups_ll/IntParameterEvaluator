@@ -3,85 +3,108 @@ define internal i32 @IntParameterEvaluator(i32 %nvars, i8** nocapture readonly %
   %thorn = alloca i8*, align 8
   %param = alloca i8*, align 8
   %type = alloca i32, align 4
-  %1 = icmp sgt i32 %nvars, 0
-  br i1 %1, label %.lr.ph, label %._crit_edge
+  tail call void @llvm.dbg.value(metadata i32 %nvars, i64 0, metadata !454, metadata !483), !dbg !1801
+  tail call void @llvm.dbg.value(metadata i8** %vars, i64 0, metadata !455, metadata !483), !dbg !1802
+  tail call void @llvm.dbg.value(metadata %struct.uExpressionValue* %vals, i64 0, metadata !456, metadata !483), !dbg !1803
+  tail call void @llvm.dbg.value(metadata i8* %data, i64 0, metadata !457, metadata !483), !dbg !1804
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !458, metadata !483), !dbg !1805
+  %1 = icmp sgt i32 %nvars, 0, !dbg !1806
+  br i1 %1, label %.lr.ph, label %._crit_edge, !dbg !1809
 
 .lr.ph:                                           ; preds = %0
-  %2 = add i32 %nvars, -1
-  br label %3
+  %2 = add i32 %nvars, -1, !dbg !1809
+  br label %3, !dbg !1809
 
 ; <label>:3                                       ; preds = %37, %.lr.ph
   %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %37 ]
-  %4 = getelementptr inbounds %struct.uExpressionValue* %vals, i64 %indvars.iv, i32 0
-  store i32 1, i32* %4, align 4, !tbaa !33
-  %5 = getelementptr inbounds i8** %vars, i64 %indvars.iv
-  %6 = load i8** %5, align 8, !tbaa !2
-  %7 = call i8* @Util_Strdup(i8* %6) #10
-  %8 = call i64 @strtol(i8* %7, i8** %endptr, i32 0) #10
-  %9 = trunc i64 %8 to i32
-  %10 = getelementptr inbounds %struct.uExpressionValue* %vals, i64 %indvars.iv, i32 1
-  %11 = bitcast %union.anon* %10 to i32*
-  store i32 %9, i32* %11, align 4, !tbaa !6
-  %12 = load i8** %endptr, align 8, !tbaa !2
-  %13 = icmp eq i8* %12, %7
-  br i1 %13, label %14, label %37
+  %4 = getelementptr inbounds %struct.uExpressionValue* %vals, i64 %indvars.iv, i32 0, !dbg !1810
+  store i32 1, i32* %4, align 4, !dbg !1812, !tbaa !1813
+  %5 = getelementptr inbounds i8** %vars, i64 %indvars.iv, !dbg !1815
+  %6 = load i8** %5, align 8, !dbg !1815, !tbaa !487
+  %7 = call i8* @Util_Strdup(i8* %6) #10, !dbg !1816
+  call void @llvm.dbg.value(metadata i8* %7, i64 0, metadata !459, metadata !483), !dbg !1817
+  call void @llvm.dbg.value(metadata i8** %endptr, i64 0, metadata !460, metadata !483), !dbg !1818
+  %8 = call i64 @strtol(i8* %7, i8** %endptr, i32 0) #10, !dbg !1819
+  %9 = trunc i64 %8 to i32, !dbg !1819
+  %10 = getelementptr inbounds %struct.uExpressionValue* %vals, i64 %indvars.iv, i32 1, !dbg !1820
+  %11 = bitcast %union.anon* %10 to i32*, !dbg !1821
+  store i32 %9, i32* %11, align 4, !dbg !1822, !tbaa !502
+  call void @llvm.dbg.value(metadata i8** %endptr, i64 0, metadata !460, metadata !483), !dbg !1818
+  %12 = load i8** %endptr, align 8, !dbg !1823, !tbaa !487
+  %13 = icmp eq i8* %12, %7, !dbg !1825
+  br i1 %13, label %14, label %37, !dbg !1826
 
 ; <label>:14                                      ; preds = %3
-  %15 = call i32 @CCTK_DecomposeName(i8* %7, i8** %thorn, i8** %param) #9
-  %16 = icmp eq i32 %15, 0
-  br i1 %16, label %18, label %17
+  call void @llvm.dbg.value(metadata i8** %thorn, i64 0, metadata !462, metadata !483), !dbg !1827
+  call void @llvm.dbg.value(metadata i8** %param, i64 0, metadata !463, metadata !483), !dbg !1828
+  %15 = call i32 @CCTK_DecomposeName(i8* %7, i8** %thorn, i8** %param) #9, !dbg !1829
+  %16 = icmp eq i32 %15, 0, !dbg !1829
+  br i1 %16, label %18, label %17, !dbg !1832
 
 ; <label>:17                                      ; preds = %14
-  store i8* null, i8** %thorn, align 8, !tbaa !2
-  store i8* null, i8** %param, align 8, !tbaa !2
-  br label %21
+  call void @llvm.dbg.value(metadata i8* null, i64 0, metadata !462, metadata !483), !dbg !1827
+  store i8* null, i8** %thorn, align 8, !dbg !1833, !tbaa !487
+  call void @llvm.dbg.value(metadata i8* null, i64 0, metadata !463, metadata !483), !dbg !1828
+  store i8* null, i8** %param, align 8, !dbg !1835, !tbaa !487
+  call void @llvm.dbg.value(metadata i8* %data, i64 0, metadata !464, metadata !483), !dbg !1836
+  call void @llvm.dbg.value(metadata i8* %7, i64 0, metadata !465, metadata !483), !dbg !1837
+  br label %21, !dbg !1838
 
 ; <label>:18                                      ; preds = %14
-  %19 = load i8** %thorn, align 8, !tbaa !2
-  %20 = load i8** %param, align 8, !tbaa !2
+  call void @llvm.dbg.value(metadata i8** %thorn, i64 0, metadata !462, metadata !483), !dbg !1827
+  %19 = load i8** %thorn, align 8, !dbg !1839, !tbaa !487
+  call void @llvm.dbg.value(metadata i8* %19, i64 0, metadata !464, metadata !483), !dbg !1836
+  call void @llvm.dbg.value(metadata i8** %param, i64 0, metadata !463, metadata !483), !dbg !1828
+  %20 = load i8** %param, align 8, !dbg !1841, !tbaa !487
+  call void @llvm.dbg.value(metadata i8* %20, i64 0, metadata !465, metadata !483), !dbg !1837
   br label %21
 
 ; <label>:21                                      ; preds = %18, %17
   %use_thorn.0 = phi i8* [ %data, %17 ], [ %19, %18 ]
   %use_param.0 = phi i8* [ %7, %17 ], [ %20, %18 ]
-  %22 = call i8* @CCTK_ParameterGet(i8* %use_param.0, i8* %use_thorn.0, i32* %type) #10
-  %23 = icmp ne i8* %22, null
+  call void @llvm.dbg.value(metadata i32* %type, i64 0, metadata !466, metadata !483), !dbg !1842
+  %22 = call i8* @CCTK_ParameterGet(i8* %use_param.0, i8* %use_thorn.0, i32* %type) #10, !dbg !1843
+  call void @llvm.dbg.value(metadata i32* %27, i64 0, metadata !461, metadata !483), !dbg !1844
+  %23 = icmp ne i8* %22, null, !dbg !1845
+  call void @llvm.dbg.value(metadata i32* %type, i64 0, metadata !466, metadata !483), !dbg !1842
   %24 = load i32* %type, align 4
-  %25 = icmp eq i32 %24, 4
-  %or.cond = and i1 %23, %25
-  br i1 %or.cond, label %26, label %29
+  %25 = icmp eq i32 %24, 4, !dbg !1847
+  %or.cond = and i1 %23, %25, !dbg !1848
+  br i1 %or.cond, label %26, label %29, !dbg !1848
 
 ; <label>:26                                      ; preds = %21
-  %27 = bitcast i8* %22 to i32*
-  %28 = load i32* %27, align 4, !tbaa !6
-  store i32 %28, i32* %11, align 4, !tbaa !6
-  br label %34
+  %27 = bitcast i8* %22 to i32*, !dbg !1849
+  %28 = load i32* %27, align 4, !dbg !1850, !tbaa !502
+  store i32 %28, i32* %11, align 4, !dbg !1852, !tbaa !502
+  br label %34, !dbg !1853
 
 ; <label>:29                                      ; preds = %21
-  br i1 %23, label %32, label %30
+  br i1 %23, label %32, label %30, !dbg !1854
 
 ; <label>:30                                      ; preds = %29
-  %31 = call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 0, i32 2367, i8* getelementptr inbounds ([75 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([51 x i8]* @.str61, i64 0, i64 0), i8* %use_thorn.0, i8* %use_param.0) #10
-  br label %34
+  %31 = call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 0, i32 2367, i8* getelementptr inbounds ([75 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([51 x i8]* @.str61, i64 0, i64 0), i8* %use_thorn.0, i8* %use_param.0) #10, !dbg !1855
+  br label %34, !dbg !1858
 
 ; <label>:32                                      ; preds = %29
-  %33 = call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 0, i32 2373, i8* getelementptr inbounds ([75 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([60 x i8]* @.str62, i64 0, i64 0), i8* %use_thorn.0, i8* %use_param.0) #10
+  %33 = call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 0, i32 2373, i8* getelementptr inbounds ([75 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([60 x i8]* @.str62, i64 0, i64 0), i8* %use_thorn.0, i8* %use_param.0) #10, !dbg !1859
   br label %34
 
 ; <label>:34                                      ; preds = %30, %32, %26
-  %35 = load i8** %thorn, align 8, !tbaa !2
-  call void @free(i8* %35) #9
-  %36 = load i8** %param, align 8, !tbaa !2
-  call void @free(i8* %36) #9
-  br label %37
+  call void @llvm.dbg.value(metadata i8** %thorn, i64 0, metadata !462, metadata !483), !dbg !1827
+  %35 = load i8** %thorn, align 8, !dbg !1861, !tbaa !487
+  call void @free(i8* %35) #9, !dbg !1862
+  call void @llvm.dbg.value(metadata i8** %param, i64 0, metadata !463, metadata !483), !dbg !1828
+  %36 = load i8** %param, align 8, !dbg !1863, !tbaa !487
+  call void @free(i8* %36) #9, !dbg !1864
+  br label %37, !dbg !1865
 
 ; <label>:37                                      ; preds = %34, %3
-  call void @free(i8* %7) #9
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %2
-  br i1 %exitcond, label %._crit_edge, label %3
+  call void @free(i8* %7) #9, !dbg !1866
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !1809
+  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !1809
+  %exitcond = icmp eq i32 %lftr.wideiv, %2, !dbg !1809
+  br i1 %exitcond, label %._crit_edge, label %3, !dbg !1809
 
 ._crit_edge:                                      ; preds = %37, %0
-  ret i32 0
+  ret i32 0, !dbg !1867
 }

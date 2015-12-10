@@ -1,0 +1,65 @@
+define zeroext i1 @_ZN7way2obj9createwayEiiiiPhRP6pointtRi(%class.way2obj* nocapture %this, i32 %startx, i32 %starty, i32 %endx, i32 %endy, i8* nocapture readonly %movetimearp, %struct.pointt** nocapture dereferenceable(8) %wayar, i32* nocapture dereferenceable(4) %waylength) #1 align 2 {
+  tail call void @llvm.dbg.value(metadata %class.way2obj* %this, i64 0, metadata !204, metadata !293), !dbg !810
+  tail call void @llvm.dbg.value(metadata i32 %startx, i64 0, metadata !205, metadata !293), !dbg !811
+  tail call void @llvm.dbg.value(metadata i32 %starty, i64 0, metadata !206, metadata !293), !dbg !812
+  tail call void @llvm.dbg.value(metadata i32 %endx, i64 0, metadata !207, metadata !293), !dbg !813
+  tail call void @llvm.dbg.value(metadata i32 %endy, i64 0, metadata !208, metadata !293), !dbg !814
+  tail call void @llvm.dbg.value(metadata i8* %movetimearp, i64 0, metadata !209, metadata !293), !dbg !815
+  tail call void @llvm.dbg.value(metadata %struct.pointt** %wayar, i64 0, metadata !210, metadata !293), !dbg !816
+  tail call void @llvm.dbg.value(metadata i32* %waylength, i64 0, metadata !211, metadata !293), !dbg !817
+  %1 = getelementptr inbounds %class.way2obj* %this, i64 0, i32 10, !dbg !818
+  store i32 %startx, i32* %1, align 4, !dbg !819, !tbaa !732
+  %2 = getelementptr inbounds %class.way2obj* %this, i64 0, i32 11, !dbg !820
+  store i32 %starty, i32* %2, align 4, !dbg !821, !tbaa !737
+  %3 = getelementptr inbounds %class.way2obj* %this, i64 0, i32 8, !dbg !822
+  store i32 %endx, i32* %3, align 4, !dbg !823, !tbaa !508
+  %4 = getelementptr inbounds %class.way2obj* %this, i64 0, i32 9, !dbg !824
+  store i32 %endy, i32* %4, align 4, !dbg !825, !tbaa !512
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !212, metadata !293), !dbg !826
+  br label %5, !dbg !827
+
+; <label>:5                                       ; preds = %5, %0
+  %indvars.iv = phi i64 [ 0, %0 ], [ %indvars.iv.next, %5 ]
+  %6 = getelementptr inbounds i8* %movetimearp, i64 %indvars.iv, !dbg !829
+  %7 = load i8* %6, align 1, !dbg !829, !tbaa !315
+  %8 = getelementptr inbounds %class.way2obj* %this, i64 0, i32 3, i64 %indvars.iv, !dbg !831
+  store i8 %7, i8* %8, align 1, !dbg !832, !tbaa !315
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !827
+  %exitcond = icmp eq i64 %indvars.iv.next, 256, !dbg !827
+  br i1 %exitcond, label %9, label %5, !dbg !827
+
+; <label>:9                                       ; preds = %5
+  %10 = icmp eq i32 %startx, %endx, !dbg !833
+  %11 = icmp eq i32 %starty, %endy, !dbg !835
+  %or.cond = and i1 %10, %11, !dbg !836
+  br i1 %or.cond, label %12, label %15, !dbg !836
+
+; <label>:12                                      ; preds = %9
+  %13 = tail call i8* @malloc(i64 8) #7, !dbg !837
+  %14 = bitcast %struct.pointt** %wayar to i8**, !dbg !839
+  store i8* %13, i8** %14, align 8, !dbg !839, !tbaa !783
+  store i32 0, i32* %waylength, align 4, !dbg !840, !tbaa !652
+  br label %21, !dbg !841
+
+; <label>:15                                      ; preds = %9
+  %16 = tail call zeroext i1 @_ZN7way2obj4fillEii(%class.way2obj* %this, i32 %startx, i32 %starty) #7, !dbg !842
+  br i1 %16, label %18, label %17, !dbg !844
+
+; <label>:17                                      ; preds = %15
+  store %struct.pointt* null, %struct.pointt** %wayar, align 8, !dbg !845, !tbaa !783
+  store i32 0, i32* %waylength, align 4, !dbg !847, !tbaa !652
+  br label %21, !dbg !848
+
+; <label>:18                                      ; preds = %15
+  %19 = tail call zeroext i1 @_ZN7way2obj11createwayarERP6pointtRi(%class.way2obj* %this, %struct.pointt** dereferenceable(8) %wayar, i32* dereferenceable(4) %waylength) #7, !dbg !849
+  br i1 %19, label %21, label %20, !dbg !851
+
+; <label>:20                                      ; preds = %18
+  store %struct.pointt* null, %struct.pointt** %wayar, align 8, !dbg !852, !tbaa !783
+  store i32 0, i32* %waylength, align 4, !dbg !854, !tbaa !652
+  br label %21, !dbg !855
+
+; <label>:21                                      ; preds = %18, %20, %17, %12
+  %.0 = phi i1 [ true, %12 ], [ false, %20 ], [ false, %17 ], [ true, %18 ]
+  ret i1 %.0, !dbg !856
+}

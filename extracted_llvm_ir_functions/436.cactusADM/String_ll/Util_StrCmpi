@@ -1,32 +1,38 @@
 define i32 @Util_StrCmpi(i8* nocapture readonly %string1, i8* nocapture readonly %string2) #1 {
-  br label %1
+  tail call void @llvm.dbg.value(metadata i8* %string1, i64 0, metadata !50, metadata !107), !dbg !226
+  tail call void @llvm.dbg.value(metadata i8* %string2, i64 0, metadata !51, metadata !107), !dbg !227
+  br label %1, !dbg !228
 
 ; <label>:1                                       ; preds = %12, %0
   %.02 = phi i8* [ %string2, %0 ], [ %14, %12 ]
   %.0 = phi i8* [ %string1, %0 ], [ %13, %12 ]
-  %2 = load i8* %.0, align 1, !tbaa !6
-  %3 = sext i8 %2 to i32
-  %4 = tail call i32 @__tolower(i32 %3) #7
-  %5 = load i8* %.02, align 1, !tbaa !6
-  %6 = sext i8 %5 to i32
-  %7 = tail call i32 @__tolower(i32 %6) #7
-  %8 = icmp eq i32 %4, %7
-  br i1 %8, label %9, label %.critedge
+  %2 = load i8* %.0, align 1, !dbg !229, !tbaa !148
+  %3 = sext i8 %2 to i32, !dbg !229
+  tail call void @llvm.dbg.value(metadata i32 %3, i64 0, metadata !98, metadata !107) #5, !dbg !231
+  %4 = tail call i32 @__tolower(i32 %3) #7, !dbg !233
+  %5 = load i8* %.02, align 1, !dbg !234, !tbaa !148
+  %6 = sext i8 %5 to i32, !dbg !234
+  tail call void @llvm.dbg.value(metadata i32 %6, i64 0, metadata !98, metadata !107) #5, !dbg !235
+  %7 = tail call i32 @__tolower(i32 %6) #7, !dbg !237
+  %8 = icmp eq i32 %4, %7, !dbg !238
+  br i1 %8, label %9, label %.critedge, !dbg !239
 
 ; <label>:9                                       ; preds = %1
-  %10 = load i8* %.0, align 1, !tbaa !6
-  %11 = icmp eq i8 %10, 0
-  br i1 %11, label %.critedge, label %12
+  tail call void @llvm.dbg.value(metadata i8* %13, i64 0, metadata !50, metadata !107), !dbg !226
+  %10 = load i8* %.0, align 1, !dbg !240, !tbaa !148
+  %11 = icmp eq i8 %10, 0, !dbg !240
+  br i1 %11, label %.critedge, label %12, !dbg !241
 
 ; <label>:12                                      ; preds = %9
-  %13 = getelementptr inbounds i8* %.0, i64 1
-  %14 = getelementptr inbounds i8* %.02, i64 1
-  %15 = load i8* %.02, align 1, !tbaa !6
-  %16 = icmp eq i8 %15, 0
-  br i1 %16, label %.critedge, label %1
+  %13 = getelementptr inbounds i8* %.0, i64 1, !dbg !242
+  %14 = getelementptr inbounds i8* %.02, i64 1, !dbg !243
+  tail call void @llvm.dbg.value(metadata i8* %14, i64 0, metadata !51, metadata !107), !dbg !227
+  %15 = load i8* %.02, align 1, !dbg !244, !tbaa !148
+  %16 = icmp eq i8 %15, 0, !dbg !241
+  br i1 %16, label %.critedge, label %1, !dbg !245
 
 .critedge:                                        ; preds = %12, %9, %1
   %.lcssa5 = phi i32 [ %4, %12 ], [ %4, %9 ], [ %7, %1 ]
-  %17 = sub nsw i32 %4, %.lcssa5
-  ret i32 %17
+  %17 = sub nsw i32 %4, %.lcssa5, !dbg !246
+  ret i32 %17, !dbg !247
 }

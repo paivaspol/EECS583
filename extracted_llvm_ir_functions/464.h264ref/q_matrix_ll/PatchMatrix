@@ -1,122 +1,122 @@
 define void @PatchMatrix() #0 {
-entry:
-  br label %for.body
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !52, metadata !666), !dbg !825
+  br label %1, !dbg !826
 
-for.body:                                         ; preds = %for.inc102, %entry
-  %indvars.iv144 = phi i64 [ 0, %entry ], [ %indvars.iv.next145, %for.inc102 ]
-  %0 = load %struct.InputParameters** @input, align 8, !tbaa !3
-  %arrayidx = getelementptr inbounds %struct.InputParameters* %0, i64 0, i32 133, i64 %indvars.iv144
-  %1 = load i32* %arrayidx, align 4, !tbaa !0
-  %tobool = icmp eq i32 %1, 0
-  br i1 %tobool, label %if.end42, label %if.then
+; <label>:1                                       ; preds = %.critedge2, %0
+  %indvars.iv10 = phi i64 [ 0, %0 ], [ %indvars.iv.next11, %.critedge2 ]
+  %2 = load %struct.InputParameters** @input, align 8, !dbg !828, !tbaa !738
+  %3 = getelementptr inbounds %struct.InputParameters* %2, i64 0, i32 133, i64 %indvars.iv10, !dbg !828
+  %4 = load i32* %3, align 4, !dbg !828, !tbaa !671
+  %5 = icmp eq i32 %4, 0, !dbg !828
+  br i1 %5, label %.critedge, label %6, !dbg !832
 
-if.then:                                          ; preds = %for.body
-  %arraydecay = getelementptr inbounds [6 x [16 x i16]]* @ScalingList4x4input, i64 0, i64 %indvars.iv144, i64 0
-  %arrayidx4 = getelementptr inbounds [6 x i32]* @matrix4x4_check, i64 0, i64 %indvars.iv144
-  %2 = load i32* %arrayidx4, align 4, !tbaa !0
-  %tobool5 = icmp eq i32 %2, 0
-  br i1 %tobool5, label %if.else31, label %for.body9
+; <label>:6                                       ; preds = %1
+  %7 = getelementptr inbounds [6 x [16 x i16]]* @ScalingList4x4input, i64 0, i64 %indvars.iv10, i64 0, !dbg !833
+  tail call void @llvm.dbg.value(metadata i16* %7, i64 0, metadata !51, metadata !666), !dbg !835
+  %8 = getelementptr inbounds [6 x i32]* @matrix4x4_check, i64 0, i64 %indvars.iv10, !dbg !836
+  %9 = load i32* %8, align 4, !dbg !836, !tbaa !671
+  %10 = icmp eq i32 %9, 0, !dbg !836
+  br i1 %10, label %27, label %.preheader3, !dbg !838
 
-for.cond7:                                        ; preds = %for.body9
-  %3 = trunc i64 %indvars.iv.next to i32
-  %cmp8 = icmp slt i32 %3, 16
-  br i1 %cmp8, label %for.body9, label %if.end42
+; <label>:11                                      ; preds = %.preheader3
+  %12 = icmp slt i64 %indvars.iv.next, 16, !dbg !839
+  br i1 %12, label %.preheader3, label %.critedge, !dbg !843
 
-for.body9:                                        ; preds = %if.then, %for.cond7
-  %indvars.iv = phi i64 [ %indvars.iv.next, %for.cond7 ], [ 0, %if.then ]
-  %arrayidx11 = getelementptr inbounds [6 x [16 x i16]]* @ScalingList4x4input, i64 0, i64 %indvars.iv144, i64 %indvars.iv
-  %4 = load i16* %arrayidx11, align 2, !tbaa !4
-  %5 = icmp ugt i16 %4, 255
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  br i1 %5, label %if.then21, label %for.cond7
+.preheader3:                                      ; preds = %6, %11
+  %indvars.iv = phi i64 [ %indvars.iv.next, %11 ], [ 0, %6 ]
+  %13 = getelementptr inbounds [6 x [16 x i16]]* @ScalingList4x4input, i64 0, i64 %indvars.iv10, i64 %indvars.iv, !dbg !844
+  %14 = load i16* %13, align 2, !dbg !844, !tbaa !819
+  %15 = icmp ugt i16 %14, 255, !dbg !847
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !843
+  br i1 %15, label %16, label %11, !dbg !847
 
-if.then21:                                        ; preds = %for.body9
-  %arraydecay24 = getelementptr inbounds [6 x [20 x i8]]* @MatrixType4x4, i64 0, i64 %indvars.iv144, i64 0
-  %call = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([50 x i8]* @.str6, i64 0, i64 0), i8* %arraydecay24) #7
-  %call25 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([40 x i8]* @.str7, i64 0, i64 0)) #7
-  %6 = trunc i64 %indvars.iv144 to i32
-  %cmp26 = icmp sgt i32 %6, 2
-  %7 = bitcast i16* %arraydecay to i8*
-  br i1 %cmp26, label %if.then28, label %if.else
+; <label>:16                                      ; preds = %.preheader3
+  %17 = getelementptr inbounds [6 x [20 x i8]]* @MatrixType4x4, i64 0, i64 %indvars.iv10, i64 0, !dbg !848
+  %18 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([50 x i8]* @.str6, i64 0, i64 0), i8* %17) #6, !dbg !851
+  %19 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([40 x i8]* @.str7, i64 0, i64 0)) #6, !dbg !852
+  %20 = icmp sgt i64 %indvars.iv10, 2, !dbg !853
+  %21 = bitcast i16* %7 to i8*, !dbg !855
+  %22 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %21, i1 false), !dbg !855
+  br i1 %20, label %23, label %25, !dbg !856
 
-if.then28:                                        ; preds = %if.then21
-  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %7, i8* bitcast ([16 x i16]* @Quant_inter_default to i8*), i64 32, i32 16, i1 false)
-  br label %if.end42
+; <label>:23                                      ; preds = %16
+  %24 = tail call i8* @__memcpy_chk(i8* %21, i8* bitcast ([16 x i16]* @Quant_inter_default to i8*), i64 32, i64 %22) #6, !dbg !855
+  br label %.critedge2, !dbg !855
 
-if.else:                                          ; preds = %if.then21
-  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %7, i8* bitcast ([16 x i16]* @Quant_intra_default to i8*), i64 32, i32 16, i1 false)
-  br label %if.end42
+; <label>:25                                      ; preds = %16
+  %26 = tail call i8* @__memcpy_chk(i8* %21, i8* bitcast ([16 x i16]* @Quant_intra_default to i8*), i64 32, i64 %22) #6, !dbg !857
+  br label %.critedge
 
-if.else31:                                        ; preds = %if.then
-  %arraydecay34 = getelementptr inbounds [6 x [20 x i8]]* @MatrixType4x4, i64 0, i64 %indvars.iv144, i64 0
-  %call35 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([57 x i8]* @.str8, i64 0, i64 0), i8* %arraydecay34) #7
-  %8 = trunc i64 %indvars.iv144 to i32
-  %cmp36 = icmp sgt i32 %8, 2
-  %9 = bitcast i16* %arraydecay to i8*
-  br i1 %cmp36, label %if.end42.thread, label %if.else39
+; <label>:27                                      ; preds = %6
+  %28 = getelementptr inbounds [6 x [20 x i8]]* @MatrixType4x4, i64 0, i64 %indvars.iv10, i64 0, !dbg !858
+  %29 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([57 x i8]* @.str8, i64 0, i64 0), i8* %28) #6, !dbg !860
+  %30 = icmp sgt i64 %indvars.iv10, 2, !dbg !861
+  %31 = bitcast i16* %7 to i8*, !dbg !863
+  %32 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %31, i1 false), !dbg !863
+  br i1 %30, label %33, label %35, !dbg !864
 
-if.end42.thread:                                  ; preds = %if.else31
-  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %9, i8* bitcast ([16 x i16]* @Quant_inter_default to i8*), i64 32, i32 16, i1 false)
-  br label %for.inc102
+; <label>:33                                      ; preds = %27
+  %34 = tail call i8* @__memcpy_chk(i8* %31, i8* bitcast ([16 x i16]* @Quant_inter_default to i8*), i64 32, i64 %32) #6, !dbg !863
+  br label %.critedge2, !dbg !863
 
-if.else39:                                        ; preds = %if.else31
-  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %9, i8* bitcast ([16 x i16]* @Quant_intra_default to i8*), i64 32, i32 16, i1 false)
-  br label %if.end42
+; <label>:35                                      ; preds = %27
+  %36 = tail call i8* @__memcpy_chk(i8* %31, i8* bitcast ([16 x i16]* @Quant_intra_default to i8*), i64 32, i64 %32) #6, !dbg !865
+  br label %.critedge
 
-if.end42:                                         ; preds = %for.cond7, %for.body, %if.then28, %if.else, %if.else39
-  %10 = trunc i64 %indvars.iv144 to i32
-  %cmp43 = icmp slt i32 %10, 2
-  br i1 %cmp43, label %land.lhs.true, label %for.inc102
+.critedge:                                        ; preds = %11, %1, %25, %35
+  %37 = icmp slt i64 %indvars.iv10, 2, !dbg !866
+  br i1 %37, label %38, label %.critedge2, !dbg !868
 
-land.lhs.true:                                    ; preds = %if.end42
-  %11 = add nsw i64 %indvars.iv144, 6
-  %12 = load %struct.InputParameters** @input, align 8, !tbaa !3
-  %arrayidx47 = getelementptr inbounds %struct.InputParameters* %12, i64 0, i32 133, i64 %11
-  %13 = load i32* %arrayidx47, align 4, !tbaa !0
-  %tobool48 = icmp eq i32 %13, 0
-  br i1 %tobool48, label %for.inc102, label %if.then49
+; <label>:38                                      ; preds = %.critedge
+  %39 = add nuw nsw i64 %indvars.iv10, 6, !dbg !869
+  %40 = load %struct.InputParameters** @input, align 8, !dbg !870, !tbaa !738
+  %41 = getelementptr inbounds %struct.InputParameters* %40, i64 0, i32 133, i64 %39, !dbg !870
+  %42 = load i32* %41, align 4, !dbg !870, !tbaa !671
+  %43 = icmp eq i32 %42, 0, !dbg !870
+  br i1 %43, label %.critedge2, label %44, !dbg !871
 
-if.then49:                                        ; preds = %land.lhs.true
-  %arraydecay52 = getelementptr inbounds [2 x [64 x i16]]* @ScalingList8x8input, i64 0, i64 %indvars.iv144, i64 0
-  %arrayidx54 = getelementptr inbounds [2 x i32]* @matrix8x8_check, i64 0, i64 %indvars.iv144
-  %14 = load i32* %arrayidx54, align 4, !tbaa !0
-  %tobool55 = icmp eq i32 %14, 0
-  br i1 %tobool55, label %if.else98, label %for.body60
+; <label>:44                                      ; preds = %38
+  %45 = getelementptr inbounds [2 x [64 x i16]]* @ScalingList8x8input, i64 0, i64 %indvars.iv10, i64 0, !dbg !872
+  tail call void @llvm.dbg.value(metadata i16* %45, i64 0, metadata !51, metadata !666), !dbg !835
+  %46 = getelementptr inbounds [2 x i32]* @matrix8x8_check, i64 0, i64 %indvars.iv10, !dbg !874
+  %47 = load i32* %46, align 4, !dbg !874, !tbaa !671
+  %48 = icmp eq i32 %47, 0, !dbg !874
+  br i1 %48, label %61, label %.preheader, !dbg !876
 
-for.cond57:                                       ; preds = %for.body60
-  %15 = trunc i64 %indvars.iv.next143 to i32
-  %cmp58 = icmp slt i32 %15, 64
-  br i1 %cmp58, label %for.body60, label %for.inc102
+; <label>:49                                      ; preds = %.preheader
+  %50 = icmp slt i64 %indvars.iv.next9, 64, !dbg !877
+  br i1 %50, label %.preheader, label %.critedge2, !dbg !881
 
-for.body60:                                       ; preds = %if.then49, %for.cond57
-  %indvars.iv142 = phi i64 [ %indvars.iv.next143, %for.cond57 ], [ 0, %if.then49 ]
-  %arrayidx62 = getelementptr inbounds [2 x [64 x i16]]* @ScalingList8x8input, i64 0, i64 %indvars.iv144, i64 %indvars.iv142
-  %16 = load i16* %arrayidx62, align 2, !tbaa !4
-  %17 = icmp ugt i16 %16, 255
-  %indvars.iv.next143 = add i64 %indvars.iv142, 1
-  br i1 %17, label %if.else87, label %for.cond57
+.preheader:                                       ; preds = %44, %49
+  %indvars.iv8 = phi i64 [ %indvars.iv.next9, %49 ], [ 0, %44 ]
+  %51 = getelementptr inbounds [2 x [64 x i16]]* @ScalingList8x8input, i64 0, i64 %indvars.iv10, i64 %indvars.iv8, !dbg !882
+  %52 = load i16* %51, align 2, !dbg !882, !tbaa !819
+  %53 = icmp ugt i16 %52, 255, !dbg !885
+  %indvars.iv.next9 = add nuw nsw i64 %indvars.iv8, 1, !dbg !881
+  br i1 %53, label %54, label %49, !dbg !885
 
-if.else87:                                        ; preds = %for.body60
-  %arraydecay81 = getelementptr inbounds [2 x [20 x i8]]* @MatrixType8x8, i64 0, i64 %indvars.iv144, i64 0
-  %call82 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([50 x i8]* @.str6, i64 0, i64 0), i8* %arraydecay81) #7
-  %call83 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([40 x i8]* @.str7, i64 0, i64 0)) #7
-  %18 = bitcast i16* %arraydecay52 to i8*
-  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %18, i8* bitcast ([64 x i16]* @Quant8_intra_default to i8*), i64 128, i32 16, i1 false)
-  br label %for.inc102
+; <label>:54                                      ; preds = %.preheader
+  %55 = getelementptr inbounds [2 x [20 x i8]]* @MatrixType8x8, i64 0, i64 %indvars.iv10, i64 0, !dbg !886
+  %56 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([50 x i8]* @.str6, i64 0, i64 0), i8* %55) #6, !dbg !889
+  %57 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([40 x i8]* @.str7, i64 0, i64 0)) #6, !dbg !890
+  %58 = bitcast i16* %45 to i8*, !dbg !891
+  %59 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %58, i1 false), !dbg !891
+  %60 = tail call i8* @__memcpy_chk(i8* %58, i8* bitcast ([64 x i16]* @Quant8_intra_default to i8*), i64 128, i64 %59) #6, !dbg !893
+  br label %.critedge2
 
-if.else98:                                        ; preds = %if.then49
-  %arraydecay93 = getelementptr inbounds [2 x [20 x i8]]* @MatrixType8x8, i64 0, i64 %indvars.iv144, i64 0
-  %call94 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([57 x i8]* @.str8, i64 0, i64 0), i8* %arraydecay93) #7
-  %19 = bitcast i16* %arraydecay52 to i8*
-  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %19, i8* bitcast ([64 x i16]* @Quant8_intra_default to i8*), i64 128, i32 16, i1 false)
-  br label %for.inc102
+; <label>:61                                      ; preds = %44
+  %62 = getelementptr inbounds [2 x [20 x i8]]* @MatrixType8x8, i64 0, i64 %indvars.iv10, i64 0, !dbg !894
+  %63 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([57 x i8]* @.str8, i64 0, i64 0), i8* %62) #6, !dbg !896
+  %64 = bitcast i16* %45 to i8*, !dbg !897
+  %65 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %64, i1 false), !dbg !897
+  %66 = tail call i8* @__memcpy_chk(i8* %64, i8* bitcast ([64 x i16]* @Quant8_intra_default to i8*), i64 128, i64 %65) #6, !dbg !899
+  br label %.critedge2
 
-for.inc102:                                       ; preds = %for.cond57, %if.end42.thread, %land.lhs.true, %if.end42, %if.else98, %if.else87
-  %indvars.iv.next145 = add i64 %indvars.iv144, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next145 to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, 6
-  br i1 %exitcond, label %for.end104, label %for.body
+.critedge2:                                       ; preds = %49, %33, %23, %38, %.critedge, %61, %54
+  %indvars.iv.next11 = add nuw nsw i64 %indvars.iv10, 1, !dbg !826
+  %exitcond = icmp eq i64 %indvars.iv.next11, 6, !dbg !826
+  br i1 %exitcond, label %67, label %1, !dbg !826
 
-for.end104:                                       ; preds = %for.inc102
-  ret void
+; <label>:67                                      ; preds = %.critedge2
+  ret void, !dbg !900
 }

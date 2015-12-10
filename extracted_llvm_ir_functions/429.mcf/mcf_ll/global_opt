@@ -1,54 +1,55 @@
 define i64 @global_opt() #0 {
-entry:
-  br label %while.body
+  tail call void @llvm.dbg.value(metadata i64 -1, i64 0, metadata !13, metadata !99), !dbg !100
+  tail call void @llvm.dbg.value(metadata i64 5, i64 0, metadata !14, metadata !99), !dbg !101
+  br label %1, !dbg !102
 
-while.body:                                       ; preds = %if.end23, %entry
-  %residual_nb_it.032 = phi i64 [ 5, %entry ], [ %dec, %if.end23 ]
-  %0 = load i64* getelementptr inbounds (%struct.network* @net, i64 0, i32 5), align 8, !tbaa !0
-  %call = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([34 x i8]* @.str, i64 0, i64 0), i64 %0) #5
-  %call1 = tail call i64 @primal_net_simplex(%struct.network* @net) #5
-  %1 = load i64* getelementptr inbounds (%struct.network* @net, i64 0, i32 27), align 8, !tbaa !0
-  %call2 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([34 x i8]* @.str1, i64 0, i64 0), i64 %1) #5
-  %call3 = tail call double @flow_cost(%struct.network* @net) #5
-  %call4 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([36 x i8]* @.str2, i64 0, i64 0), double %call3) #5
-  %tobool5 = icmp eq i64 %residual_nb_it.032, 0
-  br i1 %tobool5, label %while.end, label %if.end
+; <label>:1                                       ; preds = %21, %0
+  %residual_nb_it.01 = phi i64 [ 5, %0 ], [ %24, %21 ]
+  %2 = load i64* getelementptr inbounds (%struct.network* @net, i64 0, i32 5), align 8, !dbg !103, !tbaa !105
+  %3 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([34 x i8]* @.str, i64 0, i64 0), i64 %2) #6, !dbg !112
+  %4 = tail call i64 @primal_net_simplex(%struct.network* @net) #6, !dbg !113
+  %5 = load i64* getelementptr inbounds (%struct.network* @net, i64 0, i32 27), align 8, !dbg !114, !tbaa !115
+  %6 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([34 x i8]* @.str1, i64 0, i64 0), i64 %5) #6, !dbg !116
+  %7 = tail call double @flow_cost(%struct.network* @net) #6, !dbg !117
+  %8 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([36 x i8]* @.str2, i64 0, i64 0), double %7) #6, !dbg !118
+  %9 = icmp eq i64 %residual_nb_it.01, 0, !dbg !119
+  br i1 %9, label %.thread.thread, label %10, !dbg !121
 
-if.end:                                           ; preds = %while.body
-  %2 = load i64* getelementptr inbounds (%struct.network* @net, i64 0, i32 7), align 8, !tbaa !0
-  %tobool6 = icmp eq i64 %2, 0
-  br i1 %tobool6, label %if.end13, label %if.then7
+; <label>:10                                      ; preds = %1
+  %11 = load i64* getelementptr inbounds (%struct.network* @net, i64 0, i32 7), align 8, !dbg !122, !tbaa !124
+  %12 = icmp eq i64 %11, 0, !dbg !125
+  br i1 %12, label %18, label %13, !dbg !126
 
-if.then7:                                         ; preds = %if.end
-  %call8 = tail call i64 @suspend_impl(%struct.network* @net, i64 -1, i64 0) #5
-  %tobool9 = icmp eq i64 %call8, 0
-  br i1 %tobool9, label %if.end13, label %if.then10
+; <label>:13                                      ; preds = %10
+  %14 = tail call i64 @suspend_impl(%struct.network* @net, i64 -1, i64 0) #6, !dbg !127
+  tail call void @llvm.dbg.value(metadata i64 %14, i64 0, metadata !13, metadata !99), !dbg !100
+  %15 = icmp eq i64 %14, 0, !dbg !129
+  br i1 %15, label %18, label %16, !dbg !131
 
-if.then10:                                        ; preds = %if.then7
-  %call11 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([34 x i8]* @.str3, i64 0, i64 0), i64 %call8) #5
-  br label %if.end13
+; <label>:16                                      ; preds = %13
+  %17 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([34 x i8]* @.str3, i64 0, i64 0), i64 %14) #6, !dbg !132
+  br label %18, !dbg !132
 
-if.end13:                                         ; preds = %if.then7, %if.end, %if.then10
-  %call14 = tail call i64 @price_out_impl(%struct.network* @net) #5
-  %tobool15 = icmp eq i64 %call14, 0
-  br i1 %tobool15, label %while.end, label %if.end18
+; <label>:18                                      ; preds = %13, %10, %16
+  %19 = tail call i64 @price_out_impl(%struct.network* @net) #6, !dbg !133
+  tail call void @llvm.dbg.value(metadata i64 %19, i64 0, metadata !13, metadata !99), !dbg !100
+  %20 = icmp eq i64 %19, 0, !dbg !134
+  br i1 %20, label %.thread.thread, label %21, !dbg !136
 
-if.end18:                                         ; preds = %if.end13
-  %call17 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([34 x i8]* @.str4, i64 0, i64 0), i64 %call14) #5
-  %cmp19 = icmp slt i64 %call14, 0
-  br i1 %cmp19, label %if.then21, label %if.end23
+; <label>:21                                      ; preds = %18
+  %22 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([34 x i8]* @.str4, i64 0, i64 0), i64 %19) #6, !dbg !137
+  %23 = icmp slt i64 %19, 0, !dbg !138
+  %24 = add nsw i64 %residual_nb_it.01, -1, !dbg !140
+  tail call void @llvm.dbg.value(metadata i64 %24, i64 0, metadata !14, metadata !99), !dbg !101
+  br i1 %23, label %25, label %1, !dbg !141
 
-if.then21:                                        ; preds = %if.end18
-  %puts = tail call i32 @puts(i8* getelementptr inbounds ([28 x i8]* @str, i64 0, i64 0))
-  tail call void @exit(i32 -1) #6
-  unreachable
+; <label>:25                                      ; preds = %21
+  %puts = tail call i32 @puts(i8* getelementptr inbounds ([28 x i8]* @str, i64 0, i64 0)), !dbg !142
+  tail call void @exit(i32 -1) #7, !dbg !144
+  unreachable, !dbg !144
 
-if.end23:                                         ; preds = %if.end18
-  %dec = add nsw i64 %residual_nb_it.032, -1
-  br label %while.body
-
-while.end:                                        ; preds = %if.end13, %while.body
-  %3 = load i64* getelementptr inbounds (%struct.network* @net, i64 0, i32 29), align 8, !tbaa !0
-  %call24 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([34 x i8]* @.str6, i64 0, i64 0), i64 %3) #5
-  ret i64 0
+.thread.thread:                                   ; preds = %18, %1
+  %26 = load i64* getelementptr inbounds (%struct.network* @net, i64 0, i32 29), align 8, !dbg !145, !tbaa !146
+  %27 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([34 x i8]* @.str6, i64 0, i64 0), i64 %26) #6, !dbg !147
+  ret i64 0, !dbg !148
 }

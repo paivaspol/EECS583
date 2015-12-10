@@ -1,29 +1,35 @@
 define void @FLog(float* nocapture %vec, i32 %n) #0 {
-entry:
-  %cmp17 = icmp sgt i32 %n, 0
-  br i1 %cmp17, label %for.body, label %for.end
+  tail call void @llvm.dbg.value(metadata float* %vec, i64 0, metadata !175, metadata !206), !dbg !542
+  tail call void @llvm.dbg.value(metadata i32 %n, i64 0, metadata !176, metadata !206), !dbg !543
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !177, metadata !206), !dbg !544
+  %1 = icmp sgt i32 %n, 0, !dbg !545
+  br i1 %1, label %.lr.ph, label %._crit_edge, !dbg !548
 
-for.body:                                         ; preds = %entry, %for.inc
-  %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc ], [ 0, %entry ]
-  %arrayidx = getelementptr inbounds float* %vec, i64 %indvars.iv
-  %0 = load float* %arrayidx, align 4, !tbaa !3
-  %cmp1 = fcmp ogt float %0, 0.000000e+00
-  br i1 %cmp1, label %if.then, label %for.inc
+.lr.ph:                                           ; preds = %0
+  %2 = add i32 %n, -1, !dbg !548
+  br label %3, !dbg !548
 
-if.then:                                          ; preds = %for.body
-  %conv = fpext float %0 to double
-  %call = tail call double @log(double %conv) #3
-  %conv6 = fptrunc double %call to float
-  br label %for.inc
+; <label>:3                                       ; preds = %11, %.lr.ph
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %11 ]
+  %4 = getelementptr inbounds float* %vec, i64 %indvars.iv, !dbg !549
+  %5 = load float* %4, align 4, !dbg !549, !tbaa !232
+  %6 = fcmp ogt float %5, 0.000000e+00, !dbg !551
+  br i1 %6, label %7, label %11, !dbg !552
 
-for.inc:                                          ; preds = %for.body, %if.then
-  %storemerge = phi float [ %conv6, %if.then ], [ 0xC7EFFFFFE0000000, %for.body ]
-  store float %storemerge, float* %arrayidx, align 4, !tbaa !3
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %n
-  br i1 %exitcond, label %for.end, label %for.body
+; <label>:7                                       ; preds = %3
+  %8 = fpext float %5 to double, !dbg !549
+  %9 = tail call double @log(double %8) #4, !dbg !553
+  %10 = fptrunc double %9 to float, !dbg !553
+  br label %11, !dbg !554
 
-for.end:                                          ; preds = %for.inc, %entry
-  ret void
+; <label>:11                                      ; preds = %3, %7
+  %storemerge = phi float [ %10, %7 ], [ 0xC7EFFFFFE0000000, %3 ]
+  store float %storemerge, float* %4, align 4, !dbg !555, !tbaa !232
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !548
+  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !548
+  %exitcond = icmp eq i32 %lftr.wideiv, %2, !dbg !548
+  br i1 %exitcond, label %._crit_edge, label %3, !dbg !548
+
+._crit_edge:                                      ; preds = %11, %0
+  ret void, !dbg !556
 }

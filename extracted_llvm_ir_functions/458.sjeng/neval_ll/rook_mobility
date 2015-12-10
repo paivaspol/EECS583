@@ -1,40 +1,43 @@
-define internal fastcc i32 @rook_mobility(i32 %square) #1 {
-entry:
-  br label %for.body
+define internal fastcc i32 @rook_mobility(i32 %square) #2 {
+  tail call void @llvm.dbg.value(metadata i32 %square, i64 0, metadata !111, metadata !176), !dbg !274
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !113, metadata !176), !dbg !275
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !114, metadata !176), !dbg !276
+  br label %1, !dbg !277
 
-for.body:                                         ; preds = %for.inc9, %entry
-  %indvars.iv24 = phi i64 [ 0, %entry ], [ %indvars.iv.next25, %for.inc9 ]
-  %m.022 = phi i32 [ 0, %entry ], [ %m.1.lcssa, %for.inc9 ]
-  %arrayidx = getelementptr inbounds [4 x i32]* @rook_mobility.dir, i64 0, i64 %indvars.iv24
-  %0 = load i32* %arrayidx, align 4, !tbaa !0
-  %add = add i32 %0, %square
-  %idxprom217 = sext i32 %add to i64
-  %arrayidx318 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom217
-  %1 = load i32* %arrayidx318, align 4, !tbaa !0
-  %cmp419 = icmp eq i32 %1, 13
-  br i1 %cmp419, label %for.body5.lr.ph, label %for.inc9
+; <label>:1                                       ; preds = %._crit_edge, %0
+  %indvars.iv5 = phi i64 [ 0, %0 ], [ %indvars.iv.next6, %._crit_edge ]
+  %m.03 = phi i32 [ 0, %0 ], [ %m.1.lcssa, %._crit_edge ]
+  %2 = getelementptr inbounds [4 x i32]* @rook_mobility.dir, i64 0, i64 %indvars.iv5, !dbg !279
+  %3 = load i32* %2, align 4, !dbg !279, !tbaa !183
+  %4 = add i32 %3, %square, !dbg !283
+  tail call void @llvm.dbg.value(metadata i32 %4, i64 0, metadata !112, metadata !176), !dbg !284
+  %5 = sext i32 %4 to i64, !dbg !285
+  %6 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %5, !dbg !285
+  %7 = load i32* %6, align 4, !dbg !285, !tbaa !183
+  %8 = icmp eq i32 %7, 13, !dbg !287
+  br i1 %8, label %.lr.ph, label %._crit_edge, !dbg !288
 
-for.body5.lr.ph:                                  ; preds = %for.body
-  %2 = sext i32 %0 to i64
-  br label %for.body5
+.lr.ph:                                           ; preds = %1
+  %9 = sext i32 %3 to i64
+  br label %10, !dbg !288
 
-for.body5:                                        ; preds = %for.body5.lr.ph, %for.body5
-  %indvars.iv = phi i64 [ %idxprom217, %for.body5.lr.ph ], [ %indvars.iv.next, %for.body5 ]
-  %m.121 = phi i32 [ %m.022, %for.body5.lr.ph ], [ %inc, %for.body5 ]
-  %inc = add nsw i32 %m.121, 1
-  %indvars.iv.next = add i64 %indvars.iv, %2
-  %arrayidx3 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %indvars.iv.next
-  %3 = load i32* %arrayidx3, align 4, !tbaa !0
-  %cmp4 = icmp eq i32 %3, 13
-  br i1 %cmp4, label %for.body5, label %for.inc9
+; <label>:10                                      ; preds = %.lr.ph, %10
+  %indvars.iv = phi i64 [ %5, %.lr.ph ], [ %indvars.iv.next, %10 ]
+  %m.12 = phi i32 [ %m.03, %.lr.ph ], [ %11, %10 ]
+  %11 = add nsw i32 %m.12, 1, !dbg !289
+  tail call void @llvm.dbg.value(metadata i32 %11, i64 0, metadata !113, metadata !176), !dbg !275
+  %indvars.iv.next = add nsw i64 %indvars.iv, %9, !dbg !288
+  %12 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %indvars.iv.next, !dbg !285
+  %13 = load i32* %12, align 4, !dbg !285, !tbaa !183
+  %14 = icmp eq i32 %13, 13, !dbg !287
+  br i1 %14, label %10, label %._crit_edge, !dbg !288
 
-for.inc9:                                         ; preds = %for.body5, %for.body
-  %m.1.lcssa = phi i32 [ %m.022, %for.body ], [ %inc, %for.body5 ]
-  %indvars.iv.next25 = add i64 %indvars.iv24, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next25 to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, 4
-  br i1 %exitcond, label %for.end11, label %for.body
+._crit_edge:                                      ; preds = %10, %1
+  %m.1.lcssa = phi i32 [ %m.03, %1 ], [ %11, %10 ]
+  %indvars.iv.next6 = add nuw nsw i64 %indvars.iv5, 1, !dbg !277
+  %exitcond = icmp eq i64 %indvars.iv.next6, 4, !dbg !277
+  br i1 %exitcond, label %15, label %1, !dbg !277
 
-for.end11:                                        ; preds = %for.inc9
-  ret i32 %m.1.lcssa
+; <label>:15                                      ; preds = %._crit_edge
+  ret i32 %m.1.lcssa, !dbg !290
 }

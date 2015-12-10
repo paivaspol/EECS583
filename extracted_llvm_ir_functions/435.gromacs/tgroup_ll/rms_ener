@@ -1,26 +1,29 @@
-define float @rms_ener(%struct.t_energy* nocapture readonly %e, i32 %nsteps) #5 {
-  %1 = getelementptr inbounds %struct.t_energy* %e, i64 0, i32 3
-  %2 = load float* %1, align 4, !tbaa !40
-  %3 = sitofp i32 %nsteps to float
-  %4 = fmul float %3, %2
-  %5 = fpext float %4 to double
-  %6 = getelementptr inbounds %struct.t_energy* %e, i64 0, i32 2
-  %7 = load double* %6, align 8, !tbaa !43
-  %8 = fmul double %7, %7
-  %9 = fsub double %5, %8
-  %10 = fptrunc double %9 to float
-  %11 = fcmp ugt float %10, 0.000000e+00
-  br i1 %11, label %12, label %18
+define float @rms_ener(%struct.t_energy* nocapture readonly %e, i32 %nsteps) #6 {
+  tail call void @llvm.dbg.value(metadata %struct.t_energy* %e, i64 0, metadata !273, metadata !409), !dbg !572
+  tail call void @llvm.dbg.value(metadata i32 %nsteps, i64 0, metadata !274, metadata !409), !dbg !573
+  %1 = getelementptr inbounds %struct.t_energy* %e, i64 0, i32 3, !dbg !574
+  %2 = load float* %1, align 4, !dbg !574, !tbaa !575
+  %3 = sitofp i32 %nsteps to float, !dbg !578
+  %4 = fmul float %3, %2, !dbg !579
+  %5 = fpext float %4 to double, !dbg !580
+  %6 = getelementptr inbounds %struct.t_energy* %e, i64 0, i32 2, !dbg !581
+  %7 = load double* %6, align 8, !dbg !581, !tbaa !582
+  %8 = fmul double %7, %7, !dbg !583
+  %9 = fsub double %5, %8, !dbg !584
+  %10 = fptrunc double %9 to float, !dbg !580
+  tail call void @llvm.dbg.value(metadata float %10, i64 0, metadata !275, metadata !409), !dbg !585
+  %11 = fcmp ugt float %10, 0.000000e+00, !dbg !586
+  br i1 %11, label %12, label %18, !dbg !588
 
 ; <label>:12                                      ; preds = %0
-  %13 = fpext float %10 to double
-  %14 = tail call double @sqrt(double %13) #9
-  %15 = sitofp i32 %nsteps to double
-  %16 = fdiv double %14, %15
-  %17 = fptrunc double %16 to float
-  br label %18
+  %13 = fpext float %10 to double, !dbg !589
+  %14 = tail call double @sqrt(double %13) #10, !dbg !590
+  %15 = sitofp i32 %nsteps to double, !dbg !591
+  %16 = fdiv double %14, %15, !dbg !592
+  %17 = fptrunc double %16 to float, !dbg !590
+  br label %18, !dbg !593
 
 ; <label>:18                                      ; preds = %0, %12
   %.0 = phi float [ %17, %12 ], [ 0.000000e+00, %0 ]
-  ret float %.0
+  ret float %.0, !dbg !594
 }

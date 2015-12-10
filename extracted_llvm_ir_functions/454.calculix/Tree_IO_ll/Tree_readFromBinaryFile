@@ -1,89 +1,95 @@
-define i32 @Tree_readFromBinaryFile(%struct._Tree* %tree, %struct._IO_FILE* %fp) #0 {
-entry:
+define i32 @Tree_readFromBinaryFile(%struct._Tree* %tree, %struct.__sFILE* %fp) #0 {
   %itemp = alloca [2 x i32], align 4
-  %cmp = icmp eq %struct._Tree* %tree, null
-  %cmp1 = icmp eq %struct._IO_FILE* %fp, null
-  %or.cond = or i1 %cmp, %cmp1
-  br i1 %or.cond, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata %struct._Tree* %tree, i64 0, metadata !103, metadata !145), !dbg !209
+  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %fp, i64 0, metadata !104, metadata !145), !dbg !210
+  tail call void @llvm.dbg.declare(metadata [2 x i32]* %itemp, metadata !106, metadata !145), !dbg !211
+  %1 = icmp eq %struct._Tree* %tree, null, !dbg !212
+  %2 = icmp eq %struct.__sFILE* %fp, null, !dbg !214
+  %or.cond = or i1 %1, %2, !dbg !215
+  br i1 %or.cond, label %3, label %6, !dbg !215
 
-if.then:                                          ; preds = %entry
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([60 x i8]* @.str10, i64 0, i64 0), %struct._Tree* %tree, %struct._IO_FILE* %fp) #5
-  br label %return
+; <label>:3                                       ; preds = %0
+  %4 = load %struct.__sFILE** @__stderrp, align 8, !dbg !216, !tbaa !154
+  %5 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %4, i8* getelementptr inbounds ([60 x i8]* @.str10, i64 0, i64 0), %struct._Tree* %tree, %struct.__sFILE* %fp) #7, !dbg !218
+  br label %57, !dbg !219
 
-if.end:                                           ; preds = %entry
-  call void @Tree_clearData(%struct._Tree* %tree) #5
-  %1 = bitcast [2 x i32]* %itemp to i8*
-  %call2 = call i64 @fread(i8* %1, i64 4, i64 2, %struct._IO_FILE* %fp) #5
-  %conv = trunc i64 %call2 to i32
-  %cmp3 = icmp eq i32 %conv, 2
-  br i1 %cmp3, label %if.end7, label %if.then5
+; <label>:6                                       ; preds = %0
+  tail call void @Tree_clearData(%struct._Tree* %tree) #7, !dbg !220
+  %7 = bitcast [2 x i32]* %itemp to i8*, !dbg !221
+  %8 = call i64 @fread(i8* %7, i64 4, i64 2, %struct.__sFILE* %fp) #7, !dbg !223
+  %9 = trunc i64 %8 to i32, !dbg !223
+  tail call void @llvm.dbg.value(metadata i32 %9, i64 0, metadata !105, metadata !145), !dbg !224
+  %10 = icmp eq i32 %9, 2, !dbg !225
+  br i1 %10, label %14, label %11, !dbg !226
 
-if.then5:                                         ; preds = %if.end
-  %2 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call6 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([75 x i8]* @.str11, i64 0, i64 0), %struct._Tree* %tree, %struct._IO_FILE* %fp, i32 %conv, i32 2) #5
-  br label %return
+; <label>:11                                      ; preds = %6
+  %12 = load %struct.__sFILE** @__stderrp, align 8, !dbg !227, !tbaa !154
+  %13 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %12, i8* getelementptr inbounds ([75 x i8]* @.str11, i64 0, i64 0), %struct._Tree* %tree, %struct.__sFILE* %fp, i32 %9, i32 2) #7, !dbg !229
+  br label %57, !dbg !230
 
-if.end7:                                          ; preds = %if.end
-  %arrayidx = getelementptr inbounds [2 x i32]* %itemp, i64 0, i64 0
-  %3 = load i32* %arrayidx, align 4, !tbaa !3
-  call void @Tree_init1(%struct._Tree* %tree, i32 %3) #5
-  %arrayidx8 = getelementptr inbounds [2 x i32]* %itemp, i64 0, i64 1
-  %4 = load i32* %arrayidx8, align 4, !tbaa !3
-  %root = getelementptr inbounds %struct._Tree* %tree, i64 0, i32 1
-  store i32 %4, i32* %root, align 4, !tbaa !3
-  %par = getelementptr inbounds %struct._Tree* %tree, i64 0, i32 2
-  %5 = load i32** %par, align 8, !tbaa !0
-  %6 = bitcast i32* %5 to i8*
-  %n = getelementptr inbounds %struct._Tree* %tree, i64 0, i32 0
-  %7 = load i32* %n, align 4, !tbaa !3
-  %conv9 = sext i32 %7 to i64
-  %call10 = call i64 @fread(i8* %6, i64 4, i64 %conv9, %struct._IO_FILE* %fp) #5
-  %conv11 = trunc i64 %call10 to i32
-  %8 = load i32* %n, align 4, !tbaa !3
-  %cmp13 = icmp eq i32 %conv11, %8
-  br i1 %cmp13, label %if.end18, label %if.then15
+; <label>:14                                      ; preds = %6
+  %15 = getelementptr inbounds [2 x i32]* %itemp, i64 0, i64 0, !dbg !231
+  %16 = load i32* %15, align 4, !dbg !231, !tbaa !232
+  tail call void @Tree_init1(%struct._Tree* %tree, i32 %16) #7, !dbg !234
+  %17 = getelementptr inbounds [2 x i32]* %itemp, i64 0, i64 1, !dbg !235
+  %18 = load i32* %17, align 4, !dbg !235, !tbaa !232
+  %19 = getelementptr inbounds %struct._Tree* %tree, i64 0, i32 1, !dbg !236
+  store i32 %18, i32* %19, align 4, !dbg !237, !tbaa !238
+  %20 = getelementptr inbounds %struct._Tree* %tree, i64 0, i32 2, !dbg !240
+  %21 = bitcast i32** %20 to i8**, !dbg !240
+  %22 = load i8** %21, align 8, !dbg !240, !tbaa !242
+  %23 = getelementptr inbounds %struct._Tree* %tree, i64 0, i32 0, !dbg !243
+  %24 = load i32* %23, align 4, !dbg !243, !tbaa !244
+  %25 = sext i32 %24 to i64, !dbg !245
+  %26 = tail call i64 @fread(i8* %22, i64 4, i64 %25, %struct.__sFILE* %fp) #7, !dbg !246
+  %27 = trunc i64 %26 to i32, !dbg !246
+  tail call void @llvm.dbg.value(metadata i32 %27, i64 0, metadata !105, metadata !145), !dbg !224
+  %28 = load i32* %23, align 4, !dbg !247, !tbaa !244
+  %29 = icmp eq i32 %27, %28, !dbg !248
+  br i1 %29, label %33, label %30, !dbg !249
 
-if.then15:                                        ; preds = %if.end7
-  %9 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call17 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %9, i8* getelementptr inbounds ([70 x i8]* @.str12, i64 0, i64 0), %struct._Tree* %tree, %struct._IO_FILE* %fp, i32 %conv11, i32 %8) #5
-  br label %return
+; <label>:30                                      ; preds = %14
+  %31 = load %struct.__sFILE** @__stderrp, align 8, !dbg !250, !tbaa !154
+  %32 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %31, i8* getelementptr inbounds ([70 x i8]* @.str12, i64 0, i64 0), %struct._Tree* %tree, %struct.__sFILE* %fp, i32 %27, i32 %28) #7, !dbg !252
+  br label %57, !dbg !253
 
-if.end18:                                         ; preds = %if.end7
-  %fch = getelementptr inbounds %struct._Tree* %tree, i64 0, i32 3
-  %10 = load i32** %fch, align 8, !tbaa !0
-  %11 = bitcast i32* %10 to i8*
-  %sext = shl i64 %call10, 32
-  %conv20 = ashr exact i64 %sext, 32
-  %call21 = call i64 @fread(i8* %11, i64 4, i64 %conv20, %struct._IO_FILE* %fp) #5
-  %conv22 = trunc i64 %call21 to i32
-  %12 = load i32* %n, align 4, !tbaa !3
-  %cmp24 = icmp eq i32 %conv22, %12
-  br i1 %cmp24, label %if.end29, label %if.then26
+; <label>:33                                      ; preds = %14
+  %34 = getelementptr inbounds %struct._Tree* %tree, i64 0, i32 3, !dbg !254
+  %35 = bitcast i32** %34 to i8**, !dbg !254
+  %36 = load i8** %35, align 8, !dbg !254, !tbaa !256
+  %sext = shl i64 %26, 32, !dbg !257
+  %37 = ashr exact i64 %sext, 32, !dbg !257
+  %38 = tail call i64 @fread(i8* %36, i64 4, i64 %37, %struct.__sFILE* %fp) #7, !dbg !258
+  %39 = trunc i64 %38 to i32, !dbg !258
+  tail call void @llvm.dbg.value(metadata i32 %39, i64 0, metadata !105, metadata !145), !dbg !224
+  %40 = load i32* %23, align 4, !dbg !259, !tbaa !244
+  %41 = icmp eq i32 %39, %40, !dbg !260
+  br i1 %41, label %45, label %42, !dbg !261
 
-if.then26:                                        ; preds = %if.end18
-  %13 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call28 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %13, i8* getelementptr inbounds ([70 x i8]* @.str13, i64 0, i64 0), %struct._Tree* %tree, %struct._IO_FILE* %fp, i32 %conv22, i32 %12) #5
-  br label %return
+; <label>:42                                      ; preds = %33
+  %43 = load %struct.__sFILE** @__stderrp, align 8, !dbg !262, !tbaa !154
+  %44 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %43, i8* getelementptr inbounds ([70 x i8]* @.str13, i64 0, i64 0), %struct._Tree* %tree, %struct.__sFILE* %fp, i32 %39, i32 %40) #7, !dbg !264
+  br label %57, !dbg !265
 
-if.end29:                                         ; preds = %if.end18
-  %sib = getelementptr inbounds %struct._Tree* %tree, i64 0, i32 4
-  %14 = load i32** %sib, align 8, !tbaa !0
-  %15 = bitcast i32* %14 to i8*
-  %sext73 = shl i64 %call21, 32
-  %conv31 = ashr exact i64 %sext73, 32
-  %call32 = call i64 @fread(i8* %15, i64 4, i64 %conv31, %struct._IO_FILE* %fp) #5
-  %conv33 = trunc i64 %call32 to i32
-  %16 = load i32* %n, align 4, !tbaa !3
-  %cmp35 = icmp eq i32 %conv33, %16
-  br i1 %cmp35, label %return, label %if.then37
+; <label>:45                                      ; preds = %33
+  %46 = getelementptr inbounds %struct._Tree* %tree, i64 0, i32 4, !dbg !266
+  %47 = bitcast i32** %46 to i8**, !dbg !266
+  %48 = load i8** %47, align 8, !dbg !266, !tbaa !268
+  %sext2 = shl i64 %38, 32, !dbg !269
+  %49 = ashr exact i64 %sext2, 32, !dbg !269
+  %50 = tail call i64 @fread(i8* %48, i64 4, i64 %49, %struct.__sFILE* %fp) #7, !dbg !270
+  %51 = trunc i64 %50 to i32, !dbg !270
+  tail call void @llvm.dbg.value(metadata i32 %51, i64 0, metadata !105, metadata !145), !dbg !224
+  %52 = load i32* %23, align 4, !dbg !271, !tbaa !244
+  %53 = icmp eq i32 %51, %52, !dbg !272
+  br i1 %53, label %57, label %54, !dbg !273
 
-if.then37:                                        ; preds = %if.end29
-  %17 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call39 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %17, i8* getelementptr inbounds ([70 x i8]* @.str14, i64 0, i64 0), %struct._Tree* %tree, %struct._IO_FILE* %fp, i32 %conv33, i32 %16) #5
-  br label %return
+; <label>:54                                      ; preds = %45
+  %55 = load %struct.__sFILE** @__stderrp, align 8, !dbg !274, !tbaa !154
+  %56 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %55, i8* getelementptr inbounds ([70 x i8]* @.str14, i64 0, i64 0), %struct._Tree* %tree, %struct.__sFILE* %fp, i32 %51, i32 %52) #7, !dbg !276
+  br label %57, !dbg !277
 
-return:                                           ; preds = %if.end29, %if.then37, %if.then26, %if.then15, %if.then5, %if.then
-  %retval.0 = phi i32 [ 0, %if.then ], [ 0, %if.then5 ], [ 0, %if.then15 ], [ 0, %if.then26 ], [ 0, %if.then37 ], [ 1, %if.end29 ]
-  ret i32 %retval.0
+; <label>:57                                      ; preds = %45, %54, %42, %30, %11, %3
+  %.0 = phi i32 [ 0, %3 ], [ 0, %11 ], [ 0, %30 ], [ 0, %42 ], [ 0, %54 ], [ 1, %45 ]
+  ret i32 %.0, !dbg !278
 }

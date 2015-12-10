@@ -1,48 +1,50 @@
 define i32 @A2_sizeOf(%struct._A2* %mtx) #0 {
-entry:
-  %cmp = icmp eq %struct._A2* %mtx, null
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata %struct._A2* %mtx, i64 0, metadata !25, metadata !355), !dbg !356
+  %1 = icmp eq %struct._A2* %mtx, null, !dbg !357
+  br i1 %1, label %2, label %5, !dbg !359
 
-if.then:                                          ; preds = %entry
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([43 x i8]* @.str, i64 0, i64 0), %struct._A2* null) #5
-  tail call void @exit(i32 -1) #6
-  unreachable
+; <label>:2                                       ; preds = %0
+  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !360, !tbaa !362
+  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([43 x i8]* @.str, i64 0, i64 0), %struct._A2* null) #6, !dbg !366
+  tail call void @exit(i32 -1) #7, !dbg !367
+  unreachable, !dbg !367
 
-if.end:                                           ; preds = %entry
-  %type = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 0
-  %1 = load i32* %type, align 4, !tbaa !3
-  %.off = add i32 %1, -1
-  %switch = icmp ult i32 %.off, 2
-  br i1 %switch, label %if.end7, label %if.then4
+; <label>:5                                       ; preds = %0
+  %6 = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 0, !dbg !368
+  %7 = load i32* %6, align 4, !dbg !368, !tbaa !370
+  %.off = add i32 %7, -1, !dbg !373
+  %switch = icmp ult i32 %.off, 2, !dbg !373
+  br i1 %switch, label %11, label %8, !dbg !373
 
-if.then4:                                         ; preds = %if.end
-  %2 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call6 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([86 x i8]* @.str1, i64 0, i64 0), %struct._A2* %mtx, i32 %1) #5
-  tail call void @exit(i32 -1) #6
-  unreachable
+; <label>:8                                       ; preds = %5
+  %9 = load %struct.__sFILE** @__stderrp, align 8, !dbg !374, !tbaa !362
+  %10 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %9, i8* getelementptr inbounds ([86 x i8]* @.str1, i64 0, i64 0), %struct._A2* %mtx, i32 %7) #6, !dbg !376
+  tail call void @exit(i32 -1) #7, !dbg !377
+  unreachable, !dbg !377
 
-if.end7:                                          ; preds = %if.end
-  switch i32 %1, label %if.end23 [
-    i32 1, label %if.then10
-    i32 2, label %if.then15
-  ]
+; <label>:11                                      ; preds = %5
+  switch i32 %7, label %22 [
+    i32 1, label %12
+    i32 2, label %17
+  ], !dbg !378
 
-if.then10:                                        ; preds = %if.end7
-  %nowned = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 5
-  %3 = load i32* %nowned, align 4, !tbaa !3
-  %mul = shl i32 %3, 3
-  %add = add i32 %mul, 32
-  br label %if.end23
+; <label>:12                                      ; preds = %11
+  %13 = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 5, !dbg !379
+  %14 = load i32* %13, align 4, !dbg !379, !tbaa !382
+  %15 = shl i32 %14, 3, !dbg !383
+  %16 = add i32 %15, 32, !dbg !384
+  tail call void @llvm.dbg.value(metadata i32 %16, i64 0, metadata !26, metadata !355), !dbg !385
+  br label %22, !dbg !386
 
-if.then15:                                        ; preds = %if.end7
-  %nowned16 = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 5
-  %4 = load i32* %nowned16, align 4, !tbaa !3
-  %mul17 = shl i32 %4, 4
-  %add20 = add i32 %mul17, 32
-  br label %if.end23
+; <label>:17                                      ; preds = %11
+  %18 = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 5, !dbg !387
+  %19 = load i32* %18, align 4, !dbg !387, !tbaa !382
+  %20 = shl i32 %19, 4, !dbg !390
+  %21 = add i32 %20, 32, !dbg !391
+  tail call void @llvm.dbg.value(metadata i32 %21, i64 0, metadata !26, metadata !355), !dbg !385
+  br label %22, !dbg !392
 
-if.end23:                                         ; preds = %if.end7, %if.then15, %if.then10
-  %nbytes.0 = phi i32 [ %add, %if.then10 ], [ %add20, %if.then15 ], [ undef, %if.end7 ]
-  ret i32 %nbytes.0
+; <label>:22                                      ; preds = %11, %17, %12
+  %nbytes.0 = phi i32 [ %16, %12 ], [ %21, %17 ], [ undef, %11 ]
+  ret i32 %nbytes.0, !dbg !393
 }

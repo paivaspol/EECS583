@@ -1,64 +1,78 @@
-define internal fastcc void @compare_lists(i32* nocapture %k1, i32* nocapture %k2, i32* nocapture %t1, i32* nocapture %t2, i32 %len1, i32 %len2, float* nocapture %ret_sc) #0 {
-entry:
-  %cmp6 = icmp sgt i32 %len1, 0
-  br i1 %cmp6, label %for.body, label %for.cond9.preheader
+define internal fastcc void @compare_lists(i32* nocapture readonly %k1, i32* nocapture readonly %k2, i32* nocapture readonly %t1, i32* nocapture readonly %t2, i32 %len1, i32 %len2, float* nocapture %ret_sc) #0 {
+  tail call void @llvm.dbg.value(metadata float 0.000000e+00, i64 0, metadata !149, metadata !176), !dbg !245
+  tail call void @llvm.dbg.value(metadata float 0.000000e+00, i64 0, metadata !148, metadata !176), !dbg !246
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !150, metadata !176), !dbg !247
+  %1 = icmp sgt i32 %len1, 0, !dbg !248
+  br i1 %1, label %.lr.ph9, label %.preheader, !dbg !251
 
-for.cond9.preheader:                              ; preds = %for.inc, %entry
-  %tot.0.lcssa = phi float [ 0.000000e+00, %entry ], [ %conv1, %for.inc ]
-  %id.0.lcssa = phi float [ 0.000000e+00, %entry ], [ %id.1, %for.inc ]
-  %cmp101 = icmp sgt i32 %len2, 0
-  br i1 %cmp101, label %for.body12, label %for.end29
+.lr.ph9:                                          ; preds = %0
+  %2 = add i32 %len1, -1, !dbg !251
+  br label %5, !dbg !251
 
-for.body:                                         ; preds = %entry, %for.inc
-  %indvars.iv12 = phi i64 [ %indvars.iv.next13, %for.inc ], [ 0, %entry ]
-  %tot.08 = phi float [ %conv1, %for.inc ], [ 0.000000e+00, %entry ]
-  %id.07 = phi float [ %id.1, %for.inc ], [ 0.000000e+00, %entry ]
-  %conv1 = fadd float %tot.08, 1.000000e+00
-  %arrayidx = getelementptr inbounds i32* %t1, i64 %indvars.iv12
-  %0 = load i32* %arrayidx, align 4, !tbaa !3
-  %arrayidx3 = getelementptr inbounds i32* %k1, i64 %indvars.iv12
-  %1 = load i32* %arrayidx3, align 4, !tbaa !3
-  %cmp4 = icmp eq i32 %0, %1
-  br i1 %cmp4, label %if.then, label %for.inc
+.preheader:                                       ; preds = %14, %0
+  %tot.0.lcssa = phi float [ 0.000000e+00, %0 ], [ %6, %14 ]
+  %id.0.lcssa = phi float [ 0.000000e+00, %0 ], [ %id.1, %14 ]
+  %3 = icmp sgt i32 %len2, 0, !dbg !252
+  br i1 %3, label %.lr.ph, label %._crit_edge, !dbg !255
 
-if.then:                                          ; preds = %for.body
-  %conv8 = fadd float %id.07, 1.000000e+00
-  br label %for.inc
+.lr.ph:                                           ; preds = %.preheader
+  %4 = add i32 %len2, -1, !dbg !255
+  br label %15, !dbg !255
 
-for.inc:                                          ; preds = %for.body, %if.then
-  %id.1 = phi float [ %conv8, %if.then ], [ %id.07, %for.body ]
-  %indvars.iv.next13 = add i64 %indvars.iv12, 1
-  %lftr.wideiv14 = trunc i64 %indvars.iv.next13 to i32
-  %exitcond15 = icmp eq i32 %lftr.wideiv14, %len1
-  br i1 %exitcond15, label %for.cond9.preheader, label %for.body
+; <label>:5                                       ; preds = %14, %.lr.ph9
+  %indvars.iv13 = phi i64 [ 0, %.lr.ph9 ], [ %indvars.iv.next14, %14 ]
+  %tot.06 = phi float [ 0.000000e+00, %.lr.ph9 ], [ %6, %14 ]
+  %id.05 = phi float [ 0.000000e+00, %.lr.ph9 ], [ %id.1, %14 ]
+  %6 = fadd float %tot.06, 1.000000e+00, !dbg !256
+  tail call void @llvm.dbg.value(metadata float %6, i64 0, metadata !149, metadata !176), !dbg !245
+  %7 = getelementptr inbounds i32* %t1, i64 %indvars.iv13, !dbg !258
+  %8 = load i32* %7, align 4, !dbg !258, !tbaa !205
+  %9 = getelementptr inbounds i32* %k1, i64 %indvars.iv13, !dbg !260
+  %10 = load i32* %9, align 4, !dbg !260, !tbaa !205
+  %11 = icmp eq i32 %8, %10, !dbg !261
+  br i1 %11, label %12, label %14, !dbg !262
 
-for.body12:                                       ; preds = %for.cond9.preheader, %for.inc27
-  %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc27 ], [ 0, %for.cond9.preheader ]
-  %tot.13 = phi float [ %conv15, %for.inc27 ], [ %tot.0.lcssa, %for.cond9.preheader ]
-  %id.22 = phi float [ %id.3, %for.inc27 ], [ %id.0.lcssa, %for.cond9.preheader ]
-  %conv15 = fadd float %tot.13, 1.000000e+00
-  %arrayidx17 = getelementptr inbounds i32* %k2, i64 %indvars.iv
-  %2 = load i32* %arrayidx17, align 4, !tbaa !3
-  %arrayidx19 = getelementptr inbounds i32* %t2, i64 %indvars.iv
-  %3 = load i32* %arrayidx19, align 4, !tbaa !3
-  %cmp20 = icmp eq i32 %2, %3
-  br i1 %cmp20, label %if.then22, label %for.inc27
+; <label>:12                                      ; preds = %5
+  %13 = fadd float %id.05, 1.000000e+00, !dbg !263
+  tail call void @llvm.dbg.value(metadata float %13, i64 0, metadata !148, metadata !176), !dbg !246
+  br label %14, !dbg !264
 
-if.then22:                                        ; preds = %for.body12
-  %conv25 = fadd float %id.22, 1.000000e+00
-  br label %for.inc27
+; <label>:14                                      ; preds = %5, %12
+  %id.1 = phi float [ %13, %12 ], [ %id.05, %5 ]
+  %indvars.iv.next14 = add nuw nsw i64 %indvars.iv13, 1, !dbg !251
+  %lftr.wideiv15 = trunc i64 %indvars.iv13 to i32, !dbg !251
+  %exitcond16 = icmp eq i32 %lftr.wideiv15, %2, !dbg !251
+  br i1 %exitcond16, label %.preheader, label %5, !dbg !251
 
-for.inc27:                                        ; preds = %for.body12, %if.then22
-  %id.3 = phi float [ %conv25, %if.then22 ], [ %id.22, %for.body12 ]
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %len2
-  br i1 %exitcond, label %for.end29, label %for.body12
+; <label>:15                                      ; preds = %24, %.lr.ph
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %24 ]
+  %tot.12 = phi float [ %tot.0.lcssa, %.lr.ph ], [ %16, %24 ]
+  %id.21 = phi float [ %id.0.lcssa, %.lr.ph ], [ %id.3, %24 ]
+  %16 = fadd float %tot.12, 1.000000e+00, !dbg !265
+  tail call void @llvm.dbg.value(metadata float %16, i64 0, metadata !149, metadata !176), !dbg !245
+  %17 = getelementptr inbounds i32* %k2, i64 %indvars.iv, !dbg !267
+  %18 = load i32* %17, align 4, !dbg !267, !tbaa !205
+  %19 = getelementptr inbounds i32* %t2, i64 %indvars.iv, !dbg !269
+  %20 = load i32* %19, align 4, !dbg !269, !tbaa !205
+  %21 = icmp eq i32 %18, %20, !dbg !270
+  br i1 %21, label %22, label %24, !dbg !271
 
-for.end29:                                        ; preds = %for.inc27, %for.cond9.preheader
-  %tot.1.lcssa = phi float [ %tot.0.lcssa, %for.cond9.preheader ], [ %conv15, %for.inc27 ]
-  %id.2.lcssa = phi float [ %id.0.lcssa, %for.cond9.preheader ], [ %id.3, %for.inc27 ]
-  %div = fdiv float %id.2.lcssa, %tot.1.lcssa
-  store float %div, float* %ret_sc, align 4, !tbaa !4
+; <label>:22                                      ; preds = %15
+  %23 = fadd float %id.21, 1.000000e+00, !dbg !272
+  tail call void @llvm.dbg.value(metadata float %23, i64 0, metadata !148, metadata !176), !dbg !246
+  br label %24, !dbg !273
+
+; <label>:24                                      ; preds = %15, %22
+  %id.3 = phi float [ %23, %22 ], [ %id.21, %15 ]
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !255
+  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !255
+  %exitcond = icmp eq i32 %lftr.wideiv, %4, !dbg !255
+  br i1 %exitcond, label %._crit_edge, label %15, !dbg !255
+
+._crit_edge:                                      ; preds = %24, %.preheader
+  %tot.1.lcssa = phi float [ %tot.0.lcssa, %.preheader ], [ %16, %24 ]
+  %id.2.lcssa = phi float [ %id.0.lcssa, %.preheader ], [ %id.3, %24 ]
+  %25 = fdiv float %id.2.lcssa, %tot.1.lcssa, !dbg !274
+  store float %25, float* %ret_sc, align 4, !dbg !275, !tbaa !215
   ret void
 }

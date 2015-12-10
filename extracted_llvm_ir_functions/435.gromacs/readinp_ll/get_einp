@@ -1,94 +1,97 @@
-define internal fastcc i32 @get_einp(i32* nocapture %ninp, %struct.t_inpfile** %inp, i8* %name) #1 {
-  %1 = icmp eq %struct.t_inpfile** %inp, null
-  br i1 %1, label %46, label %.preheader
+define internal fastcc i32 @get_einp(i32* nocapture %ninp, %struct.t_inpfile** %inp, i8* %name) #2 {
+  tail call void @llvm.dbg.value(metadata i32* %ninp, i64 0, metadata !199, metadata !209), !dbg !408
+  tail call void @llvm.dbg.value(metadata %struct.t_inpfile** %inp, i64 0, metadata !200, metadata !209), !dbg !409
+  tail call void @llvm.dbg.value(metadata i8* %name, i64 0, metadata !201, metadata !209), !dbg !410
+  %1 = icmp eq %struct.t_inpfile** %inp, null, !dbg !411
+  br i1 %1, label %46, label %.preheader, !dbg !413
 
 .preheader:                                       ; preds = %0
-  %2 = load i32* %ninp, align 4, !tbaa !6
-  %3 = icmp sgt i32 %2, 0
-  br i1 %3, label %.lr.ph, label %15
+  %2 = load i32* %ninp, align 4, !dbg !414, !tbaa !232
+  %3 = icmp sgt i32 %2, 0, !dbg !417
+  br i1 %3, label %.lr.ph, label %15, !dbg !418
 
 .lr.ph:                                           ; preds = %.preheader, %9
   %indvars.iv = phi i64 [ %indvars.iv.next, %9 ], [ 0, %.preheader ]
-  %4 = load %struct.t_inpfile** %inp, align 8, !tbaa !2
-  %5 = getelementptr inbounds %struct.t_inpfile* %4, i64 %indvars.iv, i32 2
-  %6 = load i8** %5, align 8, !tbaa !12
-  %7 = tail call i32 @strcasecmp_min(i8* %name, i8* %6) #7
-  %8 = icmp eq i32 %7, 0
-  br i1 %8, label %._crit_edge, label %9
+  %4 = load %struct.t_inpfile** %inp, align 8, !dbg !419, !tbaa !225
+  %5 = getelementptr inbounds %struct.t_inpfile* %4, i64 %indvars.iv, i32 2, !dbg !421
+  %6 = load i8** %5, align 8, !dbg !421, !tbaa !322
+  %7 = tail call i32 @strcasecmp_min(i8* %name, i8* %6) #8, !dbg !422
+  %8 = icmp eq i32 %7, 0, !dbg !423
+  br i1 %8, label %._crit_edge, label %9, !dbg !424
 
 ; <label>:9                                       ; preds = %.lr.ph
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %10 = load i32* %ninp, align 4, !tbaa !6
-  %11 = sext i32 %10 to i64
-  %12 = icmp slt i64 %indvars.iv.next, %11
-  br i1 %12, label %.lr.ph, label %._crit_edge2
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !418
+  %10 = load i32* %ninp, align 4, !dbg !414, !tbaa !232
+  %11 = sext i32 %10 to i64, !dbg !417
+  %12 = icmp slt i64 %indvars.iv.next, %11, !dbg !417
+  br i1 %12, label %.lr.ph, label %._crit_edge2, !dbg !418
 
 ._crit_edge:                                      ; preds = %.lr.ph
-  %13 = trunc i64 %indvars.iv to i32
-  %.pre = load i32* %ninp, align 4, !tbaa !6
-  br label %15
+  %13 = trunc i64 %indvars.iv to i32, !dbg !424
+  %.pre = load i32* %ninp, align 4, !dbg !425, !tbaa !232
+  br label %15, !dbg !424
 
 ._crit_edge2:                                     ; preds = %9
-  %14 = trunc i64 %indvars.iv.next to i32
-  br label %15
+  %14 = trunc i64 %indvars.iv.next to i32, !dbg !418
+  br label %15, !dbg !418
 
 ; <label>:15                                      ; preds = %._crit_edge2, %._crit_edge, %.preheader
   %16 = phi i32 [ %.pre, %._crit_edge ], [ %10, %._crit_edge2 ], [ %2, %.preheader ]
   %i.0.lcssa = phi i32 [ %13, %._crit_edge ], [ %14, %._crit_edge2 ], [ 0, %.preheader ]
-  %17 = icmp eq i32 %i.0.lcssa, %16
-  br i1 %17, label %18, label %._crit_edge5
+  %17 = icmp eq i32 %i.0.lcssa, %16, !dbg !427
+  br i1 %17, label %18, label %._crit_edge5, !dbg !428
 
 ._crit_edge5:                                     ; preds = %15
-  %.pre6 = load %struct.t_inpfile** %inp, align 8, !tbaa !2
-  %.pre7 = sext i32 %i.0.lcssa to i64
-  br label %30
+  %.pre6 = load %struct.t_inpfile** %inp, align 8, !dbg !429, !tbaa !225
+  %.pre7 = sext i32 %i.0.lcssa to i64, !dbg !430
+  br label %30, !dbg !428
 
 ; <label>:18                                      ; preds = %15
-  %19 = add nsw i32 %16, 1
-  store i32 %19, i32* %ninp, align 4, !tbaa !6
-  %20 = bitcast %struct.t_inpfile** %inp to i8**
-  %21 = load i8** %20, align 8, !tbaa !2
-  %22 = mul i32 %19, 24
-  %23 = tail call i8* @save_realloc(i8* getelementptr inbounds ([5 x i8]* @.str21, i64 0, i64 0), i8* getelementptr inbounds ([67 x i8]* @.str6, i64 0, i64 0), i32 165, i8* %21, i32 %22) #7
-  store i8* %23, i8** %20, align 8, !tbaa !2
-  %24 = tail call i8* @strdup(i8* %name) #7
-  %25 = sext i32 %16 to i64
-  %26 = load %struct.t_inpfile** %inp, align 8, !tbaa !2
-  %27 = getelementptr inbounds %struct.t_inpfile* %26, i64 %25, i32 2
-  store i8* %24, i8** %27, align 8, !tbaa !12
-  %28 = load %struct.t_inpfile** %inp, align 8, !tbaa !2
-  %29 = getelementptr inbounds %struct.t_inpfile* %28, i64 %25, i32 1
-  store i32 1, i32* %29, align 4, !tbaa !11
-  br label %30
+  %19 = add nsw i32 %16, 1, !dbg !431
+  store i32 %19, i32* %ninp, align 4, !dbg !431, !tbaa !232
+  %20 = bitcast %struct.t_inpfile** %inp to i8**, !dbg !433
+  %21 = load i8** %20, align 8, !dbg !433, !tbaa !225
+  %22 = mul i32 %19, 24, !dbg !433
+  %23 = tail call i8* @save_realloc(i8* getelementptr inbounds ([5 x i8]* @.str21, i64 0, i64 0), i8* getelementptr inbounds ([67 x i8]* @.str6, i64 0, i64 0), i32 165, i8* %21, i32 %22) #8, !dbg !433
+  store i8* %23, i8** %20, align 8, !dbg !433, !tbaa !225
+  %24 = tail call i8* @strdup(i8* %name) #8, !dbg !434
+  %25 = sext i32 %16 to i64, !dbg !435
+  %26 = load %struct.t_inpfile** %inp, align 8, !dbg !436, !tbaa !225
+  %27 = getelementptr inbounds %struct.t_inpfile* %26, i64 %25, i32 2, !dbg !437
+  store i8* %24, i8** %27, align 8, !dbg !438, !tbaa !322
+  %28 = load %struct.t_inpfile** %inp, align 8, !dbg !439, !tbaa !225
+  %29 = getelementptr inbounds %struct.t_inpfile* %28, i64 %25, i32 1, !dbg !440
+  store i32 1, i32* %29, align 4, !dbg !441, !tbaa !318
+  br label %30, !dbg !442
 
 ; <label>:30                                      ; preds = %._crit_edge5, %18
-  %.pre-phi = phi i64 [ %.pre7, %._crit_edge5 ], [ %25, %18 ]
+  %.pre-phi = phi i64 [ %.pre7, %._crit_edge5 ], [ %25, %18 ], !dbg !430
   %31 = phi %struct.t_inpfile* [ %.pre6, %._crit_edge5 ], [ %28, %18 ]
-  %32 = load i32* @inp_count, align 4, !tbaa !6
-  %33 = add nsw i32 %32, 1
-  store i32 %33, i32* @inp_count, align 4, !tbaa !6
-  %34 = getelementptr inbounds %struct.t_inpfile* %31, i64 %.pre-phi, i32 0
-  store i32 %32, i32* %34, align 4, !tbaa !9
-  %35 = getelementptr inbounds %struct.t_inpfile* %31, i64 %.pre-phi, i32 1
-  store i32 1, i32* %35, align 4, !tbaa !11
-  %36 = load %struct.__sFILE** @debug, align 8, !tbaa !2
-  %37 = icmp eq %struct.__sFILE* %36, null
-  br i1 %37, label %42, label %38
+  %32 = load i32* @inp_count, align 4, !dbg !443, !tbaa !232
+  %33 = add nsw i32 %32, 1, !dbg !443
+  store i32 %33, i32* @inp_count, align 4, !dbg !443, !tbaa !232
+  %34 = getelementptr inbounds %struct.t_inpfile* %31, i64 %.pre-phi, i32 0, !dbg !444
+  store i32 %32, i32* %34, align 4, !dbg !445, !tbaa !314
+  %35 = getelementptr inbounds %struct.t_inpfile* %31, i64 %.pre-phi, i32 1, !dbg !446
+  store i32 1, i32* %35, align 4, !dbg !447, !tbaa !318
+  %36 = load %struct.__sFILE** @debug, align 8, !dbg !448, !tbaa !225
+  %37 = icmp eq %struct.__sFILE* %36, null, !dbg !448
+  br i1 %37, label %42, label %38, !dbg !450
 
 ; <label>:38                                      ; preds = %30
-  %39 = getelementptr inbounds %struct.t_inpfile* %31, i64 %.pre-phi, i32 2
-  %40 = load i8** %39, align 8, !tbaa !12
-  %41 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %36, i8* getelementptr inbounds ([13 x i8]* @.str22, i64 0, i64 0), i32 %32, i8* %40) #7
-  br label %42
+  %39 = getelementptr inbounds %struct.t_inpfile* %31, i64 %.pre-phi, i32 2, !dbg !451
+  %40 = load i8** %39, align 8, !dbg !451, !tbaa !322
+  %41 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %36, i8* getelementptr inbounds ([13 x i8]* @.str22, i64 0, i64 0), i32 %32, i8* %40) #8, !dbg !452
+  br label %42, !dbg !452
 
 ; <label>:42                                      ; preds = %30, %38
-  %43 = load i32* %ninp, align 4, !tbaa !6
-  %44 = add nsw i32 %43, -1
-  %45 = icmp eq i32 %i.0.lcssa, %44
-  %.i.0 = select i1 %45, i32 -1, i32 %i.0.lcssa
-  br label %46
+  %43 = load i32* %ninp, align 4, !dbg !453, !tbaa !232
+  %44 = add nsw i32 %43, -1, !dbg !455
+  %45 = icmp eq i32 %i.0.lcssa, %44, !dbg !456
+  %.i.0 = select i1 %45, i32 -1, i32 %i.0.lcssa, !dbg !457
+  br label %46, !dbg !457
 
 ; <label>:46                                      ; preds = %42, %0
   %.0 = phi i32 [ -1, %0 ], [ %.i.0, %42 ]
-  ret i32 %.0
+  ret i32 %.0, !dbg !458
 }

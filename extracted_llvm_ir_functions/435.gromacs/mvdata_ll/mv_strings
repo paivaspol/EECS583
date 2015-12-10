@@ -1,30 +1,39 @@
 define internal fastcc void @mv_strings(i32 %dest, %struct.t_symtab* %symtab, i32 %nr, i8*** nocapture readonly %nm) #4 {
   %1 = alloca i32, align 4
-  store i32 %nr, i32* %1, align 4, !tbaa !36
-  %2 = tail call i8* @save_calloc(i8* getelementptr inbounds ([7 x i8]* @.str23, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str8, i64 0, i64 0), i32 298, i32 %nr, i32 4) #7
-  %3 = bitcast i8* %2 to i32*
-  %4 = icmp sgt i32 %nr, 0
-  br i1 %4, label %.lr.ph, label %._crit_edge
+  tail call void @llvm.dbg.value(metadata i32 %dest, i64 0, metadata !804, metadata !837), !dbg !1445
+  tail call void @llvm.dbg.value(metadata %struct.t_symtab* %symtab, i64 0, metadata !805, metadata !837), !dbg !1446
+  tail call void @llvm.dbg.value(metadata i32 %nr, i64 0, metadata !806, metadata !837), !dbg !1447
+  store i32 %nr, i32* %1, align 4, !tbaa !1103
+  tail call void @llvm.dbg.value(metadata i8*** %nm, i64 0, metadata !807, metadata !837), !dbg !1448
+  %2 = tail call i8* @save_calloc(i8* getelementptr inbounds ([7 x i8]* @.str23, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str8, i64 0, i64 0), i32 298, i32 %nr, i32 4) #7, !dbg !1449
+  %3 = bitcast i8* %2 to i32*, !dbg !1449
+  tail call void @llvm.dbg.value(metadata i32* %3, i64 0, metadata !809, metadata !837), !dbg !1450
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !808, metadata !837), !dbg !1451
+  tail call void @llvm.dbg.value(metadata i32* %1, i64 0, metadata !806, metadata !837), !dbg !1447
+  %4 = icmp sgt i32 %nr, 0, !dbg !1452
+  br i1 %4, label %.lr.ph, label %._crit_edge, !dbg !1455
 
 .lr.ph:                                           ; preds = %0, %.lr.ph
   %indvars.iv = phi i64 [ %indvars.iv.next, %.lr.ph ], [ 0, %0 ]
-  %5 = getelementptr inbounds i8*** %nm, i64 %indvars.iv
-  %6 = load i8*** %5, align 8, !tbaa !29
-  %7 = tail call i32 @lookup_symtab(%struct.t_symtab* %symtab, i8** %6) #7
-  %8 = getelementptr inbounds i32* %3, i64 %indvars.iv
-  store i32 %7, i32* %8, align 4, !tbaa !36
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %9 = load i32* %1, align 4, !tbaa !36
-  %10 = sext i32 %9 to i64
-  %11 = icmp slt i64 %indvars.iv.next, %10
-  br i1 %11, label %.lr.ph, label %._crit_edge
+  %5 = getelementptr inbounds i8*** %nm, i64 %indvars.iv, !dbg !1456
+  %6 = load i8*** %5, align 8, !dbg !1456, !tbaa !1054
+  %7 = tail call i32 @lookup_symtab(%struct.t_symtab* %symtab, i8** %6) #7, !dbg !1457
+  %8 = getelementptr inbounds i32* %3, i64 %indvars.iv, !dbg !1458
+  store i32 %7, i32* %8, align 4, !dbg !1459, !tbaa !1103
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !1455
+  tail call void @llvm.dbg.value(metadata i32* %1, i64 0, metadata !806, metadata !837), !dbg !1447
+  %9 = load i32* %1, align 4, !dbg !1460, !tbaa !1103
+  %10 = sext i32 %9 to i64, !dbg !1452
+  %11 = icmp slt i64 %indvars.iv.next, %10, !dbg !1452
+  br i1 %11, label %.lr.ph, label %._crit_edge, !dbg !1455
 
 ._crit_edge:                                      ; preds = %.lr.ph, %0
-  %12 = bitcast i32* %1 to i8*
-  call void @_blocktx(i32 %dest, i32 1, i32 4, i8* %12) #7
-  %13 = load i32* %1, align 4, !tbaa !36
-  %14 = shl i32 %13, 2
-  call void @_blocktx(i32 %dest, i32 1, i32 %14, i8* %2) #7
-  call void @save_free(i8* getelementptr inbounds ([7 x i8]* @.str23, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str8, i64 0, i64 0), i32 303, i8* %2) #7
-  ret void
+  %12 = bitcast i32* %1 to i8*, !dbg !1461
+  call void @_blocktx(i32 %dest, i32 1, i32 4, i8* %12) #7, !dbg !1461
+  call void @llvm.dbg.value(metadata i32* %1, i64 0, metadata !806, metadata !837), !dbg !1447
+  %13 = load i32* %1, align 4, !dbg !1462, !tbaa !1103
+  %14 = shl i32 %13, 2, !dbg !1462
+  call void @_blocktx(i32 %dest, i32 1, i32 %14, i8* %2) #7, !dbg !1462
+  call void @save_free(i8* getelementptr inbounds ([7 x i8]* @.str23, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str8, i64 0, i64 0), i32 303, i8* %2) #7, !dbg !1463
+  ret void, !dbg !1464
 }

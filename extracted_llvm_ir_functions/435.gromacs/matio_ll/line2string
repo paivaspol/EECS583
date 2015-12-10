@@ -1,61 +1,63 @@
-define i8* @line2string(i8** nocapture %line) #3 {
-  %1 = load i8** %line, align 8, !tbaa !14
-  %2 = icmp eq i8* %1, null
-  br i1 %2, label %21, label %.preheader
+define i8* @line2string(i8** nocapture %line) #4 {
+  tail call void @llvm.dbg.value(metadata i8** %line, i64 0, metadata !227, metadata !477), !dbg !778
+  %1 = load i8** %line, align 8, !dbg !779, !tbaa !525
+  %2 = icmp eq i8* %1, null, !dbg !781
+  br i1 %2, label %21, label %.preheader, !dbg !782
 
 .preheader:                                       ; preds = %0
-  %3 = load i8* %1, align 1, !tbaa !13
-  %4 = icmp eq i8 %3, 34
-  %5 = icmp ne i8 %3, 0
-  %not.6 = xor i1 %4, true
-  %.7 = and i1 %5, %not.6
-  br i1 %.7, label %.lr.ph, label %._crit_edge
+  %3 = load i8* %1, align 1, !dbg !783, !tbaa !505
+  %4 = icmp eq i8 %3, 34, !dbg !785
+  %5 = icmp ne i8 %3, 0, !dbg !786
+  %not.6 = xor i1 %4, true, !dbg !787
+  %.7 = and i1 %5, %not.6, !dbg !787
+  br i1 %.7, label %.lr.ph, label %._crit_edge, !dbg !788
 
 .lr.ph:                                           ; preds = %.preheader, %.lr.ph
   %6 = phi i8* [ %7, %.lr.ph ], [ %1, %.preheader ]
-  %7 = getelementptr inbounds i8* %6, i64 1
-  store i8* %7, i8** %line, align 8, !tbaa !14
-  %8 = load i8* %7, align 1, !tbaa !13
-  %9 = icmp eq i8 %8, 34
-  %10 = icmp ne i8 %8, 0
-  %not. = xor i1 %9, true
-  %. = and i1 %10, %not.
-  br i1 %., label %.lr.ph, label %._crit_edge
+  %7 = getelementptr inbounds i8* %6, i64 1, !dbg !789
+  store i8* %7, i8** %line, align 8, !dbg !789, !tbaa !525
+  %8 = load i8* %7, align 1, !dbg !783, !tbaa !505
+  %9 = icmp eq i8 %8, 34, !dbg !785
+  %10 = icmp ne i8 %8, 0, !dbg !786
+  %not. = xor i1 %9, true, !dbg !787
+  %. = and i1 %10, %not., !dbg !787
+  br i1 %., label %.lr.ph, label %._crit_edge, !dbg !788
 
 ._crit_edge:                                      ; preds = %.lr.ph, %.preheader
   %.lcssa5 = phi i1 [ %4, %.preheader ], [ %9, %.lr.ph ]
   %.lcssa4 = phi i8* [ %1, %.preheader ], [ %7, %.lr.ph ]
-  br i1 %.lcssa5, label %11, label %21
+  br i1 %.lcssa5, label %11, label %21, !dbg !790
 
 ; <label>:11                                      ; preds = %._crit_edge
-  %12 = getelementptr inbounds i8* %.lcssa4, i64 1
-  store i8* %12, i8** %line, align 8, !tbaa !14
-  br label %13
+  %12 = getelementptr inbounds i8* %.lcssa4, i64 1, !dbg !791
+  store i8* %12, i8** %line, align 8, !dbg !791, !tbaa !525
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !228, metadata !477), !dbg !792
+  br label %13, !dbg !793
 
 ; <label>:13                                      ; preds = %13, %11
   %indvars.iv = phi i64 [ %.sum, %13 ], [ 0, %11 ]
-  %.sum = add nuw i64 %indvars.iv, 1
-  %14 = getelementptr inbounds i8* %.lcssa4, i64 %.sum
-  %15 = load i8* %14, align 1, !tbaa !13
-  %16 = icmp eq i8 %15, 34
-  %17 = icmp ne i8 %15, 0
-  %not.2 = xor i1 %16, true
-  %.1 = and i1 %17, %not.2
-  br i1 %.1, label %13, label %18
+  %.sum = add nuw i64 %indvars.iv, 1, !dbg !794
+  %14 = getelementptr inbounds i8* %.lcssa4, i64 %.sum, !dbg !794
+  %15 = load i8* %14, align 1, !dbg !794, !tbaa !505
+  %16 = icmp eq i8 %15, 34, !dbg !795
+  %17 = icmp ne i8 %15, 0, !dbg !796
+  %not.2 = xor i1 %16, true, !dbg !797
+  %.1 = and i1 %17, %not.2, !dbg !797
+  br i1 %.1, label %13, label %18, !dbg !793
 
 ; <label>:18                                      ; preds = %13
-  br i1 %16, label %20, label %19
+  br i1 %16, label %20, label %19, !dbg !798
 
 ; <label>:19                                      ; preds = %18
-  store i8* null, i8** %line, align 8, !tbaa !14
-  br label %21
+  store i8* null, i8** %line, align 8, !dbg !799, !tbaa !525
+  br label %21, !dbg !801
 
 ; <label>:20                                      ; preds = %18
-  store i8 0, i8* %14, align 1, !tbaa !13
-  %.pre = load i8** %line, align 8, !tbaa !14
+  store i8 0, i8* %14, align 1, !dbg !802, !tbaa !505
+  %.pre = load i8** %line, align 8, !dbg !803, !tbaa !525
   br label %21
 
 ; <label>:21                                      ; preds = %20, %19, %0, %._crit_edge
   %.0 = phi i8* [ null, %._crit_edge ], [ null, %0 ], [ null, %19 ], [ %.pre, %20 ]
-  ret i8* %.0
+  ret i8* %.0, !dbg !804
 }

@@ -1,62 +1,73 @@
 define float @mol_dipole(i32 %k0, i32 %k1, i32* nocapture readonly %ma, [3 x float]* nocapture readonly %x, float* nocapture readonly %q) #4 {
   %mu = alloca [3 x float], align 4
-  %1 = getelementptr inbounds [3 x float]* %mu, i64 0, i64 0
-  store float 0.000000e+00, float* %1, align 4, !tbaa !14
-  %2 = getelementptr inbounds [3 x float]* %mu, i64 0, i64 1
-  store float 0.000000e+00, float* %2, align 4, !tbaa !14
-  %3 = getelementptr inbounds [3 x float]* %mu, i64 0, i64 2
-  store float 0.000000e+00, float* %3, align 4, !tbaa !14
-  %4 = icmp slt i32 %k0, %k1
-  br i1 %4, label %.lr.ph, label %21
+  tail call void @llvm.dbg.value(metadata i32 %k0, i64 0, metadata !276, metadata !899), !dbg !1062
+  tail call void @llvm.dbg.value(metadata i32 %k1, i64 0, metadata !277, metadata !899), !dbg !1063
+  tail call void @llvm.dbg.value(metadata i32* %ma, i64 0, metadata !278, metadata !899), !dbg !1064
+  tail call void @llvm.dbg.value(metadata [3 x float]* %x, i64 0, metadata !279, metadata !899), !dbg !1065
+  tail call void @llvm.dbg.value(metadata float* %q, i64 0, metadata !280, metadata !899), !dbg !1066
+  tail call void @llvm.dbg.declare(metadata [3 x float]* %mu, metadata !284, metadata !899), !dbg !1067
+  %1 = getelementptr inbounds [3 x float]* %mu, i64 0, i64 0, !dbg !1068
+  tail call void @llvm.dbg.value(metadata float* %1, i64 0, metadata !765, metadata !899), !dbg !1069
+  store float 0.000000e+00, float* %1, align 4, !dbg !1071, !tbaa !1027
+  %2 = getelementptr inbounds [3 x float]* %mu, i64 0, i64 1, !dbg !1072
+  store float 0.000000e+00, float* %2, align 4, !dbg !1073, !tbaa !1027
+  %3 = getelementptr inbounds [3 x float]* %mu, i64 0, i64 2, !dbg !1074
+  store float 0.000000e+00, float* %3, align 4, !dbg !1075, !tbaa !1027
+  tail call void @llvm.dbg.value(metadata i32 %k0, i64 0, metadata !281, metadata !899), !dbg !1076
+  %4 = icmp slt i32 %k0, %k1, !dbg !1077
+  br i1 %4, label %.lr.ph, label %21, !dbg !1080
 
 .lr.ph:                                           ; preds = %0
   %5 = sext i32 %k0 to i64
-  %6 = add i32 %k1, -1
-  br label %7
+  %6 = add i32 %k1, -1, !dbg !1080
+  br label %7, !dbg !1080
 
 ; <label>:7                                       ; preds = %20, %.lr.ph
   %indvars.iv3 = phi i64 [ %5, %.lr.ph ], [ %indvars.iv.next4, %20 ]
-  %8 = getelementptr inbounds i32* %ma, i64 %indvars.iv3
-  %9 = load i32* %8, align 4, !tbaa !18
-  %10 = sext i32 %9 to i64
-  %11 = getelementptr inbounds float* %q, i64 %10
-  %12 = load float* %11, align 4, !tbaa !14
-  br label %13
+  %8 = getelementptr inbounds i32* %ma, i64 %indvars.iv3, !dbg !1081
+  %9 = load i32* %8, align 4, !dbg !1081, !tbaa !1083
+  tail call void @llvm.dbg.value(metadata i32 %9, i64 0, metadata !282, metadata !899), !dbg !1084
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !283, metadata !899), !dbg !1085
+  %10 = sext i32 %9 to i64, !dbg !1086
+  %11 = getelementptr inbounds float* %q, i64 %10, !dbg !1086
+  %12 = load float* %11, align 4, !dbg !1086, !tbaa !1027
+  br label %13, !dbg !1089
 
 ; <label>:13                                      ; preds = %13, %7
   %indvars.iv = phi i64 [ 0, %7 ], [ %indvars.iv.next, %13 ]
-  %14 = getelementptr inbounds [3 x float]* %x, i64 %10, i64 %indvars.iv
-  %15 = load float* %14, align 4, !tbaa !14
-  %16 = fmul float %12, %15
-  %17 = getelementptr inbounds [3 x float]* %mu, i64 0, i64 %indvars.iv
-  %18 = load float* %17, align 4, !tbaa !14
-  %19 = fadd float %18, %16
-  store float %19, float* %17, align 4, !tbaa !14
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %exitcond = icmp eq i64 %indvars.iv.next, 3
-  br i1 %exitcond, label %20, label %13
+  %14 = getelementptr inbounds [3 x float]* %x, i64 %10, i64 %indvars.iv, !dbg !1090
+  %15 = load float* %14, align 4, !dbg !1090, !tbaa !1027
+  %16 = fmul float %12, %15, !dbg !1091
+  %17 = getelementptr inbounds [3 x float]* %mu, i64 0, i64 %indvars.iv, !dbg !1092
+  %18 = load float* %17, align 4, !dbg !1093, !tbaa !1027
+  %19 = fadd float %18, %16, !dbg !1093
+  store float %19, float* %17, align 4, !dbg !1093, !tbaa !1027
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !1089
+  %exitcond = icmp eq i64 %indvars.iv.next, 3, !dbg !1089
+  br i1 %exitcond, label %20, label %13, !dbg !1089
 
 ; <label>:20                                      ; preds = %13
-  %indvars.iv.next4 = add nsw i64 %indvars.iv3, 1
-  %lftr.wideiv = trunc i64 %indvars.iv3 to i32
-  %exitcond5 = icmp eq i32 %lftr.wideiv, %6
-  br i1 %exitcond5, label %._crit_edge, label %7
+  %indvars.iv.next4 = add nsw i64 %indvars.iv3, 1, !dbg !1080
+  %lftr.wideiv = trunc i64 %indvars.iv3 to i32, !dbg !1080
+  %exitcond5 = icmp eq i32 %lftr.wideiv, %6, !dbg !1080
+  br i1 %exitcond5, label %._crit_edge, label %7, !dbg !1080
 
 ._crit_edge:                                      ; preds = %20
-  %.pre = load float* %1, align 4, !tbaa !14
-  %.pre6 = load float* %2, align 4, !tbaa !14
-  %.pre7 = load float* %3, align 4, !tbaa !14
-  br label %21
+  %.pre = load float* %1, align 4, !dbg !1094, !tbaa !1027
+  %.pre6 = load float* %2, align 4, !dbg !1096, !tbaa !1027
+  %.pre7 = load float* %3, align 4, !dbg !1097, !tbaa !1027
+  br label %21, !dbg !1080
 
 ; <label>:21                                      ; preds = %._crit_edge, %0
   %22 = phi float [ %.pre7, %._crit_edge ], [ 0.000000e+00, %0 ]
   %23 = phi float [ %.pre6, %._crit_edge ], [ 0.000000e+00, %0 ]
   %24 = phi float [ %.pre, %._crit_edge ], [ 0.000000e+00, %0 ]
-  %25 = fmul float %24, %24
-  %26 = fmul float %23, %23
-  %27 = fadd float %25, %26
-  %28 = fmul float %22, %22
-  %29 = fadd float %27, %28
-  %sqrtf.i = tail call float @sqrtf(float %29) #6
-  ret float %sqrtf.i
+  tail call void @llvm.dbg.value(metadata float* %1, i64 0, metadata !770, metadata !899) #9, !dbg !1098
+  %25 = fmul float %24, %24, !dbg !1099
+  %26 = fmul float %23, %23, !dbg !1100
+  %27 = fadd float %25, %26, !dbg !1101
+  %28 = fmul float %22, %22, !dbg !1102
+  %29 = fadd float %27, %28, !dbg !1103
+  %sqrtf.i = tail call float @sqrtf(float %29) #6, !dbg !1104
+  ret float %sqrtf.i, !dbg !1105
 }

@@ -1,28 +1,32 @@
-define internal fastcc void @set_extension(i8* %buf, i32 %ftp) #3 {
-  %1 = sext i32 %ftp to i64
-  %2 = tail call i64 @strlen(i8* %buf) #9
-  %3 = trunc i64 %2 to i32
-  %4 = getelementptr inbounds [46 x %struct.t_deffile]* @deffile, i64 0, i64 %1, i32 1
-  %5 = load i8** %4, align 8, !tbaa !17
-  %6 = tail call i64 @strlen(i8* %5) #9
-  %7 = trunc i64 %6 to i32
-  %8 = icmp sgt i32 %3, %7
-  br i1 %8, label %9, label %15
+define internal fastcc void @set_extension(i8* %buf, i32 %ftp) #4 {
+  tail call void @llvm.dbg.value(metadata i8* %buf, i64 0, metadata !323, metadata !382), !dbg !1179
+  tail call void @llvm.dbg.value(metadata i32 %ftp, i64 0, metadata !324, metadata !382), !dbg !1180
+  %1 = sext i32 %ftp to i64, !dbg !1181
+  %2 = tail call i64 @strlen(i8* %buf) #9, !dbg !1182
+  %3 = trunc i64 %2 to i32, !dbg !1182
+  tail call void @llvm.dbg.value(metadata i32 %3, i64 0, metadata !325, metadata !382), !dbg !1183
+  %4 = getelementptr inbounds [46 x %struct.t_deffile]* @deffile, i64 0, i64 %1, i32 1, !dbg !1184
+  %5 = load i8** %4, align 8, !dbg !1184, !tbaa !440
+  %6 = tail call i64 @strlen(i8* %5) #9, !dbg !1185
+  %7 = trunc i64 %6 to i32, !dbg !1185
+  tail call void @llvm.dbg.value(metadata i32 %7, i64 0, metadata !326, metadata !382), !dbg !1186
+  %8 = icmp sgt i32 %3, %7, !dbg !1187
+  br i1 %8, label %9, label %15, !dbg !1189
 
 ; <label>:9                                       ; preds = %0
-  %10 = sub i64 %2, %6
-  %sext = shl i64 %10, 32
-  %11 = ashr exact i64 %sext, 32
-  %12 = getelementptr inbounds i8* %buf, i64 %11
-  %13 = tail call i32 @strcasecmp(i8* %12, i8* %5) #9
-  %14 = icmp eq i32 %13, 0
-  br i1 %14, label %18, label %15
+  %10 = sub i64 %2, %6, !dbg !1190
+  %sext = shl i64 %10, 32, !dbg !1191
+  %11 = ashr exact i64 %sext, 32, !dbg !1191
+  %12 = getelementptr inbounds i8* %buf, i64 %11, !dbg !1191
+  %13 = tail call i32 @strcasecmp(i8* %12, i8* %5) #9, !dbg !1192
+  %14 = icmp eq i32 %13, 0, !dbg !1193
+  br i1 %14, label %18, label %15, !dbg !1194
 
 ; <label>:15                                      ; preds = %9, %0
-  %16 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %buf, i1 false)
-  %17 = tail call i8* @__strcat_chk(i8* %buf, i8* %5, i64 %16) #9
-  br label %18
+  %16 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %buf, i1 false), !dbg !1195
+  %17 = tail call i8* @__strcat_chk(i8* %buf, i8* %5, i64 %16) #9, !dbg !1195
+  br label %18, !dbg !1195
 
 ; <label>:18                                      ; preds = %9, %15
-  ret void
+  ret void, !dbg !1196
 }

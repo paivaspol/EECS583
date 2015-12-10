@@ -1,45 +1,61 @@
 define i8* @Util_CacheMalloc(i32 %index, i64 %size, i8** nocapture %realstart) #1 {
-  %1 = load i32* @cache_set, align 4, !tbaa !2
-  %2 = icmp eq i32 %1, 0
-  br i1 %2, label %5, label %Utili_CacheDataGet.exit.thread
+  tail call void @llvm.dbg.value(metadata i32 %index, i64 0, metadata !24, metadata !62), !dbg !63
+  tail call void @llvm.dbg.value(metadata i64 %size, i64 0, metadata !25, metadata !62), !dbg !64
+  tail call void @llvm.dbg.value(metadata i8** %realstart, i64 0, metadata !26, metadata !62), !dbg !65
+  %1 = load i32* @cache_set, align 4, !dbg !66, !tbaa !70
+  %2 = icmp eq i32 %1, 0, !dbg !66
+  br i1 %2, label %5, label %Utili_CacheDataGet.exit.thread, !dbg !74
 
 Utili_CacheDataGet.exit.thread:                   ; preds = %0
-  %3 = load i64* @cache_data.0, align 8, !tbaa !6
-  %4 = load i64* @cache_data.1, align 8, !tbaa !9
-  br label %5
+  %3 = load i64* @cache_data.0, align 8, !dbg !75, !tbaa !77
+  tail call void @llvm.dbg.value(metadata i64 %3, i64 0, metadata !46, metadata !62), !dbg !80
+  tail call void @llvm.dbg.value(metadata i64 %3, i64 0, metadata !29, metadata !62), !dbg !81
+  tail call void @llvm.dbg.value(metadata i64 %3, i64 0, metadata !29, metadata !62), !dbg !81
+  %4 = load i64* @cache_data.1, align 8, !dbg !82, !tbaa !83
+  tail call void @llvm.dbg.value(metadata i64 %4, i64 0, metadata !47, metadata !62), !dbg !84
+  tail call void @llvm.dbg.value(metadata i64 %4, i64 0, metadata !30, metadata !62), !dbg !85
+  tail call void @llvm.dbg.value(metadata i64 %4, i64 0, metadata !30, metadata !62), !dbg !85
+  tail call void @llvm.dbg.value(metadata i64 %4, i64 0, metadata !30, metadata !62), !dbg !85
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !48, metadata !62), !dbg !86
+  br label %5, !dbg !87
 
 ; <label>:5                                       ; preds = %0, %Utili_CacheDataGet.exit.thread
   %6 = phi i64 [ %3, %Utili_CacheDataGet.exit.thread ], [ 0, %0 ]
   %7 = phi i64 [ %4, %Utili_CacheDataGet.exit.thread ], [ 0, %0 ]
-  %8 = add i64 %7, %size
-  %9 = tail call i8* @malloc(i64 %8) #3
-  %10 = icmp eq i8* %9, null
-  br i1 %10, label %26, label %11
+  %8 = add i64 %7, %size, !dbg !88
+  %9 = tail call i8* @malloc(i64 %8) #4, !dbg !89
+  tail call void @llvm.dbg.value(metadata i8* %9, i64 0, metadata !28, metadata !62), !dbg !90
+  %10 = icmp eq i8* %9, null, !dbg !91
+  br i1 %10, label %26, label %11, !dbg !93
 
 ; <label>:11                                      ; preds = %5
-  %12 = icmp eq i64 %7, 0
-  br i1 %12, label %24, label %13
+  %12 = icmp eq i64 %7, 0, !dbg !94
+  br i1 %12, label %24, label %13, !dbg !97
 
 ; <label>:13                                      ; preds = %11
-  %14 = ptrtoint i8* %9 to i64
-  %15 = urem i64 %14, %7
-  %16 = urem i64 %15, %6
-  %17 = udiv i64 %15, %6
-  %18 = zext i32 %index to i64
-  %19 = sub i64 %18, %17
-  %20 = mul i64 %19, %6
-  %21 = sub i64 %6, %16
-  %22 = add i64 %21, %20
-  %23 = urem i64 %22, %7
-  br label %24
+  %14 = ptrtoint i8* %9 to i64, !dbg !98
+  %15 = urem i64 %14, %7, !dbg !100
+  %16 = urem i64 %15, %6, !dbg !101
+  tail call void @llvm.dbg.value(metadata i64 %16, i64 0, metadata !31, metadata !62), !dbg !102
+  %17 = udiv i64 %15, %6, !dbg !103
+  tail call void @llvm.dbg.value(metadata i64 %17, i64 0, metadata !32, metadata !62), !dbg !104
+  %18 = zext i32 %index to i64, !dbg !105
+  %19 = sub i64 %18, %17, !dbg !106
+  %20 = mul i64 %19, %6, !dbg !107
+  %21 = sub i64 %6, %16, !dbg !108
+  %22 = add i64 %21, %20, !dbg !109
+  %23 = urem i64 %22, %7, !dbg !110
+  tail call void @llvm.dbg.value(metadata i64 %23, i64 0, metadata !33, metadata !62), !dbg !111
+  br label %24, !dbg !112
 
 ; <label>:24                                      ; preds = %11, %13
   %pad.0 = phi i64 [ %23, %13 ], [ 0, %11 ]
-  %25 = getelementptr inbounds i8* %9, i64 %pad.0
-  br label %26
+  %25 = getelementptr inbounds i8* %9, i64 %pad.0, !dbg !113
+  tail call void @llvm.dbg.value(metadata i8* %25, i64 0, metadata !27, metadata !62), !dbg !114
+  br label %26, !dbg !115
 
 ; <label>:26                                      ; preds = %5, %24
   %retval.0 = phi i8* [ %25, %24 ], [ null, %5 ]
-  store i8* %9, i8** %realstart, align 8, !tbaa !10
-  ret i8* %retval.0
+  store i8* %9, i8** %realstart, align 8, !dbg !116, !tbaa !117
+  ret i8* %retval.0, !dbg !119
 }

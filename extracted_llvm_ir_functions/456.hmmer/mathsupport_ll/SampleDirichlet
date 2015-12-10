@@ -1,21 +1,28 @@
-define void @SampleDirichlet(float* nocapture %alpha, i32 %n, float* %p) #0 {
-entry:
-  %cmp8 = icmp sgt i32 %n, 0
-  br i1 %cmp8, label %for.body, label %for.end
+define void @SampleDirichlet(float* nocapture readonly %alpha, i32 %n, float* %p) #2 {
+  tail call void @llvm.dbg.value(metadata float* %alpha, i64 0, metadata !138, metadata !184), !dbg !397
+  tail call void @llvm.dbg.value(metadata i32 %n, i64 0, metadata !139, metadata !184), !dbg !398
+  tail call void @llvm.dbg.value(metadata float* %p, i64 0, metadata !140, metadata !184), !dbg !399
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !141, metadata !184), !dbg !400
+  %1 = icmp sgt i32 %n, 0, !dbg !401
+  br i1 %1, label %.lr.ph, label %._crit_edge, !dbg !404
 
-for.body:                                         ; preds = %entry, %for.body
-  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %entry ]
-  %arrayidx = getelementptr inbounds float* %alpha, i64 %indvars.iv
-  %0 = load float* %arrayidx, align 4, !tbaa !3
-  %call = tail call float @SampleGamma(float %0) #7
-  %arrayidx2 = getelementptr inbounds float* %p, i64 %indvars.iv
-  store float %call, float* %arrayidx2, align 4, !tbaa !3
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %n
-  br i1 %exitcond, label %for.end, label %for.body
+.lr.ph:                                           ; preds = %0
+  %2 = add i32 %n, -1, !dbg !404
+  br label %3, !dbg !404
 
-for.end:                                          ; preds = %for.body, %entry
-  tail call void @FNorm(float* %p, i32 %n) #5
-  ret void
+; <label>:3                                       ; preds = %3, %.lr.ph
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %3 ]
+  %4 = getelementptr inbounds float* %alpha, i64 %indvars.iv, !dbg !405
+  %5 = load float* %4, align 4, !dbg !405, !tbaa !333
+  %6 = tail call float @SampleGamma(float %5) #7, !dbg !406
+  %7 = getelementptr inbounds float* %p, i64 %indvars.iv, !dbg !407
+  store float %6, float* %7, align 4, !dbg !408, !tbaa !333
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !404
+  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !404
+  %exitcond = icmp eq i32 %lftr.wideiv, %2, !dbg !404
+  br i1 %exitcond, label %._crit_edge, label %3, !dbg !404
+
+._crit_edge:                                      ; preds = %3, %0
+  tail call void @FNorm(float* %p, i32 %n) #6, !dbg !409
+  ret void, !dbg !410
 }

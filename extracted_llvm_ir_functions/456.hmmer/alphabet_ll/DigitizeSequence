@@ -1,32 +1,35 @@
-define i8* @DigitizeSequence(i8* nocapture %seq, i32 %L) #0 {
-entry:
-  %add = add nsw i32 %L, 2
-  %conv = sext i32 %add to i64
-  %call = tail call i8* @sre_malloc(i8* getelementptr inbounds ([54 x i8]* @.str24, i64 0, i64 0), i32 215, i64 %conv) #5
-  %0 = load i32* @Alphabet_iupac, align 4, !tbaa !3
-  %conv1 = trunc i32 %0 to i8
-  %add2 = add i32 %L, 1
-  %idxprom = sext i32 %add2 to i64
-  %arrayidx = getelementptr inbounds i8* %call, i64 %idxprom
-  store i8 %conv1, i8* %arrayidx, align 1, !tbaa !1
-  store i8 %conv1, i8* %call, align 1, !tbaa !1
-  %cmp19 = icmp slt i32 %L, 1
-  br i1 %cmp19, label %for.end, label %for.body
+define i8* @DigitizeSequence(i8* nocapture readonly %seq, i32 %L) #0 {
+  tail call void @llvm.dbg.value(metadata i8* %seq, i64 0, metadata !38, metadata !167), !dbg !331
+  tail call void @llvm.dbg.value(metadata i32 %L, i64 0, metadata !39, metadata !167), !dbg !332
+  %1 = add nsw i32 %L, 2, !dbg !333
+  %2 = sext i32 %1 to i64, !dbg !333
+  %3 = tail call i8* @sre_malloc(i8* getelementptr inbounds ([66 x i8]* @.str24, i64 0, i64 0), i32 215, i64 %2) #6, !dbg !333
+  tail call void @llvm.dbg.value(metadata i8* %3, i64 0, metadata !40, metadata !167), !dbg !334
+  %4 = load i32* @Alphabet_iupac, align 4, !dbg !335, !tbaa !224
+  %5 = trunc i32 %4 to i8, !dbg !336
+  %6 = add nsw i32 %L, 1, !dbg !337
+  %7 = sext i32 %6 to i64, !dbg !338
+  %8 = getelementptr inbounds i8* %3, i64 %7, !dbg !338
+  store i8 %5, i8* %8, align 1, !dbg !339, !tbaa !255
+  store i8 %5, i8* %3, align 1, !dbg !340, !tbaa !255
+  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !41, metadata !167), !dbg !341
+  %9 = icmp slt i32 %L, 1, !dbg !342
+  br i1 %9, label %._crit_edge, label %.lr.ph, !dbg !345
 
-for.body:                                         ; preds = %entry, %for.body
-  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 1, %entry ]
-  %1 = add nsw i64 %indvars.iv, -1
-  %arrayidx6 = getelementptr inbounds i8* %seq, i64 %1
-  %2 = load i8* %arrayidx6, align 1, !tbaa !1
-  %call7 = tail call i32 @SymbolIndex(i8 signext %2) #6
-  %conv8 = trunc i32 %call7 to i8
-  %arrayidx10 = getelementptr inbounds i8* %call, i64 %indvars.iv
-  store i8 %conv8, i8* %arrayidx10, align 1, !tbaa !1
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %add2
-  br i1 %exitcond, label %for.end, label %for.body
+.lr.ph:                                           ; preds = %0, %.lr.ph
+  %indvars.iv = phi i64 [ %indvars.iv.next, %.lr.ph ], [ 1, %0 ]
+  %10 = add nsw i64 %indvars.iv, -1, !dbg !346
+  %11 = getelementptr inbounds i8* %seq, i64 %10, !dbg !347
+  %12 = load i8* %11, align 1, !dbg !347, !tbaa !255
+  %13 = tail call i32 @SymbolIndex(i8 signext %12) #7, !dbg !348
+  %14 = trunc i32 %13 to i8, !dbg !348
+  %15 = getelementptr inbounds i8* %3, i64 %indvars.iv, !dbg !349
+  store i8 %14, i8* %15, align 1, !dbg !350, !tbaa !255
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !345
+  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !345
+  %exitcond = icmp eq i32 %lftr.wideiv, %L, !dbg !345
+  br i1 %exitcond, label %._crit_edge, label %.lr.ph, !dbg !345
 
-for.end:                                          ; preds = %for.body, %entry
-  ret i8* %call
+._crit_edge:                                      ; preds = %.lr.ph, %0
+  ret i8* %3, !dbg !351
 }

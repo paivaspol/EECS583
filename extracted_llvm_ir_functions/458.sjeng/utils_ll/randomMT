@@ -1,33 +1,36 @@
 define i32 @randomMT() #0 {
-entry:
-  %0 = load i32* @left, align 4, !tbaa !0
-  %dec = add nsw i32 %0, -1
-  store i32 %dec, i32* @left, align 4, !tbaa !0
-  %cmp = icmp slt i32 %0, 1
-  br i1 %cmp, label %if.then, label %if.end
+  %1 = load i32* @left, align 4, !dbg !1666, !tbaa !393
+  %2 = add nsw i32 %1, -1, !dbg !1666
+  store i32 %2, i32* @left, align 4, !dbg !1666, !tbaa !393
+  %3 = icmp slt i32 %1, 1, !dbg !1668
+  br i1 %3, label %4, label %6, !dbg !1669
 
-if.then:                                          ; preds = %entry
-  %call = tail call i32 @reloadMT() #13
-  br label %return
+; <label>:4                                       ; preds = %0
+  %5 = tail call i32 @reloadMT() #11, !dbg !1670
+  br label %20, !dbg !1671
 
-if.end:                                           ; preds = %entry
-  %1 = load i32** @next, align 8, !tbaa !3
-  %incdec.ptr = getelementptr inbounds i32* %1, i64 1
-  store i32* %incdec.ptr, i32** @next, align 8, !tbaa !3
-  %2 = load i32* %1, align 4, !tbaa !0
-  %shr = lshr i32 %2, 11
-  %xor = xor i32 %shr, %2
-  %shl = shl i32 %xor, 7
-  %and = and i32 %shl, -1658038656
-  %xor1 = xor i32 %and, %xor
-  %shl2 = shl i32 %xor1, 15
-  %and3 = and i32 %shl2, -272236544
-  %xor4 = xor i32 %and3, %xor1
-  %shr5 = lshr i32 %xor4, 18
-  %xor6 = xor i32 %shr5, %xor4
-  br label %return
+; <label>:6                                       ; preds = %0
+  %7 = load i32** @next, align 8, !dbg !1672, !tbaa !767
+  %8 = getelementptr inbounds i32* %7, i64 1, !dbg !1672
+  store i32* %8, i32** @next, align 8, !dbg !1672, !tbaa !767
+  %9 = load i32* %7, align 4, !dbg !1673, !tbaa !393
+  tail call void @llvm.dbg.value(metadata i32 %9, i64 0, metadata !343, metadata !388), !dbg !1674
+  %10 = lshr i32 %9, 11, !dbg !1675
+  %11 = xor i32 %10, %9, !dbg !1676
+  tail call void @llvm.dbg.value(metadata i32 %11, i64 0, metadata !343, metadata !388), !dbg !1674
+  %12 = shl i32 %11, 7, !dbg !1677
+  %13 = and i32 %12, -1658038656, !dbg !1678
+  %14 = xor i32 %13, %11, !dbg !1679
+  tail call void @llvm.dbg.value(metadata i32 %14, i64 0, metadata !343, metadata !388), !dbg !1674
+  %15 = shl i32 %14, 15, !dbg !1680
+  %16 = and i32 %15, -272236544, !dbg !1681
+  %17 = xor i32 %16, %14, !dbg !1682
+  tail call void @llvm.dbg.value(metadata i32 %17, i64 0, metadata !343, metadata !388), !dbg !1674
+  %18 = lshr i32 %17, 18, !dbg !1683
+  %19 = xor i32 %18, %17, !dbg !1684
+  br label %20, !dbg !1685
 
-return:                                           ; preds = %if.end, %if.then
-  %retval.0 = phi i32 [ %call, %if.then ], [ %xor6, %if.end ]
-  ret i32 %retval.0
+; <label>:20                                      ; preds = %6, %4
+  %.0 = phi i32 [ %5, %4 ], [ %19, %6 ]
+  ret i32 %.0, !dbg !1686
 }

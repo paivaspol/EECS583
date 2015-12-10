@@ -1,28 +1,30 @@
-define internal i32 @d_comp(i8* nocapture readonly %a, i8* nocapture readonly %b) #6 {
-  %1 = getelementptr inbounds i8* %a, i64 4
-  %2 = bitcast i8* %1 to i32*
-  %3 = load i32* %2, align 4, !tbaa !22
-  %4 = getelementptr inbounds i8* %b, i64 4
-  %5 = bitcast i8* %4 to i32*
-  %6 = load i32* %5, align 4, !tbaa !22
-  %7 = icmp slt i32 %3, %6
-  br i1 %7, label %18, label %8
+define internal i32 @d_comp(i8* nocapture readonly %a, i8* nocapture readonly %b) #7 {
+  tail call void @llvm.dbg.value(metadata i8* %a, i64 0, metadata !464, metadata !508), !dbg !844
+  tail call void @llvm.dbg.value(metadata i8* %b, i64 0, metadata !465, metadata !508), !dbg !845
+  %1 = getelementptr inbounds i8* %a, i64 4, !dbg !846
+  %2 = bitcast i8* %1 to i32*, !dbg !846
+  %3 = load i32* %2, align 4, !dbg !846, !tbaa !592
+  %4 = getelementptr inbounds i8* %b, i64 4, !dbg !848
+  %5 = bitcast i8* %4 to i32*, !dbg !848
+  %6 = load i32* %5, align 4, !dbg !848, !tbaa !592
+  %7 = icmp slt i32 %3, %6, !dbg !849
+  br i1 %7, label %18, label %8, !dbg !850
 
 ; <label>:8                                       ; preds = %0
-  %9 = icmp eq i32 %3, %6
-  br i1 %9, label %10, label %18
+  %9 = icmp eq i32 %3, %6, !dbg !851
+  br i1 %9, label %10, label %18, !dbg !853
 
 ; <label>:10                                      ; preds = %8
-  %11 = getelementptr inbounds i8* %a, i64 8
-  %12 = bitcast i8* %11 to i32*
-  %13 = load i32* %12, align 4, !tbaa !22
-  %14 = getelementptr inbounds i8* %b, i64 8
-  %15 = bitcast i8* %14 to i32*
-  %16 = load i32* %15, align 4, !tbaa !22
-  %17 = sub nsw i32 %13, %16
-  br label %18
+  %11 = getelementptr inbounds i8* %a, i64 8, !dbg !854
+  %12 = bitcast i8* %11 to i32*, !dbg !854
+  %13 = load i32* %12, align 4, !dbg !854, !tbaa !592
+  %14 = getelementptr inbounds i8* %b, i64 8, !dbg !855
+  %15 = bitcast i8* %14 to i32*, !dbg !855
+  %16 = load i32* %15, align 4, !dbg !855, !tbaa !592
+  %17 = sub nsw i32 %13, %16, !dbg !856
+  br label %18, !dbg !857
 
 ; <label>:18                                      ; preds = %8, %0, %10
   %.0 = phi i32 [ %17, %10 ], [ -1, %0 ], [ 1, %8 ]
-  ret i32 %.0
+  ret i32 %.0, !dbg !858
 }

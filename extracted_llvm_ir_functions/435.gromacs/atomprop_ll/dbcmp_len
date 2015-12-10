@@ -1,39 +1,43 @@
-define internal fastcc i32 @dbcmp_len(i8* nocapture readonly %search, i8* nocapture readonly %database) #7 {
-  %1 = load i8* %search, align 1, !tbaa !13
-  %2 = icmp eq i8 %1, 0
-  br i1 %2, label %.critedge, label %.lr.ph
+define internal fastcc i32 @dbcmp_len(i8* nocapture readonly %search, i8* nocapture readonly %database) #8 {
+  tail call void @llvm.dbg.value(metadata i8* %search, i64 0, metadata !176, metadata !203), !dbg !501
+  tail call void @llvm.dbg.value(metadata i8* %database, i64 0, metadata !177, metadata !203), !dbg !502
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !178, metadata !203), !dbg !503
+  %1 = load i8* %search, align 1, !dbg !504, !tbaa !231
+  %2 = icmp eq i8 %1, 0, !dbg !504
+  br i1 %2, label %.critedge, label %.lr.ph, !dbg !505
 
 .lr.ph:                                           ; preds = %0, %7
   %indvars.iv = phi i64 [ %indvars.iv.next, %7 ], [ 0, %0 ]
   %3 = phi i8 [ %9, %7 ], [ %1, %0 ]
-  %4 = getelementptr inbounds i8* %database, i64 %indvars.iv
-  %5 = load i8* %4, align 1, !tbaa !13
-  %6 = icmp eq i8 %3, %5
-  %not. = icmp ne i8 %5, 0
-  %. = and i1 %6, %not.
-  br i1 %., label %7, label %..critedge_crit_edge3
+  %4 = getelementptr inbounds i8* %database, i64 %indvars.iv, !dbg !506
+  %5 = load i8* %4, align 1, !dbg !506, !tbaa !231
+  %6 = icmp eq i8 %3, %5, !dbg !507
+  %not. = icmp ne i8 %5, 0, !dbg !508
+  %. = and i1 %6, %not., !dbg !508
+  br i1 %., label %7, label %..critedge_crit_edge3, !dbg !509
 
 ; <label>:7                                       ; preds = %.lr.ph
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %8 = getelementptr inbounds i8* %search, i64 %indvars.iv.next
-  %9 = load i8* %8, align 1, !tbaa !13
-  %10 = icmp eq i8 %9, 0
-  br i1 %10, label %..critedge_crit_edge, label %.lr.ph
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !505
+  %8 = getelementptr inbounds i8* %search, i64 %indvars.iv.next, !dbg !504
+  %9 = load i8* %8, align 1, !dbg !504, !tbaa !231
+  %10 = icmp eq i8 %9, 0, !dbg !504
+  br i1 %10, label %..critedge_crit_edge, label %.lr.ph, !dbg !505
 
 ..critedge_crit_edge:                             ; preds = %7
-  %11 = trunc i64 %indvars.iv.next to i32
-  br label %.critedge
+  %11 = trunc i64 %indvars.iv.next to i32, !dbg !505
+  br label %.critedge, !dbg !505
 
 ..critedge_crit_edge3:                            ; preds = %.lr.ph
-  %12 = trunc i64 %indvars.iv to i32
-  br label %.critedge
+  %12 = trunc i64 %indvars.iv to i32, !dbg !509
+  br label %.critedge, !dbg !509
 
 .critedge:                                        ; preds = %..critedge_crit_edge3, %..critedge_crit_edge, %0
   %.lcssa = phi i64 [ %indvars.iv.next, %..critedge_crit_edge ], [ %indvars.iv, %..critedge_crit_edge3 ], [ 0, %0 ]
   %i.0.lcssa = phi i32 [ %11, %..critedge_crit_edge ], [ %12, %..critedge_crit_edge3 ], [ 0, %0 ]
-  %13 = getelementptr inbounds i8* %database, i64 %.lcssa
-  %14 = load i8* %13, align 1, !tbaa !13
-  %15 = icmp eq i8 %14, 0
-  %i.0. = select i1 %15, i32 %i.0.lcssa, i32 -3
-  ret i32 %i.0.
+  %13 = getelementptr inbounds i8* %database, i64 %.lcssa, !dbg !510
+  %14 = load i8* %13, align 1, !dbg !510, !tbaa !231
+  %15 = icmp eq i8 %14, 0, !dbg !510
+  tail call void @llvm.dbg.value(metadata i32 -3, i64 0, metadata !178, metadata !203), !dbg !503
+  %i.0. = select i1 %15, i32 %i.0.lcssa, i32 -3, !dbg !512
+  ret i32 %i.0., !dbg !513
 }

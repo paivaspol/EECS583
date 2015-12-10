@@ -1,65 +1,70 @@
 define i32 @writeChromaIntraPredMode() #0 {
-entry:
-  %0 = load %struct.ImageParameters** @img, align 8, !tbaa !0
-  %current_mb_nr = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 3
-  %1 = load i32* %current_mb_nr, align 4, !tbaa !3
-  %idxprom = sext i32 %1 to i64
-  %mb_data = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 51
-  %2 = load %struct.macroblock** %mb_data, align 8, !tbaa !0
-  %currSEnr = getelementptr inbounds %struct.macroblock* %2, i64 %idxprom, i32 0
-  %3 = load i32* %currSEnr, align 4, !tbaa !3
-  %idxprom1 = sext i32 %3 to i64
-  %arrayidx2 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 52, i64 %idxprom1
-  %currentSlice = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 50
-  %4 = load %struct.Slice** %currentSlice, align 8, !tbaa !0
-  %5 = load %struct.InputParameters** @input, align 8, !tbaa !0
-  %partition_mode = getelementptr inbounds %struct.InputParameters* %5, i64 0, i32 61
-  %6 = load i32* %partition_mode, align 4, !tbaa !3
-  %idxprom3 = sext i32 %6 to i64
-  %arrayidx4 = getelementptr inbounds [2 x i32*]* @assignSE2partition, i64 0, i64 %idxprom3
-  %7 = load i32** %arrayidx4, align 8, !tbaa !0
-  %symbol_mode = getelementptr inbounds %struct.InputParameters* %5, i64 0, i32 59
-  %8 = load i32* %symbol_mode, align 4, !tbaa !3
-  %cmp = icmp eq i32 %8, 0
-  br i1 %cmp, label %if.then, label %if.else
+  %1 = load %struct.ImageParameters** @img, align 8, !dbg !6012, !tbaa !1587
+  %2 = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 3, !dbg !6013
+  %3 = load i32* %2, align 4, !dbg !6013, !tbaa !1593
+  %4 = sext i32 %3 to i64, !dbg !6014
+  %5 = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 51, !dbg !6015
+  %6 = load %struct.macroblock** %5, align 8, !dbg !6015, !tbaa !1634
+  %7 = getelementptr inbounds %struct.macroblock* %6, i64 %4, i32 0, !dbg !6016
+  %8 = load i32* %7, align 4, !dbg !6016, !tbaa !2380
+  %9 = sext i32 %8 to i64, !dbg !6017
+  %10 = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 52, i64 %9, !dbg !6017
+  tail call void @llvm.dbg.value(metadata %struct.syntaxelement* %10, i64 0, metadata !865, metadata !1584), !dbg !6018
+  %11 = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 50, !dbg !6019
+  %12 = load %struct.Slice** %11, align 8, !dbg !6019, !tbaa !1864
+  tail call void @llvm.dbg.value(metadata %struct.Slice* %12, i64 0, metadata !866, metadata !1584), !dbg !6020
+  %13 = load %struct.InputParameters** @input, align 8, !dbg !6021, !tbaa !1587
+  %14 = getelementptr inbounds %struct.InputParameters* %13, i64 0, i32 61, !dbg !6022
+  %15 = load i32* %14, align 4, !dbg !6022, !tbaa !2551
+  %16 = sext i32 %15 to i64, !dbg !6023
+  %17 = getelementptr inbounds [2 x i32*]* @assignSE2partition, i64 0, i64 %16, !dbg !6023
+  %18 = load i32** %17, align 8, !dbg !6023, !tbaa !1587
+  tail call void @llvm.dbg.value(metadata i32* %18, i64 0, metadata !868, metadata !1584), !dbg !6024
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !869, metadata !1584), !dbg !6025
+  %19 = getelementptr inbounds %struct.InputParameters* %13, i64 0, i32 59, !dbg !6026
+  %20 = load i32* %19, align 4, !dbg !6026, !tbaa !1924
+  %21 = icmp eq i32 %20, 0, !dbg !6028
+  br i1 %21, label %22, label %24, !dbg !6029
 
-if.then:                                          ; preds = %entry
-  %mapping = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 52, i64 %idxprom1, i32 8
-  store void (i32, i32, i32*, i32*)* @ue_linfo, void (i32, i32, i32*, i32*)** %mapping, align 8, !tbaa !0
-  br label %if.end
+; <label>:22                                      ; preds = %0
+  %23 = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 52, i64 %9, i32 8, !dbg !6030
+  store void (i32, i32, i32*, i32*)* @ue_linfo, void (i32, i32, i32*, i32*)** %23, align 8, !dbg !6031, !tbaa !2628
+  br label %26, !dbg !6032
 
-if.else:                                          ; preds = %entry
-  %writing = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 52, i64 %idxprom1, i32 9
-  store void (%struct.syntaxelement*, %struct.EncodingEnvironment*)* @writeCIPredMode_CABAC, void (%struct.syntaxelement*, %struct.EncodingEnvironment*)** %writing, align 8, !tbaa !0
-  br label %if.end
+; <label>:24                                      ; preds = %0
+  %25 = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 52, i64 %9, i32 9, !dbg !6033
+  store void (%struct.syntaxelement*, %struct.EncodingEnvironment*)* @writeCIPredMode_CABAC, void (%struct.syntaxelement*, %struct.EncodingEnvironment*)** %25, align 8, !dbg !6034, !tbaa !5396
+  br label %26
 
-if.end:                                           ; preds = %if.else, %if.then
-  %c_ipred_mode = getelementptr inbounds %struct.macroblock* %2, i64 %idxprom, i32 20
-  %9 = load i32* %c_ipred_mode, align 4, !tbaa !3
-  %value1 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 52, i64 %idxprom1, i32 1
-  store i32 %9, i32* %value1, align 4, !tbaa !3
-  %value2 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 52, i64 %idxprom1, i32 2
-  store i32 0, i32* %value2, align 4, !tbaa !3
-  %type = getelementptr inbounds %struct.syntaxelement* %arrayidx2, i64 0, i32 0
-  store i32 4, i32* %type, align 4, !tbaa !3
-  %arrayidx5 = getelementptr inbounds i32* %7, i64 4
-  %10 = load i32* %arrayidx5, align 4, !tbaa !3
-  %idxprom6 = sext i32 %10 to i64
-  %partArr = getelementptr inbounds %struct.Slice* %4, i64 0, i32 6
-  %11 = load %struct.datapartition** %partArr, align 8, !tbaa !0
-  %arrayidx7 = getelementptr inbounds %struct.datapartition* %11, i64 %idxprom6
-  %writeSyntaxElement = getelementptr inbounds %struct.datapartition* %11, i64 %idxprom6, i32 2
-  %12 = load i32 (%struct.syntaxelement*, %struct.datapartition*)** %writeSyntaxElement, align 8, !tbaa !0
-  %call = tail call i32 %12(%struct.syntaxelement* %arrayidx2, %struct.datapartition* %arrayidx7) #7
-  %len = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 52, i64 %idxprom1, i32 3
-  %13 = load i32* %len, align 4, !tbaa !3
-  %arrayidx8 = getelementptr inbounds %struct.macroblock* %2, i64 %idxprom, i32 5, i64 6
-  %14 = load i32* %arrayidx8, align 4, !tbaa !3
-  %add = add nsw i32 %14, %13
-  store i32 %add, i32* %arrayidx8, align 4, !tbaa !3
-  %15 = load i32* %len, align 4, !tbaa !3
-  %16 = load i32* %currSEnr, align 4, !tbaa !3
-  %inc = add nsw i32 %16, 1
-  store i32 %inc, i32* %currSEnr, align 4, !tbaa !3
-  ret i32 %15
+; <label>:26                                      ; preds = %24, %22
+  %27 = getelementptr inbounds %struct.macroblock* %6, i64 %4, i32 20, !dbg !6035
+  %28 = load i32* %27, align 4, !dbg !6035, !tbaa !1745
+  %29 = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 52, i64 %9, i32 1, !dbg !6036
+  store i32 %28, i32* %29, align 4, !dbg !6037, !tbaa !2621
+  %30 = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 52, i64 %9, i32 2, !dbg !6038
+  store i32 0, i32* %30, align 4, !dbg !6039, !tbaa !2625
+  %31 = getelementptr inbounds %struct.syntaxelement* %10, i64 0, i32 0, !dbg !6040
+  store i32 4, i32* %31, align 4, !dbg !6041, !tbaa !2631
+  %32 = getelementptr inbounds i32* %18, i64 4, !dbg !6042
+  %33 = load i32* %32, align 4, !dbg !6042, !tbaa !1719
+  %34 = sext i32 %33 to i64, !dbg !6043
+  %35 = getelementptr inbounds %struct.Slice* %12, i64 0, i32 6, !dbg !6044
+  %36 = load %struct.datapartition** %35, align 8, !dbg !6044, !tbaa !1899
+  %37 = getelementptr inbounds %struct.datapartition* %36, i64 %34, !dbg !6043
+  tail call void @llvm.dbg.value(metadata %struct.datapartition* %37, i64 0, metadata !870, metadata !1584), !dbg !6045
+  %38 = getelementptr inbounds %struct.datapartition* %36, i64 %34, i32 2, !dbg !6046
+  %39 = load i32 (%struct.syntaxelement*, %struct.datapartition*)** %38, align 8, !dbg !6046, !tbaa !2637
+  %40 = tail call i32 %39(%struct.syntaxelement* %10, %struct.datapartition* %37) #7, !dbg !6047
+  %41 = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 52, i64 %9, i32 3, !dbg !6048
+  %42 = load i32* %41, align 4, !dbg !6048, !tbaa !2640
+  %43 = getelementptr inbounds %struct.macroblock* %6, i64 %4, i32 5, i64 6, !dbg !6049
+  %44 = load i32* %43, align 4, !dbg !6050, !tbaa !1719
+  %45 = add nsw i32 %44, %42, !dbg !6050
+  store i32 %45, i32* %43, align 4, !dbg !6050, !tbaa !1719
+  %46 = load i32* %41, align 4, !dbg !6051, !tbaa !2640
+  tail call void @llvm.dbg.value(metadata i32 %46, i64 0, metadata !869, metadata !1584), !dbg !6025
+  %47 = load i32* %7, align 4, !dbg !6052, !tbaa !2380
+  %48 = add nsw i32 %47, 1, !dbg !6052
+  store i32 %48, i32* %7, align 4, !dbg !6052, !tbaa !2380
+  ret i32 %46, !dbg !6053
 }

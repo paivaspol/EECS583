@@ -1,42 +1,55 @@
 define void @StringChop(i8* nocapture %s) #0 {
-entry:
-  %call = tail call i64 @strlen(i8* %s) #7
-  %sub = add i64 %call, 4294967295
-  %conv = trunc i64 %sub to i32
-  %cmp13 = icmp sgt i32 %conv, -1
-  br i1 %cmp13, label %land.rhs.lr.ph, label %while.end
+  tail call void @llvm.dbg.value(metadata i8* %s, i64 0, metadata !19, metadata !225), !dbg !240
+  %1 = tail call i64 @strlen(i8* %s) #5, !dbg !241
+  %2 = add i64 %1, 4294967295, !dbg !242
+  %3 = trunc i64 %2 to i32, !dbg !241
+  tail call void @llvm.dbg.value(metadata i32 %3, i64 0, metadata !20, metadata !225), !dbg !243
+  %4 = icmp sgt i32 %3, -1, !dbg !244
+  br i1 %4, label %.lr.ph, label %.critedge, !dbg !245
 
-land.rhs.lr.ph:                                   ; preds = %entry
-  %call4 = tail call i16** @__ctype_b_loc() #9
-  %0 = load i16** %call4, align 8, !tbaa !0
-  %sext = shl i64 %sub, 32
-  %1 = ashr exact i64 %sext, 32
-  br label %land.rhs
+.lr.ph:                                           ; preds = %0
+  %sext5 = shl i64 %2, 32
+  %5 = ashr exact i64 %sext5, 32
+  br label %6, !dbg !245
 
-while.cond:                                       ; preds = %land.rhs
-  %indvars.iv.next = add i64 %indvars.iv, -1
-  %2 = trunc i64 %indvars.iv to i32
-  %cmp = icmp sgt i32 %2, 0
-  br i1 %cmp, label %land.rhs, label %while.end
+; <label>:6                                       ; preds = %.lr.ph, %17
+  %indvars.iv = phi i64 [ %5, %.lr.ph ], [ %indvars.iv.next, %17 ]
+  %7 = getelementptr inbounds i8* %s, i64 %indvars.iv, !dbg !246
+  %8 = load i8* %7, align 1, !dbg !246, !tbaa !247
+  tail call void @llvm.dbg.value(metadata i32 %15, i64 0, metadata !210, metadata !225) #6, !dbg !250
+  tail call void @llvm.dbg.value(metadata i32 %15, i64 0, metadata !216, metadata !225) #6, !dbg !252
+  tail call void @llvm.dbg.value(metadata i64 16384, i64 0, metadata !217, metadata !225) #6, !dbg !254
+  %isascii.i.i1 = icmp sgt i8 %8, -1, !dbg !255
+  br i1 %isascii.i.i1, label %9, label %14, !dbg !255
 
-land.rhs:                                         ; preds = %land.rhs.lr.ph, %while.cond
-  %indvars.iv = phi i64 [ %1, %land.rhs.lr.ph ], [ %indvars.iv.next, %while.cond ]
-  %i.014 = phi i32 [ %conv, %land.rhs.lr.ph ], [ %dec, %while.cond ]
-  %arrayidx = getelementptr inbounds i8* %s, i64 %indvars.iv
-  %3 = load i8* %arrayidx, align 1, !tbaa !1
-  %idxprom3 = sext i8 %3 to i64
-  %arrayidx5 = getelementptr inbounds i16* %0, i64 %idxprom3
-  %4 = load i16* %arrayidx5, align 2, !tbaa !3
-  %and = and i16 %4, 8192
-  %tobool = icmp eq i16 %and, 0
-  %dec = add nsw i32 %i.014, -1
-  br i1 %tobool, label %while.end, label %while.cond
+; <label>:9                                       ; preds = %6
+  %10 = sext i8 %8 to i64, !dbg !256
+  %11 = getelementptr inbounds %struct._RuneLocale* @_DefaultRuneLocale, i64 0, i32 5, i64 %10, !dbg !256
+  %12 = load i32* %11, align 4, !dbg !256, !tbaa !257
+  %13 = and i32 %12, 16384, !dbg !259
+  br label %isspace.exit, !dbg !255
 
-while.end:                                        ; preds = %while.cond, %land.rhs, %entry
-  %i.0.lcssa = phi i32 [ %conv, %entry ], [ %i.014, %land.rhs ], [ %dec, %while.cond ]
-  %add = add nsw i32 %i.0.lcssa, 1
-  %idxprom7 = sext i32 %add to i64
-  %arrayidx8 = getelementptr inbounds i8* %s, i64 %idxprom7
-  store i8 0, i8* %arrayidx8, align 1, !tbaa !1
-  ret void
+; <label>:14                                      ; preds = %6
+  %15 = sext i8 %8 to i32, !dbg !260
+  %16 = tail call i32 @__maskrune(i32 %15, i64 16384) #5, !dbg !261
+  br label %isspace.exit, !dbg !255
+
+isspace.exit:                                     ; preds = %9, %14
+  %.sink.i.in.i = phi i32 [ %13, %9 ], [ %16, %14 ], !dbg !262
+  %.sink.i.i = icmp eq i32 %.sink.i.in.i, 0, !dbg !263
+  br i1 %.sink.i.i, label %.critedge, label %17, !dbg !264
+
+; <label>:17                                      ; preds = %isspace.exit
+  %indvars.iv.next = add nsw i64 %indvars.iv, -1, !dbg !245
+  %18 = icmp sgt i64 %indvars.iv, 0, !dbg !244
+  br i1 %18, label %6, label %.critedge, !dbg !245
+
+.critedge:                                        ; preds = %17, %isspace.exit, %0
+  %i.0.lcssa = phi i64 [ %2, %0 ], [ %indvars.iv.next, %17 ], [ %indvars.iv, %isspace.exit ]
+  %19 = shl i64 %i.0.lcssa, 32, !dbg !265
+  %sext = add i64 %19, 4294967296, !dbg !265
+  %20 = ashr exact i64 %sext, 32, !dbg !265
+  %21 = getelementptr inbounds i8* %s, i64 %20, !dbg !265
+  store i8 0, i8* %21, align 1, !dbg !266, !tbaa !247
+  ret void, !dbg !267
 }

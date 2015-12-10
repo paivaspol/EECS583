@@ -1,76 +1,87 @@
 define i32 @readHB_newmat_double(i8* %filename, i32* nocapture %M, i32* nocapture %N, i32* nocapture %nonzeros, i32** nocapture %colptr, i32** nocapture %rowind, double** nocapture %val) #0 {
-entry:
   %Nrhs = alloca i32, align 4
   %Type = alloca i8*, align 8
-  %call = call i32 @readHB_info(i8* %filename, i32* %M, i32* %N, i32* %nonzeros, i8** %Type, i32* %Nrhs) #9
-  %0 = load i32* %N, align 4, !tbaa !3
-  %add = add nsw i32 %0, 1
-  %conv = sext i32 %add to i64
-  %mul = shl nsw i64 %conv, 2
-  %call1 = call noalias i8* @malloc(i64 %mul) #8
-  %1 = bitcast i8* %call1 to i32*
-  store i32* %1, i32** %colptr, align 8, !tbaa !0
-  %cmp = icmp eq i8* %call1, null
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata i8* %filename, i64 0, metadata !191, metadata !563), !dbg !1185
+  tail call void @llvm.dbg.value(metadata i32* %M, i64 0, metadata !192, metadata !563), !dbg !1186
+  tail call void @llvm.dbg.value(metadata i32* %N, i64 0, metadata !193, metadata !563), !dbg !1187
+  tail call void @llvm.dbg.value(metadata i32* %nonzeros, i64 0, metadata !194, metadata !563), !dbg !1188
+  tail call void @llvm.dbg.value(metadata i32** %colptr, i64 0, metadata !195, metadata !563), !dbg !1189
+  tail call void @llvm.dbg.value(metadata i32** %rowind, i64 0, metadata !196, metadata !563), !dbg !1190
+  tail call void @llvm.dbg.value(metadata double** %val, i64 0, metadata !197, metadata !563), !dbg !1191
+  tail call void @llvm.dbg.value(metadata i32* %Nrhs, i64 0, metadata !198, metadata !563), !dbg !1192
+  tail call void @llvm.dbg.value(metadata i8** %Type, i64 0, metadata !199, metadata !563), !dbg !1193
+  %1 = call i32 @readHB_info(i8* %filename, i32* %M, i32* %N, i32* %nonzeros, i8** %Type, i32* %Nrhs) #9, !dbg !1194
+  %2 = load i32* %N, align 4, !dbg !1195, !tbaa !617
+  %3 = add nsw i32 %2, 1, !dbg !1196
+  %4 = sext i32 %3 to i64, !dbg !1197
+  %5 = shl nsw i64 %4, 2, !dbg !1198
+  %6 = call i8* @malloc(i64 %5) #8, !dbg !1199
+  %7 = bitcast i32** %colptr to i8**, !dbg !1200
+  store i8* %6, i8** %7, align 8, !dbg !1200, !tbaa !591
+  %8 = icmp eq i8* %6, null, !dbg !1201
+  br i1 %8, label %9, label %10, !dbg !1203
 
-if.then:                                          ; preds = %entry
-  call fastcc void @IOHBTerminate(i8* getelementptr inbounds ([33 x i8]* @.str31, i64 0, i64 0)) #9
+; <label>:9                                       ; preds = %0
+  call fastcc void @IOHBTerminate(i8* getelementptr inbounds ([33 x i8]* @.str31, i64 0, i64 0)) #9, !dbg !1204
   unreachable
 
-if.end:                                           ; preds = %entry
-  %2 = load i32* %nonzeros, align 4, !tbaa !3
-  %conv3 = sext i32 %2 to i64
-  %mul4 = shl nsw i64 %conv3, 2
-  %call5 = call noalias i8* @malloc(i64 %mul4) #8
-  %3 = bitcast i8* %call5 to i32*
-  store i32* %3, i32** %rowind, align 8, !tbaa !0
-  %cmp6 = icmp eq i8* %call5, null
-  br i1 %cmp6, label %if.then8, label %if.end9
+; <label>:10                                      ; preds = %0
+  %11 = load i32* %nonzeros, align 4, !dbg !1205, !tbaa !617
+  %12 = sext i32 %11 to i64, !dbg !1205
+  %13 = shl nsw i64 %12, 2, !dbg !1206
+  %14 = call i8* @malloc(i64 %13) #8, !dbg !1207
+  %15 = bitcast i32** %rowind to i8**, !dbg !1208
+  store i8* %14, i8** %15, align 8, !dbg !1208, !tbaa !591
+  %16 = icmp eq i8* %14, null, !dbg !1209
+  br i1 %16, label %17, label %18, !dbg !1211
 
-if.then8:                                         ; preds = %if.end
-  call fastcc void @IOHBTerminate(i8* getelementptr inbounds ([33 x i8]* @.str32, i64 0, i64 0)) #9
+; <label>:17                                      ; preds = %10
+  call fastcc void @IOHBTerminate(i8* getelementptr inbounds ([33 x i8]* @.str32, i64 0, i64 0)) #9, !dbg !1212
   unreachable
 
-if.end9:                                          ; preds = %if.end
-  %4 = load i8** %Type, align 8, !tbaa !0
-  %5 = load i8* %4, align 1, !tbaa !1
-  switch i8 %5, label %if.then26 [
-    i8 67, label %if.then13
-    i8 80, label %if.end9.if.end35_crit_edge
-  ]
+; <label>:18                                      ; preds = %10
+  call void @llvm.dbg.value(metadata i8** %Type, i64 0, metadata !199, metadata !563), !dbg !1193
+  %19 = load i8** %Type, align 8, !dbg !1213, !tbaa !591
+  %20 = load i8* %19, align 1, !dbg !1213, !tbaa !615
+  switch i8 %20, label %28 [
+    i8 67, label %21
+    i8 80, label %._crit_edge
+  ], !dbg !1215
 
-if.end9.if.end35_crit_edge:                       ; preds = %if.end9
-  %.pre = load double** %val, align 8, !tbaa !0
-  br label %if.end35
+._crit_edge:                                      ; preds = %18
+  %.pre = load double** %val, align 8, !dbg !1216, !tbaa !591
+  br label %35, !dbg !1215
 
-if.then13:                                        ; preds = %if.end9
-  %mul16 = shl nsw i64 %conv3, 4
-  %call17 = call noalias i8* @malloc(i64 %mul16) #8
-  %6 = bitcast i8* %call17 to double*
-  store double* %6, double** %val, align 8, !tbaa !0
-  %cmp18 = icmp eq i8* %call17, null
-  br i1 %cmp18, label %if.then20, label %if.end35
+; <label>:21                                      ; preds = %18
+  %22 = shl nsw i64 %12, 4, !dbg !1217
+  %23 = call i8* @malloc(i64 %22) #8, !dbg !1219
+  %24 = bitcast double** %val to i8**, !dbg !1220
+  store i8* %23, i8** %24, align 8, !dbg !1220, !tbaa !591
+  %25 = icmp eq i8* %23, null, !dbg !1221
+  %26 = bitcast i8* %23 to double*
+  br i1 %25, label %27, label %35, !dbg !1223
 
-if.then20:                                        ; preds = %if.then13
-  call fastcc void @IOHBTerminate(i8* getelementptr inbounds ([30 x i8]* @.str33, i64 0, i64 0)) #9
+; <label>:27                                      ; preds = %21
+  call fastcc void @IOHBTerminate(i8* getelementptr inbounds ([30 x i8]* @.str33, i64 0, i64 0)) #9, !dbg !1224
   unreachable
 
-if.then26:                                        ; preds = %if.end9
-  %mul28 = shl nsw i64 %conv3, 3
-  %call29 = call noalias i8* @malloc(i64 %mul28) #8
-  %7 = bitcast i8* %call29 to double*
-  store double* %7, double** %val, align 8, !tbaa !0
-  %cmp30 = icmp eq i8* %call29, null
-  br i1 %cmp30, label %if.then32, label %if.end35
+; <label>:28                                      ; preds = %18
+  %29 = shl nsw i64 %12, 3, !dbg !1225
+  %30 = call i8* @malloc(i64 %29) #8, !dbg !1229
+  %31 = bitcast double** %val to i8**, !dbg !1230
+  store i8* %30, i8** %31, align 8, !dbg !1230, !tbaa !591
+  %32 = icmp eq i8* %30, null, !dbg !1231
+  %33 = bitcast i8* %30 to double*
+  br i1 %32, label %34, label %35, !dbg !1233
 
-if.then32:                                        ; preds = %if.then26
-  call fastcc void @IOHBTerminate(i8* getelementptr inbounds ([30 x i8]* @.str33, i64 0, i64 0)) #9
+; <label>:34                                      ; preds = %28
+  call fastcc void @IOHBTerminate(i8* getelementptr inbounds ([30 x i8]* @.str33, i64 0, i64 0)) #9, !dbg !1234
   unreachable
 
-if.end35:                                         ; preds = %if.then26, %if.then13, %if.end9.if.end35_crit_edge
-  %8 = phi double* [ %.pre, %if.end9.if.end35_crit_edge ], [ %6, %if.then13 ], [ %7, %if.then26 ]
-  %9 = load i32** %colptr, align 8, !tbaa !0
-  %10 = load i32** %rowind, align 8, !tbaa !0
-  %call36 = call i32 @readHB_mat_double(i8* %filename, i32* %9, i32* %10, double* %8) #9
-  ret i32 %call36
+; <label>:35                                      ; preds = %._crit_edge, %28, %21
+  %36 = phi double* [ %.pre, %._crit_edge ], [ %33, %28 ], [ %26, %21 ]
+  %37 = load i32** %colptr, align 8, !dbg !1235, !tbaa !591
+  %38 = load i32** %rowind, align 8, !dbg !1236, !tbaa !591
+  %39 = call i32 @readHB_mat_double(i8* %filename, i32* %37, i32* %38, double* %36) #9, !dbg !1237
+  ret i32 %39, !dbg !1238
 }

@@ -1,20 +1,22 @@
 define i32 @CCTK_TimerDestroyI(i32 %this_timer) #1 {
-  %1 = load %struct.cHandledData** @timers, align 8, !tbaa !9
-  %2 = tail call i8* @Util_GetHandledData(%struct.cHandledData* %1, i32 %this_timer) #7
-  %3 = icmp ne i8* %2, null
-  br i1 %3, label %4, label %6
+  tail call void @llvm.dbg.value(metadata i32 %this_timer, i64 0, metadata !152, metadata !354), !dbg !598
+  %1 = load %struct.cHandledData** @timers, align 8, !dbg !599, !tbaa !376
+  %2 = tail call i8* @Util_GetHandledData(%struct.cHandledData* %1, i32 %this_timer) #8, !dbg !600
+  tail call void @llvm.dbg.value(metadata %struct.t_Timer* %5, i64 0, metadata !153, metadata !354), !dbg !601
+  %3 = icmp ne i8* %2, null, !dbg !602
+  br i1 %3, label %4, label %6, !dbg !604
 
 ; <label>:4                                       ; preds = %0
-  %5 = bitcast i8* %2 to %struct.t_Timer*
-  tail call fastcc void @CCTKi_TimerDestroy(i32 %this_timer, %struct.t_Timer* %5) #8
-  br label %8
+  %5 = bitcast i8* %2 to %struct.t_Timer*, !dbg !600
+  tail call fastcc void @CCTKi_TimerDestroy(i32 %this_timer, %struct.t_Timer* %5) #9, !dbg !605
+  br label %8, !dbg !607
 
 ; <label>:6                                       ; preds = %0
-  %7 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 8, i32 541, i8* getelementptr inbounds ([81 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([39 x i8]* @.str4, i64 0, i64 0), i32 %this_timer) #7
+  %7 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 8, i32 541, i8* getelementptr inbounds ([81 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([39 x i8]* @.str4, i64 0, i64 0), i32 %this_timer) #8, !dbg !608
   br label %8
 
 ; <label>:8                                       ; preds = %6, %4
-  %not. = xor i1 %3, true
-  %9 = sext i1 %not. to i32
-  ret i32 %9
+  %not. = xor i1 %3, true, !dbg !610
+  %9 = sext i1 %not. to i32, !dbg !610
+  ret i32 %9, !dbg !611
 }

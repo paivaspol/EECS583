@@ -1,286 +1,348 @@
-define i32 @SeqfileFormat(%struct._IO_FILE* %fp) #0 {
-entry:
+define i32 @SeqfileFormat(%struct.__sFILE* %fp) #0 {
   %buf = alloca i8*, align 8
   %len = alloca i32, align 4
   %s = alloca i8*, align 8
-  store i8* null, i8** %buf, align 8, !tbaa !3
-  store i32 0, i32* %len, align 4, !tbaa !0
-  br label %while.cond.outer
+  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %fp, i64 0, metadata !341, metadata !624), !dbg !1990
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !344, metadata !624), !dbg !1991
+  tail call void @llvm.dbg.value(metadata i8* null, i64 0, metadata !342, metadata !624), !dbg !1992
+  store i8* null, i8** %buf, align 8, !dbg !1993, !tbaa !669
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !343, metadata !624), !dbg !1994
+  store i32 0, i32* %len, align 4, !dbg !1995, !tbaa !897
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !345, metadata !624), !dbg !1996
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !350, metadata !624), !dbg !1997
+  %1 = bitcast i8** %s to i64*, !dbg !1998
+  br label %.outer, !dbg !2000
 
-while.cond.outer:                                 ; preds = %if.end179, %entry
-  %ndataline.0.ph = phi i32 [ 0, %entry ], [ %inc, %if.end179 ]
-  %has_junk.0.ph = phi i32 [ 0, %entry ], [ %has_junk.2, %if.end179 ]
-  %call208 = call i8* @sre_fgets(i8** %buf, i32* %len, %struct._IO_FILE* %fp) #8
-  %cmp209 = icmp eq i8* %call208, null
-  br i1 %cmp209, label %while.end, label %while.body.lr.ph
+.outer:                                           ; preds = %136, %0
+  %ndataline.0.ph = phi i32 [ %137, %136 ], [ 0, %0 ]
+  %has_junk.0.ph = phi i32 [ %has_junk.2, %136 ], [ 0, %0 ]
+  call void @llvm.dbg.value(metadata i8** %buf, i64 0, metadata !342, metadata !624), !dbg !1992
+  call void @llvm.dbg.value(metadata i32* %len, i64 0, metadata !343, metadata !624), !dbg !1994
+  %2 = call i8* @sre_fgets(i8** %buf, i32* %len, %struct.__sFILE* %fp) #8, !dbg !2001
+  %3 = icmp eq i8* %2, null, !dbg !2002
+  br i1 %3, label %.outer._crit_edge, label %.lr.ph, !dbg !2000
 
-while.body.lr.ph:                                 ; preds = %while.cond.outer
-  %cmp2 = icmp eq i32 %ndataline.0.ph, 0
-  br label %while.body
+.lr.ph:                                           ; preds = %.outer
+  %4 = icmp eq i32 %ndataline.0.ph, 0, !dbg !2003
+  br label %5, !dbg !2000
 
-while.body:                                       ; preds = %while.body.lr.ph, %while.cond.backedge
-  %0 = load i8** %buf, align 8, !tbaa !3
-  %call1 = call i32 @IsBlankline(i8* %0) #8
-  %tobool = icmp eq i32 %call1, 0
-  br i1 %tobool, label %if.end, label %while.cond.backedge
+; <label>:5                                       ; preds = %.lr.ph, %.backedge
+  call void @llvm.dbg.value(metadata i8** %buf, i64 0, metadata !342, metadata !624), !dbg !1992
+  %6 = load i8** %buf, align 8, !dbg !2005, !tbaa !669
+  %7 = call i32 @IsBlankline(i8* %6) #8, !dbg !2007
+  %8 = icmp eq i32 %7, 0, !dbg !2007
+  br i1 %8, label %9, label %.backedge, !dbg !2008
 
-if.end:                                           ; preds = %while.body
-  br i1 %cmp2, label %if.then3, label %if.end61
+; <label>:9                                       ; preds = %5
+  br i1 %4, label %10, label %56, !dbg !2009
 
-if.then3:                                         ; preds = %if.end
-  %1 = load i8** %buf, align 8, !tbaa !3
-  %call4 = call i32 @strncmp(i8* %1, i8* getelementptr inbounds ([5 x i8]* @.str7, i64 0, i64 0), i64 4) #9
-  %cmp5 = icmp eq i32 %call4, 0
-  br i1 %cmp5, label %land.lhs.true, label %if.end9
+; <label>:10                                      ; preds = %9
+  call void @llvm.dbg.value(metadata i8** %buf, i64 0, metadata !342, metadata !624), !dbg !1992
+  %11 = load i8** %buf, align 8, !dbg !2010, !tbaa !669
+  %12 = call i32 @strncmp(i8* %11, i8* getelementptr inbounds ([5 x i8]* @.str7, i64 0, i64 0), i64 4) #8, !dbg !2013
+  %13 = icmp eq i32 %12, 0, !dbg !2014
+  br i1 %13, label %14, label %17, !dbg !2015
 
-land.lhs.true:                                    ; preds = %if.then3
-  %call6 = call i8* @strstr(i8* %1, i8* getelementptr inbounds ([6 x i8]* @.str8, i64 0, i64 0)) #9
-  %tobool7 = icmp eq i8* %call6, null
-  br i1 %tobool7, label %if.end9, label %DONEthread-pre-split
+; <label>:14                                      ; preds = %10
+  call void @llvm.dbg.value(metadata i8** %buf, i64 0, metadata !342, metadata !624), !dbg !1992
+  %15 = call i8* @strstr(i8* %11, i8* getelementptr inbounds ([6 x i8]* @.str8, i64 0, i64 0)) #8, !dbg !2016
+  %16 = icmp eq i8* %15, null, !dbg !2016
+  br i1 %16, label %17, label %thread-pre-split, !dbg !2017
 
-if.end9:                                          ; preds = %land.lhs.true, %if.then3
-  %2 = load i8* %1, align 1, !tbaa !1
-  %cmp10 = icmp eq i8 %2, 62
-  br i1 %cmp10, label %DONE, label %if.end13
+; <label>:17                                      ; preds = %14, %10
+  call void @llvm.dbg.value(metadata i8** %buf, i64 0, metadata !342, metadata !624), !dbg !1992
+  %18 = load i8* %11, align 1, !dbg !2018, !tbaa !861
+  %19 = icmp eq i8 %18, 62, !dbg !2020
+  br i1 %19, label %.loopexit.thread, label %20, !dbg !2021
 
-if.end13:                                         ; preds = %if.end9
-  %call14 = call i32 @strncmp(i8* %1, i8* getelementptr inbounds ([14 x i8]* @.str9, i64 0, i64 0), i64 13) #9
-  %cmp15 = icmp eq i32 %call14, 0
-  br i1 %cmp15, label %DONEthread-pre-split, label %lor.lhs.false
+; <label>:20                                      ; preds = %17
+  %21 = call i32 @strncmp(i8* %11, i8* getelementptr inbounds ([14 x i8]* @.str9, i64 0, i64 0), i64 13) #8, !dbg !2022
+  %22 = icmp eq i32 %21, 0, !dbg !2024
+  br i1 %22, label %thread-pre-split, label %23, !dbg !2025
 
-lor.lhs.false:                                    ; preds = %if.end13
-  %call17 = call i32 @strncmp(i8* %1, i8* getelementptr inbounds ([14 x i8]* @.str10, i64 0, i64 0), i64 13) #9
-  %cmp18 = icmp eq i32 %call17, 0
-  br i1 %cmp18, label %DONEthread-pre-split, label %if.end21
+; <label>:23                                      ; preds = %20
+  call void @llvm.dbg.value(metadata i8** %buf, i64 0, metadata !342, metadata !624), !dbg !1992
+  %24 = call i32 @strncmp(i8* %11, i8* getelementptr inbounds ([14 x i8]* @.str10, i64 0, i64 0), i64 13) #8, !dbg !2026
+  %25 = icmp eq i32 %24, 0, !dbg !2027
+  br i1 %25, label %thread-pre-split, label %26, !dbg !2028
 
-if.end21:                                         ; preds = %lor.lhs.false
-  %call22 = call i32 @strncmp(i8* %1, i8* getelementptr inbounds ([15 x i8]* @.str11, i64 0, i64 0), i64 14) #9
-  %cmp23 = icmp eq i32 %call22, 0
-  br i1 %cmp23, label %DONEthread-pre-split, label %if.end26
+; <label>:26                                      ; preds = %23
+  call void @llvm.dbg.value(metadata i8** %buf, i64 0, metadata !342, metadata !624), !dbg !1992
+  %27 = call i32 @strncmp(i8* %11, i8* getelementptr inbounds ([15 x i8]* @.str11, i64 0, i64 0), i64 14) #8, !dbg !2029
+  %28 = icmp eq i32 %27, 0, !dbg !2031
+  br i1 %28, label %thread-pre-split, label %29, !dbg !2032
 
-if.end26:                                         ; preds = %if.end21
-  %call27 = call i32 @strncmp(i8* %1, i8* getelementptr inbounds ([8 x i8]* @.str12, i64 0, i64 0), i64 7) #9
-  %cmp28 = icmp eq i32 %call27, 0
-  br i1 %cmp28, label %land.lhs.true30, label %if.end35
+; <label>:29                                      ; preds = %26
+  call void @llvm.dbg.value(metadata i8** %buf, i64 0, metadata !342, metadata !624), !dbg !1992
+  %30 = call i32 @strncmp(i8* %11, i8* getelementptr inbounds ([8 x i8]* @.str12, i64 0, i64 0), i64 7) #8, !dbg !2033
+  %31 = icmp eq i32 %30, 0, !dbg !2035
+  br i1 %31, label %32, label %35, !dbg !2036
 
-land.lhs.true30:                                  ; preds = %if.end26
-  %call31 = call i8* @strstr(i8* %1, i8* getelementptr inbounds ([28 x i8]* @.str13, i64 0, i64 0)) #9
-  %cmp32 = icmp eq i8* %call31, null
-  br i1 %cmp32, label %if.end35, label %DONEthread-pre-split
+; <label>:32                                      ; preds = %29
+  call void @llvm.dbg.value(metadata i8** %buf, i64 0, metadata !342, metadata !624), !dbg !1992
+  %33 = call i8* @strstr(i8* %11, i8* getelementptr inbounds ([28 x i8]* @.str13, i64 0, i64 0)) #8, !dbg !2037
+  %34 = icmp eq i8* %33, null, !dbg !2038
+  br i1 %34, label %35, label %thread-pre-split, !dbg !2039
 
-if.end35:                                         ; preds = %land.lhs.true30, %if.end26
-  %call36 = call i32 @strncmp(i8* %1, i8* getelementptr inbounds ([24 x i8]* @.str14, i64 0, i64 0), i64 23) #9
-  %cmp37 = icmp eq i32 %call36, 0
-  br i1 %cmp37, label %DONE, label %lor.lhs.false39
+; <label>:35                                      ; preds = %32, %29
+  call void @llvm.dbg.value(metadata i8** %buf, i64 0, metadata !342, metadata !624), !dbg !1992
+  %36 = call i32 @strncmp(i8* %11, i8* getelementptr inbounds ([24 x i8]* @.str14, i64 0, i64 0), i64 23) #8, !dbg !2040
+  %37 = icmp eq i32 %36, 0, !dbg !2042
+  br i1 %37, label %.loopexit.thread, label %38, !dbg !2043
 
-lor.lhs.false39:                                  ; preds = %if.end35
-  %call40 = call i32 @strncmp(i8* %1, i8* getelementptr inbounds ([24 x i8]* @.str15, i64 0, i64 0), i64 23) #9
-  %cmp41 = icmp eq i32 %call40, 0
-  br i1 %cmp41, label %DONEthread-pre-split, label %if.end44
+; <label>:38                                      ; preds = %35
+  call void @llvm.dbg.value(metadata i8** %buf, i64 0, metadata !342, metadata !624), !dbg !1992
+  %39 = call i32 @strncmp(i8* %11, i8* getelementptr inbounds ([24 x i8]* @.str15, i64 0, i64 0), i64 23) #8, !dbg !2044
+  %40 = icmp eq i32 %39, 0, !dbg !2045
+  br i1 %40, label %thread-pre-split, label %41, !dbg !2046
 
-if.end44:                                         ; preds = %lor.lhs.false39
-  %call45 = call i8* @sre_strdup(i8* %1, i32 -1) #8
-  store i8* %call45, i8** %s, align 8, !tbaa !3
-  %call46 = call i8* @sre_strtok(i8** %s, i8* getelementptr inbounds ([4 x i8]* @.str16, i64 0, i64 0), i32* null) #8
-  %cmp47 = icmp eq i8* %call46, null
-  br i1 %cmp47, label %if.end60, label %land.lhs.true49
+; <label>:41                                      ; preds = %38
+  call void @llvm.dbg.value(metadata i8** %buf, i64 0, metadata !342, metadata !624), !dbg !1992
+  %42 = call i8* @sre_strdup(i8* %11, i32 -1) #8, !dbg !2047
+  call void @llvm.dbg.value(metadata i8* %42, i64 0, metadata !346, metadata !624), !dbg !2048
+  call void @llvm.dbg.value(metadata i8* %42, i64 0, metadata !347, metadata !624), !dbg !2049
+  store i8* %42, i8** %s, align 8, !dbg !2050, !tbaa !669
+  call void @llvm.dbg.value(metadata i8** %s, i64 0, metadata !347, metadata !624), !dbg !2049
+  %43 = call i8* @sre_strtok(i8** %s, i8* getelementptr inbounds ([4 x i8]* @.str16, i64 0, i64 0), i32* null) #8, !dbg !2051
+  call void @llvm.dbg.value(metadata i8* %43, i64 0, metadata !348, metadata !624), !dbg !2053
+  %44 = icmp eq i8* %43, null, !dbg !2054
+  br i1 %44, label %55, label %45, !dbg !2055
 
-land.lhs.true49:                                  ; preds = %if.end44
-  %call50 = call i8* @sre_strtok(i8** %s, i8* getelementptr inbounds ([4 x i8]* @.str16, i64 0, i64 0), i32* null) #8
-  %cmp51 = icmp eq i8* %call50, null
-  br i1 %cmp51, label %if.end60, label %land.lhs.true53
+; <label>:45                                      ; preds = %41
+  call void @llvm.dbg.value(metadata i8** %s, i64 0, metadata !347, metadata !624), !dbg !2049
+  %46 = call i8* @sre_strtok(i8** %s, i8* getelementptr inbounds ([4 x i8]* @.str16, i64 0, i64 0), i32* null) #8, !dbg !2056
+  call void @llvm.dbg.value(metadata i8* %46, i64 0, metadata !349, metadata !624), !dbg !2057
+  %47 = icmp eq i8* %46, null, !dbg !2058
+  br i1 %47, label %55, label %48, !dbg !2059
 
-land.lhs.true53:                                  ; preds = %land.lhs.true49
-  %call54 = call i32 @IsInt(i8* %call46) #8
-  %tobool55 = icmp eq i32 %call54, 0
-  br i1 %tobool55, label %if.end60, label %land.lhs.true56
+; <label>:48                                      ; preds = %45
+  %49 = call i32 @IsInt(i8* %43) #8, !dbg !2060
+  %50 = icmp eq i32 %49, 0, !dbg !2060
+  br i1 %50, label %55, label %51, !dbg !2061
 
-land.lhs.true56:                                  ; preds = %land.lhs.true53
-  %call57 = call i32 @IsInt(i8* %call50) #8
-  %tobool58 = icmp eq i32 %call57, 0
-  br i1 %tobool58, label %if.end60, label %if.then59
+; <label>:51                                      ; preds = %48
+  %52 = call i32 @IsInt(i8* %46) #8, !dbg !2062
+  %53 = icmp eq i32 %52, 0, !dbg !2062
+  br i1 %53, label %55, label %54, !dbg !2063
 
-if.then59:                                        ; preds = %land.lhs.true56
-  call void @free(i8* %call45) #8
-  br label %DONEthread-pre-split
+; <label>:54                                      ; preds = %51
+  call void @free(i8* %42) #7, !dbg !2064
+  call void @llvm.dbg.value(metadata i32 106, i64 0, metadata !344, metadata !624), !dbg !1991
+  br label %thread-pre-split, !dbg !2066
 
-if.end60:                                         ; preds = %land.lhs.true56, %land.lhs.true53, %land.lhs.true49, %if.end44
-  call void @free(i8* %call45) #8
-  br label %if.end61
+; <label>:55                                      ; preds = %51, %48, %45, %41
+  call void @free(i8* %42) #7, !dbg !2067
+  br label %56, !dbg !2068
 
-if.end61:                                         ; preds = %if.end60, %if.end
-  %3 = load i8** %buf, align 8, !tbaa !3
-  %call62 = call i32 @strncmp(i8* %3, i8* getelementptr inbounds ([5 x i8]* @.str17, i64 0, i64 0), i64 4) #9
-  %cmp63 = icmp eq i32 %call62, 0
-  br i1 %cmp63, label %DONE, label %lor.lhs.false65
+; <label>:56                                      ; preds = %55, %9
+  call void @llvm.dbg.value(metadata i8** %buf, i64 0, metadata !342, metadata !624), !dbg !1992
+  %57 = load i8** %buf, align 8, !dbg !2069, !tbaa !669
+  %58 = call i32 @strncmp(i8* %57, i8* getelementptr inbounds ([5 x i8]* @.str17, i64 0, i64 0), i64 4) #8, !dbg !2071
+  %59 = icmp eq i32 %58, 0, !dbg !2072
+  %60 = ptrtoint i8* %57 to i64
+  br i1 %59, label %.loopexit, label %61, !dbg !2073
 
-lor.lhs.false65:                                  ; preds = %if.end61
-  %call66 = call i32 @strncmp(i8* %3, i8* getelementptr inbounds ([5 x i8]* @.str18, i64 0, i64 0), i64 4) #9
-  %cmp67 = icmp eq i32 %call66, 0
-  br i1 %cmp67, label %DONEthread-pre-split, label %lor.lhs.false69
+; <label>:61                                      ; preds = %56
+  call void @llvm.dbg.value(metadata i8** %buf, i64 0, metadata !342, metadata !624), !dbg !1992
+  %62 = call i32 @strncmp(i8* %57, i8* getelementptr inbounds ([5 x i8]* @.str18, i64 0, i64 0), i64 4) #8, !dbg !2074
+  %63 = icmp eq i32 %62, 0, !dbg !2075
+  br i1 %63, label %thread-pre-split, label %64, !dbg !2076
 
-lor.lhs.false69:                                  ; preds = %lor.lhs.false65
-  %call70 = call i32 @strncmp(i8* %3, i8* getelementptr inbounds ([5 x i8]* @.str19, i64 0, i64 0), i64 4) #9
-  %cmp71 = icmp eq i32 %call70, 0
-  br i1 %cmp71, label %DONEthread-pre-split, label %lor.lhs.false73
+; <label>:64                                      ; preds = %61
+  call void @llvm.dbg.value(metadata i8** %buf, i64 0, metadata !342, metadata !624), !dbg !1992
+  %65 = call i32 @strncmp(i8* %57, i8* getelementptr inbounds ([5 x i8]* @.str19, i64 0, i64 0), i64 4) #8, !dbg !2077
+  %66 = icmp eq i32 %65, 0, !dbg !2078
+  br i1 %66, label %thread-pre-split, label %67, !dbg !2079
 
-lor.lhs.false73:                                  ; preds = %lor.lhs.false69
-  %call74 = call i32 @strncmp(i8* %3, i8* getelementptr inbounds ([5 x i8]* @.str20, i64 0, i64 0), i64 4) #9
-  %cmp75 = icmp eq i32 %call74, 0
-  br i1 %cmp75, label %DONEthread-pre-split, label %lor.lhs.false77
+; <label>:67                                      ; preds = %64
+  call void @llvm.dbg.value(metadata i8** %buf, i64 0, metadata !342, metadata !624), !dbg !1992
+  %68 = call i32 @strncmp(i8* %57, i8* getelementptr inbounds ([5 x i8]* @.str20, i64 0, i64 0), i64 4) #8, !dbg !2080
+  %69 = icmp eq i32 %68, 0, !dbg !2081
+  br i1 %69, label %thread-pre-split, label %70, !dbg !2082
 
-lor.lhs.false77:                                  ; preds = %lor.lhs.false73
-  %call78 = call i32 @strncmp(i8* %3, i8* getelementptr inbounds ([5 x i8]* @.str21, i64 0, i64 0), i64 4) #9
-  %cmp79 = icmp eq i32 %call78, 0
-  br i1 %cmp79, label %DONEthread-pre-split, label %lor.lhs.false81
+; <label>:70                                      ; preds = %67
+  call void @llvm.dbg.value(metadata i8** %buf, i64 0, metadata !342, metadata !624), !dbg !1992
+  %71 = call i32 @strncmp(i8* %57, i8* getelementptr inbounds ([5 x i8]* @.str21, i64 0, i64 0), i64 4) #8, !dbg !2083
+  %72 = icmp eq i32 %71, 0, !dbg !2084
+  br i1 %72, label %thread-pre-split, label %73, !dbg !2085
 
-lor.lhs.false81:                                  ; preds = %lor.lhs.false77
-  %call82 = call i32 @strncmp(i8* %3, i8* getelementptr inbounds ([5 x i8]* @.str22, i64 0, i64 0), i64 4) #9
-  %cmp83 = icmp eq i32 %call82, 0
-  br i1 %cmp83, label %DONEthread-pre-split, label %lor.lhs.false85
+; <label>:73                                      ; preds = %70
+  call void @llvm.dbg.value(metadata i8** %buf, i64 0, metadata !342, metadata !624), !dbg !1992
+  %74 = call i32 @strncmp(i8* %57, i8* getelementptr inbounds ([5 x i8]* @.str22, i64 0, i64 0), i64 4) #8, !dbg !2086
+  %75 = icmp eq i32 %74, 0, !dbg !2087
+  br i1 %75, label %thread-pre-split, label %76, !dbg !2088
 
-lor.lhs.false85:                                  ; preds = %lor.lhs.false81
-  %call86 = call i32 @strncmp(i8* %3, i8* getelementptr inbounds ([5 x i8]* @.str23, i64 0, i64 0), i64 4) #9
-  %cmp87 = icmp eq i32 %call86, 0
-  br i1 %cmp87, label %DONEthread-pre-split, label %lor.lhs.false89
+; <label>:76                                      ; preds = %73
+  call void @llvm.dbg.value(metadata i8** %buf, i64 0, metadata !342, metadata !624), !dbg !1992
+  %77 = call i32 @strncmp(i8* %57, i8* getelementptr inbounds ([5 x i8]* @.str23, i64 0, i64 0), i64 4) #8, !dbg !2089
+  %78 = icmp eq i32 %77, 0, !dbg !2090
+  br i1 %78, label %thread-pre-split, label %79, !dbg !2091
 
-lor.lhs.false89:                                  ; preds = %lor.lhs.false85
-  %call90 = call i32 @strncmp(i8* %3, i8* getelementptr inbounds ([5 x i8]* @.str24, i64 0, i64 0), i64 4) #9
-  %cmp91 = icmp eq i32 %call90, 0
-  br i1 %cmp91, label %DONEthread-pre-split, label %lor.lhs.false93
+; <label>:79                                      ; preds = %76
+  call void @llvm.dbg.value(metadata i8** %buf, i64 0, metadata !342, metadata !624), !dbg !1992
+  %80 = call i32 @strncmp(i8* %57, i8* getelementptr inbounds ([5 x i8]* @.str24, i64 0, i64 0), i64 4) #8, !dbg !2092
+  %81 = icmp eq i32 %80, 0, !dbg !2093
+  br i1 %81, label %thread-pre-split, label %82, !dbg !2094
 
-lor.lhs.false93:                                  ; preds = %lor.lhs.false89
-  %call94 = call i32 @strncmp(i8* %3, i8* getelementptr inbounds ([5 x i8]* @.str25, i64 0, i64 0), i64 4) #9
-  %cmp95 = icmp eq i32 %call94, 0
-  br i1 %cmp95, label %DONEthread-pre-split, label %lor.lhs.false97
+; <label>:82                                      ; preds = %79
+  call void @llvm.dbg.value(metadata i8** %buf, i64 0, metadata !342, metadata !624), !dbg !1992
+  %83 = call i32 @strncmp(i8* %57, i8* getelementptr inbounds ([5 x i8]* @.str25, i64 0, i64 0), i64 4) #8, !dbg !2095
+  %84 = icmp eq i32 %83, 0, !dbg !2096
+  br i1 %84, label %thread-pre-split, label %85, !dbg !2097
 
-lor.lhs.false97:                                  ; preds = %lor.lhs.false93
-  %call98 = call i32 @strncmp(i8* %3, i8* getelementptr inbounds ([5 x i8]* @.str26, i64 0, i64 0), i64 4) #9
-  %cmp99 = icmp eq i32 %call98, 0
-  br i1 %cmp99, label %DONEthread-pre-split, label %lor.lhs.false101
+; <label>:85                                      ; preds = %82
+  call void @llvm.dbg.value(metadata i8** %buf, i64 0, metadata !342, metadata !624), !dbg !1992
+  %86 = call i32 @strncmp(i8* %57, i8* getelementptr inbounds ([5 x i8]* @.str26, i64 0, i64 0), i64 4) #8, !dbg !2098
+  %87 = icmp eq i32 %86, 0, !dbg !2099
+  br i1 %87, label %thread-pre-split, label %88, !dbg !2100
 
-lor.lhs.false101:                                 ; preds = %lor.lhs.false97
-  %call102 = call i32 @strncmp(i8* %3, i8* getelementptr inbounds ([5 x i8]* @.str27, i64 0, i64 0), i64 4) #9
-  %cmp103 = icmp eq i32 %call102, 0
-  br i1 %cmp103, label %DONEthread-pre-split, label %if.end106
+; <label>:88                                      ; preds = %85
+  call void @llvm.dbg.value(metadata i8** %buf, i64 0, metadata !342, metadata !624), !dbg !1992
+  %89 = call i32 @strncmp(i8* %57, i8* getelementptr inbounds ([5 x i8]* @.str27, i64 0, i64 0), i64 4) #8, !dbg !2101
+  %90 = icmp eq i32 %89, 0, !dbg !2102
+  br i1 %90, label %thread-pre-split, label %91, !dbg !2103
 
-if.end106:                                        ; preds = %lor.lhs.false101
-  %call107 = call i32 @strncmp(i8* %3, i8* getelementptr inbounds ([4 x i8]* @.str28, i64 0, i64 0), i64 3) #9
-  %cmp108 = icmp eq i32 %call107, 0
-  br i1 %cmp108, label %DONEthread-pre-split, label %lor.lhs.false110
+; <label>:91                                      ; preds = %88
+  call void @llvm.dbg.value(metadata i8** %buf, i64 0, metadata !342, metadata !624), !dbg !1992
+  %92 = call i32 @strncmp(i8* %57, i8* getelementptr inbounds ([4 x i8]* @.str28, i64 0, i64 0), i64 3) #8, !dbg !2104
+  %93 = icmp eq i32 %92, 0, !dbg !2106
+  br i1 %93, label %thread-pre-split, label %94, !dbg !2107
 
-lor.lhs.false110:                                 ; preds = %if.end106
-  %call111 = call i32 @strncmp(i8* %3, i8* getelementptr inbounds ([7 x i8]* @.str29, i64 0, i64 0), i64 6) #9
-  %cmp112 = icmp eq i32 %call111, 0
-  br i1 %cmp112, label %DONEthread-pre-split, label %if.end115
+; <label>:94                                      ; preds = %91
+  call void @llvm.dbg.value(metadata i8** %buf, i64 0, metadata !342, metadata !624), !dbg !1992
+  %95 = call i32 @strncmp(i8* %57, i8* getelementptr inbounds ([7 x i8]* @.str29, i64 0, i64 0), i64 6) #8, !dbg !2108
+  %96 = icmp eq i32 %95, 0, !dbg !2109
+  br i1 %96, label %thread-pre-split, label %97, !dbg !2110
 
-if.end115:                                        ; preds = %lor.lhs.false110
-  %call116 = call i8* @strstr(i8* %3, i8* getelementptr inbounds ([3 x i8]* @.str6, i64 0, i64 0)) #9
-  %cmp117 = icmp eq i8* %call116, null
-  br i1 %cmp117, label %if.end128, label %land.lhs.true119
+; <label>:97                                      ; preds = %94
+  call void @llvm.dbg.value(metadata i8** %buf, i64 0, metadata !342, metadata !624), !dbg !1992
+  %98 = call i8* @strstr(i8* %57, i8* getelementptr inbounds ([3 x i8]* @.str6, i64 0, i64 0)) #8, !dbg !2111
+  %99 = icmp eq i8* %98, null, !dbg !2113
+  br i1 %99, label %106, label %100, !dbg !2114
 
-land.lhs.true119:                                 ; preds = %if.end115
-  %call120 = call i8* @strstr(i8* %3, i8* getelementptr inbounds ([5 x i8]* @.str30, i64 0, i64 0)) #9
-  %cmp121 = icmp eq i8* %call120, null
-  br i1 %cmp121, label %if.end128, label %land.lhs.true123
+; <label>:100                                     ; preds = %97
+  call void @llvm.dbg.value(metadata i8** %buf, i64 0, metadata !342, metadata !624), !dbg !1992
+  %101 = call i8* @strstr(i8* %57, i8* getelementptr inbounds ([5 x i8]* @.str30, i64 0, i64 0)) #8, !dbg !2115
+  %102 = icmp eq i8* %101, null, !dbg !2116
+  br i1 %102, label %106, label %103, !dbg !2117
 
-land.lhs.true123:                                 ; preds = %land.lhs.true119
-  %call124 = call i8* @strstr(i8* %3, i8* getelementptr inbounds ([7 x i8]* @.str31, i64 0, i64 0)) #9
-  %cmp125 = icmp eq i8* %call124, null
-  br i1 %cmp125, label %if.end128, label %DONEthread-pre-split
+; <label>:103                                     ; preds = %100
+  call void @llvm.dbg.value(metadata i8** %buf, i64 0, metadata !342, metadata !624), !dbg !1992
+  %104 = call i8* @strstr(i8* %57, i8* getelementptr inbounds ([7 x i8]* @.str31, i64 0, i64 0)) #8, !dbg !2118
+  %105 = icmp eq i8* %104, null, !dbg !2119
+  br i1 %105, label %106, label %thread-pre-split, !dbg !2120
 
-if.end128:                                        ; preds = %land.lhs.true123, %land.lhs.true119, %if.end115
-  %call129 = call i8* @strstr(i8* %3, i8* getelementptr inbounds ([9 x i8]* @.str32, i64 0, i64 0)) #9
-  %cmp130 = icmp eq i8* %call129, null
-  %brmerge = or i1 %cmp130, %cmp117
-  br i1 %brmerge, label %if.end137, label %DONEthread-pre-split
+; <label>:106                                     ; preds = %103, %100, %97
+  call void @llvm.dbg.value(metadata i8** %buf, i64 0, metadata !342, metadata !624), !dbg !1992
+  %107 = call i8* @strstr(i8* %57, i8* getelementptr inbounds ([9 x i8]* @.str32, i64 0, i64 0)) #8, !dbg !2121
+  %108 = icmp eq i8* %107, null, !dbg !2123
+  %brmerge = or i1 %108, %99, !dbg !2124
+  br i1 %brmerge, label %109, label %thread-pre-split, !dbg !2124
 
-if.end137:                                        ; preds = %if.end128
-  %call138 = call i32 @strncmp(i8* %3, i8* getelementptr inbounds ([7 x i8]* @.str33, i64 0, i64 0), i64 6) #9
-  %cmp139 = icmp eq i32 %call138, 0
-  br i1 %cmp139, label %DONE, label %lor.lhs.false141
+; <label>:109                                     ; preds = %106
+  call void @llvm.dbg.value(metadata i8** %buf, i64 0, metadata !342, metadata !624), !dbg !1992
+  %110 = call i32 @strncmp(i8* %57, i8* getelementptr inbounds ([7 x i8]* @.str33, i64 0, i64 0), i64 6) #8, !dbg !2125
+  %111 = icmp eq i32 %110, 0, !dbg !2127
+  br i1 %111, label %.loopexit, label %112, !dbg !2128
 
-lor.lhs.false141:                                 ; preds = %if.end137
-  %call142 = call i32 @strncmp(i8* %3, i8* getelementptr inbounds ([8 x i8]* @.str34, i64 0, i64 0), i64 6) #9
-  %cmp143 = icmp eq i32 %call142, 0
-  br i1 %cmp143, label %DONEthread-pre-split, label %if.end146
+; <label>:112                                     ; preds = %109
+  call void @llvm.dbg.value(metadata i8** %buf, i64 0, metadata !342, metadata !624), !dbg !1992
+  %113 = call i32 @strncmp(i8* %57, i8* getelementptr inbounds ([8 x i8]* @.str34, i64 0, i64 0), i64 6) #8, !dbg !2129
+  %114 = icmp eq i32 %113, 0, !dbg !2130
+  br i1 %114, label %thread-pre-split, label %115, !dbg !2131
 
-if.end146:                                        ; preds = %lor.lhs.false141
-  %call147 = call i32 @strncmp(i8* %3, i8* getelementptr inbounds ([6 x i8]* @.str35, i64 0, i64 0), i64 5) #9
-  %cmp148 = icmp eq i32 %call147, 0
-  br i1 %cmp148, label %DONEthread-pre-split, label %lor.lhs.false150
+; <label>:115                                     ; preds = %112
+  call void @llvm.dbg.value(metadata i8** %buf, i64 0, metadata !342, metadata !624), !dbg !1992
+  %116 = call i32 @strncmp(i8* %57, i8* getelementptr inbounds ([6 x i8]* @.str35, i64 0, i64 0), i64 5) #8, !dbg !2132
+  %117 = icmp eq i32 %116, 0, !dbg !2134
+  br i1 %117, label %thread-pre-split, label %118, !dbg !2135
 
-lor.lhs.false150:                                 ; preds = %if.end146
-  %call151 = call i32 @strncmp(i8* %3, i8* getelementptr inbounds ([6 x i8]* @.str36, i64 0, i64 0), i64 5) #9
-  %cmp152 = icmp eq i32 %call151, 0
-  br i1 %cmp152, label %DONEthread-pre-split, label %if.end155
+; <label>:118                                     ; preds = %115
+  call void @llvm.dbg.value(metadata i8** %buf, i64 0, metadata !342, metadata !624), !dbg !1992
+  %119 = call i32 @strncmp(i8* %57, i8* getelementptr inbounds ([6 x i8]* @.str36, i64 0, i64 0), i64 5) #8, !dbg !2136
+  %120 = icmp eq i32 %119, 0, !dbg !2137
+  br i1 %120, label %thread-pre-split, label %121, !dbg !2138
 
-if.end155:                                        ; preds = %lor.lhs.false150
-  store i8* %3, i8** %s, align 8, !tbaa !3
-  %call156 = call i8* @sre_strtok(i8** %s, i8* getelementptr inbounds ([4 x i8]* @.str16, i64 0, i64 0), i32* null) #8
-  %cmp157 = icmp eq i8* %call156, null
-  br i1 %cmp157, label %while.cond.backedge, label %if.end160
+; <label>:121                                     ; preds = %118
+  call void @llvm.dbg.value(metadata i8** %buf, i64 0, metadata !342, metadata !624), !dbg !1992
+  store i64 %60, i64* %1, align 8, !dbg !1998, !tbaa !669
+  call void @llvm.dbg.value(metadata i8** %s, i64 0, metadata !347, metadata !624), !dbg !2049
+  %122 = call i8* @sre_strtok(i8** %s, i8* getelementptr inbounds ([4 x i8]* @.str16, i64 0, i64 0), i32* null) #8, !dbg !2139
+  call void @llvm.dbg.value(metadata i8* %122, i64 0, metadata !348, metadata !624), !dbg !2053
+  %123 = icmp eq i8* %122, null, !dbg !2141
+  br i1 %123, label %.backedge, label %126, !dbg !2142
 
-while.cond.backedge:                              ; preds = %if.end155, %while.body, %if.end160
-  %call = call i8* @sre_fgets(i8** %buf, i32* %len, %struct._IO_FILE* %fp) #8
-  %cmp = icmp eq i8* %call, null
-  br i1 %cmp, label %while.end, label %while.body
+.backedge:                                        ; preds = %121, %5, %126
+  call void @llvm.dbg.value(metadata i8** %buf, i64 0, metadata !342, metadata !624), !dbg !1992
+  call void @llvm.dbg.value(metadata i32* %len, i64 0, metadata !343, metadata !624), !dbg !1994
+  %124 = call i8* @sre_fgets(i8** %buf, i32* %len, %struct.__sFILE* %fp) #8, !dbg !2001
+  %125 = icmp eq i8* %124, null, !dbg !2002
+  br i1 %125, label %.outer._crit_edge, label %5, !dbg !2000
 
-if.end160:                                        ; preds = %if.end155
-  %4 = load i8* %call156, align 1, !tbaa !1
-  %conv161 = sext i8 %4 to i32
-  %memchr = call i8* @memchr(i8* getelementptr inbounds ([3 x i8]* @.str37, i64 0, i64 0), i32 %conv161, i64 3)
-  %cmp163 = icmp eq i8* %memchr, null
-  br i1 %cmp163, label %if.end166, label %while.cond.backedge
+; <label>:126                                     ; preds = %121
+  %127 = load i8* %122, align 1, !dbg !2143, !tbaa !861
+  %128 = sext i8 %127 to i32, !dbg !2143
+  %memchr = call i8* @memchr(i8* getelementptr inbounds ([3 x i8]* @.str37, i64 0, i64 0), i32 %128, i64 3), !dbg !2145
+  %129 = icmp eq i8* %memchr, null, !dbg !2146
+  br i1 %129, label %130, label %.backedge, !dbg !2147
 
-if.end166:                                        ; preds = %if.end160
-  %call167 = call i8* @sre_strtok(i8** %s, i8* getelementptr inbounds ([4 x i8]* @.str16, i64 0, i64 0), i32* null) #8
-  %cmp168 = icmp eq i8* %call167, null
-  %.has_junk.0 = select i1 %cmp168, i32 1, i32 %has_junk.0.ph
-  br i1 %cmp168, label %if.end179, label %land.lhs.true174
+; <label>:130                                     ; preds = %126
+  call void @llvm.dbg.value(metadata i8** %s, i64 0, metadata !347, metadata !624), !dbg !2049
+  %131 = call i8* @sre_strtok(i8** %s, i8* getelementptr inbounds ([4 x i8]* @.str16, i64 0, i64 0), i32* null) #8, !dbg !2148
+  call void @llvm.dbg.value(metadata i8* %131, i64 0, metadata !349, metadata !624), !dbg !2057
+  %132 = icmp eq i8* %131, null, !dbg !2150
+  call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !350, metadata !624), !dbg !1997
+  %.has_junk.0 = select i1 %132, i32 1, i32 %has_junk.0.ph, !dbg !2151
+  br i1 %132, label %136, label %133, !dbg !2152
 
-land.lhs.true174:                                 ; preds = %if.end166
-  %call175 = call i32 @Seqtype(i8* %call167) #7
-  %cmp176 = icmp eq i32 %call175, 0
-  %..has_junk.0 = select i1 %cmp176, i32 1, i32 %.has_junk.0
-  br label %if.end179
+; <label>:133                                     ; preds = %130
+  %134 = call i32 @Seqtype(i8* %131) #7, !dbg !2154
+  %135 = icmp eq i32 %134, 0, !dbg !2155
+  call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !350, metadata !624), !dbg !1997
+  %..has_junk.0 = select i1 %135, i32 1, i32 %.has_junk.0, !dbg !2156
+  br label %136, !dbg !2156
 
-if.end179:                                        ; preds = %land.lhs.true174, %if.end166
-  %has_junk.2 = phi i32 [ %.has_junk.0, %if.end166 ], [ %..has_junk.0, %land.lhs.true174 ]
-  %inc = add nsw i32 %ndataline.0.ph, 1
-  %cmp180 = icmp eq i32 %inc, 300
-  br i1 %cmp180, label %if.end187, label %while.cond.outer
+; <label>:136                                     ; preds = %133, %130
+  %has_junk.2 = phi i32 [ %.has_junk.0, %130 ], [ %..has_junk.0, %133 ]
+  %137 = add nuw nsw i32 %ndataline.0.ph, 1, !dbg !2157
+  call void @llvm.dbg.value(metadata i32 %137, i64 0, metadata !345, metadata !624), !dbg !1996
+  %138 = icmp eq i32 %137, 300, !dbg !2158
+  br i1 %138, label %.thread, label %.outer, !dbg !2160
 
-while.end:                                        ; preds = %while.cond.outer, %while.cond.backedge
-  %cmp184 = icmp eq i32 %ndataline.0.ph, 0
-  br i1 %cmp184, label %if.then186, label %if.end187
+.outer._crit_edge:                                ; preds = %.outer, %.backedge
+  %139 = icmp eq i32 %ndataline.0.ph, 0, !dbg !2161
+  br i1 %139, label %140, label %.thread, !dbg !2163
 
-if.then186:                                       ; preds = %while.end
-  call void (i8*, ...)* @Die(i8* getelementptr inbounds ([31 x i8]* @.str38, i64 0, i64 0)) #8
-  br label %if.end187
+; <label>:140                                     ; preds = %.outer._crit_edge
+  call void (i8*, ...)* @Die(i8* getelementptr inbounds ([31 x i8]* @.str38, i64 0, i64 0)) #8, !dbg !2164
+  br label %.thread, !dbg !2164
 
-if.end187:                                        ; preds = %if.end179, %if.then186, %while.end
-  %has_junk.3206 = phi i32 [ %has_junk.0.ph, %if.then186 ], [ %has_junk.0.ph, %while.end ], [ %has_junk.2, %if.end179 ]
-  %cmp188 = icmp eq i32 %has_junk.3206, 1
-  %. = select i1 %cmp188, i32 0, i32 102
-  br label %DONEthread-pre-split
+.thread:                                          ; preds = %136, %140, %.outer._crit_edge
+  %has_junk.31 = phi i32 [ %has_junk.0.ph, %140 ], [ %has_junk.0.ph, %.outer._crit_edge ], [ %has_junk.2, %136 ]
+  %141 = icmp eq i32 %has_junk.31, 1, !dbg !2165
+  %. = select i1 %141, i32 0, i32 102, !dbg !2167
+  br label %thread-pre-split, !dbg !2167
 
-DONEthread-pre-split:                             ; preds = %if.end128, %land.lhs.true, %lor.lhs.false, %if.end13, %if.end21, %land.lhs.true30, %lor.lhs.false39, %lor.lhs.false101, %lor.lhs.false97, %lor.lhs.false93, %lor.lhs.false89, %lor.lhs.false85, %lor.lhs.false81, %lor.lhs.false77, %lor.lhs.false73, %lor.lhs.false69, %lor.lhs.false65, %lor.lhs.false110, %if.end106, %land.lhs.true123, %lor.lhs.false141, %lor.lhs.false150, %if.end146, %if.then59, %if.end187
-  %fmt.0.ph = phi i32 [ %., %if.end187 ], [ 106, %if.then59 ], [ 16, %land.lhs.true ], [ 5, %lor.lhs.false ], [ 5, %if.end13 ], [ 101, %if.end21 ], [ 104, %land.lhs.true30 ], [ 103, %lor.lhs.false39 ], [ 102, %lor.lhs.false101 ], [ 102, %lor.lhs.false97 ], [ 102, %lor.lhs.false93 ], [ 102, %lor.lhs.false89 ], [ 102, %lor.lhs.false85 ], [ 102, %lor.lhs.false81 ], [ 102, %lor.lhs.false77 ], [ 102, %lor.lhs.false73 ], [ 102, %lor.lhs.false69 ], [ 102, %lor.lhs.false65 ], [ 12, %lor.lhs.false110 ], [ 12, %if.end106 ], [ 103, %land.lhs.true123 ], [ 2, %lor.lhs.false141 ], [ 4, %lor.lhs.false150 ], [ 4, %if.end146 ], [ 5, %if.end128 ]
-  %.pr = load i8** %buf, align 8, !tbaa !3
-  br label %DONE
+thread-pre-split:                                 ; preds = %106, %14, %23, %20, %26, %32, %38, %88, %85, %82, %79, %76, %73, %70, %67, %64, %61, %94, %91, %103, %112, %118, %115, %54, %.thread
+  %fmt.0.ph = phi i32 [ %., %.thread ], [ 106, %54 ], [ 5, %106 ], [ 4, %115 ], [ 4, %118 ], [ 2, %112 ], [ 103, %103 ], [ 12, %91 ], [ 12, %94 ], [ 102, %61 ], [ 102, %64 ], [ 102, %67 ], [ 102, %70 ], [ 102, %73 ], [ 102, %76 ], [ 102, %79 ], [ 102, %82 ], [ 102, %85 ], [ 102, %88 ], [ 103, %38 ], [ 104, %32 ], [ 101, %26 ], [ 5, %20 ], [ 5, %23 ], [ 16, %14 ]
+  %.pr = load i8** %buf, align 8, !dbg !2168, !tbaa !669
+  br label %.loopexit
 
-DONE:                                             ; preds = %if.end137, %if.end61, %if.end35, %if.end9, %DONEthread-pre-split
-  %5 = phi i8* [ %.pr, %DONEthread-pre-split ], [ %3, %if.end137 ], [ %3, %if.end61 ], [ %1, %if.end35 ], [ %1, %if.end9 ]
-  %fmt.0 = phi i32 [ %fmt.0.ph, %DONEthread-pre-split ], [ 2, %if.end137 ], [ 102, %if.end61 ], [ 103, %if.end35 ], [ 7, %if.end9 ]
-  %cmp192 = icmp eq i8* %5, null
-  br i1 %cmp192, label %if.end195, label %if.then194
+.loopexit:                                        ; preds = %109, %56, %thread-pre-split
+  %142 = phi i8* [ %.pr, %thread-pre-split ], [ %57, %56 ], [ %57, %109 ], !dbg !2168
+  %fmt.0 = phi i32 [ %fmt.0.ph, %thread-pre-split ], [ 102, %56 ], [ 2, %109 ]
+  call void @llvm.dbg.value(metadata i8** %buf, i64 0, metadata !342, metadata !624), !dbg !1992
+  %143 = icmp eq i8* %142, null, !dbg !2170
+  br i1 %143, label %145, label %.loopexit.thread, !dbg !2171
 
-if.then194:                                       ; preds = %DONE
-  call void @free(i8* %5) #8
-  br label %if.end195
+.loopexit.thread:                                 ; preds = %35, %17, %.loopexit
+  %fmt.027 = phi i32 [ %fmt.0, %.loopexit ], [ 7, %17 ], [ 103, %35 ]
+  %144 = phi i8* [ %142, %.loopexit ], [ %11, %17 ], [ %11, %35 ]
+  call void @free(i8* %144) #7, !dbg !2172
+  br label %145, !dbg !2172
 
-if.end195:                                        ; preds = %DONE, %if.then194
-  call void @rewind(%struct._IO_FILE* %fp) #8
-  ret i32 %fmt.0
+; <label>:145                                     ; preds = %.loopexit, %.loopexit.thread
+  %fmt.028 = phi i32 [ %fmt.0, %.loopexit ], [ %fmt.027, %.loopexit.thread ]
+  call void @rewind(%struct.__sFILE* %fp) #8, !dbg !2173
+  ret i32 %fmt.028, !dbg !2174
 }

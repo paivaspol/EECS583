@@ -1,65 +1,72 @@
-define void @writeUVLC2buffer(%struct.syntaxelement* nocapture %se, %struct.Bitstream* nocapture %currStream) #0 {
-entry:
-  %len = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 3
-  %0 = load i32* %len, align 4, !tbaa !0
-  %cmp28 = icmp sgt i32 %0, 0
-  br i1 %cmp28, label %for.body.lr.ph, label %for.end
+define void @writeUVLC2buffer(%struct.syntaxelement* nocapture readonly %se, %struct.Bitstream* nocapture %currStream) #0 {
+  tail call void @llvm.dbg.value(metadata %struct.syntaxelement* %se, i64 0, metadata !243, metadata !814), !dbg !1188
+  tail call void @llvm.dbg.value(metadata %struct.Bitstream* %currStream, i64 0, metadata !244, metadata !814), !dbg !1189
+  %1 = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 3, !dbg !1190
+  tail call void @llvm.dbg.value(metadata i32 %5, i64 0, metadata !246, metadata !814), !dbg !1191
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !245, metadata !814), !dbg !1192
+  %2 = load i32* %1, align 4, !dbg !1193, !tbaa !880
+  %3 = icmp sgt i32 %2, 0, !dbg !1196
+  br i1 %3, label %.lr.ph, label %._crit_edge, !dbg !1197
 
-for.body.lr.ph:                                   ; preds = %entry
-  %sub = add nsw i32 %0, -1
-  %shl = shl i32 1, %sub
-  %byte_buf = getelementptr inbounds %struct.Bitstream* %currStream, i64 0, i32 2
-  %bitpattern = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 5
-  %bits_to_go = getelementptr inbounds %struct.Bitstream* %currStream, i64 0, i32 1
-  %byte_pos = getelementptr inbounds %struct.Bitstream* %currStream, i64 0, i32 0
-  %streamBuffer = getelementptr inbounds %struct.Bitstream* %currStream, i64 0, i32 9
-  %.pre = load i8* %byte_buf, align 1, !tbaa !1
-  br label %for.body
+.lr.ph:                                           ; preds = %0
+  %4 = add nsw i32 %2, -1, !dbg !1198
+  %5 = shl i32 1, %4, !dbg !1199
+  %6 = getelementptr inbounds %struct.Bitstream* %currStream, i64 0, i32 2, !dbg !1200
+  %7 = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 5, !dbg !1202
+  %8 = getelementptr inbounds %struct.Bitstream* %currStream, i64 0, i32 1, !dbg !1204
+  %9 = getelementptr inbounds %struct.Bitstream* %currStream, i64 0, i32 0, !dbg !1205
+  %10 = getelementptr inbounds %struct.Bitstream* %currStream, i64 0, i32 9, !dbg !1208
+  %.pre = load i8* %6, align 1, !dbg !1209, !tbaa !1210
+  br label %11, !dbg !1197
 
-for.body:                                         ; preds = %for.body.lr.ph, %for.inc
-  %1 = phi i8 [ %.pre, %for.body.lr.ph ], [ %7, %for.inc ]
-  %mask.030 = phi i32 [ %shl, %for.body.lr.ph ], [ %shr, %for.inc ]
-  %i.029 = phi i32 [ 0, %for.body.lr.ph ], [ %inc15, %for.inc ]
-  %shl2 = shl i8 %1, 1
-  store i8 %shl2, i8* %byte_buf, align 1, !tbaa !1
-  %2 = load i32* %bitpattern, align 4, !tbaa !0
-  %and = and i32 %2, %mask.030
-  %tobool = icmp eq i32 %and, 0
-  br i1 %tobool, label %if.end, label %if.then
+; <label>:11                                      ; preds = %.lr.ph, %32
+  %12 = phi i32 [ %2, %.lr.ph ], [ %33, %32 ]
+  %13 = phi i8 [ %.pre, %.lr.ph ], [ %34, %32 ], !dbg !1209
+  %mask.02 = phi i32 [ %5, %.lr.ph ], [ %24, %32 ]
+  %i.01 = phi i32 [ 0, %.lr.ph ], [ %35, %32 ]
+  %14 = shl i8 %13, 1, !dbg !1209
+  store i8 %14, i8* %6, align 1, !dbg !1209, !tbaa !1210
+  %15 = load i32* %7, align 4, !dbg !1202, !tbaa !891
+  %16 = and i32 %15, %mask.02, !dbg !1211
+  %17 = icmp eq i32 %16, 0, !dbg !1211
+  br i1 %17, label %20, label %18, !dbg !1212
 
-if.then:                                          ; preds = %for.body
-  %or = or i8 %shl2, 1
-  store i8 %or, i8* %byte_buf, align 1, !tbaa !1
-  br label %if.end
+; <label>:18                                      ; preds = %11
+  %19 = or i8 %14, 1, !dbg !1213
+  store i8 %19, i8* %6, align 1, !dbg !1213, !tbaa !1210
+  br label %20, !dbg !1214
 
-if.end:                                           ; preds = %for.body, %if.then
-  %3 = phi i8 [ %or, %if.then ], [ %shl2, %for.body ]
-  %4 = load i32* %bits_to_go, align 4, !tbaa !0
-  %dec = add nsw i32 %4, -1
-  store i32 %dec, i32* %bits_to_go, align 4, !tbaa !0
-  %shr = lshr i32 %mask.030, 1
-  %cmp8 = icmp eq i32 %dec, 0
-  br i1 %cmp8, label %if.then10, label %for.inc
+; <label>:20                                      ; preds = %11, %18
+  %21 = phi i8 [ %14, %11 ], [ %19, %18 ]
+  %22 = load i32* %8, align 4, !dbg !1215, !tbaa !1216
+  %23 = add nsw i32 %22, -1, !dbg !1215
+  store i32 %23, i32* %8, align 4, !dbg !1215, !tbaa !1216
+  %24 = lshr i32 %mask.02, 1, !dbg !1217
+  tail call void @llvm.dbg.value(metadata i32 %24, i64 0, metadata !246, metadata !814), !dbg !1191
+  %25 = icmp eq i32 %23, 0, !dbg !1218
+  br i1 %25, label %26, label %32, !dbg !1219
 
-if.then10:                                        ; preds = %if.end
-  store i32 8, i32* %bits_to_go, align 4, !tbaa !0
-  %5 = load i32* %byte_pos, align 4, !tbaa !0
-  %inc = add nsw i32 %5, 1
-  store i32 %inc, i32* %byte_pos, align 4, !tbaa !0
-  %idxprom = sext i32 %5 to i64
-  %6 = load i8** %streamBuffer, align 8, !tbaa !3
-  %arrayidx = getelementptr inbounds i8* %6, i64 %idxprom
-  store i8 %3, i8* %arrayidx, align 1, !tbaa !1
-  store i8 0, i8* %byte_buf, align 1, !tbaa !1
-  br label %for.inc
+; <label>:26                                      ; preds = %20
+  store i32 8, i32* %8, align 4, !dbg !1220, !tbaa !1216
+  %27 = load i32* %9, align 4, !dbg !1221, !tbaa !1222
+  %28 = add nsw i32 %27, 1, !dbg !1221
+  store i32 %28, i32* %9, align 4, !dbg !1221, !tbaa !1222
+  %29 = sext i32 %27 to i64, !dbg !1223
+  %30 = load i8** %10, align 8, !dbg !1208, !tbaa !841
+  %31 = getelementptr inbounds i8* %30, i64 %29, !dbg !1223
+  store i8 %21, i8* %31, align 1, !dbg !1224, !tbaa !1021
+  store i8 0, i8* %6, align 1, !dbg !1225, !tbaa !1210
+  %.pre3 = load i32* %1, align 4, !dbg !1193, !tbaa !880
+  br label %32, !dbg !1226
 
-for.inc:                                          ; preds = %if.end, %if.then10
-  %7 = phi i8 [ %3, %if.end ], [ 0, %if.then10 ]
-  %inc15 = add nsw i32 %i.029, 1
-  %8 = load i32* %len, align 4, !tbaa !0
-  %cmp = icmp slt i32 %inc15, %8
-  br i1 %cmp, label %for.body, label %for.end
+; <label>:32                                      ; preds = %20, %26
+  %33 = phi i32 [ %12, %20 ], [ %.pre3, %26 ], !dbg !1227
+  %34 = phi i8 [ %21, %20 ], [ 0, %26 ]
+  %35 = add nuw nsw i32 %i.01, 1, !dbg !1227
+  tail call void @llvm.dbg.value(metadata i32 %35, i64 0, metadata !245, metadata !814), !dbg !1192
+  %36 = icmp slt i32 %35, %33, !dbg !1196
+  br i1 %36, label %11, label %._crit_edge, !dbg !1197
 
-for.end:                                          ; preds = %for.inc, %entry
-  ret void
+._crit_edge:                                      ; preds = %32, %0
+  ret void, !dbg !1228
 }

@@ -1,70 +1,71 @@
 define i32 @Util_TableCreate(i32 %flags) #1 {
-  %1 = icmp slt i32 %flags, 0
-  br i1 %1, label %31, label %2
+  tail call void @llvm.dbg.value(metadata i32 %flags, i64 0, metadata !48, metadata !608), !dbg !609
+  %1 = icmp slt i32 %flags, 0, !dbg !610
+  br i1 %1, label %31, label %2, !dbg !612
 
 ; <label>:2                                       ; preds = %0
-  %3 = load i32* @N_tables, align 4, !tbaa !2
-  %4 = load i32* @N_thp_array, align 4, !tbaa !2
-  %5 = icmp eq i32 %3, %4
-  br i1 %5, label %6, label %.preheader
+  %3 = load i32* @N_tables, align 4, !dbg !613, !tbaa !615
+  %4 = load i32* @N_thp_array, align 4, !dbg !619, !tbaa !615
+  %5 = icmp eq i32 %3, %4, !dbg !620
+  br i1 %5, label %6, label %.preheader, !dbg !621
 
 ; <label>:6                                       ; preds = %2
-  %7 = tail call fastcc i32 @grow_pointer_array(i32* @N_thp_array, i8*** @thp_array) #9
-  %8 = icmp slt i32 %7, 0
-  br i1 %8, label %31, label %..preheader_crit_edge
+  %7 = tail call fastcc i32 @grow_pointer_array(i32* @N_thp_array, i8*** @thp_array) #9, !dbg !622
+  %8 = icmp slt i32 %7, 0, !dbg !625
+  br i1 %8, label %31, label %..preheader_crit_edge, !dbg !626
 
 ..preheader_crit_edge:                            ; preds = %6
-  %.pre = load i32* @N_thp_array, align 4, !tbaa !2
-  br label %.preheader
+  %.pre = load i32* @N_thp_array, align 4, !dbg !627, !tbaa !615
+  br label %.preheader, !dbg !626
 
 .preheader:                                       ; preds = %..preheader_crit_edge, %2
   %9 = phi i32 [ %.pre, %..preheader_crit_edge ], [ %4, %2 ]
-  %10 = icmp sgt i32 %9, 0
-  br i1 %10, label %.lr.ph, label %._crit_edge
+  %10 = icmp sgt i32 %9, 0, !dbg !628
+  br i1 %10, label %.lr.ph, label %._crit_edge, !dbg !629
 
 .lr.ph:                                           ; preds = %.preheader
-  %11 = load i8*** @thp_array, align 8, !tbaa !6
-  %12 = sext i32 %9 to i64
-  br label %13
+  %11 = load i8*** @thp_array, align 8, !dbg !630, !tbaa !631
+  %12 = sext i32 %9 to i64, !dbg !629
+  br label %13, !dbg !629
 
 ; <label>:13                                      ; preds = %.lr.ph, %29
   %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %29 ]
-  %14 = getelementptr inbounds i8** %11, i64 %indvars.iv
-  %15 = load i8** %14, align 8, !tbaa !6
-  %16 = icmp eq i8* %15, null
-  br i1 %16, label %17, label %29
+  %14 = getelementptr inbounds i8** %11, i64 %indvars.iv, !dbg !630
+  %15 = load i8** %14, align 8, !dbg !630, !tbaa !631
+  %16 = icmp eq i8* %15, null, !dbg !633
+  br i1 %16, label %17, label %29, !dbg !634
 
 ; <label>:17                                      ; preds = %13
-  %18 = trunc i64 %indvars.iv to i32
-  %19 = tail call i8* @malloc(i64 16) #10
-  %20 = icmp eq i8* %19, null
-  br i1 %20, label %31, label %21
+  %18 = trunc i64 %indvars.iv to i32, !dbg !635
+  %19 = tail call i8* @malloc(i64 16) #10, !dbg !635
+  %20 = icmp eq i8* %19, null, !dbg !636
+  br i1 %20, label %31, label %21, !dbg !638
 
 ; <label>:21                                      ; preds = %17
-  %22 = bitcast i8* %19 to %struct.table_entry**
-  store %struct.table_entry* null, %struct.table_entry** %22, align 8, !tbaa !8
-  %23 = getelementptr inbounds i8* %19, i64 8
-  %24 = bitcast i8* %23 to i32*
-  store i32 %flags, i32* %24, align 4, !tbaa !10
-  %25 = getelementptr inbounds i8* %19, i64 12
-  %26 = bitcast i8* %25 to i32*
-  store i32 %18, i32* %26, align 4, !tbaa !11
-  %27 = load i32* @N_tables, align 4, !tbaa !2
-  %28 = add nsw i32 %27, 1
-  store i32 %28, i32* @N_tables, align 4, !tbaa !2
-  store i8* %19, i8** %14, align 8, !tbaa !6
-  br label %31
+  %22 = bitcast i8* %19 to %struct.table_entry**, !dbg !639
+  store %struct.table_entry* null, %struct.table_entry** %22, align 8, !dbg !640, !tbaa !641
+  %23 = getelementptr inbounds i8* %19, i64 8, !dbg !643
+  %24 = bitcast i8* %23 to i32*, !dbg !643
+  store i32 %flags, i32* %24, align 4, !dbg !644, !tbaa !645
+  %25 = getelementptr inbounds i8* %19, i64 12, !dbg !646
+  %26 = bitcast i8* %25 to i32*, !dbg !646
+  store i32 %18, i32* %26, align 4, !dbg !647, !tbaa !648
+  %27 = load i32* @N_tables, align 4, !dbg !649, !tbaa !615
+  %28 = add nsw i32 %27, 1, !dbg !649
+  store i32 %28, i32* @N_tables, align 4, !dbg !649, !tbaa !615
+  store i8* %19, i8** %14, align 8, !dbg !650, !tbaa !631
+  br label %31, !dbg !651
 
 ; <label>:29                                      ; preds = %13
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %30 = icmp slt i64 %indvars.iv.next, %12
-  br i1 %30, label %13, label %._crit_edge
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !629
+  %30 = icmp slt i64 %indvars.iv.next, %12, !dbg !628
+  br i1 %30, label %13, label %._crit_edge, !dbg !629
 
 ._crit_edge:                                      ; preds = %29, %.preheader
-  tail call void @abort() #11
-  unreachable
+  tail call void @abort() #11, !dbg !652
+  unreachable, !dbg !652
 
 ; <label>:31                                      ; preds = %17, %6, %0, %21
   %.0 = phi i32 [ %18, %21 ], [ -100, %0 ], [ -1, %6 ], [ -1, %17 ]
-  ret i32 %.0
+  ret i32 %.0, !dbg !653
 }

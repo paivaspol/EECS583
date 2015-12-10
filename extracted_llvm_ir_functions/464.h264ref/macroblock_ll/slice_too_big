@@ -1,82 +1,90 @@
 define i32 @slice_too_big(i32 %rlc_bits) #0 {
-entry:
-  %0 = load %struct.ImageParameters** @img, align 8, !tbaa !0
-  %currentSlice = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 50
-  %1 = load %struct.Slice** %currentSlice, align 8, !tbaa !0
-  %2 = load %struct.InputParameters** @input, align 8, !tbaa !0
-  %symbol_mode = getelementptr inbounds %struct.InputParameters* %2, i64 0, i32 59
-  %3 = load i32* %symbol_mode, align 4, !tbaa !3
-  switch i32 %3, label %return [
-    i32 0, label %for.cond.preheader
-    i32 1, label %for.cond17.preheader
-  ]
+  tail call void @llvm.dbg.value(metadata i32 %rlc_bits, i64 0, metadata !383, metadata !1584), !dbg !2873
+  %1 = load %struct.ImageParameters** @img, align 8, !dbg !2874, !tbaa !1587
+  %2 = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 50, !dbg !2875
+  %3 = load %struct.Slice** %2, align 8, !dbg !2875, !tbaa !1864
+  tail call void @llvm.dbg.value(metadata %struct.Slice* %3, i64 0, metadata !384, metadata !1584), !dbg !2876
+  %4 = load %struct.InputParameters** @input, align 8, !dbg !2877, !tbaa !1587
+  %5 = getelementptr inbounds %struct.InputParameters* %4, i64 0, i32 59, !dbg !2879
+  %6 = load i32* %5, align 4, !dbg !2879, !tbaa !1924
+  switch i32 %6, label %.loopexit [
+    i32 0, label %.preheader1
+    i32 1, label %.preheader
+  ], !dbg !2880
 
-for.cond.preheader:                               ; preds = %entry
-  %max_part_nr = getelementptr inbounds %struct.Slice* %1, i64 0, i32 4
-  %4 = load i32* %max_part_nr, align 4, !tbaa !3
-  %cmp148 = icmp sgt i32 %4, 0
-  br i1 %cmp148, label %for.body.lr.ph, label %return
+.preheader1:                                      ; preds = %0
+  %7 = getelementptr inbounds %struct.Slice* %3, i64 0, i32 4, !dbg !2881
+  %8 = load i32* %7, align 4, !dbg !2881, !tbaa !1893
+  %9 = icmp sgt i32 %8, 0, !dbg !2885
+  br i1 %9, label %.lr.ph8, label %.loopexit, !dbg !2886
 
-for.body.lr.ph:                                   ; preds = %for.cond.preheader
-  %partArr = getelementptr inbounds %struct.Slice* %1, i64 0, i32 6
-  %5 = load %struct.datapartition** %partArr, align 8, !tbaa !0
-  %slice_argument = getelementptr inbounds %struct.InputParameters* %2, i64 0, i32 23
-  %6 = load i32* %slice_argument, align 4, !tbaa !3
-  br label %for.body
+.lr.ph8:                                          ; preds = %.preheader1
+  %10 = getelementptr inbounds %struct.Slice* %3, i64 0, i32 6, !dbg !2887
+  %11 = load %struct.datapartition** %10, align 8, !dbg !2887, !tbaa !1899
+  %12 = getelementptr inbounds %struct.InputParameters* %4, i64 0, i32 23, !dbg !2889
+  %13 = load i32* %12, align 4, !dbg !2889, !tbaa !2610
+  br label %17, !dbg !2886
 
-for.cond:                                         ; preds = %for.body
-  %7 = trunc i64 %indvars.iv.next51 to i32
-  %cmp1 = icmp slt i32 %7, %4
-  br i1 %cmp1, label %for.body, label %return
+; <label>:14                                      ; preds = %17
+  %15 = sext i32 %8 to i64, !dbg !2885
+  %16 = icmp slt i64 %indvars.iv.next10, %15, !dbg !2885
+  br i1 %16, label %17, label %.loopexit2, !dbg !2886
 
-for.body:                                         ; preds = %for.body.lr.ph, %for.cond
-  %indvars.iv50 = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next51, %for.cond ]
-  %bitstream = getelementptr inbounds %struct.datapartition* %5, i64 %indvars.iv50, i32 0
-  %8 = load %struct.Bitstream** %bitstream, align 8, !tbaa !0
-  %byte_pos = getelementptr inbounds %struct.Bitstream* %8, i64 0, i32 0
-  %9 = load i32* %byte_pos, align 4, !tbaa !3
-  %bits_to_go = getelementptr inbounds %struct.Bitstream* %8, i64 0, i32 1
-  %10 = load i32* %bits_to_go, align 4, !tbaa !3
-  %cmp2 = icmp slt i32 %10, 8
-  %inc = zext i1 %cmp2 to i32
-  %inc. = add nsw i32 %inc, %9
-  %cmp5 = icmp slt i32 %10, %rlc_bits
-  %inc7 = zext i1 %cmp5 to i32
-  %size_in_bytes.1 = add nsw i32 %inc., %inc7
-  %cmp9 = icmp sgt i32 %size_in_bytes.1, %6
-  %indvars.iv.next51 = add i64 %indvars.iv50, 1
-  br i1 %cmp9, label %return, label %for.cond
+; <label>:17                                      ; preds = %.lr.ph8, %14
+  %indvars.iv9 = phi i64 [ 0, %.lr.ph8 ], [ %indvars.iv.next10, %14 ]
+  %18 = getelementptr inbounds %struct.datapartition* %11, i64 %indvars.iv9, i32 0, !dbg !2891
+  %19 = load %struct.Bitstream** %18, align 8, !dbg !2891, !tbaa !1901
+  tail call void @llvm.dbg.value(metadata %struct.Bitstream* %19, i64 0, metadata !386, metadata !1584), !dbg !2892
+  %20 = getelementptr inbounds %struct.Bitstream* %19, i64 0, i32 0, !dbg !2893
+  %21 = load i32* %20, align 4, !dbg !2893, !tbaa !1912
+  tail call void @llvm.dbg.value(metadata i32 %21, i64 0, metadata !389, metadata !1584), !dbg !2894
+  %22 = getelementptr inbounds %struct.Bitstream* %19, i64 0, i32 1, !dbg !2895
+  %23 = load i32* %22, align 4, !dbg !2895, !tbaa !1906
+  %24 = icmp slt i32 %23, 8, !dbg !2897
+  %25 = zext i1 %24 to i32, !dbg !2898
+  %. = add nsw i32 %25, %21, !dbg !2898
+  %26 = icmp slt i32 %23, %rlc_bits, !dbg !2899
+  %27 = zext i1 %26 to i32, !dbg !2901
+  %size_in_bytes.1 = add nsw i32 %., %27, !dbg !2901
+  %28 = icmp sgt i32 %size_in_bytes.1, %13, !dbg !2902
+  %indvars.iv.next10 = add nuw nsw i64 %indvars.iv9, 1, !dbg !2886
+  br i1 %28, label %.loopexit, label %14, !dbg !2903
 
-for.cond17.preheader:                             ; preds = %entry
-  %max_part_nr18 = getelementptr inbounds %struct.Slice* %1, i64 0, i32 4
-  %11 = load i32* %max_part_nr18, align 4, !tbaa !3
-  %cmp1945 = icmp sgt i32 %11, 0
-  br i1 %cmp1945, label %for.body20.lr.ph, label %return
+.loopexit2:                                       ; preds = %14
+  %29 = icmp eq i32 %6, 1, !dbg !2904
+  br i1 %29, label %.preheader, label %.loopexit, !dbg !2906
 
-for.body20.lr.ph:                                 ; preds = %for.cond17.preheader
-  %partArr22 = getelementptr inbounds %struct.Slice* %1, i64 0, i32 6
-  br label %for.body20
+.preheader:                                       ; preds = %0, %.loopexit2
+  %30 = getelementptr inbounds %struct.Slice* %3, i64 0, i32 4, !dbg !2907
+  %31 = load i32* %30, align 4, !dbg !2907, !tbaa !1893
+  %32 = icmp sgt i32 %31, 0, !dbg !2911
+  br i1 %32, label %.lr.ph, label %.loopexit, !dbg !2912
 
-for.cond17:                                       ; preds = %for.body20
-  %12 = load i32* %max_part_nr18, align 4, !tbaa !3
-  %13 = trunc i64 %indvars.iv.next to i32
-  %cmp19 = icmp slt i32 %13, %12
-  br i1 %cmp19, label %for.body20, label %return
+.lr.ph:                                           ; preds = %.preheader
+  %33 = getelementptr inbounds %struct.Slice* %3, i64 0, i32 6, !dbg !2913
+  br label %38, !dbg !2912
 
-for.body20:                                       ; preds = %for.cond17, %for.body20.lr.ph
-  %indvars.iv = phi i64 [ 0, %for.body20.lr.ph ], [ %indvars.iv.next, %for.cond17 ]
-  %14 = load %struct.datapartition** %partArr22, align 8, !tbaa !0
-  %ee_cabac = getelementptr inbounds %struct.datapartition* %14, i64 %indvars.iv, i32 1
-  %call = tail call i32 @arienco_bits_written(%struct.EncodingEnvironment* %ee_cabac) #7
-  %15 = load %struct.InputParameters** @input, align 8, !tbaa !0
-  %slice_argument24 = getelementptr inbounds %struct.InputParameters* %15, i64 0, i32 23
-  %16 = load i32* %slice_argument24, align 4, !tbaa !3
-  %mul = shl nsw i32 %16, 3
-  %cmp25 = icmp sgt i32 %call, %mul
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  br i1 %cmp25, label %return, label %for.cond17
+; <label>:34                                      ; preds = %38
+  %35 = load i32* %30, align 4, !dbg !2907, !tbaa !1893
+  %36 = sext i32 %35 to i64, !dbg !2911
+  %37 = icmp slt i64 %indvars.iv.next, %36, !dbg !2911
+  br i1 %37, label %38, label %.loopexit, !dbg !2912
 
-return:                                           ; preds = %entry, %for.cond.preheader, %for.cond, %for.body, %for.cond17.preheader, %for.body20, %for.cond17
-  %retval.0 = phi i32 [ 0, %for.cond17.preheader ], [ 1, %for.body20 ], [ 0, %for.cond17 ], [ 1, %for.body ], [ 0, %for.cond ], [ 0, %for.cond.preheader ], [ 0, %entry ]
-  ret i32 %retval.0
+; <label>:38                                      ; preds = %.lr.ph, %34
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %34 ]
+  %39 = load %struct.datapartition** %33, align 8, !dbg !2913, !tbaa !1899
+  %40 = getelementptr inbounds %struct.datapartition* %39, i64 %indvars.iv, i32 1, !dbg !2915
+  tail call void @llvm.dbg.value(metadata %struct.EncodingEnvironment* %40, i64 0, metadata !387, metadata !1584), !dbg !2916
+  %41 = tail call i32 @arienco_bits_written(%struct.EncodingEnvironment* %40) #7, !dbg !2917
+  %42 = load %struct.InputParameters** @input, align 8, !dbg !2919, !tbaa !1587
+  %43 = getelementptr inbounds %struct.InputParameters* %42, i64 0, i32 23, !dbg !2920
+  %44 = load i32* %43, align 4, !dbg !2920, !tbaa !2610
+  %45 = shl nsw i32 %44, 3, !dbg !2921
+  %46 = icmp sgt i32 %41, %45, !dbg !2922
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !2912
+  br i1 %46, label %.loopexit, label %34, !dbg !2923
+
+.loopexit:                                        ; preds = %17, %38, %34, %0, %.preheader1, %.preheader, %.loopexit2
+  %.0 = phi i32 [ 0, %.loopexit2 ], [ 0, %.preheader ], [ 0, %.preheader1 ], [ 0, %0 ], [ 0, %34 ], [ 1, %38 ], [ 1, %17 ]
+  ret i32 %.0, !dbg !2924
 }

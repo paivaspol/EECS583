@@ -1,34 +1,37 @@
-define i32 @SSISetFileForSubseq(%struct.ssiindex_s* nocapture %g, i32 %fh, i32 %bpl, i32 %rpl) #0 {
-entry:
-  %cmp = icmp slt i32 %fh, 0
-  br i1 %cmp, label %return, label %lor.lhs.false
+define i32 @SSISetFileForSubseq(%struct.ssiindex_s* nocapture readonly %g, i32 %fh, i32 %bpl, i32 %rpl) #0 {
+  tail call void @llvm.dbg.value(metadata %struct.ssiindex_s* %g, i64 0, metadata !314, metadata !535), !dbg !1531
+  tail call void @llvm.dbg.value(metadata i32 %fh, i64 0, metadata !315, metadata !535), !dbg !1532
+  tail call void @llvm.dbg.value(metadata i32 %bpl, i64 0, metadata !316, metadata !535), !dbg !1533
+  tail call void @llvm.dbg.value(metadata i32 %rpl, i64 0, metadata !317, metadata !535), !dbg !1534
+  %1 = icmp slt i32 %fh, 0, !dbg !1535
+  br i1 %1, label %18, label %2, !dbg !1537
 
-lor.lhs.false:                                    ; preds = %entry
-  %nfiles = getelementptr inbounds %struct.ssiindex_s* %g, i64 0, i32 9
-  %0 = load i16* %nfiles, align 2, !tbaa !3
-  %conv = zext i16 %0 to i32
-  %cmp1 = icmp sgt i32 %conv, %fh
-  br i1 %cmp1, label %if.end, label %return
+; <label>:2                                       ; preds = %0
+  %3 = getelementptr inbounds %struct.ssiindex_s* %g, i64 0, i32 9, !dbg !1538
+  %4 = load i16* %3, align 2, !dbg !1538, !tbaa !1398
+  %5 = zext i16 %4 to i32, !dbg !1539
+  %6 = icmp sgt i32 %5, %fh, !dbg !1540
+  br i1 %6, label %7, label %18, !dbg !1541
 
-if.end:                                           ; preds = %lor.lhs.false
-  %cmp3 = icmp slt i32 %bpl, 1
-  %cmp6 = icmp slt i32 %rpl, 1
-  %or.cond = or i1 %cmp3, %cmp6
-  br i1 %or.cond, label %return, label %if.end9
+; <label>:7                                       ; preds = %2
+  %8 = icmp slt i32 %bpl, 1, !dbg !1542
+  %9 = icmp slt i32 %rpl, 1, !dbg !1544
+  %or.cond = or i1 %8, %9, !dbg !1545
+  br i1 %or.cond, label %18, label %10, !dbg !1545
 
-if.end9:                                          ; preds = %if.end
-  %idxprom = sext i32 %fh to i64
-  %bpl10 = getelementptr inbounds %struct.ssiindex_s* %g, i64 0, i32 6
-  %1 = load i32** %bpl10, align 8, !tbaa !0
-  %arrayidx = getelementptr inbounds i32* %1, i64 %idxprom
-  store i32 %bpl, i32* %arrayidx, align 4, !tbaa !4
-  %rpl12 = getelementptr inbounds %struct.ssiindex_s* %g, i64 0, i32 7
-  %2 = load i32** %rpl12, align 8, !tbaa !0
-  %arrayidx13 = getelementptr inbounds i32* %2, i64 %idxprom
-  store i32 %rpl, i32* %arrayidx13, align 4, !tbaa !4
-  br label %return
+; <label>:10                                      ; preds = %7
+  %11 = sext i32 %fh to i64, !dbg !1546
+  %12 = getelementptr inbounds %struct.ssiindex_s* %g, i64 0, i32 6, !dbg !1547
+  %13 = load i32** %12, align 8, !dbg !1547, !tbaa !1302
+  %14 = getelementptr inbounds i32* %13, i64 %11, !dbg !1546
+  store i32 %bpl, i32* %14, align 4, !dbg !1548, !tbaa !578
+  %15 = getelementptr inbounds %struct.ssiindex_s* %g, i64 0, i32 7, !dbg !1549
+  %16 = load i32** %15, align 8, !dbg !1549, !tbaa !1308
+  %17 = getelementptr inbounds i32* %16, i64 %11, !dbg !1550
+  store i32 %rpl, i32* %17, align 4, !dbg !1551, !tbaa !578
+  br label %18, !dbg !1552
 
-return:                                           ; preds = %if.end, %entry, %lor.lhs.false, %if.end9
-  %retval.0 = phi i32 [ 0, %if.end9 ], [ 12, %lor.lhs.false ], [ 12, %entry ], [ 12, %if.end ]
-  ret i32 %retval.0
+; <label>:18                                      ; preds = %7, %0, %2, %10
+  %.0 = phi i32 [ 0, %10 ], [ 12, %2 ], [ 12, %0 ], [ 12, %7 ]
+  ret i32 %.0, !dbg !1553
 }

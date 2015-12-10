@@ -1,14 +1,20 @@
 define i32 @IOASCII_Output3DVarAs(%struct.cGH* %GH, i8* %fullname, i8* %alias) #1 {
-  %1 = tail call i32 @CCTK_VarIndex(i8* %fullname) #5
-  %2 = tail call fastcc i32 @CheckOutputVar(i32 %1) #6
-  %3 = icmp eq i32 %2, 0
-  br i1 %3, label %4, label %6
+  tail call void @llvm.dbg.value(metadata %struct.cGH* %GH, i64 0, metadata !98, metadata !231), !dbg !394
+  tail call void @llvm.dbg.value(metadata i8* %fullname, i64 0, metadata !99, metadata !231), !dbg !395
+  tail call void @llvm.dbg.value(metadata i8* %alias, i64 0, metadata !100, metadata !231), !dbg !396
+  %1 = tail call i32 @CCTK_VarIndex(i8* %fullname) #5, !dbg !397
+  tail call void @llvm.dbg.value(metadata i32 %1, i64 0, metadata !101, metadata !231), !dbg !398
+  tail call void @llvm.dbg.value(metadata i32 -1, i64 0, metadata !102, metadata !231), !dbg !399
+  %2 = tail call fastcc i32 @CheckOutputVar(i32 %1) #6, !dbg !400
+  %3 = icmp eq i32 %2, 0, !dbg !402
+  br i1 %3, label %4, label %6, !dbg !403
 
 ; <label>:4                                       ; preds = %0
-  %5 = tail call i32 @IOASCII_Write3D(%struct.cGH* %GH, i32 %1, i8* %alias) #5
-  br label %6
+  %5 = tail call i32 @IOASCII_Write3D(%struct.cGH* %GH, i32 %1, i8* %alias) #5, !dbg !404
+  tail call void @llvm.dbg.value(metadata i32 %5, i64 0, metadata !102, metadata !231), !dbg !399
+  br label %6, !dbg !406
 
 ; <label>:6                                       ; preds = %4, %0
   %retval.0 = phi i32 [ %5, %4 ], [ -1, %0 ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !407
 }

@@ -1,33 +1,37 @@
-define void @m4_op([4 x float]* nocapture readonly %m, float* nocapture readonly %x, float* nocapture %v) #3 {
-  %1 = getelementptr inbounds float* %x, i64 1
-  %2 = getelementptr inbounds float* %x, i64 2
-  br label %3
+define void @m4_op([4 x float]* nocapture readonly %m, float* nocapture readonly %x, float* nocapture %v) #4 {
+  tail call void @llvm.dbg.value(metadata [4 x float]* %m, i64 0, metadata !93, metadata !259), !dbg !298
+  tail call void @llvm.dbg.value(metadata float* %x, i64 0, metadata !94, metadata !259), !dbg !299
+  tail call void @llvm.dbg.value(metadata float* %v, i64 0, metadata !95, metadata !259), !dbg !300
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !96, metadata !259), !dbg !301
+  %1 = getelementptr inbounds float* %x, i64 1, !dbg !302
+  %2 = getelementptr inbounds float* %x, i64 2, !dbg !305
+  br label %3, !dbg !306
 
 ; <label>:3                                       ; preds = %3, %0
   %indvars.iv = phi i64 [ 0, %0 ], [ %indvars.iv.next, %3 ]
-  %4 = getelementptr inbounds [4 x float]* %m, i64 0, i64 %indvars.iv
-  %5 = load float* %4, align 4, !tbaa !14
-  %6 = load float* %x, align 4, !tbaa !14
-  %7 = fmul float %5, %6
-  %8 = getelementptr inbounds [4 x float]* %m, i64 1, i64 %indvars.iv
-  %9 = load float* %8, align 4, !tbaa !14
-  %10 = load float* %1, align 4, !tbaa !14
-  %11 = fmul float %9, %10
-  %12 = fadd float %7, %11
-  %13 = getelementptr inbounds [4 x float]* %m, i64 2, i64 %indvars.iv
-  %14 = load float* %13, align 4, !tbaa !14
-  %15 = load float* %2, align 4, !tbaa !14
-  %16 = fmul float %14, %15
-  %17 = fadd float %12, %16
-  %18 = getelementptr inbounds [4 x float]* %m, i64 3, i64 %indvars.iv
-  %19 = load float* %18, align 4, !tbaa !14
-  %20 = fadd float %19, %17
-  %21 = getelementptr inbounds float* %v, i64 %indvars.iv
-  store float %20, float* %21, align 4, !tbaa !14
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %exitcond = icmp eq i64 %indvars.iv.next, 4
-  br i1 %exitcond, label %22, label %3
+  %4 = getelementptr inbounds [4 x float]* %m, i64 0, i64 %indvars.iv, !dbg !307
+  %5 = load float* %4, align 4, !dbg !307, !tbaa !308
+  %6 = load float* %x, align 4, !dbg !310, !tbaa !308
+  %7 = fmul float %5, %6, !dbg !311
+  %8 = getelementptr inbounds [4 x float]* %m, i64 1, i64 %indvars.iv, !dbg !312
+  %9 = load float* %8, align 4, !dbg !312, !tbaa !308
+  %10 = load float* %1, align 4, !dbg !302, !tbaa !308
+  %11 = fmul float %9, %10, !dbg !313
+  %12 = fadd float %7, %11, !dbg !314
+  %13 = getelementptr inbounds [4 x float]* %m, i64 2, i64 %indvars.iv, !dbg !315
+  %14 = load float* %13, align 4, !dbg !315, !tbaa !308
+  %15 = load float* %2, align 4, !dbg !305, !tbaa !308
+  %16 = fmul float %14, %15, !dbg !316
+  %17 = fadd float %12, %16, !dbg !317
+  %18 = getelementptr inbounds [4 x float]* %m, i64 3, i64 %indvars.iv, !dbg !318
+  %19 = load float* %18, align 4, !dbg !318, !tbaa !308
+  %20 = fadd float %19, %17, !dbg !319
+  %21 = getelementptr inbounds float* %v, i64 %indvars.iv, !dbg !320
+  store float %20, float* %21, align 4, !dbg !321, !tbaa !308
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !306
+  %exitcond = icmp eq i64 %indvars.iv.next, 4, !dbg !306
+  br i1 %exitcond, label %22, label %3, !dbg !306
 
 ; <label>:22                                      ; preds = %3
-  ret void
+  ret void, !dbg !322
 }

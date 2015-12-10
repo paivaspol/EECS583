@@ -1,18 +1,19 @@
-define internal fastcc i8* @dbgstr(i8* %desc) #1 {
-  %1 = load %struct.t_fileio** @curfio, align 8, !tbaa !15
-  %2 = getelementptr inbounds %struct.t_fileio* %1, i64 0, i32 4
-  %3 = load i32* %2, align 4, !tbaa !25
-  %4 = icmp eq i32 %3, 0
-  br i1 %4, label %10, label %5
+define internal fastcc i8* @dbgstr(i8* %desc) #2 {
+  tail call void @llvm.dbg.value(metadata i8* %desc, i64 0, metadata !530, metadata !602), !dbg !1886
+  %1 = load %struct.t_fileio** @curfio, align 8, !dbg !1887, !tbaa !784
+  %2 = getelementptr inbounds %struct.t_fileio* %1, i64 0, i32 4, !dbg !1889
+  %3 = load i32* %2, align 4, !dbg !1889, !tbaa !926
+  %4 = icmp eq i32 %3, 0, !dbg !1887
+  br i1 %4, label %10, label %5, !dbg !1890
 
 ; <label>:5                                       ; preds = %0
-  %6 = load i8** @add_comment, align 8, !tbaa !15
-  %7 = icmp ne i8* %6, null
-  %8 = select i1 %7, i8* %6, i8* getelementptr inbounds ([1 x i8]* @.str64, i64 0, i64 0)
-  %9 = tail call i32 (i8*, i32, i64, i8*, ...)* @__sprintf_chk(i8* getelementptr inbounds ([4096 x i8]* @dbgstr.buf, i64 0, i64 0), i32 0, i64 4096, i8* getelementptr inbounds ([10 x i8]* @.str65, i64 0, i64 0), i8* %8, i8* %desc) #9
-  br label %10
+  %6 = load i8** @add_comment, align 8, !dbg !1891, !tbaa !784
+  %7 = icmp ne i8* %6, null, !dbg !1891
+  %8 = select i1 %7, i8* %6, i8* getelementptr inbounds ([1 x i8]* @.str64, i64 0, i64 0), !dbg !1891
+  %9 = tail call i32 (i8*, i32, i64, i8*, ...)* @__sprintf_chk(i8* getelementptr inbounds ([4096 x i8]* @dbgstr.buf, i64 0, i64 0), i32 0, i64 4096, i8* getelementptr inbounds ([10 x i8]* @.str65, i64 0, i64 0), i8* %8, i8* %desc) #10, !dbg !1891
+  br label %10, !dbg !1893
 
 ; <label>:10                                      ; preds = %0, %5
   %.0 = phi i8* [ getelementptr inbounds ([4096 x i8]* @dbgstr.buf, i64 0, i64 0), %5 ], [ getelementptr inbounds ([1 x i8]* @.str64, i64 0, i64 0), %0 ]
-  ret i8* %.0
+  ret i8* %.0, !dbg !1894
 }

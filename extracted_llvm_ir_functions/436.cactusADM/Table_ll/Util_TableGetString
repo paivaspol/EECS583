@@ -1,26 +1,32 @@
 define i32 @Util_TableGetString(i32 %handle, i32 %buffer_length, i8* %buffer, i8* %key) #1 {
-  %1 = add nsw i32 %buffer_length, -1
-  %2 = tail call fastcc i32 @internal_get(i32 %handle, i32 1, i32 %1, i8* %buffer, i8* %key) #9
-  %3 = icmp slt i32 %2, 0
-  br i1 %3, label %11, label %4
+  tail call void @llvm.dbg.value(metadata i32 %handle, i64 0, metadata !166, metadata !608), !dbg !1112
+  tail call void @llvm.dbg.value(metadata i32 %buffer_length, i64 0, metadata !167, metadata !608), !dbg !1113
+  tail call void @llvm.dbg.value(metadata i8* %buffer, i64 0, metadata !168, metadata !608), !dbg !1114
+  tail call void @llvm.dbg.value(metadata i8* %key, i64 0, metadata !169, metadata !608), !dbg !1115
+  %1 = add nsw i32 %buffer_length, -1, !dbg !1116
+  %2 = tail call fastcc i32 @internal_get(i32 %handle, i32 1, i32 %1, i8* %buffer, i8* %key) #9, !dbg !1117
+  tail call void @llvm.dbg.value(metadata i32 %2, i64 0, metadata !170, metadata !608), !dbg !1118
+  %3 = icmp slt i32 %2, 0, !dbg !1119
+  br i1 %3, label %11, label %4, !dbg !1121
 
 ; <label>:4                                       ; preds = %0
-  %5 = icmp eq i8* %buffer, null
-  br i1 %5, label %.critedge, label %6
+  %5 = icmp eq i8* %buffer, null, !dbg !1122
+  br i1 %5, label %.critedge, label %6, !dbg !1123
 
 ; <label>:6                                       ; preds = %4
-  %7 = icmp slt i32 %2, %1
-  %. = select i1 %7, i32 %2, i32 %1
-  %8 = sext i32 %. to i64
-  %9 = getelementptr inbounds i8* %buffer, i64 %8
-  store i8 0, i8* %9, align 1, !tbaa !18
-  %10 = icmp sgt i32 %2, %1
-  br i1 %10, label %11, label %.critedge
+  %7 = icmp slt i32 %2, %1, !dbg !1124
+  %. = select i1 %7, i32 %2, i32 %1, !dbg !1124
+  tail call void @llvm.dbg.value(metadata i32 %., i64 0, metadata !171, metadata !608), !dbg !1125
+  %8 = sext i32 %. to i64, !dbg !1126
+  %9 = getelementptr inbounds i8* %buffer, i64 %8, !dbg !1126
+  store i8 0, i8* %9, align 1, !dbg !1127, !tbaa !920
+  %10 = icmp sgt i32 %2, %1, !dbg !1128
+  br i1 %10, label %11, label %.critedge, !dbg !1129
 
 .critedge:                                        ; preds = %4, %6
-  br label %11
+  br label %11, !dbg !1130
 
 ; <label>:11                                      ; preds = %.critedge, %6, %0
   %.0 = phi i32 [ %2, %0 ], [ %2, %.critedge ], [ -102, %6 ]
-  ret i32 %.0
+  ret i32 %.0, !dbg !1131
 }

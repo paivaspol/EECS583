@@ -1,298 +1,336 @@
-define i32 @FrontMtx_writeForHumanEye(%struct._FrontMtx* %frontmtx, %struct._IO_FILE* %fp) #0 {
-entry:
+define i32 @FrontMtx_writeForHumanEye(%struct._FrontMtx* %frontmtx, %struct.__sFILE* %fp) #0 {
   %nadj = alloca i32, align 4
   %adj = alloca i32*, align 8
-  %cmp = icmp eq %struct._FrontMtx* %frontmtx, null
-  %cmp1 = icmp eq %struct._IO_FILE* %fp, null
-  %or.cond = or i1 %cmp, %cmp1
-  br i1 %or.cond, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata %struct._FrontMtx* %frontmtx, i64 0, metadata !323, metadata !387), !dbg !2312
+  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %fp, i64 0, metadata !324, metadata !387), !dbg !2313
+  %1 = icmp eq %struct._FrontMtx* %frontmtx, null, !dbg !2314
+  %2 = icmp eq %struct.__sFILE* %fp, null, !dbg !2316
+  %or.cond = or i1 %1, %2, !dbg !2317
+  br i1 %or.cond, label %3, label %6, !dbg !2317
 
-if.then:                                          ; preds = %entry
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([62 x i8]* @.str71, i64 0, i64 0), %struct._FrontMtx* %frontmtx, %struct._IO_FILE* %fp) #6
-  call void @exit(i32 -1) #9
-  unreachable
+; <label>:3                                       ; preds = %0
+  %4 = load %struct.__sFILE** @__stderrp, align 8, !dbg !2318, !tbaa !396
+  %5 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %4, i8* getelementptr inbounds ([62 x i8]* @.str71, i64 0, i64 0), %struct._FrontMtx* %frontmtx, %struct.__sFILE* %fp) #7, !dbg !2320
+  tail call void @exit(i32 -1) #9, !dbg !2321
+  unreachable, !dbg !2321
 
-if.end:                                           ; preds = %entry
-  %nfront2 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 0
-  %1 = load i32* %nfront2, align 4, !tbaa !3
-  %call3 = call i32 @FrontMtx_writeStats(%struct._FrontMtx* %frontmtx, %struct._IO_FILE* %fp) #8
-  %frontETree = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 11
-  %2 = load %struct._ETree** %frontETree, align 8, !tbaa !0
-  %cmp4 = icmp eq %struct._ETree* %2, null
-  br i1 %cmp4, label %if.end10, label %if.then5
+; <label>:6                                       ; preds = %0
+  %7 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 0, !dbg !2322
+  %8 = load i32* %7, align 4, !dbg !2322, !tbaa !477
+  tail call void @llvm.dbg.value(metadata i32 %8, i64 0, metadata !330, metadata !387), !dbg !2323
+  %9 = tail call i32 @FrontMtx_writeStats(%struct._FrontMtx* %frontmtx, %struct.__sFILE* %fp) #8, !dbg !2324
+  %10 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 11, !dbg !2325
+  %11 = load %struct._ETree** %10, align 8, !dbg !2325, !tbaa !514
+  %12 = icmp eq %struct._ETree* %11, null, !dbg !2327
+  br i1 %12, label %18, label %13, !dbg !2328
 
-if.then5:                                         ; preds = %if.end
-  %3 = call i64 @fwrite(i8* getelementptr inbounds ([30 x i8]* @.str72, i64 0, i64 0), i64 29, i64 1, %struct._IO_FILE* %fp) #3
-  %4 = load %struct._ETree** %frontETree, align 8, !tbaa !0
-  %call8 = call i32 @ETree_writeForHumanEye(%struct._ETree* %4, %struct._IO_FILE* %fp) #6
-  %call9 = call i32 @fflush(%struct._IO_FILE* %fp) #6
-  br label %if.end10
+; <label>:13                                      ; preds = %6
+  %14 = tail call i64 @fwrite(i8* getelementptr inbounds ([30 x i8]* @.str72, i64 0, i64 0), i64 29, i64 1, %struct.__sFILE* %fp), !dbg !2329
+  %15 = load %struct._ETree** %10, align 8, !dbg !2331, !tbaa !514
+  %16 = tail call i32 @ETree_writeForHumanEye(%struct._ETree* %15, %struct.__sFILE* %fp) #7, !dbg !2332
+  %17 = tail call i32 @fflush(%struct.__sFILE* %fp) #7, !dbg !2333
+  br label %18, !dbg !2334
 
-if.end10:                                         ; preds = %if.end, %if.then5
-  %symbfacIVL = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 13
-  %5 = load %struct._IVL** %symbfacIVL, align 8, !tbaa !0
-  %cmp11 = icmp eq %struct._IVL* %5, null
-  br i1 %cmp11, label %if.end17, label %if.then12
+; <label>:18                                      ; preds = %6, %13
+  %19 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 13, !dbg !2335
+  %20 = load %struct._IVL** %19, align 8, !dbg !2335, !tbaa !533
+  %21 = icmp eq %struct._IVL* %20, null, !dbg !2337
+  br i1 %21, label %27, label %22, !dbg !2338
 
-if.then12:                                        ; preds = %if.end10
-  %6 = call i64 @fwrite(i8* getelementptr inbounds ([25 x i8]* @.str73, i64 0, i64 0), i64 24, i64 1, %struct._IO_FILE* %fp) #3
-  %7 = load %struct._IVL** %symbfacIVL, align 8, !tbaa !0
-  %call15 = call i32 @IVL_writeForHumanEye(%struct._IVL* %7, %struct._IO_FILE* %fp) #6
-  %call16 = call i32 @fflush(%struct._IO_FILE* %fp) #6
-  br label %if.end17
+; <label>:22                                      ; preds = %18
+  %23 = tail call i64 @fwrite(i8* getelementptr inbounds ([25 x i8]* @.str73, i64 0, i64 0), i64 24, i64 1, %struct.__sFILE* %fp), !dbg !2339
+  %24 = load %struct._IVL** %19, align 8, !dbg !2341, !tbaa !533
+  %25 = tail call i32 @IVL_writeForHumanEye(%struct._IVL* %24, %struct.__sFILE* %fp) #7, !dbg !2342
+  %26 = tail call i32 @fflush(%struct.__sFILE* %fp) #7, !dbg !2343
+  br label %27, !dbg !2344
 
-if.end17:                                         ; preds = %if.end10, %if.then12
-  %frontsizesIV = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 12
-  %8 = load %struct._IV** %frontsizesIV, align 8, !tbaa !0
-  %cmp18 = icmp eq %struct._IV* %8, null
-  br i1 %cmp18, label %if.end24, label %if.then19
+; <label>:27                                      ; preds = %18, %22
+  %28 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 12, !dbg !2345
+  %29 = load %struct._IV** %28, align 8, !dbg !2345, !tbaa !549
+  %30 = icmp eq %struct._IV* %29, null, !dbg !2347
+  br i1 %30, label %36, label %31, !dbg !2348
 
-if.then19:                                        ; preds = %if.end17
-  %9 = call i64 @fwrite(i8* getelementptr inbounds ([26 x i8]* @.str74, i64 0, i64 0), i64 25, i64 1, %struct._IO_FILE* %fp) #3
-  %10 = load %struct._IV** %frontsizesIV, align 8, !tbaa !0
-  %call22 = call i32 @IV_writeForHumanEye(%struct._IV* %10, %struct._IO_FILE* %fp) #6
-  %call23 = call i32 @fflush(%struct._IO_FILE* %fp) #6
-  br label %if.end24
+; <label>:31                                      ; preds = %27
+  %32 = tail call i64 @fwrite(i8* getelementptr inbounds ([26 x i8]* @.str74, i64 0, i64 0), i64 25, i64 1, %struct.__sFILE* %fp), !dbg !2349
+  %33 = load %struct._IV** %28, align 8, !dbg !2351, !tbaa !549
+  %34 = tail call i32 @IV_writeForHumanEye(%struct._IV* %33, %struct.__sFILE* %fp) #7, !dbg !2352
+  %35 = tail call i32 @fflush(%struct.__sFILE* %fp) #7, !dbg !2353
+  br label %36, !dbg !2354
 
-if.end24:                                         ; preds = %if.end17, %if.then19
-  %rowadjIVL = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 14
-  %11 = load %struct._IVL** %rowadjIVL, align 8, !tbaa !0
-  %cmp25 = icmp eq %struct._IVL* %11, null
-  br i1 %cmp25, label %if.end31, label %if.then26
+; <label>:36                                      ; preds = %27, %31
+  %37 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 14, !dbg !2355
+  %38 = load %struct._IVL** %37, align 8, !dbg !2355, !tbaa !581
+  %39 = icmp eq %struct._IVL* %38, null, !dbg !2357
+  br i1 %39, label %45, label %40, !dbg !2358
 
-if.then26:                                        ; preds = %if.end24
-  %12 = call i64 @fwrite(i8* getelementptr inbounds ([21 x i8]* @.str75, i64 0, i64 0), i64 20, i64 1, %struct._IO_FILE* %fp) #3
-  %13 = load %struct._IVL** %rowadjIVL, align 8, !tbaa !0
-  %call29 = call i32 @IVL_writeForHumanEye(%struct._IVL* %13, %struct._IO_FILE* %fp) #6
-  %call30 = call i32 @fflush(%struct._IO_FILE* %fp) #6
-  br label %if.end31
+; <label>:40                                      ; preds = %36
+  %41 = tail call i64 @fwrite(i8* getelementptr inbounds ([21 x i8]* @.str75, i64 0, i64 0), i64 20, i64 1, %struct.__sFILE* %fp), !dbg !2359
+  %42 = load %struct._IVL** %37, align 8, !dbg !2361, !tbaa !581
+  %43 = tail call i32 @IVL_writeForHumanEye(%struct._IVL* %42, %struct.__sFILE* %fp) #7, !dbg !2362
+  %44 = tail call i32 @fflush(%struct.__sFILE* %fp) #7, !dbg !2363
+  br label %45, !dbg !2364
 
-if.end31:                                         ; preds = %if.end24, %if.then26
-  %coladjIVL = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 15
-  %14 = load %struct._IVL** %coladjIVL, align 8, !tbaa !0
-  %cmp32 = icmp eq %struct._IVL* %14, null
-  br i1 %cmp32, label %if.end38, label %if.then33
+; <label>:45                                      ; preds = %36, %40
+  %46 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 15, !dbg !2365
+  %47 = load %struct._IVL** %46, align 8, !dbg !2365, !tbaa !595
+  %48 = icmp eq %struct._IVL* %47, null, !dbg !2367
+  br i1 %48, label %54, label %49, !dbg !2368
 
-if.then33:                                        ; preds = %if.end31
-  %15 = call i64 @fwrite(i8* getelementptr inbounds ([21 x i8]* @.str76, i64 0, i64 0), i64 20, i64 1, %struct._IO_FILE* %fp) #3
-  %16 = load %struct._IVL** %coladjIVL, align 8, !tbaa !0
-  %call36 = call i32 @IVL_writeForHumanEye(%struct._IVL* %16, %struct._IO_FILE* %fp) #6
-  %call37 = call i32 @fflush(%struct._IO_FILE* %fp) #6
-  br label %if.end38
+; <label>:49                                      ; preds = %45
+  %50 = tail call i64 @fwrite(i8* getelementptr inbounds ([21 x i8]* @.str76, i64 0, i64 0), i64 20, i64 1, %struct.__sFILE* %fp), !dbg !2369
+  %51 = load %struct._IVL** %46, align 8, !dbg !2371, !tbaa !595
+  %52 = tail call i32 @IVL_writeForHumanEye(%struct._IVL* %51, %struct.__sFILE* %fp) #7, !dbg !2372
+  %53 = tail call i32 @fflush(%struct.__sFILE* %fp) #7, !dbg !2373
+  br label %54, !dbg !2374
 
-if.end38:                                         ; preds = %if.end31, %if.then33
-  %lowerblockIVL = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 16
-  %17 = load %struct._IVL** %lowerblockIVL, align 8, !tbaa !0
-  %cmp39 = icmp eq %struct._IVL* %17, null
-  br i1 %cmp39, label %if.end45, label %if.then40
+; <label>:54                                      ; preds = %45, %49
+  %55 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 16, !dbg !2375
+  %56 = load %struct._IVL** %55, align 8, !dbg !2375, !tbaa !859
+  %57 = icmp eq %struct._IVL* %56, null, !dbg !2377
+  br i1 %57, label %63, label %58, !dbg !2378
 
-if.then40:                                        ; preds = %if.end38
-  %18 = call i64 @fwrite(i8* getelementptr inbounds ([36 x i8]* @.str77, i64 0, i64 0), i64 35, i64 1, %struct._IO_FILE* %fp) #3
-  %19 = load %struct._IVL** %lowerblockIVL, align 8, !tbaa !0
-  %call43 = call i32 @IVL_writeForHumanEye(%struct._IVL* %19, %struct._IO_FILE* %fp) #6
-  %call44 = call i32 @fflush(%struct._IO_FILE* %fp) #6
-  br label %if.end45
+; <label>:58                                      ; preds = %54
+  %59 = tail call i64 @fwrite(i8* getelementptr inbounds ([36 x i8]* @.str77, i64 0, i64 0), i64 35, i64 1, %struct.__sFILE* %fp), !dbg !2379
+  %60 = load %struct._IVL** %55, align 8, !dbg !2381, !tbaa !859
+  %61 = tail call i32 @IVL_writeForHumanEye(%struct._IVL* %60, %struct.__sFILE* %fp) #7, !dbg !2382
+  %62 = tail call i32 @fflush(%struct.__sFILE* %fp) #7, !dbg !2383
+  br label %63, !dbg !2384
 
-if.end45:                                         ; preds = %if.end38, %if.then40
-  %upperblockIVL = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 17
-  %20 = load %struct._IVL** %upperblockIVL, align 8, !tbaa !0
-  %cmp46 = icmp eq %struct._IVL* %20, null
-  br i1 %cmp46, label %if.end52, label %if.then47
+; <label>:63                                      ; preds = %54, %58
+  %64 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 17, !dbg !2385
+  %65 = load %struct._IVL** %64, align 8, !dbg !2385, !tbaa !873
+  %66 = icmp eq %struct._IVL* %65, null, !dbg !2387
+  br i1 %66, label %72, label %67, !dbg !2388
 
-if.then47:                                        ; preds = %if.end45
-  %21 = call i64 @fwrite(i8* getelementptr inbounds ([36 x i8]* @.str78, i64 0, i64 0), i64 35, i64 1, %struct._IO_FILE* %fp) #3
-  %22 = load %struct._IVL** %upperblockIVL, align 8, !tbaa !0
-  %call50 = call i32 @IVL_writeForHumanEye(%struct._IVL* %22, %struct._IO_FILE* %fp) #6
-  %call51 = call i32 @fflush(%struct._IO_FILE* %fp) #6
-  br label %if.end52
+; <label>:67                                      ; preds = %63
+  %68 = tail call i64 @fwrite(i8* getelementptr inbounds ([36 x i8]* @.str78, i64 0, i64 0), i64 35, i64 1, %struct.__sFILE* %fp), !dbg !2389
+  %69 = load %struct._IVL** %64, align 8, !dbg !2391, !tbaa !873
+  %70 = tail call i32 @IVL_writeForHumanEye(%struct._IVL* %69, %struct.__sFILE* %fp) #7, !dbg !2392
+  %71 = tail call i32 @fflush(%struct.__sFILE* %fp) #7, !dbg !2393
+  br label %72, !dbg !2394
 
-if.end52:                                         ; preds = %if.end45, %if.then47
-  %symmetryflag = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 3
-  %23 = load i32* %symmetryflag, align 4, !tbaa !3
-  %cmp53 = icmp eq i32 %23, 2
-  br i1 %cmp53, label %if.then54, label %if.end88
+; <label>:72                                      ; preds = %63, %67
+  %73 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 3, !dbg !2395
+  %74 = load i32* %73, align 4, !dbg !2395, !tbaa !489
+  %75 = icmp eq i32 %74, 2, !dbg !2395
+  br i1 %75, label %76, label %.loopexit3, !dbg !2397
 
-if.then54:                                        ; preds = %if.end52
-  %24 = call i64 @fwrite(i8* getelementptr inbounds ([21 x i8]* @.str79, i64 0, i64 0), i64 20, i64 1, %struct._IO_FILE* %fp) #3
-  %cmp56272 = icmp sgt i32 %1, 0
-  br i1 %cmp56272, label %for.body.lr.ph, label %if.end88.thread
+; <label>:76                                      ; preds = %72
+  %77 = tail call i64 @fwrite(i8* getelementptr inbounds ([21 x i8]* @.str79, i64 0, i64 0), i64 20, i64 1, %struct.__sFILE* %fp), !dbg !2398
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !327, metadata !387), !dbg !2400
+  %78 = icmp sgt i32 %8, 0, !dbg !2401
+  br i1 %78, label %.lr.ph20, label %.loopexit3.thread, !dbg !2404
 
-if.end88.thread:                                  ; preds = %if.then54
-  %25 = call i64 @fwrite(i8* getelementptr inbounds ([24 x i8]* @.str82, i64 0, i64 0), i64 23, i64 1, %struct._IO_FILE* %fp) #3
-  %26 = call i64 @fwrite(i8* getelementptr inbounds ([21 x i8]* @.str84, i64 0, i64 0), i64 20, i64 1, %struct._IO_FILE* %fp) #3
-  br label %for.end145
+.loopexit3.thread:                                ; preds = %76
+  %79 = call i64 @fwrite(i8* getelementptr inbounds ([24 x i8]* @.str82, i64 0, i64 0), i64 23, i64 1, %struct.__sFILE* %fp), !dbg !2405
+  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !327, metadata !387), !dbg !2400
+  %80 = call i64 @fwrite(i8* getelementptr inbounds ([21 x i8]* @.str84, i64 0, i64 0), i64 20, i64 1, %struct.__sFILE* %fp), !dbg !2406
+  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !327, metadata !387), !dbg !2400
+  br label %._crit_edge
 
-for.body.lr.ph:                                   ; preds = %if.then54
-  %dataMode = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 6
-  br label %for.body
+.lr.ph20:                                         ; preds = %76
+  %81 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 6, !dbg !2407
+  %82 = add i32 %8, -1, !dbg !2404
+  br label %83, !dbg !2404
 
-for.body:                                         ; preds = %for.inc85, %for.body.lr.ph
-  %J.0273 = phi i32 [ 0, %for.body.lr.ph ], [ %inc86, %for.inc85 ]
-  %call57 = call %struct._SubMtx* @FrontMtx_lowerMtx(%struct._FrontMtx* %frontmtx, i32 %J.0273, i32 %J.0273) #6
-  %cmp58 = icmp eq %struct._SubMtx* %call57, null
-  br i1 %cmp58, label %if.end63, label %if.then59
+; <label>:83                                      ; preds = %.loopexit2, %.lr.ph20
+  %J.016 = phi i32 [ 0, %.lr.ph20 ], [ %118, %.loopexit2 ]
+  %84 = call %struct._SubMtx* @FrontMtx_lowerMtx(%struct._FrontMtx* %frontmtx, i32 %J.016, i32 %J.016) #7, !dbg !2410
+  call void @llvm.dbg.value(metadata %struct._SubMtx* %84, i64 0, metadata !325, metadata !387), !dbg !2411
+  %85 = icmp eq %struct._SubMtx* %84, null, !dbg !2412
+  br i1 %85, label %90, label %86, !dbg !2414
 
-if.then59:                                        ; preds = %for.body
-  %27 = call i64 @fwrite(i8* getelementptr inbounds ([35 x i8]* @.str80, i64 0, i64 0), i64 34, i64 1, %struct._IO_FILE* %fp) #3
-  %call61 = call i32 @SubMtx_writeForHumanEye(%struct._SubMtx* %call57, %struct._IO_FILE* %fp) #6
-  %call62 = call i32 @fflush(%struct._IO_FILE* %fp) #6
-  br label %if.end63
+; <label>:86                                      ; preds = %83
+  %87 = call i64 @fwrite(i8* getelementptr inbounds ([35 x i8]* @.str80, i64 0, i64 0), i64 34, i64 1, %struct.__sFILE* %fp), !dbg !2415
+  %88 = call i32 @SubMtx_writeForHumanEye(%struct._SubMtx* %84, %struct.__sFILE* %fp) #7, !dbg !2417
+  %89 = call i32 @fflush(%struct.__sFILE* %fp) #7, !dbg !2418
+  br label %90, !dbg !2419
 
-if.end63:                                         ; preds = %for.body, %if.then59
-  %28 = load i32* %dataMode, align 4, !tbaa !3
-  %cmp64 = icmp eq i32 %28, 1
-  br i1 %cmp64, label %if.then65, label %if.else
+; <label>:90                                      ; preds = %83, %86
+  %91 = load i32* %81, align 4, !dbg !2407, !tbaa !500
+  %92 = icmp eq i32 %91, 1, !dbg !2407
+  br i1 %92, label %93, label %100, !dbg !2420
 
-if.then65:                                        ; preds = %if.end63
-  %call66 = call %struct._SubMtx* @FrontMtx_lowerMtx(%struct._FrontMtx* %frontmtx, i32 %1, i32 %J.0273) #6
-  %cmp67 = icmp eq %struct._SubMtx* %call66, null
-  br i1 %cmp67, label %for.inc85, label %if.then68
+; <label>:93                                      ; preds = %90
+  %94 = call %struct._SubMtx* @FrontMtx_lowerMtx(%struct._FrontMtx* %frontmtx, i32 %8, i32 %J.016) #7, !dbg !2421
+  call void @llvm.dbg.value(metadata %struct._SubMtx* %94, i64 0, metadata !325, metadata !387), !dbg !2411
+  %95 = icmp eq %struct._SubMtx* %94, null, !dbg !2423
+  br i1 %95, label %.loopexit2, label %96, !dbg !2425
 
-if.then68:                                        ; preds = %if.then65
-  %29 = call i64 @fwrite(i8* getelementptr inbounds ([23 x i8]* @.str81, i64 0, i64 0), i64 22, i64 1, %struct._IO_FILE* %fp) #3
-  %call70 = call i32 @SubMtx_writeForHumanEye(%struct._SubMtx* %call66, %struct._IO_FILE* %fp) #6
-  %call71 = call i32 @fflush(%struct._IO_FILE* %fp) #6
-  br label %for.inc85
+; <label>:96                                      ; preds = %93
+  %97 = call i64 @fwrite(i8* getelementptr inbounds ([23 x i8]* @.str81, i64 0, i64 0), i64 22, i64 1, %struct.__sFILE* %fp), !dbg !2426
+  %98 = call i32 @SubMtx_writeForHumanEye(%struct._SubMtx* %94, %struct.__sFILE* %fp) #7, !dbg !2428
+  %99 = call i32 @fflush(%struct.__sFILE* %fp) #7, !dbg !2429
+  br label %.loopexit2, !dbg !2430
 
-if.else:                                          ; preds = %if.end63
-  call void @FrontMtx_lowerAdjFronts(%struct._FrontMtx* %frontmtx, i32 %J.0273, i32* %nadj, i32** %adj) #6
-  %30 = load i32* %nadj, align 4, !tbaa !3
-  %cmp74270 = icmp sgt i32 %30, 0
-  br i1 %cmp74270, label %for.body75, label %for.inc85
+; <label>:100                                     ; preds = %90
+  call void @llvm.dbg.value(metadata i32* %nadj, i64 0, metadata !329, metadata !387), !dbg !2431
+  call void @llvm.dbg.value(metadata i32** %adj, i64 0, metadata !331, metadata !387), !dbg !2432
+  call void @FrontMtx_lowerAdjFronts(%struct._FrontMtx* %frontmtx, i32 %J.016, i32* %nadj, i32** %adj) #7, !dbg !2433
+  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !326, metadata !387), !dbg !2435
+  call void @llvm.dbg.value(metadata i32* %nadj, i64 0, metadata !329, metadata !387), !dbg !2431
+  %101 = load i32* %nadj, align 4, !dbg !2436, !tbaa !710
+  %102 = icmp sgt i32 %101, 0, !dbg !2439
+  br i1 %102, label %.lr.ph15, label %.loopexit2, !dbg !2440
 
-for.body75:                                       ; preds = %for.inc, %if.else
-  %indvars.iv277 = phi i64 [ 0, %if.else ], [ %indvars.iv.next278, %for.inc ]
-  %31 = load i32** %adj, align 8, !tbaa !0
-  %arrayidx = getelementptr inbounds i32* %31, i64 %indvars.iv277
-  %32 = load i32* %arrayidx, align 4, !tbaa !3
-  %cmp76 = icmp sgt i32 %32, %J.0273
-  br i1 %cmp76, label %land.lhs.true, label %for.inc
+.lr.ph15:                                         ; preds = %100, %114
+  %indvars.iv22 = phi i64 [ %indvars.iv.next23, %114 ], [ 0, %100 ]
+  call void @llvm.dbg.value(metadata i32** %adj, i64 0, metadata !331, metadata !387), !dbg !2432
+  %103 = load i32** %adj, align 8, !dbg !2441, !tbaa !396
+  %104 = getelementptr inbounds i32* %103, i64 %indvars.iv22, !dbg !2441
+  %105 = load i32* %104, align 4, !dbg !2441, !tbaa !710
+  call void @llvm.dbg.value(metadata i32 %105, i64 0, metadata !328, metadata !387), !dbg !2444
+  %106 = icmp sgt i32 %105, %J.016, !dbg !2445
+  br i1 %106, label %107, label %114, !dbg !2446
 
-land.lhs.true:                                    ; preds = %for.body75
-  %call77 = call %struct._SubMtx* @FrontMtx_lowerMtx(%struct._FrontMtx* %frontmtx, i32 %32, i32 %J.0273) #6
-  %cmp78 = icmp eq %struct._SubMtx* %call77, null
-  br i1 %cmp78, label %for.inc, label %if.then79
+; <label>:107                                     ; preds = %.lr.ph15
+  %108 = call %struct._SubMtx* @FrontMtx_lowerMtx(%struct._FrontMtx* %frontmtx, i32 %105, i32 %J.016) #7, !dbg !2447
+  call void @llvm.dbg.value(metadata %struct._SubMtx* %108, i64 0, metadata !325, metadata !387), !dbg !2411
+  %109 = icmp eq %struct._SubMtx* %108, null, !dbg !2448
+  br i1 %109, label %114, label %110, !dbg !2449
 
-if.then79:                                        ; preds = %land.lhs.true
-  %33 = call i64 @fwrite(i8* getelementptr inbounds ([23 x i8]* @.str81, i64 0, i64 0), i64 22, i64 1, %struct._IO_FILE* %fp) #3
-  %call81 = call i32 @SubMtx_writeForHumanEye(%struct._SubMtx* %call77, %struct._IO_FILE* %fp) #6
-  %call82 = call i32 @fflush(%struct._IO_FILE* %fp) #6
-  br label %for.inc
+; <label>:110                                     ; preds = %107
+  %111 = call i64 @fwrite(i8* getelementptr inbounds ([23 x i8]* @.str81, i64 0, i64 0), i64 22, i64 1, %struct.__sFILE* %fp), !dbg !2450
+  %112 = call i32 @SubMtx_writeForHumanEye(%struct._SubMtx* %108, %struct.__sFILE* %fp) #7, !dbg !2452
+  %113 = call i32 @fflush(%struct.__sFILE* %fp) #7, !dbg !2453
+  br label %114, !dbg !2454
 
-for.inc:                                          ; preds = %land.lhs.true, %for.body75, %if.then79
-  %indvars.iv.next278 = add i64 %indvars.iv277, 1
-  %34 = load i32* %nadj, align 4, !tbaa !3
-  %35 = trunc i64 %indvars.iv.next278 to i32
-  %cmp74 = icmp slt i32 %35, %34
-  br i1 %cmp74, label %for.body75, label %for.inc85
+; <label>:114                                     ; preds = %107, %.lr.ph15, %110
+  %indvars.iv.next23 = add nuw nsw i64 %indvars.iv22, 1, !dbg !2440
+  call void @llvm.dbg.value(metadata i32* %nadj, i64 0, metadata !329, metadata !387), !dbg !2431
+  %115 = load i32* %nadj, align 4, !dbg !2436, !tbaa !710
+  %116 = sext i32 %115 to i64, !dbg !2439
+  %117 = icmp slt i64 %indvars.iv.next23, %116, !dbg !2439
+  br i1 %117, label %.lr.ph15, label %.loopexit2, !dbg !2440
 
-for.inc85:                                        ; preds = %if.else, %for.inc, %if.then65, %if.then68
-  %inc86 = add nsw i32 %J.0273, 1
-  %exitcond279 = icmp eq i32 %inc86, %1
-  br i1 %exitcond279, label %if.end88, label %for.body
+.loopexit2:                                       ; preds = %114, %100, %93, %96
+  %118 = add nuw nsw i32 %J.016, 1, !dbg !2455
+  call void @llvm.dbg.value(metadata i32 %118, i64 0, metadata !327, metadata !387), !dbg !2400
+  %exitcond24 = icmp eq i32 %J.016, %82, !dbg !2404
+  br i1 %exitcond24, label %.loopexit3, label %83, !dbg !2404
 
-if.end88:                                         ; preds = %for.inc85, %if.end52
-  %36 = call i64 @fwrite(i8* getelementptr inbounds ([24 x i8]* @.str82, i64 0, i64 0), i64 23, i64 1, %struct._IO_FILE* %fp) #3
-  %cmp91268 = icmp sgt i32 %1, 0
-  br i1 %cmp91268, label %for.body92, label %for.end102.thread
+.loopexit3:                                       ; preds = %.loopexit2, %72
+  %119 = call i64 @fwrite(i8* getelementptr inbounds ([24 x i8]* @.str82, i64 0, i64 0), i64 23, i64 1, %struct.__sFILE* %fp), !dbg !2405
+  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !327, metadata !387), !dbg !2400
+  %120 = icmp sgt i32 %8, 0, !dbg !2456
+  br i1 %120, label %.lr.ph11, label %._crit_edge12.thread, !dbg !2459
 
-for.end102.thread:                                ; preds = %if.end88
-  %37 = call i64 @fwrite(i8* getelementptr inbounds ([21 x i8]* @.str84, i64 0, i64 0), i64 20, i64 1, %struct._IO_FILE* %fp) #3
-  br label %for.end145
+._crit_edge12.thread:                             ; preds = %.loopexit3
+  %121 = call i64 @fwrite(i8* getelementptr inbounds ([21 x i8]* @.str84, i64 0, i64 0), i64 20, i64 1, %struct.__sFILE* %fp), !dbg !2406
+  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !327, metadata !387), !dbg !2400
+  br label %._crit_edge, !dbg !2460
 
-for.body92:                                       ; preds = %if.end88, %if.end98
-  %J.1269 = phi i32 [ %inc101, %if.end98 ], [ 0, %if.end88 ]
-  %call93 = call %struct._SubMtx* @FrontMtx_diagMtx(%struct._FrontMtx* %frontmtx, i32 %J.1269) #6
-  %cmp94 = icmp eq %struct._SubMtx* %call93, null
-  br i1 %cmp94, label %if.end98, label %if.then95
+.lr.ph11:                                         ; preds = %.loopexit3
+  %122 = add i32 %8, -1, !dbg !2459
+  br label %123, !dbg !2459
 
-if.then95:                                        ; preds = %for.body92
-  %38 = call i64 @fwrite(i8* getelementptr inbounds ([26 x i8]* @.str83, i64 0, i64 0), i64 25, i64 1, %struct._IO_FILE* %fp) #3
-  %call97 = call i32 @SubMtx_writeForHumanEye(%struct._SubMtx* %call93, %struct._IO_FILE* %fp) #6
-  br label %if.end98
+; <label>:123                                     ; preds = %129, %.lr.ph11
+  %J.19 = phi i32 [ 0, %.lr.ph11 ], [ %131, %129 ]
+  %124 = call %struct._SubMtx* @FrontMtx_diagMtx(%struct._FrontMtx* %frontmtx, i32 %J.19) #7, !dbg !2462
+  call void @llvm.dbg.value(metadata %struct._SubMtx* %124, i64 0, metadata !325, metadata !387), !dbg !2411
+  %125 = icmp eq %struct._SubMtx* %124, null, !dbg !2464
+  br i1 %125, label %129, label %126, !dbg !2466
 
-if.end98:                                         ; preds = %for.body92, %if.then95
-  %call99 = call i32 @fflush(%struct._IO_FILE* %fp) #6
-  %inc101 = add nsw i32 %J.1269, 1
-  %exitcond276 = icmp eq i32 %inc101, %1
-  br i1 %exitcond276, label %for.end102, label %for.body92
+; <label>:126                                     ; preds = %123
+  %127 = call i64 @fwrite(i8* getelementptr inbounds ([26 x i8]* @.str83, i64 0, i64 0), i64 25, i64 1, %struct.__sFILE* %fp), !dbg !2467
+  %128 = call i32 @SubMtx_writeForHumanEye(%struct._SubMtx* %124, %struct.__sFILE* %fp) #7, !dbg !2469
+  br label %129, !dbg !2470
 
-for.end102:                                       ; preds = %if.end98
-  %39 = call i64 @fwrite(i8* getelementptr inbounds ([21 x i8]* @.str84, i64 0, i64 0), i64 20, i64 1, %struct._IO_FILE* %fp) #3
-  br i1 %cmp91268, label %for.body106.lr.ph, label %for.end145
+; <label>:129                                     ; preds = %123, %126
+  %130 = call i32 @fflush(%struct.__sFILE* %fp) #7, !dbg !2471
+  %131 = add nuw nsw i32 %J.19, 1, !dbg !2472
+  call void @llvm.dbg.value(metadata i32 %131, i64 0, metadata !327, metadata !387), !dbg !2400
+  %exitcond21 = icmp eq i32 %J.19, %122, !dbg !2459
+  br i1 %exitcond21, label %._crit_edge12, label %123, !dbg !2459
 
-for.body106.lr.ph:                                ; preds = %for.end102
-  %dataMode114 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 6
-  br label %for.body106
+._crit_edge12:                                    ; preds = %129
+  %132 = call i64 @fwrite(i8* getelementptr inbounds ([21 x i8]* @.str84, i64 0, i64 0), i64 20, i64 1, %struct.__sFILE* %fp), !dbg !2406
+  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !327, metadata !387), !dbg !2400
+  br i1 %120, label %.lr.ph8, label %._crit_edge, !dbg !2460
 
-for.body106:                                      ; preds = %for.inc143, %for.body106.lr.ph
-  %J.2265 = phi i32 [ 0, %for.body106.lr.ph ], [ %inc144, %for.inc143 ]
-  %call107 = call %struct._SubMtx* @FrontMtx_upperMtx(%struct._FrontMtx* %frontmtx, i32 %J.2265, i32 %J.2265) #6
-  %cmp108 = icmp eq %struct._SubMtx* %call107, null
-  br i1 %cmp108, label %if.end113, label %if.then109
+.lr.ph8:                                          ; preds = %._crit_edge12
+  %133 = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 6, !dbg !2473
+  %134 = add i32 %8, -1, !dbg !2460
+  br label %135, !dbg !2460
 
-if.then109:                                       ; preds = %for.body106
-  %40 = call i64 @fwrite(i8* getelementptr inbounds ([36 x i8]* @.str85, i64 0, i64 0), i64 35, i64 1, %struct._IO_FILE* %fp) #3
-  %call111 = call i32 @SubMtx_writeForHumanEye(%struct._SubMtx* %call107, %struct._IO_FILE* %fp) #6
-  %call112 = call i32 @fflush(%struct._IO_FILE* %fp) #6
-  br label %if.end113
+; <label>:135                                     ; preds = %.loopexit, %.lr.ph8
+  %J.25 = phi i32 [ 0, %.lr.ph8 ], [ %170, %.loopexit ]
+  %136 = call %struct._SubMtx* @FrontMtx_upperMtx(%struct._FrontMtx* %frontmtx, i32 %J.25, i32 %J.25) #7, !dbg !2477
+  call void @llvm.dbg.value(metadata %struct._SubMtx* %136, i64 0, metadata !325, metadata !387), !dbg !2411
+  %137 = icmp eq %struct._SubMtx* %136, null, !dbg !2478
+  br i1 %137, label %142, label %138, !dbg !2480
 
-if.end113:                                        ; preds = %for.body106, %if.then109
-  %41 = load i32* %dataMode114, align 4, !tbaa !3
-  %cmp115 = icmp eq i32 %41, 1
-  br i1 %cmp115, label %if.then116, label %if.else124
+; <label>:138                                     ; preds = %135
+  %139 = call i64 @fwrite(i8* getelementptr inbounds ([36 x i8]* @.str85, i64 0, i64 0), i64 35, i64 1, %struct.__sFILE* %fp), !dbg !2481
+  %140 = call i32 @SubMtx_writeForHumanEye(%struct._SubMtx* %136, %struct.__sFILE* %fp) #7, !dbg !2483
+  %141 = call i32 @fflush(%struct.__sFILE* %fp) #7, !dbg !2484
+  br label %142, !dbg !2485
 
-if.then116:                                       ; preds = %if.end113
-  %call117 = call %struct._SubMtx* @FrontMtx_upperMtx(%struct._FrontMtx* %frontmtx, i32 %J.2265, i32 %1) #6
-  %cmp118 = icmp eq %struct._SubMtx* %call117, null
-  br i1 %cmp118, label %for.inc143, label %if.then119
+; <label>:142                                     ; preds = %135, %138
+  %143 = load i32* %133, align 4, !dbg !2473, !tbaa !500
+  %144 = icmp eq i32 %143, 1, !dbg !2473
+  br i1 %144, label %145, label %152, !dbg !2486
 
-if.then119:                                       ; preds = %if.then116
-  %42 = call i64 @fwrite(i8* getelementptr inbounds ([23 x i8]* @.str86, i64 0, i64 0), i64 22, i64 1, %struct._IO_FILE* %fp) #3
-  %call121 = call i32 @SubMtx_writeForHumanEye(%struct._SubMtx* %call117, %struct._IO_FILE* %fp) #6
-  %call122 = call i32 @fflush(%struct._IO_FILE* %fp) #6
-  br label %for.inc143
+; <label>:145                                     ; preds = %142
+  %146 = call %struct._SubMtx* @FrontMtx_upperMtx(%struct._FrontMtx* %frontmtx, i32 %J.25, i32 %8) #7, !dbg !2487
+  call void @llvm.dbg.value(metadata %struct._SubMtx* %146, i64 0, metadata !325, metadata !387), !dbg !2411
+  %147 = icmp eq %struct._SubMtx* %146, null, !dbg !2489
+  br i1 %147, label %.loopexit, label %148, !dbg !2491
 
-if.else124:                                       ; preds = %if.end113
-  call void @FrontMtx_upperAdjFronts(%struct._FrontMtx* %frontmtx, i32 %J.2265, i32* %nadj, i32** %adj) #6
-  %43 = load i32* %nadj, align 4, !tbaa !3
-  %cmp126262 = icmp sgt i32 %43, 0
-  br i1 %cmp126262, label %for.body127, label %for.inc143
+; <label>:148                                     ; preds = %145
+  %149 = call i64 @fwrite(i8* getelementptr inbounds ([23 x i8]* @.str86, i64 0, i64 0), i64 22, i64 1, %struct.__sFILE* %fp), !dbg !2492
+  %150 = call i32 @SubMtx_writeForHumanEye(%struct._SubMtx* %146, %struct.__sFILE* %fp) #7, !dbg !2494
+  %151 = call i32 @fflush(%struct.__sFILE* %fp) #7, !dbg !2495
+  br label %.loopexit, !dbg !2496
 
-for.body127:                                      ; preds = %for.inc139, %if.else124
-  %indvars.iv = phi i64 [ 0, %if.else124 ], [ %indvars.iv.next, %for.inc139 ]
-  %44 = load i32** %adj, align 8, !tbaa !0
-  %arrayidx129 = getelementptr inbounds i32* %44, i64 %indvars.iv
-  %45 = load i32* %arrayidx129, align 4, !tbaa !3
-  %cmp130 = icmp sgt i32 %45, %J.2265
-  br i1 %cmp130, label %land.lhs.true131, label %for.inc139
+; <label>:152                                     ; preds = %142
+  call void @llvm.dbg.value(metadata i32* %nadj, i64 0, metadata !329, metadata !387), !dbg !2431
+  call void @llvm.dbg.value(metadata i32** %adj, i64 0, metadata !331, metadata !387), !dbg !2432
+  call void @FrontMtx_upperAdjFronts(%struct._FrontMtx* %frontmtx, i32 %J.25, i32* %nadj, i32** %adj) #7, !dbg !2497
+  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !326, metadata !387), !dbg !2435
+  call void @llvm.dbg.value(metadata i32* %nadj, i64 0, metadata !329, metadata !387), !dbg !2431
+  %153 = load i32* %nadj, align 4, !dbg !2499, !tbaa !710
+  %154 = icmp sgt i32 %153, 0, !dbg !2502
+  br i1 %154, label %.lr.ph, label %.loopexit, !dbg !2503
 
-land.lhs.true131:                                 ; preds = %for.body127
-  %call132 = call %struct._SubMtx* @FrontMtx_upperMtx(%struct._FrontMtx* %frontmtx, i32 %J.2265, i32 %45) #6
-  %cmp133 = icmp eq %struct._SubMtx* %call132, null
-  br i1 %cmp133, label %for.inc139, label %if.then134
+.lr.ph:                                           ; preds = %152, %166
+  %indvars.iv = phi i64 [ %indvars.iv.next, %166 ], [ 0, %152 ]
+  call void @llvm.dbg.value(metadata i32** %adj, i64 0, metadata !331, metadata !387), !dbg !2432
+  %155 = load i32** %adj, align 8, !dbg !2504, !tbaa !396
+  %156 = getelementptr inbounds i32* %155, i64 %indvars.iv, !dbg !2504
+  %157 = load i32* %156, align 4, !dbg !2504, !tbaa !710
+  call void @llvm.dbg.value(metadata i32 %157, i64 0, metadata !328, metadata !387), !dbg !2444
+  %158 = icmp sgt i32 %157, %J.25, !dbg !2507
+  br i1 %158, label %159, label %166, !dbg !2508
 
-if.then134:                                       ; preds = %land.lhs.true131
-  %46 = call i64 @fwrite(i8* getelementptr inbounds ([23 x i8]* @.str86, i64 0, i64 0), i64 22, i64 1, %struct._IO_FILE* %fp) #3
-  %call136 = call i32 @SubMtx_writeForHumanEye(%struct._SubMtx* %call132, %struct._IO_FILE* %fp) #6
-  %call137 = call i32 @fflush(%struct._IO_FILE* %fp) #6
-  br label %for.inc139
+; <label>:159                                     ; preds = %.lr.ph
+  %160 = call %struct._SubMtx* @FrontMtx_upperMtx(%struct._FrontMtx* %frontmtx, i32 %J.25, i32 %157) #7, !dbg !2509
+  call void @llvm.dbg.value(metadata %struct._SubMtx* %160, i64 0, metadata !325, metadata !387), !dbg !2411
+  %161 = icmp eq %struct._SubMtx* %160, null, !dbg !2510
+  br i1 %161, label %166, label %162, !dbg !2511
 
-for.inc139:                                       ; preds = %land.lhs.true131, %for.body127, %if.then134
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %47 = load i32* %nadj, align 4, !tbaa !3
-  %48 = trunc i64 %indvars.iv.next to i32
-  %cmp126 = icmp slt i32 %48, %47
-  br i1 %cmp126, label %for.body127, label %for.inc143
+; <label>:162                                     ; preds = %159
+  %163 = call i64 @fwrite(i8* getelementptr inbounds ([23 x i8]* @.str86, i64 0, i64 0), i64 22, i64 1, %struct.__sFILE* %fp), !dbg !2512
+  %164 = call i32 @SubMtx_writeForHumanEye(%struct._SubMtx* %160, %struct.__sFILE* %fp) #7, !dbg !2514
+  %165 = call i32 @fflush(%struct.__sFILE* %fp) #7, !dbg !2515
+  br label %166, !dbg !2516
 
-for.inc143:                                       ; preds = %if.else124, %for.inc139, %if.then116, %if.then119
-  %inc144 = add nsw i32 %J.2265, 1
-  %exitcond = icmp eq i32 %inc144, %1
-  br i1 %exitcond, label %for.end145, label %for.body106
+; <label>:166                                     ; preds = %159, %.lr.ph, %162
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !2503
+  call void @llvm.dbg.value(metadata i32* %nadj, i64 0, metadata !329, metadata !387), !dbg !2431
+  %167 = load i32* %nadj, align 4, !dbg !2499, !tbaa !710
+  %168 = sext i32 %167 to i64, !dbg !2502
+  %169 = icmp slt i64 %indvars.iv.next, %168, !dbg !2502
+  br i1 %169, label %.lr.ph, label %.loopexit, !dbg !2503
 
-for.end145:                                       ; preds = %if.end88.thread, %for.inc143, %for.end102.thread, %for.end102
-  %49 = call i64 @fwrite(i8* getelementptr inbounds ([41 x i8]* @.str87, i64 0, i64 0), i64 40, i64 1, %struct._IO_FILE* %fp) #3
-  %call147 = call i32 @fflush(%struct._IO_FILE* %fp) #6
-  ret i32 1
+.loopexit:                                        ; preds = %166, %152, %145, %148
+  %170 = add nuw nsw i32 %J.25, 1, !dbg !2517
+  call void @llvm.dbg.value(metadata i32 %170, i64 0, metadata !327, metadata !387), !dbg !2400
+  %exitcond = icmp eq i32 %J.25, %134, !dbg !2460
+  br i1 %exitcond, label %._crit_edge, label %135, !dbg !2460
+
+._crit_edge:                                      ; preds = %.loopexit, %.loopexit3.thread, %._crit_edge12.thread, %._crit_edge12
+  %171 = call i64 @fwrite(i8* getelementptr inbounds ([41 x i8]* @.str87, i64 0, i64 0), i64 40, i64 1, %struct.__sFILE* %fp), !dbg !2518
+  %172 = call i32 @fflush(%struct.__sFILE* %fp) #7, !dbg !2519
+  ret i32 1, !dbg !2520
 }

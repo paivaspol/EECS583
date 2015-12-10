@@ -1,5 +1,4 @@
-define internal fastcc i32 @sym2x2(%struct._Chv* %chv, i32 %irow, i32 %jcol, double %tau, double* nocapture %rowmaxes) #0 {
-entry:
+define internal fastcc i32 @sym2x2(%struct._Chv* %chv, i32 %irow, i32 %jcol, double %tau, double* nocapture readonly %rowmaxes) #0 {
   %a = alloca double, align 8
   %b = alloca double, align 8
   %c = alloca double, align 8
@@ -9,129 +8,182 @@ entry:
   %breal = alloca double, align 8
   %cimag = alloca double, align 8
   %creal = alloca double, align 8
-  %type = getelementptr inbounds %struct._Chv* %chv, i64 0, i32 4
-  %0 = load i32* %type, align 4, !tbaa !3
-  switch i32 %0, label %if.end44 [
-    i32 1, label %if.then
-    i32 2, label %if.then7
-  ]
+  tail call void @llvm.dbg.value(metadata %struct._Chv* %chv, i64 0, metadata !92, metadata !171), !dbg !557
+  tail call void @llvm.dbg.value(metadata i32 %irow, i64 0, metadata !93, metadata !171), !dbg !558
+  tail call void @llvm.dbg.value(metadata i32 %jcol, i64 0, metadata !94, metadata !171), !dbg !559
+  tail call void @llvm.dbg.value(metadata double %tau, i64 0, metadata !95, metadata !171), !dbg !560
+  tail call void @llvm.dbg.value(metadata double* %rowmaxes, i64 0, metadata !96, metadata !171), !dbg !561
+  %1 = getelementptr inbounds %struct._Chv* %chv, i64 0, i32 4, !dbg !562
+  %2 = load i32* %1, align 4, !dbg !562, !tbaa !198
+  switch i32 %2, label %.thread [
+    i32 1, label %3
+    i32 2, label %14
+  ], !dbg !563
 
-if.then:                                          ; preds = %entry
-  call void @Chv_realEntry(%struct._Chv* %chv, i32 %irow, i32 %irow, double* %a) #6
-  call void @Chv_realEntry(%struct._Chv* %chv, i32 %irow, i32 %jcol, double* %b) #6
-  call void @Chv_realEntry(%struct._Chv* %chv, i32 %jcol, i32 %jcol, double* %c) #6
-  %1 = load double* %a, align 8, !tbaa !4
-  %call = call double @fabs(double %1) #8
-  %2 = load double* %b, align 8, !tbaa !4
-  %call1 = call double @fabs(double %2) #8
-  %3 = load double* %c, align 8, !tbaa !4
-  %call2 = call double @fabs(double %3) #8
-  %mul = fmul double %1, %3
-  %mul3 = fmul double %2, %2
-  %sub = fsub double %mul, %mul3
-  %call4 = call double @fabs(double %sub) #8
-  br label %if.end41
+; <label>:3                                       ; preds = %0
+  tail call void @llvm.dbg.value(metadata double* %a, i64 0, metadata !104, metadata !171), !dbg !564
+  call void @Chv_realEntry(%struct._Chv* %chv, i32 %irow, i32 %irow, double* %a) #7, !dbg !565
+  call void @llvm.dbg.value(metadata double* %b, i64 0, metadata !107, metadata !171), !dbg !566
+  call void @Chv_realEntry(%struct._Chv* %chv, i32 %irow, i32 %jcol, double* %b) #7, !dbg !567
+  call void @llvm.dbg.value(metadata double* %c, i64 0, metadata !108, metadata !171), !dbg !568
+  call void @Chv_realEntry(%struct._Chv* %chv, i32 %jcol, i32 %jcol, double* %c) #7, !dbg !569
+  call void @llvm.dbg.value(metadata double* %a, i64 0, metadata !104, metadata !171), !dbg !564
+  %4 = load double* %a, align 8, !dbg !570, !tbaa !277
+  %5 = call double @fabs(double %4) #9, !dbg !571
+  call void @llvm.dbg.value(metadata double %5, i64 0, metadata !97, metadata !171), !dbg !572
+  call void @llvm.dbg.value(metadata double* %b, i64 0, metadata !107, metadata !171), !dbg !566
+  %6 = load double* %b, align 8, !dbg !573, !tbaa !277
+  %7 = call double @fabs(double %6) #9, !dbg !574
+  call void @llvm.dbg.value(metadata double %7, i64 0, metadata !98, metadata !171), !dbg !575
+  call void @llvm.dbg.value(metadata double* %c, i64 0, metadata !108, metadata !171), !dbg !568
+  %8 = load double* %c, align 8, !dbg !576, !tbaa !277
+  %9 = call double @fabs(double %8) #9, !dbg !577
+  call void @llvm.dbg.value(metadata double %9, i64 0, metadata !99, metadata !171), !dbg !578
+  %10 = fmul double %4, %8, !dbg !579
+  %11 = fmul double %6, %6, !dbg !580
+  %12 = fsub double %10, %11, !dbg !581
+  %13 = call double @fabs(double %12) #9, !dbg !582
+  call void @llvm.dbg.value(metadata double %13, i64 0, metadata !100, metadata !171), !dbg !583
+  br label %64, !dbg !584
 
-if.then7:                                         ; preds = %entry
-  call void @Chv_complexEntry(%struct._Chv* %chv, i32 %irow, i32 %irow, double* %areal, double* %aimag) #6
-  call void @Chv_complexEntry(%struct._Chv* %chv, i32 %irow, i32 %jcol, double* %breal, double* %bimag) #6
-  call void @Chv_complexEntry(%struct._Chv* %chv, i32 %jcol, i32 %jcol, double* %creal, double* %cimag) #6
-  %symflag = getelementptr inbounds %struct._Chv* %chv, i64 0, i32 5
-  %4 = load i32* %symflag, align 4, !tbaa !3
-  switch i32 %4, label %if.end44 [
-    i32 1, label %if.then9
-    i32 0, label %if.then22
-  ]
+; <label>:14                                      ; preds = %0
+  tail call void @llvm.dbg.value(metadata double* %aimag, i64 0, metadata !109, metadata !171), !dbg !585
+  tail call void @llvm.dbg.value(metadata double* %areal, i64 0, metadata !112, metadata !171), !dbg !586
+  call void @Chv_complexEntry(%struct._Chv* %chv, i32 %irow, i32 %irow, double* %areal, double* %aimag) #7, !dbg !587
+  call void @llvm.dbg.value(metadata double* %bimag, i64 0, metadata !113, metadata !171), !dbg !588
+  call void @llvm.dbg.value(metadata double* %breal, i64 0, metadata !114, metadata !171), !dbg !589
+  call void @Chv_complexEntry(%struct._Chv* %chv, i32 %irow, i32 %jcol, double* %breal, double* %bimag) #7, !dbg !590
+  call void @llvm.dbg.value(metadata double* %cimag, i64 0, metadata !115, metadata !171), !dbg !591
+  call void @llvm.dbg.value(metadata double* %creal, i64 0, metadata !116, metadata !171), !dbg !592
+  call void @Chv_complexEntry(%struct._Chv* %chv, i32 %jcol, i32 %jcol, double* %creal, double* %cimag) #7, !dbg !593
+  %15 = getelementptr inbounds %struct._Chv* %chv, i64 0, i32 5, !dbg !594
+  %16 = load i32* %15, align 4, !dbg !594, !tbaa !209
+  switch i32 %16, label %.thread [
+    i32 1, label %17
+    i32 0, label %34
+  ], !dbg !596
 
-if.then9:                                         ; preds = %if.then7
-  %5 = load double* %areal, align 8, !tbaa !4
-  %call10 = call double @fabs(double %5) #8
-  %6 = load double* %breal, align 8, !tbaa !4
-  %7 = load double* %bimag, align 8, !tbaa !4
-  %call11 = call double @Zabs(double %6, double %7) #6
-  %8 = load double* %creal, align 8, !tbaa !4
-  %call12 = call double @fabs(double %8) #8
-  %9 = load double* %areal, align 8, !tbaa !4
-  %mul13 = fmul double %8, %9
-  %10 = load double* %breal, align 8, !tbaa !4
-  %mul14 = fmul double %10, %10
-  %sub15 = fsub double %mul13, %mul14
-  %11 = load double* %bimag, align 8, !tbaa !4
-  %mul16 = fmul double %11, %11
-  %sub17 = fsub double %sub15, %mul16
-  %call18 = call double @fabs(double %sub17) #8
-  br label %if.end41
+; <label>:17                                      ; preds = %14
+  call void @llvm.dbg.value(metadata double* %areal, i64 0, metadata !112, metadata !171), !dbg !586
+  %18 = load double* %areal, align 8, !dbg !597, !tbaa !277
+  %19 = call double @fabs(double %18) #9, !dbg !599
+  call void @llvm.dbg.value(metadata double %19, i64 0, metadata !97, metadata !171), !dbg !572
+  call void @llvm.dbg.value(metadata double* %breal, i64 0, metadata !114, metadata !171), !dbg !589
+  %20 = load double* %breal, align 8, !dbg !600, !tbaa !277
+  call void @llvm.dbg.value(metadata double* %bimag, i64 0, metadata !113, metadata !171), !dbg !588
+  %21 = load double* %bimag, align 8, !dbg !601, !tbaa !277
+  %22 = call double @Zabs(double %20, double %21) #7, !dbg !602
+  call void @llvm.dbg.value(metadata double %22, i64 0, metadata !98, metadata !171), !dbg !575
+  call void @llvm.dbg.value(metadata double* %creal, i64 0, metadata !116, metadata !171), !dbg !592
+  %23 = load double* %creal, align 8, !dbg !603, !tbaa !277
+  %24 = call double @fabs(double %23) #9, !dbg !604
+  call void @llvm.dbg.value(metadata double %24, i64 0, metadata !99, metadata !171), !dbg !578
+  call void @llvm.dbg.value(metadata double* %areal, i64 0, metadata !112, metadata !171), !dbg !586
+  %25 = load double* %areal, align 8, !dbg !605, !tbaa !277
+  %26 = fmul double %23, %25, !dbg !606
+  call void @llvm.dbg.value(metadata double* %breal, i64 0, metadata !114, metadata !171), !dbg !589
+  %27 = load double* %breal, align 8, !dbg !607, !tbaa !277
+  %28 = fmul double %27, %27, !dbg !608
+  %29 = fsub double %26, %28, !dbg !609
+  call void @llvm.dbg.value(metadata double* %bimag, i64 0, metadata !113, metadata !171), !dbg !588
+  %30 = load double* %bimag, align 8, !dbg !610, !tbaa !277
+  %31 = fmul double %30, %30, !dbg !611
+  %32 = fsub double %29, %31, !dbg !612
+  %33 = call double @fabs(double %32) #9, !dbg !613
+  call void @llvm.dbg.value(metadata double %33, i64 0, metadata !100, metadata !171), !dbg !583
+  br label %64, !dbg !614
 
-if.then22:                                        ; preds = %if.then7
-  %12 = load double* %areal, align 8, !tbaa !4
-  %13 = load double* %aimag, align 8, !tbaa !4
-  %call23 = call double @Zabs(double %12, double %13) #6
-  %14 = load double* %breal, align 8, !tbaa !4
-  %15 = load double* %bimag, align 8, !tbaa !4
-  %call24 = call double @Zabs(double %14, double %15) #6
-  %16 = load double* %creal, align 8, !tbaa !4
-  %17 = load double* %cimag, align 8, !tbaa !4
-  %call25 = call double @Zabs(double %16, double %17) #6
-  %18 = load double* %areal, align 8, !tbaa !4
-  %19 = load double* %creal, align 8, !tbaa !4
-  %mul26 = fmul double %18, %19
-  %20 = load double* %aimag, align 8, !tbaa !4
-  %21 = load double* %cimag, align 8, !tbaa !4
-  %mul27 = fmul double %20, %21
-  %sub28 = fsub double %mul26, %mul27
-  %22 = load double* %breal, align 8, !tbaa !4
-  %mul29 = fmul double %22, %22
-  %sub30 = fsub double %sub28, %mul29
-  %23 = load double* %bimag, align 8, !tbaa !4
-  %mul31 = fmul double %23, %23
-  %add = fadd double %sub30, %mul31
-  %mul32 = fmul double %18, %21
-  %mul33 = fmul double %19, %20
-  %add34 = fadd double %mul33, %mul32
-  %mul35 = fmul double %22, 2.000000e+00
-  %mul36 = fmul double %mul35, %23
-  %sub37 = fsub double %add34, %mul36
-  %call38 = call double @Zabs(double %add, double %sub37) #6
-  br label %if.end41
+; <label>:34                                      ; preds = %14
+  call void @llvm.dbg.value(metadata double* %areal, i64 0, metadata !112, metadata !171), !dbg !586
+  %35 = load double* %areal, align 8, !dbg !615, !tbaa !277
+  call void @llvm.dbg.value(metadata double* %aimag, i64 0, metadata !109, metadata !171), !dbg !585
+  %36 = load double* %aimag, align 8, !dbg !618, !tbaa !277
+  %37 = call double @Zabs(double %35, double %36) #7, !dbg !619
+  call void @llvm.dbg.value(metadata double %37, i64 0, metadata !97, metadata !171), !dbg !572
+  call void @llvm.dbg.value(metadata double* %breal, i64 0, metadata !114, metadata !171), !dbg !589
+  %38 = load double* %breal, align 8, !dbg !620, !tbaa !277
+  call void @llvm.dbg.value(metadata double* %bimag, i64 0, metadata !113, metadata !171), !dbg !588
+  %39 = load double* %bimag, align 8, !dbg !621, !tbaa !277
+  %40 = call double @Zabs(double %38, double %39) #7, !dbg !622
+  call void @llvm.dbg.value(metadata double %40, i64 0, metadata !98, metadata !171), !dbg !575
+  call void @llvm.dbg.value(metadata double* %creal, i64 0, metadata !116, metadata !171), !dbg !592
+  %41 = load double* %creal, align 8, !dbg !623, !tbaa !277
+  call void @llvm.dbg.value(metadata double* %cimag, i64 0, metadata !115, metadata !171), !dbg !591
+  %42 = load double* %cimag, align 8, !dbg !624, !tbaa !277
+  %43 = call double @Zabs(double %41, double %42) #7, !dbg !625
+  call void @llvm.dbg.value(metadata double %43, i64 0, metadata !99, metadata !171), !dbg !578
+  call void @llvm.dbg.value(metadata double* %areal, i64 0, metadata !112, metadata !171), !dbg !586
+  %44 = load double* %areal, align 8, !dbg !626, !tbaa !277
+  call void @llvm.dbg.value(metadata double* %creal, i64 0, metadata !116, metadata !171), !dbg !592
+  %45 = load double* %creal, align 8, !dbg !627, !tbaa !277
+  %46 = fmul double %44, %45, !dbg !628
+  call void @llvm.dbg.value(metadata double* %aimag, i64 0, metadata !109, metadata !171), !dbg !585
+  %47 = load double* %aimag, align 8, !dbg !629, !tbaa !277
+  call void @llvm.dbg.value(metadata double* %cimag, i64 0, metadata !115, metadata !171), !dbg !591
+  %48 = load double* %cimag, align 8, !dbg !630, !tbaa !277
+  %49 = fmul double %47, %48, !dbg !631
+  %50 = fsub double %46, %49, !dbg !632
+  call void @llvm.dbg.value(metadata double* %breal, i64 0, metadata !114, metadata !171), !dbg !589
+  %51 = load double* %breal, align 8, !dbg !633, !tbaa !277
+  %52 = fmul double %51, %51, !dbg !634
+  %53 = fsub double %50, %52, !dbg !635
+  call void @llvm.dbg.value(metadata double* %bimag, i64 0, metadata !113, metadata !171), !dbg !588
+  %54 = load double* %bimag, align 8, !dbg !636, !tbaa !277
+  %55 = fmul double %54, %54, !dbg !637
+  %56 = fadd double %53, %55, !dbg !638
+  call void @llvm.dbg.value(metadata double %56, i64 0, metadata !118, metadata !171), !dbg !639
+  %57 = fmul double %44, %48, !dbg !640
+  %58 = fmul double %45, %47, !dbg !641
+  %59 = fadd double %58, %57, !dbg !642
+  %60 = fmul double %51, 2.000000e+00, !dbg !643
+  %61 = fmul double %60, %54, !dbg !644
+  %62 = fsub double %59, %61, !dbg !645
+  call void @llvm.dbg.value(metadata double %62, i64 0, metadata !117, metadata !171), !dbg !646
+  %63 = call double @Zabs(double %56, double %62) #7, !dbg !647
+  call void @llvm.dbg.value(metadata double %63, i64 0, metadata !100, metadata !171), !dbg !583
+  br label %64, !dbg !648
 
-if.end41:                                         ; preds = %if.then22, %if.then9, %if.then
-  %denom.0 = phi double [ %call4, %if.then ], [ %call18, %if.then9 ], [ %call38, %if.then22 ]
-  %cmag.0 = phi double [ %call2, %if.then ], [ %call12, %if.then9 ], [ %call25, %if.then22 ]
-  %bmag.0 = phi double [ %call1, %if.then ], [ %call11, %if.then9 ], [ %call24, %if.then22 ]
-  %amag.0 = phi double [ %call, %if.then ], [ %call10, %if.then9 ], [ %call23, %if.then22 ]
-  %cmp42 = fcmp oeq double %denom.0, 0.000000e+00
-  br i1 %cmp42, label %return, label %if.end44
+; <label>:64                                      ; preds = %34, %17, %3
+  %denom.0 = phi double [ %13, %3 ], [ %33, %17 ], [ %63, %34 ]
+  %cmag.0 = phi double [ %9, %3 ], [ %24, %17 ], [ %43, %34 ]
+  %bmag.0 = phi double [ %7, %3 ], [ %22, %17 ], [ %40, %34 ]
+  %amag.0 = phi double [ %5, %3 ], [ %19, %17 ], [ %37, %34 ]
+  %65 = fcmp oeq double %denom.0, 0.000000e+00, !dbg !649
+  br i1 %65, label %84, label %.thread, !dbg !651
 
-if.end44:                                         ; preds = %if.then7, %entry, %if.end41
-  %amag.096 = phi double [ %amag.0, %if.end41 ], [ undef, %entry ], [ undef, %if.then7 ]
-  %bmag.095 = phi double [ %bmag.0, %if.end41 ], [ undef, %entry ], [ undef, %if.then7 ]
-  %cmag.094 = phi double [ %cmag.0, %if.end41 ], [ undef, %entry ], [ undef, %if.then7 ]
-  %denom.093 = phi double [ %denom.0, %if.end41 ], [ undef, %entry ], [ undef, %if.then7 ]
-  %idxprom = sext i32 %irow to i64
-  %arrayidx = getelementptr inbounds double* %rowmaxes, i64 %idxprom
-  %24 = load double* %arrayidx, align 8, !tbaa !4
-  %mul45 = fmul double %cmag.094, %24
-  %idxprom46 = sext i32 %jcol to i64
-  %arrayidx47 = getelementptr inbounds double* %rowmaxes, i64 %idxprom46
-  %25 = load double* %arrayidx47, align 8, !tbaa !4
-  %mul48 = fmul double %bmag.095, %25
-  %add49 = fadd double %mul45, %mul48
-  %div = fdiv double %add49, %denom.093
-  %cmp58 = fcmp ugt double %div, %tau
-  br i1 %cmp58, label %if.else61, label %land.lhs.true
+.thread:                                          ; preds = %14, %0, %64
+  %amag.04 = phi double [ %amag.0, %64 ], [ undef, %0 ], [ undef, %14 ]
+  %bmag.03 = phi double [ %bmag.0, %64 ], [ undef, %0 ], [ undef, %14 ]
+  %cmag.02 = phi double [ %cmag.0, %64 ], [ undef, %0 ], [ undef, %14 ]
+  %denom.01 = phi double [ %denom.0, %64 ], [ undef, %0 ], [ undef, %14 ]
+  %66 = sext i32 %irow to i64, !dbg !652
+  %67 = getelementptr inbounds double* %rowmaxes, i64 %66, !dbg !652
+  %68 = load double* %67, align 8, !dbg !652, !tbaa !277
+  %69 = fmul double %cmag.02, %68, !dbg !653
+  %70 = sext i32 %jcol to i64, !dbg !654
+  %71 = getelementptr inbounds double* %rowmaxes, i64 %70, !dbg !654
+  %72 = load double* %71, align 8, !dbg !654, !tbaa !277
+  %73 = fmul double %bmag.03, %72, !dbg !655
+  %74 = fadd double %69, %73, !dbg !656
+  %75 = fdiv double %74, %denom.01, !dbg !657
+  call void @llvm.dbg.value(metadata double %75, i64 0, metadata !101, metadata !171), !dbg !658
+  call void @llvm.dbg.value(metadata double %81, i64 0, metadata !102, metadata !171), !dbg !659
+  %76 = fcmp ugt double %75, %tau, !dbg !660
+  br i1 %76, label %83, label %77, !dbg !662
 
-land.lhs.true:                                    ; preds = %if.end44
-  %mul55 = fmul double %amag.096, %25
-  %mul52 = fmul double %bmag.095, %24
-  %add56 = fadd double %mul52, %mul55
-  %div57 = fdiv double %add56, %denom.093
-  %cmp59 = fcmp ugt double %div57, %tau
-  br i1 %cmp59, label %if.else61, label %return
+; <label>:77                                      ; preds = %.thread
+  %78 = fmul double %bmag.03, %68, !dbg !663
+  %79 = fmul double %amag.04, %72, !dbg !664
+  %80 = fadd double %78, %79, !dbg !665
+  %81 = fdiv double %80, %denom.01, !dbg !666
+  %82 = fcmp ugt double %81, %tau, !dbg !667
+  br i1 %82, label %83, label %84, !dbg !668
 
-if.else61:                                        ; preds = %land.lhs.true, %if.end44
-  br label %return
+; <label>:83                                      ; preds = %77, %.thread
+  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !103, metadata !171), !dbg !669
+  br label %84
 
-return:                                           ; preds = %if.else61, %land.lhs.true, %if.end41
-  %retval.0 = phi i32 [ 0, %if.end41 ], [ 0, %if.else61 ], [ 2, %land.lhs.true ]
-  ret i32 %retval.0
+; <label>:84                                      ; preds = %83, %77, %64
+  %.0 = phi i32 [ 0, %64 ], [ 0, %83 ], [ 2, %77 ]
+  ret i32 %.0, !dbg !670
 }

@@ -1,31 +1,37 @@
-define internal fastcc i32 @indexfile_position(%struct.ssifile_s* nocapture %sfp, %struct.ssioffset_s* nocapture %base, i32 %len, i32 %n) #0 {
-entry:
-  %mode = getelementptr inbounds %struct.ssioffset_s* %base, i64 0, i32 0
-  %0 = load i8* %mode, align 1, !tbaa !1
-  switch i8 %0, label %return [
-    i8 0, label %if.then.i
+define internal fastcc i32 @indexfile_position(%struct.ssifile_s* nocapture readonly %sfp, %struct.ssioffset_s* nocapture readonly %base, i32 %len, i32 %n) #0 {
+  tail call void @llvm.dbg.value(metadata %struct.ssifile_s* %sfp, i64 0, metadata !507, metadata !535), !dbg !986
+  tail call void @llvm.dbg.value(metadata %struct.ssioffset_s* %base, i64 0, metadata !508, metadata !535), !dbg !987
+  tail call void @llvm.dbg.value(metadata i32 %len, i64 0, metadata !509, metadata !535), !dbg !988
+  tail call void @llvm.dbg.value(metadata i32 %n, i64 0, metadata !510, metadata !535), !dbg !989
+  %1 = getelementptr inbounds %struct.ssioffset_s* %base, i64 0, i32 0, !dbg !990
+  %2 = load i8* %1, align 1, !dbg !990, !tbaa !914
+  switch i8 %2, label %14 [
+    i8 0, label %3
     i8 1, label %SSISetFilePosition.exit
-  ]
+  ], !dbg !992
 
-if.then.i:                                        ; preds = %entry
-  %off = getelementptr inbounds %struct.ssioffset_s* %base, i64 0, i32 1
-  %i32 = bitcast %union.anon* %off to i32*
-  %1 = load i32* %i32, align 4, !tbaa !4
-  %mul = mul i32 %n, %len
-  %add = add i32 %1, %mul
-  %fp30 = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 0
-  %2 = load %struct._IO_FILE** %fp30, align 8, !tbaa !0
-  %conv2.i = zext i32 %add to i64
-  %call.i = tail call i32 @fseek(%struct._IO_FILE* %2, i64 %conv2.i, i32 0) #8
-  %cmp3.i = icmp eq i32 %call.i, 0
-  %..i = select i1 %cmp3.i, i32 0, i32 8
-  br label %SSISetFilePosition.exit
+; <label>:3                                       ; preds = %0
+  %4 = getelementptr inbounds %struct.ssioffset_s* %base, i64 0, i32 1, !dbg !993
+  %5 = bitcast %union.anon* %4 to i32*, !dbg !995
+  %6 = load i32* %5, align 4, !dbg !995, !tbaa !578
+  %7 = mul i32 %n, %len, !dbg !996
+  %8 = add i32 %6, %7, !dbg !997
+  %9 = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 0, !dbg !998
+  %10 = load %struct.__sFILE** %9, align 8, !dbg !998, !tbaa !547
+  tail call void @llvm.dbg.value(metadata %struct.ssioffset_s* undef, i64 0, metadata !511, metadata !535), !dbg !1000
+  tail call void @llvm.dbg.value(metadata %struct.ssioffset_s* undef, i64 0, metadata !186, metadata !535) #4, !dbg !1001
+  %11 = zext i32 %8 to i64, !dbg !1003
+  %12 = tail call i32 @fseek(%struct.__sFILE* %10, i64 %11, i32 0) #9, !dbg !1007
+  %13 = icmp eq i32 %12, 0, !dbg !1008
+  %..i = select i1 %13, i32 0, i32 8, !dbg !1009
+  br label %SSISetFilePosition.exit, !dbg !1009
 
-SSISetFilePosition.exit:                          ; preds = %entry, %if.then.i
-  %retval.0.i = phi i32 [ %..i, %if.then.i ], [ 7, %entry ]
-  br label %return
+SSISetFilePosition.exit:                          ; preds = %0, %3
+  %.0.i = phi i32 [ %..i, %3 ], [ 7, %0 ], !dbg !1010
+  tail call void @llvm.dbg.value(metadata i32 %.0.i, i64 0, metadata !512, metadata !535), !dbg !1011
+  br label %14, !dbg !1012
 
-return:                                           ; preds = %SSISetFilePosition.exit, %entry
-  %retval.0 = phi i32 [ 0, %entry ], [ %retval.0.i, %SSISetFilePosition.exit ]
-  ret i32 %retval.0
+; <label>:14                                      ; preds = %SSISetFilePosition.exit, %0
+  %.0 = phi i32 [ 0, %0 ], [ %.0.i, %SSISetFilePosition.exit ]
+  ret i32 %.0, !dbg !1013
 }

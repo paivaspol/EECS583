@@ -1,46 +1,43 @@
 define void @InitPanScanRectInfo() #0 {
-entry:
-  %call = tail call noalias i8* @malloc(i64 48) #6
-  %0 = bitcast i8* %call to %struct.Bitstream*
-  store %struct.Bitstream* %0, %struct.Bitstream** getelementptr inbounds (%struct.panscanrect_information_struct* @seiPanScanRectInfo, i64 0, i32 5), align 8, !tbaa !0
-  %cmp = icmp eq i8* %call, null
-  br i1 %cmp, label %if.then, label %if.end
+  %1 = tail call i8* @malloc(i64 48) #8, !dbg !2046
+  store i8* %1, i8** bitcast (%struct.Bitstream** getelementptr inbounds (%struct.panscanrect_information_struct* @seiPanScanRectInfo, i64 0, i32 5) to i8**), align 8, !dbg !2047, !tbaa !2048
+  %2 = icmp eq i8* %1, null, !dbg !2050
+  %3 = bitcast i8* %1 to %struct.Bitstream*
+  br i1 %2, label %4, label %5, !dbg !2052
 
-if.then:                                          ; preds = %entry
-  tail call void @no_mem_exit(i8* getelementptr inbounds ([45 x i8]* @.str11, i64 0, i64 0)) #6
-  %.pre = load %struct.Bitstream** getelementptr inbounds (%struct.panscanrect_information_struct* @seiPanScanRectInfo, i64 0, i32 5), align 8, !tbaa !0
-  br label %if.end
+; <label>:4                                       ; preds = %0
+  tail call void @no_mem_exit(i8* getelementptr inbounds ([45 x i8]* @.str16, i64 0, i64 0)) #8, !dbg !2053
+  %.pre = load %struct.Bitstream** getelementptr inbounds (%struct.panscanrect_information_struct* @seiPanScanRectInfo, i64 0, i32 5), align 8, !dbg !2054, !tbaa !2048
+  br label %5, !dbg !2053
 
-if.end:                                           ; preds = %if.then, %entry
-  %1 = phi %struct.Bitstream* [ %.pre, %if.then ], [ %0, %entry ]
-  %call1 = tail call noalias i8* @malloc(i64 65496) #6
-  %streamBuffer = getelementptr inbounds %struct.Bitstream* %1, i64 0, i32 9
-  store i8* %call1, i8** %streamBuffer, align 8, !tbaa !0
-  %2 = load %struct.Bitstream** getelementptr inbounds (%struct.panscanrect_information_struct* @seiPanScanRectInfo, i64 0, i32 5), align 8, !tbaa !0
-  %streamBuffer2 = getelementptr inbounds %struct.Bitstream* %2, i64 0, i32 9
-  %3 = load i8** %streamBuffer2, align 8, !tbaa !0
-  %cmp3 = icmp eq i8* %3, null
-  br i1 %cmp3, label %if.then4, label %if.end5
+; <label>:5                                       ; preds = %4, %0
+  %6 = phi %struct.Bitstream* [ %.pre, %4 ], [ %3, %0 ]
+  %7 = tail call i8* @malloc(i64 65496) #8, !dbg !2055
+  %8 = getelementptr inbounds %struct.Bitstream* %6, i64 0, i32 9, !dbg !2056
+  store i8* %7, i8** %8, align 8, !dbg !2057, !tbaa !1130
+  %9 = icmp eq i8* %7, null, !dbg !2058
+  br i1 %9, label %10, label %11, !dbg !2060
 
-if.then4:                                         ; preds = %if.end
-  tail call void @no_mem_exit(i8* getelementptr inbounds ([59 x i8]* @.str12, i64 0, i64 0)) #6
-  %.pre6 = load %struct.Bitstream** getelementptr inbounds (%struct.panscanrect_information_struct* @seiPanScanRectInfo, i64 0, i32 5), align 8, !tbaa !0
-  %streamBuffer.i.phi.trans.insert = getelementptr inbounds %struct.Bitstream* %.pre6, i64 0, i32 9
-  %.pre7 = load i8** %streamBuffer.i.phi.trans.insert, align 8, !tbaa !0
-  br label %if.end5
+; <label>:10                                      ; preds = %5
+  tail call void @no_mem_exit(i8* getelementptr inbounds ([59 x i8]* @.str17, i64 0, i64 0)) #8, !dbg !2061
+  %.pre1 = load %struct.Bitstream** getelementptr inbounds (%struct.panscanrect_information_struct* @seiPanScanRectInfo, i64 0, i32 5), align 8, !dbg !2062, !tbaa !2048
+  br label %11, !dbg !2061
 
-if.end5:                                          ; preds = %if.then4, %if.end
-  %4 = phi i8* [ %.pre7, %if.then4 ], [ %3, %if.end ]
-  tail call void @llvm.memset.p0i8.i64(i8* %4, i8 0, i64 65496, i32 1, i1 false) #4
-  %5 = load %struct.Bitstream** getelementptr inbounds (%struct.panscanrect_information_struct* @seiPanScanRectInfo, i64 0, i32 5), align 8, !tbaa !0
-  %bits_to_go.i = getelementptr inbounds %struct.Bitstream* %5, i64 0, i32 1
-  store i32 8, i32* %bits_to_go.i, align 4, !tbaa !3
-  %byte_pos.i = getelementptr inbounds %struct.Bitstream* %5, i64 0, i32 0
-  store i32 0, i32* %byte_pos.i, align 4, !tbaa !3
-  %byte_buf.i = getelementptr inbounds %struct.Bitstream* %5, i64 0, i32 2
-  store i8 0, i8* %byte_buf.i, align 1, !tbaa !1
-  store i32 0, i32* getelementptr inbounds (%struct.panscanrect_information_struct* @seiPanScanRectInfo, i64 0, i32 6), align 8, !tbaa !3
-  store i32 1, i32* @seiHasPanScanRectInfo, align 4, !tbaa !1
-  call void @llvm.memset.p0i8.i64(i8* bitcast (i32* getelementptr inbounds (%struct.panscanrect_information_struct* @seiPanScanRectInfo, i64 0, i32 1) to i8*), i8 0, i64 16, i32 4, i1 false)
-  ret void
+; <label>:11                                      ; preds = %10, %5
+  %12 = phi %struct.Bitstream* [ %.pre1, %10 ], [ %6, %5 ]
+  %13 = getelementptr inbounds %struct.Bitstream* %12, i64 0, i32 9, !dbg !2062
+  %14 = load i8** %13, align 8, !dbg !2062, !tbaa !1130
+  %15 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %14, i1 false) #7, !dbg !2062
+  %16 = tail call i8* @__memset_chk(i8* %14, i32 0, i64 65496, i64 %15) #8, !dbg !2062
+  %17 = load %struct.Bitstream** getelementptr inbounds (%struct.panscanrect_information_struct* @seiPanScanRectInfo, i64 0, i32 5), align 8, !dbg !2064, !tbaa !2048
+  %18 = getelementptr inbounds %struct.Bitstream* %17, i64 0, i32 1, !dbg !2065
+  store i32 8, i32* %18, align 4, !dbg !2066, !tbaa !1138
+  %19 = getelementptr inbounds %struct.Bitstream* %17, i64 0, i32 0, !dbg !2067
+  store i32 0, i32* %19, align 4, !dbg !2068, !tbaa !1111
+  %20 = getelementptr inbounds %struct.Bitstream* %17, i64 0, i32 2, !dbg !2069
+  store i8 0, i8* %20, align 1, !dbg !2070, !tbaa !1128
+  store i32 0, i32* getelementptr inbounds (%struct.panscanrect_information_struct* @seiPanScanRectInfo, i64 0, i32 6), align 8, !dbg !2071, !tbaa !2072
+  store i32 1, i32* @seiHasPanScanRectInfo, align 4, !dbg !2073, !tbaa !977
+  call void @llvm.memset.p0i8.i64(i8* bitcast (i32* getelementptr inbounds (%struct.panscanrect_information_struct* @seiPanScanRectInfo, i64 0, i32 1) to i8*), i8 0, i64 16, i32 4, i1 false), !dbg !2074
+  ret void, !dbg !2075
 }

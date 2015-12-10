@@ -1,43 +1,51 @@
-define i32 @Queen(i32 %sq, i32 %c) #1 {
-entry:
-  %xor = xor i32 %c, 1
-  %idxprom = sext i32 %xor to i64
-  %arrayidx = getelementptr inbounds [2 x i32]* @king_locs, i64 0, i64 %idxprom
-  %0 = load i32* %arrayidx, align 4, !tbaa !0
-  %idxprom1 = sext i32 %0 to i64
-  %idxprom2 = sext i32 %sq to i64
-  %arrayidx4 = getelementptr inbounds [144 x [144 x i32]]* @distance, i64 0, i64 %idxprom2, i64 %idxprom1
-  %1 = load i32* %arrayidx4, align 4, !tbaa !0
-  %idxprom5 = sext i32 %1 to i64
-  %arrayidx6 = getelementptr inbounds [8 x i32]* @std_q_tropism, i64 0, i64 %idxprom5
-  %2 = load i32* %arrayidx6, align 4, !tbaa !0
-  %add7 = add nsw i32 %2, 900
-  %call = tail call fastcc i32 @rook_mobility(i32 %sq) #5
-  %shl = shl i32 %call, 1
-  %call8 = tail call fastcc i32 @bishop_mobility(i32 %sq) #5
-  %shl9 = shl i32 %call8, 1
-  %add10 = add nsw i32 %shl9, %shl
-  %cmp = icmp slt i32 %add10, 5
-  br i1 %cmp, label %if.then, label %if.end19
+define i32 @Queen(i32 %sq, i32 %c) #2 {
+  tail call void @llvm.dbg.value(metadata i32 %sq, i64 0, metadata !28, metadata !176), !dbg !246
+  tail call void @llvm.dbg.value(metadata i32 %c, i64 0, metadata !29, metadata !176), !dbg !247
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !30, metadata !176), !dbg !248
+  %1 = xor i32 %c, 1, !dbg !249
+  tail call void @llvm.dbg.value(metadata i32 %1, i64 0, metadata !32, metadata !176), !dbg !250
+  tail call void @llvm.dbg.value(metadata i32 900, i64 0, metadata !30, metadata !176), !dbg !248
+  %2 = sext i32 %1 to i64, !dbg !251
+  %3 = getelementptr inbounds [2 x i32]* @king_locs, i64 0, i64 %2, !dbg !251
+  %4 = load i32* %3, align 4, !dbg !251, !tbaa !183
+  %5 = sext i32 %4 to i64, !dbg !252
+  %6 = sext i32 %sq to i64, !dbg !252
+  %7 = getelementptr inbounds [144 x [144 x i32]]* @distance, i64 0, i64 %6, i64 %5, !dbg !252
+  %8 = load i32* %7, align 4, !dbg !252, !tbaa !183
+  %9 = sext i32 %8 to i64, !dbg !253
+  %10 = getelementptr inbounds [8 x i32]* @std_q_tropism, i64 0, i64 %9, !dbg !253
+  %11 = load i32* %10, align 4, !dbg !253, !tbaa !183
+  %12 = add nsw i32 %11, 900, !dbg !254
+  tail call void @llvm.dbg.value(metadata i32 %12, i64 0, metadata !30, metadata !176), !dbg !248
+  %13 = tail call fastcc i32 @rook_mobility(i32 %sq) #7, !dbg !255
+  %14 = tail call fastcc i32 @bishop_mobility(i32 %sq) #7, !dbg !256
+  %15 = add i32 %14, %13, !dbg !257
+  %16 = shl i32 %15, 1, !dbg !257
+  tail call void @llvm.dbg.value(metadata i32 %16, i64 0, metadata !31, metadata !176), !dbg !258
+  %17 = icmp slt i32 %16, 5, !dbg !259
+  br i1 %17, label %18, label %22, !dbg !261
 
-if.then:                                          ; preds = %entry
-  switch i32 %add10, label %if.else16 [
-    i32 0, label %if.end19
-    i32 2, label %if.then14
-  ]
+; <label>:18                                      ; preds = %0
+  switch i32 %16, label %20 [
+    i32 0, label %22
+    i32 2, label %19
+  ], !dbg !262
 
-if.then14:                                        ; preds = %if.then
-  br label %if.end19
+; <label>:19                                      ; preds = %18
+  br label %22, !dbg !264
 
-if.else16:                                        ; preds = %if.then
-  %sub17 = add nsw i32 %add10, -5
-  br label %if.end19
+; <label>:20                                      ; preds = %18
+  %21 = add nsw i32 %16, -5, !dbg !267
+  tail call void @llvm.dbg.value(metadata i32 %21, i64 0, metadata !31, metadata !176), !dbg !258
+  br label %22
 
-if.end19:                                         ; preds = %if.then, %if.else16, %if.then14, %entry
-  %mob.0 = phi i32 [ -8, %if.then14 ], [ %sub17, %if.else16 ], [ %add10, %entry ], [ -15, %if.then ]
-  %add20 = add nsw i32 %add7, %mob.0
-  %cmp21 = icmp eq i32 %c, 1
-  %sub23 = sub nsw i32 0, %add20
-  %sub23.add20 = select i1 %cmp21, i32 %sub23, i32 %add20
-  ret i32 %sub23.add20
+; <label>:22                                      ; preds = %18, %20, %19, %0
+  %mob.0 = phi i32 [ -8, %19 ], [ %21, %20 ], [ %16, %0 ], [ -15, %18 ]
+  %23 = add nsw i32 %12, %mob.0, !dbg !268
+  tail call void @llvm.dbg.value(metadata i32 %23, i64 0, metadata !30, metadata !176), !dbg !248
+  %24 = icmp eq i32 %c, 1, !dbg !269
+  %25 = sub nsw i32 0, %23, !dbg !271
+  tail call void @llvm.dbg.value(metadata i32 %25, i64 0, metadata !30, metadata !176), !dbg !248
+  %. = select i1 %24, i32 %25, i32 %23, !dbg !272
+  ret i32 %., !dbg !273
 }

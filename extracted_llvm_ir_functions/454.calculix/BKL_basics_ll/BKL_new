@@ -1,17 +1,17 @@
 define %struct._BKL* @BKL_new() #0 {
-entry:
-  %call = tail call noalias i8* @malloc(i64 88) #5
-  %0 = bitcast i8* %call to %struct._BKL*
-  %cmp = icmp eq i8* %call, null
-  br i1 %cmp, label %if.then, label %if.end
+  %1 = tail call i8* @malloc(i64 88) #6, !dbg !99
+  %2 = bitcast i8* %1 to %struct._BKL*, !dbg !99
+  tail call void @llvm.dbg.value(metadata %struct._BKL* %2, i64 0, metadata !83, metadata !103), !dbg !104
+  %3 = icmp eq i8* %1, null, !dbg !99
+  br i1 %3, label %4, label %7, !dbg !105
 
-if.then:                                          ; preds = %entry
-  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call1 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i64 88, i32 19, i8* getelementptr inbounds ([75 x i8]* @.str1, i64 0, i64 0)) #5
-  tail call void @exit(i32 -1) #6
-  unreachable
+; <label>:4                                       ; preds = %0
+  %5 = load %struct.__sFILE** @__stderrp, align 8, !dbg !106, !tbaa !108
+  %6 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %5, i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i64 88, i32 19, i8* getelementptr inbounds ([87 x i8]* @.str1, i64 0, i64 0)) #6, !dbg !106
+  tail call void @exit(i32 -1) #7, !dbg !106
+  unreachable, !dbg !106
 
-if.end:                                           ; preds = %entry
-  tail call void @BKL_setDefaultFields(%struct._BKL* %0) #7
-  ret %struct._BKL* %0
+; <label>:7                                       ; preds = %0
+  tail call void @BKL_setDefaultFields(%struct._BKL* %2) #8, !dbg !112
+  ret %struct._BKL* %2, !dbg !113
 }

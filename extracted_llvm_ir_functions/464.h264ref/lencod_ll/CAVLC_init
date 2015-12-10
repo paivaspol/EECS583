@@ -1,63 +1,64 @@
 define void @CAVLC_init() #0 {
-entry:
-  %0 = load %struct.ImageParameters** @img, align 8, !tbaa !3
-  %PicSizeInMbs28 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 110
-  %1 = load i32* %PicSizeInMbs28, align 4, !tbaa !0
-  %cmp29 = icmp eq i32 %1, 0
-  br i1 %cmp29, label %for.end16, label %for.cond1.preheader.lr.ph
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !148, metadata !1429), !dbg !1974
+  %1 = load %struct.ImageParameters** @img, align 8, !dbg !1975, !tbaa !1439
+  %2 = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 110, !dbg !1978
+  %3 = load i32* %2, align 4, !dbg !1978, !tbaa !1979
+  %4 = icmp eq i32 %3, 0, !dbg !1980
+  br i1 %4, label %._crit_edge5, label %.preheader1.lr.ph, !dbg !1981
 
-for.cond1.preheader.lr.ph:                        ; preds = %entry
-  %num_blk8x8_uv23 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 157
-  %.pre.pre = load i32* %num_blk8x8_uv23, align 4, !tbaa !0
-  br label %for.cond1.preheader
+.preheader1.lr.ph:                                ; preds = %0
+  %5 = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 157, !dbg !1982
+  %.pre.pre = load i32* %5, align 4, !dbg !1982, !tbaa !1987
+  br label %.preheader1, !dbg !1981
 
-for.cond1.preheader:                              ; preds = %for.cond1.preheader.lr.ph, %for.inc14
-  %.pre = phi i32 [ %.pre.pre, %for.cond1.preheader.lr.ph ], [ %.pre35, %for.inc14 ]
-  %i.030 = phi i32 [ 0, %for.cond1.preheader.lr.ph ], [ %inc15, %for.inc14 ]
-  %idxprom8 = zext i32 %i.030 to i64
-  br label %for.cond4.preheader
+.preheader1:                                      ; preds = %.preheader1.lr.ph, %17
+  %.pre = phi i32 [ %.pre.pre, %.preheader1.lr.ph ], [ %.pre12, %17 ], !dbg !1988
+  %i.04 = phi i32 [ 0, %.preheader1.lr.ph ], [ %18, %17 ]
+  %6 = zext i32 %i.04 to i64, !dbg !1988
+  br label %.preheader, !dbg !1989
 
-for.cond4.preheader:                              ; preds = %for.inc11, %for.cond1.preheader
-  %.pre34 = phi i32 [ %.pre, %for.cond1.preheader ], [ %.pre35, %for.inc11 ]
-  %2 = phi i32 [ %.pre, %for.cond1.preheader ], [ %4, %for.inc11 ]
-  %indvars.iv = phi i64 [ 0, %for.cond1.preheader ], [ %indvars.iv.next, %for.inc11 ]
-  %cmp525 = icmp eq i32 %2, -4
-  br i1 %cmp525, label %for.inc11, label %for.body6.lr.ph
+.preheader:                                       ; preds = %._crit_edge, %.preheader1
+  %.pre11 = phi i32 [ %.pre, %.preheader1 ], [ %.pre12, %._crit_edge ]
+  %7 = phi i32 [ %.pre, %.preheader1 ], [ %16, %._crit_edge ], !dbg !1982
+  %indvars.iv = phi i64 [ 0, %.preheader1 ], [ %indvars.iv.next, %._crit_edge ]
+  %8 = icmp eq i32 %7, -4, !dbg !1990
+  br i1 %8, label %._crit_edge, label %.lr.ph, !dbg !1991
 
-for.body6.lr.ph:                                  ; preds = %for.cond4.preheader
-  %nz_coeff.phi.trans.insert = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 28
-  %.pre31 = load i32**** %nz_coeff.phi.trans.insert, align 8, !tbaa !3
-  %arrayidx.phi.trans.insert = getelementptr inbounds i32*** %.pre31, i64 %idxprom8
-  %.pre32 = load i32*** %arrayidx.phi.trans.insert, align 8, !tbaa !3
-  %arrayidx9.phi.trans.insert = getelementptr inbounds i32** %.pre32, i64 %indvars.iv
-  %.pre33 = load i32** %arrayidx9.phi.trans.insert, align 8, !tbaa !3
-  br label %for.body6
+.lr.ph:                                           ; preds = %.preheader
+  %.phi.trans.insert = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 28
+  %.pre6 = load i32**** %.phi.trans.insert, align 8, !dbg !1992, !tbaa !1993
+  %.phi.trans.insert7 = getelementptr inbounds i32*** %.pre6, i64 %6
+  %.pre8 = load i32*** %.phi.trans.insert7, align 8, !dbg !1988, !tbaa !1439
+  %.phi.trans.insert9 = getelementptr inbounds i32** %.pre8, i64 %indvars.iv
+  %.pre10 = load i32** %.phi.trans.insert9, align 8, !dbg !1988, !tbaa !1439
+  br label %9, !dbg !1991
 
-for.body6:                                        ; preds = %for.body6.lr.ph, %for.body6
-  %l.026 = phi i32 [ 0, %for.body6.lr.ph ], [ %inc, %for.body6 ]
-  %idxprom = zext i32 %l.026 to i64
-  %arrayidx10 = getelementptr inbounds i32* %.pre33, i64 %idxprom
-  store i32 0, i32* %arrayidx10, align 4, !tbaa !0
-  %inc = add i32 %l.026, 1
-  %3 = load i32* %num_blk8x8_uv23, align 4, !tbaa !0
-  %add = add i32 %3, 4
-  %cmp5 = icmp ult i32 %inc, %add
-  br i1 %cmp5, label %for.body6, label %for.inc11
+; <label>:9                                       ; preds = %.lr.ph, %9
+  %l.02 = phi i32 [ 0, %.lr.ph ], [ %12, %9 ]
+  %10 = zext i32 %l.02 to i64, !dbg !1988
+  %11 = getelementptr inbounds i32* %.pre10, i64 %10, !dbg !1988
+  store i32 0, i32* %11, align 4, !dbg !1994, !tbaa !1433
+  %12 = add nuw i32 %l.02, 1, !dbg !1995
+  tail call void @llvm.dbg.value(metadata i32 %12, i64 0, metadata !150, metadata !1429), !dbg !1996
+  %13 = load i32* %5, align 4, !dbg !1982, !tbaa !1987
+  %14 = add i32 %13, 4, !dbg !1997
+  %15 = icmp ult i32 %12, %14, !dbg !1990
+  br i1 %15, label %9, label %._crit_edge, !dbg !1991
 
-for.inc11:                                        ; preds = %for.body6, %for.cond4.preheader
-  %.pre35 = phi i32 [ %.pre34, %for.cond4.preheader ], [ %3, %for.body6 ]
-  %4 = phi i32 [ -4, %for.cond4.preheader ], [ %3, %for.body6 ]
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, 4
-  br i1 %exitcond, label %for.inc14, label %for.cond4.preheader
+._crit_edge:                                      ; preds = %9, %.preheader
+  %.pre12 = phi i32 [ %.pre11, %.preheader ], [ %13, %9 ]
+  %16 = phi i32 [ -4, %.preheader ], [ %13, %9 ]
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !1989
+  %exitcond = icmp eq i64 %indvars.iv.next, 4, !dbg !1989
+  br i1 %exitcond, label %17, label %.preheader, !dbg !1989
 
-for.inc14:                                        ; preds = %for.inc11
-  %inc15 = add i32 %i.030, 1
-  %5 = load i32* %PicSizeInMbs28, align 4, !tbaa !0
-  %cmp = icmp ult i32 %inc15, %5
-  br i1 %cmp, label %for.cond1.preheader, label %for.end16
+; <label>:17                                      ; preds = %._crit_edge
+  %18 = add nuw i32 %i.04, 1, !dbg !1998
+  tail call void @llvm.dbg.value(metadata i32 %18, i64 0, metadata !148, metadata !1429), !dbg !1974
+  %19 = load i32* %2, align 4, !dbg !1978, !tbaa !1979
+  %20 = icmp ult i32 %18, %19, !dbg !1980
+  br i1 %20, label %.preheader1, label %._crit_edge5, !dbg !1981
 
-for.end16:                                        ; preds = %for.inc14, %entry
-  ret void
+._crit_edge5:                                     ; preds = %17, %0
+  ret void, !dbg !1999
 }

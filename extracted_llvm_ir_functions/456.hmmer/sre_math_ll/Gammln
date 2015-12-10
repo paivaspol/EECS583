@@ -1,39 +1,48 @@
-define double @Gammln(double %x) #0 {
-entry:
-  %cmp = fcmp ugt double %x, 0.000000e+00
-  br i1 %cmp, label %if.end, label %return
+define double @Gammln(double %x) #2 {
+  tail call void @llvm.dbg.value(metadata double %x, i64 0, metadata !51, metadata !122), !dbg !225
+  %1 = fcmp ugt double %x, 0.000000e+00, !dbg !226
+  br i1 %1, label %2, label %21, !dbg !228
 
-if.end:                                           ; preds = %entry
-  %sub = fadd double %x, -1.000000e+00
-  %add = fadd double %sub, 1.100000e+01
-  br label %for.body
+; <label>:2                                       ; preds = %0
+  %3 = fadd double %x, -1.000000e+00, !dbg !229
+  tail call void @llvm.dbg.value(metadata double %3, i64 0, metadata !53, metadata !122), !dbg !230
+  %4 = fadd double %3, 1.100000e+01, !dbg !231
+  tail call void @llvm.dbg.value(metadata double %4, i64 0, metadata !55, metadata !122), !dbg !232
+  tail call void @llvm.dbg.value(metadata double %4, i64 0, metadata !54, metadata !122), !dbg !233
+  tail call void @llvm.dbg.value(metadata double 1.000000e+00, i64 0, metadata !56, metadata !122), !dbg !234
+  tail call void @llvm.dbg.value(metadata i32 10, i64 0, metadata !52, metadata !122), !dbg !235
+  br label %5, !dbg !236
 
-for.body:                                         ; preds = %if.end, %for.body
-  %indvars.iv = phi i64 [ 10, %if.end ], [ %indvars.iv.next, %for.body ]
-  %value.023 = phi double [ 1.000000e+00, %if.end ], [ %add3, %for.body ]
-  %tmp.022 = phi double [ %add, %if.end ], [ %sub4, %for.body ]
-  %arrayidx = getelementptr inbounds [11 x double]* @Gammln.cof, i64 0, i64 %indvars.iv
-  %0 = load double* %arrayidx, align 8, !tbaa !3
-  %div = fdiv double %0, %tmp.022
-  %add3 = fadd double %value.023, %div
-  %sub4 = fadd double %tmp.022, -1.000000e+00
-  %indvars.iv.next = add i64 %indvars.iv, -1
-  %1 = trunc i64 %indvars.iv to i32
-  %cmp2 = icmp sgt i32 %1, 0
-  br i1 %cmp2, label %for.body, label %for.end
+; <label>:5                                       ; preds = %2, %5
+  %indvars.iv = phi i64 [ 10, %2 ], [ %indvars.iv.next, %5 ]
+  %value.03 = phi double [ 1.000000e+00, %2 ], [ %9, %5 ]
+  %tmp.02 = phi double [ %4, %2 ], [ %10, %5 ]
+  %6 = getelementptr inbounds [11 x double]* @Gammln.cof, i64 0, i64 %indvars.iv, !dbg !238
+  %7 = load double* %6, align 8, !dbg !238, !tbaa !241
+  %8 = fdiv double %7, %tmp.02, !dbg !243
+  %9 = fadd double %value.03, %8, !dbg !244
+  tail call void @llvm.dbg.value(metadata double %9, i64 0, metadata !56, metadata !122), !dbg !234
+  %10 = fadd double %tmp.02, -1.000000e+00, !dbg !245
+  tail call void @llvm.dbg.value(metadata double %10, i64 0, metadata !55, metadata !122), !dbg !232
+  %indvars.iv.next = add nsw i64 %indvars.iv, -1, !dbg !236
+  %11 = icmp sgt i64 %indvars.iv, 0, !dbg !246
+  br i1 %11, label %5, label %12, !dbg !236
 
-for.end:                                          ; preds = %for.body
-  %call = tail call double @log(double %add3) #4
-  %add5 = fadd double %add, 5.000000e-01
-  %add6 = fadd double %sub, 5.000000e-01
-  %call7 = tail call double @log(double %add5) #4
-  %mul = fmul double %add6, %call7
-  %add8 = fadd double %mul, 0x3FED67F1C8489D6C
-  %sub9 = fsub double %add8, %add5
-  %add10 = fadd double %call, %sub9
-  br label %return
+; <label>:12                                      ; preds = %5
+  %13 = tail call double @log(double %9) #6, !dbg !247
+  tail call void @llvm.dbg.value(metadata double %13, i64 0, metadata !56, metadata !122), !dbg !234
+  %14 = fadd double %4, 5.000000e-01, !dbg !248
+  tail call void @llvm.dbg.value(metadata double %14, i64 0, metadata !54, metadata !122), !dbg !233
+  %15 = fadd double %3, 5.000000e-01, !dbg !249
+  %16 = tail call double @log(double %14) #6, !dbg !250
+  %17 = fmul double %15, %16, !dbg !251
+  %18 = fadd double %17, 0x3FED67F1C8489D6C, !dbg !252
+  %19 = fsub double %18, %14, !dbg !253
+  %20 = fadd double %13, %19, !dbg !254
+  tail call void @llvm.dbg.value(metadata double %20, i64 0, metadata !56, metadata !122), !dbg !234
+  br label %21, !dbg !255
 
-return:                                           ; preds = %entry, %for.end
-  %retval.0 = phi double [ %add10, %for.end ], [ 9.999990e+05, %entry ]
-  ret double %retval.0
+; <label>:21                                      ; preds = %0, %12
+  %.0 = phi double [ %20, %12 ], [ 9.999990e+05, %0 ]
+  ret double %.0, !dbg !256
 }

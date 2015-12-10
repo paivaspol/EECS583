@@ -1,0 +1,125 @@
+define internal fastcc i32 @_ZN3povL17bezier_subdividerEPNS_10Ray_StructEPNS_20Bicubic_Patch_StructEPA4_A4_A3_dddddiPNS_13istack_structE(%"struct.pov::Ray_Struct"* %Ray, %"struct.pov::Bicubic_Patch_Struct"* %Object, [4 x [4 x [3 x double]]]* nocapture readonly %Patch, double %u0, double %u1, double %v0, double %v1, i32 %recursion_depth, %"struct.pov::istack_struct"* %Depth_Stack) #0 {
+  %radius = alloca double, align 8
+  %Lower_Left = alloca [4 x [4 x [3 x double]]], align 16
+  %Lower_Right = alloca [4 x [4 x [3 x double]]], align 16
+  %Upper_Left = alloca [4 x [4 x [3 x double]]], align 16
+  %Upper_Right = alloca [4 x [4 x [3 x double]]], align 16
+  %center = alloca [3 x double], align 16
+  tail call void @llvm.dbg.value(metadata %"struct.pov::Ray_Struct"* %Ray, i64 0, metadata !1227, metadata !1911), !dbg !3652
+  tail call void @llvm.dbg.value(metadata %"struct.pov::Bicubic_Patch_Struct"* %Object, i64 0, metadata !1228, metadata !1911), !dbg !3653
+  tail call void @llvm.dbg.value(metadata [4 x [4 x [3 x double]]]* %Patch, i64 0, metadata !1229, metadata !1911), !dbg !3654
+  tail call void @llvm.dbg.value(metadata double %u0, i64 0, metadata !1230, metadata !1911), !dbg !3655
+  tail call void @llvm.dbg.value(metadata double %u1, i64 0, metadata !1231, metadata !1911), !dbg !3656
+  tail call void @llvm.dbg.value(metadata double %v0, i64 0, metadata !1232, metadata !1911), !dbg !3657
+  tail call void @llvm.dbg.value(metadata double %v1, i64 0, metadata !1233, metadata !1911), !dbg !3658
+  tail call void @llvm.dbg.value(metadata i32 %recursion_depth, i64 0, metadata !1234, metadata !1911), !dbg !3659
+  tail call void @llvm.dbg.value(metadata %"struct.pov::istack_struct"* %Depth_Stack, i64 0, metadata !1235, metadata !1911), !dbg !3660
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !1236, metadata !1911), !dbg !3661
+  %1 = bitcast [4 x [4 x [3 x double]]]* %Lower_Left to i8*, !dbg !3662
+  call void @llvm.lifetime.start(i64 384, i8* %1) #2, !dbg !3662
+  tail call void @llvm.dbg.declare(metadata [4 x [4 x [3 x double]]]* %Lower_Left, metadata !1240, metadata !1911), !dbg !3663
+  %2 = bitcast [4 x [4 x [3 x double]]]* %Lower_Right to i8*, !dbg !3662
+  call void @llvm.lifetime.start(i64 384, i8* %2) #2, !dbg !3662
+  tail call void @llvm.dbg.declare(metadata [4 x [4 x [3 x double]]]* %Lower_Right, metadata !1241, metadata !1911), !dbg !3664
+  %3 = bitcast [4 x [4 x [3 x double]]]* %Upper_Left to i8*, !dbg !3665
+  call void @llvm.lifetime.start(i64 384, i8* %3) #2, !dbg !3665
+  tail call void @llvm.dbg.declare(metadata [4 x [4 x [3 x double]]]* %Upper_Left, metadata !1242, metadata !1911), !dbg !3666
+  %4 = bitcast [4 x [4 x [3 x double]]]* %Upper_Right to i8*, !dbg !3665
+  call void @llvm.lifetime.start(i64 384, i8* %4) #2, !dbg !3665
+  tail call void @llvm.dbg.declare(metadata [4 x [4 x [3 x double]]]* %Upper_Right, metadata !1243, metadata !1911), !dbg !3667
+  tail call void @llvm.dbg.declare(metadata [3 x double]* %center, metadata !1244, metadata !1911), !dbg !3668
+  %5 = getelementptr inbounds [3 x double]* %center, i64 0, i64 0, !dbg !3669
+  tail call void @llvm.dbg.value(metadata double* %radius, i64 0, metadata !1239, metadata !1911), !dbg !3670
+  call fastcc void @_ZN3povL22bezier_bounding_sphereEPA4_A4_A3_dPdS4_([4 x [4 x [3 x double]]]* %Patch, double* %5, double* %radius) #8, !dbg !3671
+  tail call void @llvm.dbg.value(metadata double* %radius, i64 0, metadata !1239, metadata !1911), !dbg !3670
+  %6 = load double* %radius, align 8, !dbg !3672, !tbaa !1938
+  %7 = call fastcc i32 @_ZN3povL22spherical_bounds_checkEPNS_10Ray_StructEPdd(%"struct.pov::Ray_Struct"* %Ray, double* %5, double %6) #8, !dbg !3674
+  %8 = icmp eq i32 %7, 0, !dbg !3674
+  br i1 %8, label %52, label %9, !dbg !3675
+
+; <label>:9                                       ; preds = %0
+  %10 = tail call fastcc i32 @_ZN3povL11flat_enoughEPNS_20Bicubic_Patch_StructEPA4_A4_A3_d(%"struct.pov::Bicubic_Patch_Struct"* %Object, [4 x [4 x [3 x double]]]* %Patch) #8, !dbg !3676
+  %11 = icmp eq i32 %10, 0, !dbg !3676
+  br i1 %11, label %14, label %12, !dbg !3678
+
+; <label>:12                                      ; preds = %9
+  %13 = tail call fastcc i32 @_ZN3povL25bezier_subpatch_intersectEPNS_10Ray_StructEPNS_20Bicubic_Patch_StructEPA4_A4_A3_dddddPNS_13istack_structE(%"struct.pov::Ray_Struct"* %Ray, %"struct.pov::Bicubic_Patch_Struct"* %Object, [4 x [4 x [3 x double]]]* %Patch, double %u0, double %u1, double %v0, double %v1, %"struct.pov::istack_struct"* %Depth_Stack) #8, !dbg !3679
+  br label %52, !dbg !3681
+
+; <label>:14                                      ; preds = %9
+  %15 = getelementptr inbounds %"struct.pov::Bicubic_Patch_Struct"* %Object, i64 0, i32 15, !dbg !3682
+  %16 = load i32* %15, align 4, !dbg !3682, !tbaa !2154
+  %17 = icmp sgt i32 %16, %recursion_depth, !dbg !3684
+  %18 = getelementptr inbounds %"struct.pov::Bicubic_Patch_Struct"* %Object, i64 0, i32 16, !dbg !3685
+  %19 = load i32* %18, align 4, !dbg !3685, !tbaa !2159
+  %20 = icmp sle i32 %19, %recursion_depth, !dbg !3688
+  br i1 %17, label %31, label %21, !dbg !3689
+
+; <label>:21                                      ; preds = %14
+  br i1 %20, label %22, label %24, !dbg !3690
+
+; <label>:22                                      ; preds = %21
+  %23 = tail call fastcc i32 @_ZN3povL25bezier_subpatch_intersectEPNS_10Ray_StructEPNS_20Bicubic_Patch_StructEPA4_A4_A3_dddddPNS_13istack_structE(%"struct.pov::Ray_Struct"* %Ray, %"struct.pov::Bicubic_Patch_Struct"* %Object, [4 x [4 x [3 x double]]]* %Patch, double %u0, double %u1, double %v0, double %v1, %"struct.pov::istack_struct"* %Depth_Stack) #8, !dbg !3691
+  br label %52, !dbg !3693
+
+; <label>:24                                      ; preds = %21
+  call fastcc void @_ZN3povL20bezier_split_up_downEPA4_A4_A3_dS3_S3_([4 x [4 x [3 x double]]]* %Patch, [4 x [4 x [3 x double]]]* %Lower_Left, [4 x [4 x [3 x double]]]* %Upper_Left) #8, !dbg !3694
+  %25 = fadd double %v0, %v1, !dbg !3696
+  %26 = fmul double %25, 5.000000e-01, !dbg !3697
+  tail call void @llvm.dbg.value(metadata double %26, i64 0, metadata !1238, metadata !1911), !dbg !3698
+  %27 = add nsw i32 %recursion_depth, 1, !dbg !3699
+  %28 = call fastcc i32 @_ZN3povL17bezier_subdividerEPNS_10Ray_StructEPNS_20Bicubic_Patch_StructEPA4_A4_A3_dddddiPNS_13istack_structE(%"struct.pov::Ray_Struct"* %Ray, %"struct.pov::Bicubic_Patch_Struct"* %Object, [4 x [4 x [3 x double]]]* %Lower_Left, double %u0, double %u1, double %v0, double %26, i32 %27, %"struct.pov::istack_struct"* %Depth_Stack) #8, !dbg !3700
+  tail call void @llvm.dbg.value(metadata i32 %28, i64 0, metadata !1236, metadata !1911), !dbg !3661
+  %29 = call fastcc i32 @_ZN3povL17bezier_subdividerEPNS_10Ray_StructEPNS_20Bicubic_Patch_StructEPA4_A4_A3_dddddiPNS_13istack_structE(%"struct.pov::Ray_Struct"* %Ray, %"struct.pov::Bicubic_Patch_Struct"* %Object, [4 x [4 x [3 x double]]]* %Upper_Left, double %u0, double %u1, double %26, double %v1, i32 %27, %"struct.pov::istack_struct"* %Depth_Stack) #8, !dbg !3701
+  %30 = add nsw i32 %29, %28, !dbg !3702
+  tail call void @llvm.dbg.value(metadata i32 %30, i64 0, metadata !1236, metadata !1911), !dbg !3661
+  br label %52, !dbg !3703
+
+; <label>:31                                      ; preds = %14
+  br i1 %20, label %32, label %39, !dbg !3704
+
+; <label>:32                                      ; preds = %31
+  call fastcc void @_ZN3povL23bezier_split_left_rightEPA4_A4_A3_dS3_S3_([4 x [4 x [3 x double]]]* %Patch, [4 x [4 x [3 x double]]]* %Lower_Left, [4 x [4 x [3 x double]]]* %Lower_Right) #8, !dbg !3706
+  %33 = fadd double %u0, %u1, !dbg !3709
+  %34 = fmul double %33, 5.000000e-01, !dbg !3710
+  tail call void @llvm.dbg.value(metadata double %34, i64 0, metadata !1237, metadata !1911), !dbg !3711
+  %35 = add nsw i32 %recursion_depth, 1, !dbg !3712
+  %36 = call fastcc i32 @_ZN3povL17bezier_subdividerEPNS_10Ray_StructEPNS_20Bicubic_Patch_StructEPA4_A4_A3_dddddiPNS_13istack_structE(%"struct.pov::Ray_Struct"* %Ray, %"struct.pov::Bicubic_Patch_Struct"* %Object, [4 x [4 x [3 x double]]]* %Lower_Left, double %u0, double %34, double %v0, double %v1, i32 %35, %"struct.pov::istack_struct"* %Depth_Stack) #8, !dbg !3713
+  tail call void @llvm.dbg.value(metadata i32 %36, i64 0, metadata !1236, metadata !1911), !dbg !3661
+  %37 = call fastcc i32 @_ZN3povL17bezier_subdividerEPNS_10Ray_StructEPNS_20Bicubic_Patch_StructEPA4_A4_A3_dddddiPNS_13istack_structE(%"struct.pov::Ray_Struct"* %Ray, %"struct.pov::Bicubic_Patch_Struct"* %Object, [4 x [4 x [3 x double]]]* %Lower_Right, double %34, double %u1, double %v0, double %v1, i32 %35, %"struct.pov::istack_struct"* %Depth_Stack) #8, !dbg !3714
+  %38 = add nsw i32 %37, %36, !dbg !3715
+  tail call void @llvm.dbg.value(metadata i32 %38, i64 0, metadata !1236, metadata !1911), !dbg !3661
+  br label %52, !dbg !3716
+
+; <label>:39                                      ; preds = %31
+  %40 = fadd double %u0, %u1, !dbg !3717
+  %41 = fmul double %40, 5.000000e-01, !dbg !3719
+  tail call void @llvm.dbg.value(metadata double %41, i64 0, metadata !1237, metadata !1911), !dbg !3711
+  %42 = fadd double %v0, %v1, !dbg !3720
+  %43 = fmul double %42, 5.000000e-01, !dbg !3721
+  tail call void @llvm.dbg.value(metadata double %43, i64 0, metadata !1238, metadata !1911), !dbg !3698
+  call fastcc void @_ZN3povL23bezier_split_left_rightEPA4_A4_A3_dS3_S3_([4 x [4 x [3 x double]]]* %Patch, [4 x [4 x [3 x double]]]* %Lower_Left, [4 x [4 x [3 x double]]]* %Lower_Right) #8, !dbg !3722
+  call fastcc void @_ZN3povL20bezier_split_up_downEPA4_A4_A3_dS3_S3_([4 x [4 x [3 x double]]]* %Lower_Left, [4 x [4 x [3 x double]]]* %Lower_Left, [4 x [4 x [3 x double]]]* %Upper_Left) #8, !dbg !3723
+  call fastcc void @_ZN3povL20bezier_split_up_downEPA4_A4_A3_dS3_S3_([4 x [4 x [3 x double]]]* %Lower_Right, [4 x [4 x [3 x double]]]* %Lower_Right, [4 x [4 x [3 x double]]]* %Upper_Right) #8, !dbg !3724
+  %44 = add nsw i32 %recursion_depth, 1, !dbg !3725
+  %45 = call fastcc i32 @_ZN3povL17bezier_subdividerEPNS_10Ray_StructEPNS_20Bicubic_Patch_StructEPA4_A4_A3_dddddiPNS_13istack_structE(%"struct.pov::Ray_Struct"* %Ray, %"struct.pov::Bicubic_Patch_Struct"* %Object, [4 x [4 x [3 x double]]]* %Lower_Left, double %u0, double %41, double %v0, double %43, i32 %44, %"struct.pov::istack_struct"* %Depth_Stack) #8, !dbg !3726
+  tail call void @llvm.dbg.value(metadata i32 %45, i64 0, metadata !1236, metadata !1911), !dbg !3661
+  %46 = call fastcc i32 @_ZN3povL17bezier_subdividerEPNS_10Ray_StructEPNS_20Bicubic_Patch_StructEPA4_A4_A3_dddddiPNS_13istack_structE(%"struct.pov::Ray_Struct"* %Ray, %"struct.pov::Bicubic_Patch_Struct"* %Object, [4 x [4 x [3 x double]]]* %Upper_Left, double %u0, double %41, double %43, double %v1, i32 %44, %"struct.pov::istack_struct"* %Depth_Stack) #8, !dbg !3727
+  %47 = add nsw i32 %46, %45, !dbg !3728
+  tail call void @llvm.dbg.value(metadata i32 %47, i64 0, metadata !1236, metadata !1911), !dbg !3661
+  %48 = call fastcc i32 @_ZN3povL17bezier_subdividerEPNS_10Ray_StructEPNS_20Bicubic_Patch_StructEPA4_A4_A3_dddddiPNS_13istack_structE(%"struct.pov::Ray_Struct"* %Ray, %"struct.pov::Bicubic_Patch_Struct"* %Object, [4 x [4 x [3 x double]]]* %Lower_Right, double %41, double %u1, double %v0, double %43, i32 %44, %"struct.pov::istack_struct"* %Depth_Stack) #8, !dbg !3729
+  %49 = add nsw i32 %47, %48, !dbg !3730
+  tail call void @llvm.dbg.value(metadata i32 %49, i64 0, metadata !1236, metadata !1911), !dbg !3661
+  %50 = call fastcc i32 @_ZN3povL17bezier_subdividerEPNS_10Ray_StructEPNS_20Bicubic_Patch_StructEPA4_A4_A3_dddddiPNS_13istack_structE(%"struct.pov::Ray_Struct"* %Ray, %"struct.pov::Bicubic_Patch_Struct"* %Object, [4 x [4 x [3 x double]]]* %Upper_Right, double %41, double %u1, double %43, double %v1, i32 %44, %"struct.pov::istack_struct"* %Depth_Stack) #8, !dbg !3731
+  %51 = add nsw i32 %49, %50, !dbg !3732
+  tail call void @llvm.dbg.value(metadata i32 %51, i64 0, metadata !1236, metadata !1911), !dbg !3661
+  br label %52
+
+; <label>:52                                      ; preds = %24, %39, %32, %0, %22, %12
+  %.0 = phi i32 [ %13, %12 ], [ %23, %22 ], [ 0, %0 ], [ %30, %24 ], [ %38, %32 ], [ %51, %39 ]
+  call void @llvm.lifetime.end(i64 384, i8* %4) #2, !dbg !3733
+  call void @llvm.lifetime.end(i64 384, i8* %3) #2, !dbg !3733
+  call void @llvm.lifetime.end(i64 384, i8* %2) #2, !dbg !3733
+  call void @llvm.lifetime.end(i64 384, i8* %1) #2, !dbg !3733
+  ret i32 %.0, !dbg !3733
+}

@@ -1,0 +1,33 @@
+define zeroext i1 @_ZN3pov7MatchesEPKcS1_(i8* nocapture readonly %v1, i8* nocapture readonly %v2) #0 {
+  tail call void @llvm.dbg.value(metadata i8* %v1, i64 0, metadata !386, metadata !1047), !dbg !1048
+  tail call void @llvm.dbg.value(metadata i8* %v2, i64 0, metadata !387, metadata !1047), !dbg !1049
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !388, metadata !1047), !dbg !1050
+  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !389, metadata !1047), !dbg !1051
+  br label %1, !dbg !1052
+
+; <label>:1                                       ; preds = %0, %9
+  %indvars.iv = phi i64 [ 0, %0 ], [ %indvars.iv.next, %9 ]
+  %2 = getelementptr inbounds i8* %v1, i64 %indvars.iv, !dbg !1053
+  %3 = load i8* %2, align 1, !dbg !1053, !tbaa !1054
+  %4 = icmp eq i8 %3, 0, !dbg !1057
+  br i1 %4, label %.critedge, label %5, !dbg !1058
+
+; <label>:5                                       ; preds = %1
+  %6 = getelementptr inbounds i8* %v2, i64 %indvars.iv, !dbg !1059
+  %7 = load i8* %6, align 1, !dbg !1059, !tbaa !1054
+  %8 = icmp eq i8 %7, 0, !dbg !1060
+  br i1 %8, label %.critedge, label %9, !dbg !1061
+
+; <label>:9                                       ; preds = %5
+  %10 = sext i8 %3 to i32, !dbg !1062
+  %11 = sext i8 %7 to i32, !dbg !1064
+  tail call void @llvm.dbg.value(metadata i32 %11, i64 0, metadata !475, metadata !1047), !dbg !1065
+  %12 = tail call i32 @__tolower(i32 %11) #6, !dbg !1067
+  %13 = icmp eq i32 %10, %12, !dbg !1068
+  %indvars.iv.next = add nuw i64 %indvars.iv, 1, !dbg !1052
+  br i1 %13, label %1, label %.critedge, !dbg !1052
+
+.critedge:                                        ; preds = %5, %9, %1
+  %.lcssa = phi i1 [ true, %5 ], [ false, %9 ], [ true, %1 ]
+  ret i1 %.lcssa, !dbg !1069
+}

@@ -1,0 +1,27 @@
+define i32 @_ZN6soplex9CLUFactor12solveLeftEpsEPdS1_Pid(%"class.soplex::CLUFactor"* nocapture readonly %this, double* nocapture %vec, double* nocapture %rhs, i32* nocapture %nonz, double %eps) #0 align 2 {
+  tail call void @llvm.dbg.value(metadata %"class.soplex::CLUFactor"* %this, i64 0, metadata !1286, metadata !2134), !dbg !3582
+  tail call void @llvm.dbg.value(metadata double* %vec, i64 0, metadata !1287, metadata !2134), !dbg !3583
+  tail call void @llvm.dbg.value(metadata double* %rhs, i64 0, metadata !1288, metadata !2134), !dbg !3584
+  tail call void @llvm.dbg.value(metadata i32* %nonz, i64 0, metadata !1289, metadata !2134), !dbg !3585
+  tail call void @llvm.dbg.value(metadata double %eps, i64 0, metadata !1290, metadata !2134), !dbg !3586
+  %1 = getelementptr inbounds %"class.soplex::CLUFactor"* %this, i64 0, i32 10, i32 8, !dbg !3587
+  %2 = load i32* %1, align 4, !dbg !3587, !tbaa !2541
+  %3 = icmp eq i32 %2, 0, !dbg !3589
+  br i1 %3, label %4, label %6, !dbg !3590
+
+; <label>:4                                       ; preds = %0
+  tail call void @_ZN6soplex9CLUFactor15solveUpdateLeftEPd(%"class.soplex::CLUFactor"* %this, double* %rhs) #5, !dbg !3591
+  tail call void @_ZN6soplex9CLUFactor10solveUleftEPdS1_(%"class.soplex::CLUFactor"* %this, double* %vec, double* %rhs) #5, !dbg !3593
+  %5 = tail call i32 @_ZN6soplex9CLUFactor13solveLleftEpsEPdPid(%"class.soplex::CLUFactor"* %this, double* %vec, i32* %nonz, double %eps) #5, !dbg !3594
+  br label %9, !dbg !3595
+
+; <label>:6                                       ; preds = %0
+  tail call void @_ZN6soplex9CLUFactor10solveUleftEPdS1_(%"class.soplex::CLUFactor"* %this, double* %vec, double* %rhs) #5, !dbg !3596
+  %7 = tail call i32 @_ZN6soplex9CLUFactor16solveLleftForestEPdPid(%"class.soplex::CLUFactor"* %this, double* %vec, i32* undef, double undef) #5, !dbg !3598
+  %8 = tail call i32 @_ZN6soplex9CLUFactor13solveLleftEpsEPdPid(%"class.soplex::CLUFactor"* %this, double* %vec, i32* %nonz, double %eps) #5, !dbg !3599
+  br label %9, !dbg !3600
+
+; <label>:9                                       ; preds = %6, %4
+  %.0 = phi i32 [ %8, %6 ], [ %5, %4 ]
+  ret i32 %.0, !dbg !3601
+}

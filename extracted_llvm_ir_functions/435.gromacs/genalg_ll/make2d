@@ -1,24 +1,28 @@
 define internal fastcc float** @make2d(i32 %n, i32 %m) #1 {
-  %1 = tail call i8* @save_calloc(i8* getelementptr inbounds ([2 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i32 88, i32 %n, i32 8) #6
-  %2 = bitcast i8* %1 to float**
-  %3 = icmp sgt i32 %n, 0
-  br i1 %3, label %.lr.ph, label %._crit_edge
+  tail call void @llvm.dbg.value(metadata i32 %n, i64 0, metadata !163, metadata !193), !dbg !331
+  tail call void @llvm.dbg.value(metadata i32 %m, i64 0, metadata !164, metadata !193), !dbg !332
+  %1 = tail call i8* @save_calloc(i8* getelementptr inbounds ([2 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i32 88, i32 %n, i32 8) #6, !dbg !333
+  %2 = bitcast i8* %1 to float**, !dbg !333
+  tail call void @llvm.dbg.value(metadata float** %2, i64 0, metadata !166, metadata !193), !dbg !334
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !165, metadata !193), !dbg !335
+  %3 = icmp sgt i32 %n, 0, !dbg !336
+  br i1 %3, label %.lr.ph, label %._crit_edge, !dbg !339
 
 .lr.ph:                                           ; preds = %0
-  %4 = add i32 %n, -1
-  br label %5
+  %4 = add i32 %n, -1, !dbg !339
+  br label %5, !dbg !339
 
 ; <label>:5                                       ; preds = %5, %.lr.ph
   %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %5 ]
-  %6 = tail call i8* @save_calloc(i8* getelementptr inbounds ([5 x i8]* @.str27, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i32 90, i32 %m, i32 4) #6
-  %7 = getelementptr inbounds float** %2, i64 %indvars.iv
-  %8 = bitcast float** %7 to i8**
-  store i8* %6, i8** %8, align 8, !tbaa !26
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %4
-  br i1 %exitcond, label %._crit_edge, label %5
+  %6 = tail call i8* @save_calloc(i8* getelementptr inbounds ([5 x i8]* @.str27, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i32 90, i32 %m, i32 4) #6, !dbg !340
+  %7 = getelementptr inbounds float** %2, i64 %indvars.iv, !dbg !340
+  %8 = bitcast float** %7 to i8**, !dbg !340
+  store i8* %6, i8** %8, align 8, !dbg !340, !tbaa !301
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !339
+  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !339
+  %exitcond = icmp eq i32 %lftr.wideiv, %4, !dbg !339
+  br i1 %exitcond, label %._crit_edge, label %5, !dbg !339
 
 ._crit_edge:                                      ; preds = %5, %0
-  ret float** %2
+  ret float** %2, !dbg !341
 }

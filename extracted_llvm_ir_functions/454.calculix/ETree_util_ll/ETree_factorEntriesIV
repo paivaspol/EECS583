@@ -1,35 +1,43 @@
 define %struct._IV* @ETree_factorEntriesIV(%struct._ETree* %etree, i32 %symflag) #0 {
-entry:
-  %cmp = icmp eq %struct._ETree* %etree, null
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata %struct._ETree* %etree, i64 0, metadata !171, metadata !258), !dbg !676
+  tail call void @llvm.dbg.value(metadata i32 %symflag, i64 0, metadata !172, metadata !258), !dbg !677
+  %1 = icmp eq %struct._ETree* %etree, null, !dbg !678
+  br i1 %1, label %2, label %5, !dbg !680
 
-if.then:                                          ; preds = %entry
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([58 x i8]* @.str11, i64 0, i64 0), %struct._ETree* null, i32 %symflag) #4
-  tail call void @exit(i32 -1) #5
-  unreachable
+; <label>:2                                       ; preds = %0
+  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !681, !tbaa !265
+  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([58 x i8]* @.str11, i64 0, i64 0), %struct._ETree* null, i32 %symflag) #5, !dbg !683
+  tail call void @exit(i32 -1) #6, !dbg !684
+  unreachable, !dbg !684
 
-if.end:                                           ; preds = %entry
-  %call1 = tail call i32 @ETree_nfront(%struct._ETree* %etree) #4
-  %call2 = tail call %struct._IV* @IV_new() #4
-  tail call void @IV_init(%struct._IV* %call2, i32 %call1, i32* null) #4
-  %call3 = tail call i32* @IV_entries(%struct._IV* %call2) #4
-  tail call void @IV_fill(%struct._IV* %call2, i32 0) #4
-  %cmp417 = icmp sgt i32 %call1, 0
-  br i1 %cmp417, label %for.body, label %for.end
+; <label>:5                                       ; preds = %0
+  %6 = tail call i32 @ETree_nfront(%struct._ETree* %etree) #5, !dbg !685
+  tail call void @llvm.dbg.value(metadata i32 %6, i64 0, metadata !174, metadata !258), !dbg !686
+  %7 = tail call %struct._IV* @IV_new() #5, !dbg !687
+  tail call void @llvm.dbg.value(metadata %struct._IV* %7, i64 0, metadata !176, metadata !258), !dbg !688
+  tail call void @IV_init(%struct._IV* %7, i32 %6, i32* null) #5, !dbg !689
+  %8 = tail call i32* @IV_entries(%struct._IV* %7) #5, !dbg !690
+  tail call void @llvm.dbg.value(metadata i32* %8, i64 0, metadata !175, metadata !258), !dbg !691
+  tail call void @IV_fill(%struct._IV* %7, i32 0) #5, !dbg !692
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !173, metadata !258), !dbg !693
+  %9 = icmp sgt i32 %6, 0, !dbg !694
+  br i1 %9, label %.lr.ph, label %._crit_edge, !dbg !697
 
-for.body:                                         ; preds = %if.end, %for.body
-  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %if.end ]
-  %1 = trunc i64 %indvars.iv to i32
-  %call5 = tail call double @ETree_nFactorEntriesInFront(%struct._ETree* %etree, i32 %symflag, i32 %1) #6
-  %conv = fptosi double %call5 to i32
-  %arrayidx = getelementptr inbounds i32* %call3, i64 %indvars.iv
-  store i32 %conv, i32* %arrayidx, align 4, !tbaa !3
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %call1
-  br i1 %exitcond, label %for.end, label %for.body
+.lr.ph:                                           ; preds = %5
+  %10 = add i32 %6, -1, !dbg !697
+  br label %11, !dbg !697
 
-for.end:                                          ; preds = %for.body, %if.end
-  ret %struct._IV* %call2
+; <label>:11                                      ; preds = %11, %.lr.ph
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %11 ]
+  %12 = trunc i64 %indvars.iv to i32, !dbg !698
+  %13 = tail call double @ETree_nFactorEntriesInFront(%struct._ETree* %etree, i32 %symflag, i32 %12) #7, !dbg !698
+  %14 = fptosi double %13 to i32, !dbg !698
+  %15 = getelementptr inbounds i32* %8, i64 %indvars.iv, !dbg !700
+  store i32 %14, i32* %15, align 4, !dbg !701, !tbaa !342
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !697
+  %exitcond = icmp eq i32 %12, %10, !dbg !697
+  br i1 %exitcond, label %._crit_edge, label %11, !dbg !697
+
+._crit_edge:                                      ; preds = %11, %5
+  ret %struct._IV* %7, !dbg !702
 }

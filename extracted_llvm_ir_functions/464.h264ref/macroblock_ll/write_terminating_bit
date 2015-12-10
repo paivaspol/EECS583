@@ -1,24 +1,26 @@
 define void @write_terminating_bit(i16 signext %bit) #0 {
-entry:
-  %0 = load %struct.InputParameters** @input, align 8, !tbaa !0
-  %partition_mode = getelementptr inbounds %struct.InputParameters* %0, i64 0, i32 61
-  %1 = load i32* %partition_mode, align 4, !tbaa !3
-  %idxprom = sext i32 %1 to i64
-  %arrayidx = getelementptr inbounds [2 x i32*]* @assignSE2partition, i64 0, i64 %idxprom
-  %2 = load i32** %arrayidx, align 8, !tbaa !0
-  %arrayidx1 = getelementptr inbounds i32* %2, i64 2
-  %3 = load i32* %arrayidx1, align 4, !tbaa !3
-  %idxprom2 = sext i32 %3 to i64
-  %4 = load %struct.ImageParameters** @img, align 8, !tbaa !0
-  %currentSlice = getelementptr inbounds %struct.ImageParameters* %4, i64 0, i32 50
-  %5 = load %struct.Slice** %currentSlice, align 8, !tbaa !0
-  %partArr = getelementptr inbounds %struct.Slice* %5, i64 0, i32 6
-  %6 = load %struct.datapartition** %partArr, align 8, !tbaa !0
-  %bitstream = getelementptr inbounds %struct.datapartition* %6, i64 %idxprom2, i32 0
-  %7 = load %struct.Bitstream** %bitstream, align 8, !tbaa !0
-  %write_flag = getelementptr inbounds %struct.Bitstream* %7, i64 0, i32 10
-  store i32 1, i32* %write_flag, align 4, !tbaa !3
-  %ee_cabac = getelementptr inbounds %struct.datapartition* %6, i64 %idxprom2, i32 1
-  tail call void @biari_encode_symbol_final(%struct.EncodingEnvironment* %ee_cabac, i16 signext %bit) #7
-  ret void
+  tail call void @llvm.dbg.value(metadata i16 %bit, i64 0, metadata !856, metadata !1584), !dbg !5995
+  %1 = load %struct.InputParameters** @input, align 8, !dbg !5996, !tbaa !1587
+  %2 = getelementptr inbounds %struct.InputParameters* %1, i64 0, i32 61, !dbg !5997
+  %3 = load i32* %2, align 4, !dbg !5997, !tbaa !2551
+  %4 = sext i32 %3 to i64, !dbg !5998
+  %5 = getelementptr inbounds [2 x i32*]* @assignSE2partition, i64 0, i64 %4, !dbg !5998
+  %6 = load i32** %5, align 8, !dbg !5998, !tbaa !1587
+  tail call void @llvm.dbg.value(metadata i32* %6, i64 0, metadata !858, metadata !1584), !dbg !5999
+  %7 = getelementptr inbounds i32* %6, i64 2, !dbg !6000
+  %8 = load i32* %7, align 4, !dbg !6000, !tbaa !1719
+  %9 = sext i32 %8 to i64, !dbg !6001
+  %10 = load %struct.ImageParameters** @img, align 8, !dbg !6001, !tbaa !1587
+  %11 = getelementptr inbounds %struct.ImageParameters* %10, i64 0, i32 50, !dbg !6002
+  %12 = load %struct.Slice** %11, align 8, !dbg !6002, !tbaa !1864
+  %13 = getelementptr inbounds %struct.Slice* %12, i64 0, i32 6, !dbg !6003
+  %14 = load %struct.datapartition** %13, align 8, !dbg !6003, !tbaa !1899
+  %15 = getelementptr inbounds %struct.datapartition* %14, i64 %9, i32 0, !dbg !6004
+  %16 = load %struct.Bitstream** %15, align 8, !dbg !6004, !tbaa !1901
+  %17 = getelementptr inbounds %struct.Bitstream* %16, i64 0, i32 10, !dbg !6005
+  store i32 1, i32* %17, align 4, !dbg !6006, !tbaa !6007
+  %18 = getelementptr inbounds %struct.datapartition* %14, i64 %9, i32 1, !dbg !6008
+  tail call void @llvm.dbg.value(metadata %struct.EncodingEnvironment* %18, i64 0, metadata !859, metadata !1584), !dbg !6009
+  tail call void @biari_encode_symbol_final(%struct.EncodingEnvironment* %18, i16 signext %bit) #7, !dbg !6010
+  ret void, !dbg !6011
 }

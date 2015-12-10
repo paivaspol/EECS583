@@ -1,0 +1,51 @@
+define void @_ZN7way2obj12releaseboundEv(%class.way2obj* nocapture %this) #1 align 2 {
+  tail call void @llvm.dbg.value(metadata %class.way2obj* %this, i64 0, metadata !174, metadata !293), !dbg !519
+  %1 = getelementptr inbounds %class.way2obj* %this, i64 0, i32 5, !dbg !520
+  %2 = load i32* %1, align 4, !dbg !520, !tbaa !522
+  %3 = sext i32 %2 to i64, !dbg !523
+  %4 = getelementptr inbounds %class.way2obj* %this, i64 0, i32 4, i64 %3, i32 1, !dbg !524
+  %5 = load i32* %4, align 4, !dbg !524, !tbaa !359
+  %6 = icmp eq i32 %5, 0, !dbg !525
+  %7 = getelementptr inbounds %class.way2obj* %this, i64 0, i32 6, !dbg !526
+  br i1 %6, label %8, label %11, !dbg !527
+
+; <label>:8                                       ; preds = %0
+  %9 = load i32* %7, align 4, !dbg !526, !tbaa !528
+  %10 = add nsw i32 %9, 1, !dbg !529
+  store i32 %10, i32* %7, align 4, !dbg !530, !tbaa !528
+  br label %26, !dbg !531
+
+; <label>:11                                      ; preds = %0
+  store i32 0, i32* %7, align 4, !dbg !532, !tbaa !528
+  %12 = icmp sgt i32 %5, 0, !dbg !534
+  br i1 %12, label %.lr.ph, label %._crit_edge, !dbg !537
+
+.lr.ph:                                           ; preds = %11
+  %13 = sext i32 %5 to i64
+  br label %14, !dbg !537
+
+; <label>:14                                      ; preds = %.lr.ph, %14
+  %indvars.iv = phi i64 [ %13, %.lr.ph ], [ %indvars.iv.next, %14 ]
+  %15 = phi i64 [ %3, %.lr.ph ], [ %24, %14 ]
+  %indvars.iv.next = add nsw i64 %indvars.iv, -1, !dbg !537
+  %16 = getelementptr inbounds %class.way2obj* %this, i64 0, i32 4, i64 %15, i32 0, !dbg !538
+  %17 = load %struct.pointt** %16, align 8, !dbg !538, !tbaa !366
+  %18 = getelementptr inbounds %struct.pointt* %17, i64 %indvars.iv.next, i32 0, !dbg !540
+  %19 = load i32* %18, align 4, !dbg !540, !tbaa !349
+  %20 = getelementptr inbounds %struct.pointt* %17, i64 %indvars.iv.next, i32 1, !dbg !541
+  %21 = load i32* %20, align 4, !dbg !541, !tbaa !353
+  tail call void @_ZN7way2obj12releasepointEii(%class.way2obj* %this, i32 %19, i32 %21) #7, !dbg !542
+  %22 = icmp sgt i64 %indvars.iv, 1, !dbg !534
+  %23 = load i32* %1, align 4, !dbg !543, !tbaa !522
+  %24 = sext i32 %23 to i64, !dbg !544
+  br i1 %22, label %14, label %._crit_edge, !dbg !537
+
+._crit_edge:                                      ; preds = %14, %11
+  %.lcssa = phi i64 [ %3, %11 ], [ %24, %14 ]
+  %25 = getelementptr inbounds %class.way2obj* %this, i64 0, i32 4, i64 %.lcssa, i32 1, !dbg !545
+  store i32 0, i32* %25, align 4, !dbg !547, !tbaa !359
+  br label %26
+
+; <label>:26                                      ; preds = %._crit_edge, %8
+  ret void, !dbg !548
+}

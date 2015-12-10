@@ -1,56 +1,65 @@
 define i32 @get_mem2Dint(i32*** nocapture %array2D, i32 %rows, i32 %columns) #0 {
-entry:
-  %conv = sext i32 %rows to i64
-  %call = tail call noalias i8* @calloc(i64 %conv, i64 8) #3
-  %0 = bitcast i8* %call to i32**
-  store i32** %0, i32*** %array2D, align 8, !tbaa !0
-  %cmp = icmp eq i8* %call, null
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata i32*** %array2D, i64 0, metadata !97, metadata !769), !dbg !968
+  tail call void @llvm.dbg.value(metadata i32 %rows, i64 0, metadata !98, metadata !769), !dbg !969
+  tail call void @llvm.dbg.value(metadata i32 %columns, i64 0, metadata !99, metadata !769), !dbg !970
+  %1 = sext i32 %rows to i64, !dbg !971
+  %2 = tail call i8* @calloc(i64 %1, i64 8) #4, !dbg !973
+  %3 = bitcast i32*** %array2D to i8**, !dbg !974
+  store i8* %2, i8** %3, align 8, !dbg !974, !tbaa !780
+  %4 = icmp eq i8* %2, null, !dbg !975
+  br i1 %4, label %6, label %._crit_edge2, !dbg !976
 
-if.then:                                          ; preds = %entry
-  %call.i = tail call i32 (i8*, i64, i8*, ...)* @snprintf(i8* getelementptr inbounds ([300 x i8]* @errortext, i64 0, i64 0), i64 300, i8* getelementptr inbounds ([30 x i8]* @.str20, i64 0, i64 0), i8* getelementptr inbounds ([22 x i8]* @.str7, i64 0, i64 0)) #3
-  tail call void @error(i8* getelementptr inbounds ([300 x i8]* @errortext, i64 0, i64 0), i32 100) #3
-  %.pre = load i32*** %array2D, align 8, !tbaa !0
-  br label %if.end
+._crit_edge2:                                     ; preds = %0
+  %5 = bitcast i8* %2 to i8**
+  br label %8, !dbg !976
 
-if.end:                                           ; preds = %if.then, %entry
-  %1 = phi i32** [ %.pre, %if.then ], [ %0, %entry ]
-  %mul = mul nsw i32 %columns, %rows
-  %conv2 = sext i32 %mul to i64
-  %call3 = tail call noalias i8* @calloc(i64 %conv2, i64 4) #3
-  %2 = bitcast i8* %call3 to i32*
-  store i32* %2, i32** %1, align 8, !tbaa !0
-  %cmp4 = icmp eq i8* %call3, null
-  br i1 %cmp4, label %if.then6, label %for.cond.preheader
+; <label>:6                                       ; preds = %0
+  tail call void @llvm.dbg.value(metadata i8* getelementptr inbounds ([22 x i8]* @.str7, i64 0, i64 0), i64 0, metadata !199, metadata !769) #5, !dbg !977
+  %7 = tail call i32 (i8*, i64, i32, i64, i8*, ...)* @__snprintf_chk(i8* getelementptr inbounds ([300 x i8]* @errortext, i64 0, i64 0), i64 300, i32 0, i64 300, i8* getelementptr inbounds ([30 x i8]* @.str20, i64 0, i64 0), i8* getelementptr inbounds ([22 x i8]* @.str7, i64 0, i64 0)) #4, !dbg !979
+  tail call void @error(i8* getelementptr inbounds ([300 x i8]* @errortext, i64 0, i64 0), i32 100) #4, !dbg !980
+  %.phi.trans.insert = bitcast i32*** %array2D to i8***
+  %.pre = load i8*** %.phi.trans.insert, align 8, !dbg !981, !tbaa !780
+  br label %8, !dbg !983
 
-if.then6:                                         ; preds = %if.end
-  %call.i28 = tail call i32 (i8*, i64, i8*, ...)* @snprintf(i8* getelementptr inbounds ([300 x i8]* @errortext, i64 0, i64 0), i64 300, i8* getelementptr inbounds ([30 x i8]* @.str20, i64 0, i64 0), i8* getelementptr inbounds ([22 x i8]* @.str7, i64 0, i64 0)) #3
-  tail call void @error(i8* getelementptr inbounds ([300 x i8]* @errortext, i64 0, i64 0), i32 100) #3
-  br label %for.cond.preheader
+; <label>:8                                       ; preds = %._crit_edge2, %6
+  %9 = phi i8** [ %.pre, %6 ], [ %5, %._crit_edge2 ]
+  %10 = mul nsw i32 %columns, %rows, !dbg !984
+  %11 = sext i32 %10 to i64, !dbg !985
+  %12 = tail call i8* @calloc(i64 %11, i64 4) #4, !dbg !986
+  store i8* %12, i8** %9, align 8, !dbg !987, !tbaa !780
+  %13 = icmp eq i8* %12, null, !dbg !988
+  br i1 %13, label %14, label %.preheader, !dbg !989
 
-for.cond.preheader:                               ; preds = %if.then6, %if.end
-  %cmp829 = icmp sgt i32 %rows, 1
-  br i1 %cmp829, label %for.body.lr.ph, label %for.end
+; <label>:14                                      ; preds = %8
+  tail call void @llvm.dbg.value(metadata i8* getelementptr inbounds ([22 x i8]* @.str7, i64 0, i64 0), i64 0, metadata !199, metadata !769) #5, !dbg !990
+  %15 = tail call i32 (i8*, i64, i32, i64, i8*, ...)* @__snprintf_chk(i8* getelementptr inbounds ([300 x i8]* @errortext, i64 0, i64 0), i64 300, i32 0, i64 300, i8* getelementptr inbounds ([30 x i8]* @.str20, i64 0, i64 0), i8* getelementptr inbounds ([22 x i8]* @.str7, i64 0, i64 0)) #4, !dbg !992
+  tail call void @error(i8* getelementptr inbounds ([300 x i8]* @errortext, i64 0, i64 0), i32 100) #4, !dbg !993
+  br label %.preheader, !dbg !994
 
-for.body.lr.ph:                                   ; preds = %for.cond.preheader
-  %idx.ext = sext i32 %columns to i64
-  br label %for.body
+.preheader:                                       ; preds = %14, %8
+  %16 = icmp sgt i32 %rows, 1, !dbg !995
+  br i1 %16, label %.lr.ph, label %._crit_edge, !dbg !998
 
-for.body:                                         ; preds = %for.body, %for.body.lr.ph
-  %indvars.iv = phi i64 [ 1, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
-  %3 = add nsw i64 %indvars.iv, -1
-  %4 = load i32*** %array2D, align 8, !tbaa !0
-  %arrayidx10 = getelementptr inbounds i32** %4, i64 %3
-  %5 = load i32** %arrayidx10, align 8, !tbaa !0
-  %add.ptr = getelementptr inbounds i32* %5, i64 %idx.ext
-  %arrayidx12 = getelementptr inbounds i32** %4, i64 %indvars.iv
-  store i32* %add.ptr, i32** %arrayidx12, align 8, !tbaa !0
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %rows
-  br i1 %exitcond, label %for.end, label %for.body
+.lr.ph:                                           ; preds = %.preheader
+  %17 = sext i32 %columns to i64, !dbg !999
+  %18 = add i32 %rows, -1, !dbg !998
+  br label %19, !dbg !998
 
-for.end:                                          ; preds = %for.body, %for.cond.preheader
-  %mul15 = shl i32 %mul, 2
-  ret i32 %mul15
+; <label>:19                                      ; preds = %19, %.lr.ph
+  %indvars.iv = phi i64 [ 1, %.lr.ph ], [ %indvars.iv.next, %19 ]
+  %20 = add nsw i64 %indvars.iv, -1, !dbg !1000
+  %21 = load i32*** %array2D, align 8, !dbg !1001, !tbaa !780
+  %22 = getelementptr inbounds i32** %21, i64 %20, !dbg !1002
+  %23 = load i32** %22, align 8, !dbg !1002, !tbaa !780
+  %24 = getelementptr inbounds i32* %23, i64 %17, !dbg !999
+  %25 = getelementptr inbounds i32** %21, i64 %indvars.iv, !dbg !1003
+  store i32* %24, i32** %25, align 8, !dbg !1004, !tbaa !780
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !998
+  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !998
+  %exitcond = icmp eq i32 %lftr.wideiv, %18, !dbg !998
+  br i1 %exitcond, label %._crit_edge, label %19, !dbg !998
+
+._crit_edge:                                      ; preds = %19, %.preheader
+  %26 = shl i32 %10, 2, !dbg !1005
+  ret i32 %26, !dbg !1006
 }

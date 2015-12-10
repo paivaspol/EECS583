@@ -1,48 +1,50 @@
 define %struct._I2OP* @I2OP_init(i32 %n, i32 %flag) #0 {
-entry:
-  %cmp = icmp slt i32 %n, 1
-  %0 = icmp ugt i32 %flag, 2
-  %or.cond = or i1 %cmp, %0
-  br i1 %or.cond, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata i32 %n, i64 0, metadata !24, metadata !115), !dbg !116
+  tail call void @llvm.dbg.value(metadata i32 %flag, i64 0, metadata !25, metadata !115), !dbg !117
+  %1 = icmp slt i32 %n, 1, !dbg !118
+  %2 = icmp ugt i32 %flag, 2, !dbg !120
+  %3 = or i1 %1, %2, !dbg !120
+  br i1 %3, label %4, label %7, !dbg !120
 
-if.then:                                          ; preds = %entry
-  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([46 x i8]* @.str, i64 0, i64 0), i32 %n, i32 %flag) #4
-  tail call void @exit(i32 -1) #5
-  unreachable
+; <label>:4                                       ; preds = %0
+  %5 = load %struct.__sFILE** @__stderrp, align 8, !dbg !121, !tbaa !123
+  %6 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %5, i8* getelementptr inbounds ([46 x i8]* @.str, i64 0, i64 0), i32 %n, i32 %flag) #5, !dbg !127
+  tail call void @exit(i32 -1) #6, !dbg !128
+  unreachable, !dbg !128
 
-if.end:                                           ; preds = %entry
-  %cmp4 = icmp sgt i32 %n, 0
-  br i1 %cmp4, label %if.then5, label %if.else14
+; <label>:7                                       ; preds = %0
+  %8 = icmp sgt i32 %n, 0, !dbg !129
+  br i1 %8, label %9, label %18, !dbg !131
 
-if.then5:                                         ; preds = %if.end
-  %conv = sext i32 %n to i64
-  %mul = mul i64 %conv, 24
-  %call6 = tail call noalias i8* @malloc(i64 %mul) #4
-  %2 = bitcast i8* %call6 to %struct._I2OP*
-  %cmp7 = icmp eq i8* %call6, null
-  br i1 %cmp7, label %if.then9, label %if.end23
+; <label>:9                                       ; preds = %7
+  %10 = sext i32 %n to i64, !dbg !132
+  %11 = mul nsw i64 %10, 24, !dbg !132
+  %12 = tail call i8* @malloc(i64 %11) #5, !dbg !132
+  %13 = bitcast i8* %12 to %struct._I2OP*, !dbg !132
+  tail call void @llvm.dbg.value(metadata %struct._I2OP* %13, i64 0, metadata !26, metadata !115), !dbg !135
+  %14 = icmp eq i8* %12, null, !dbg !132
+  br i1 %14, label %15, label %25, !dbg !136
 
-if.then9:                                         ; preds = %if.then5
-  %3 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call12 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([49 x i8]* @.str1, i64 0, i64 0), i64 %mul, i32 41, i8* getelementptr inbounds ([85 x i8]* @.str2, i64 0, i64 0)) #4
-  tail call void @exit(i32 -1) #5
-  unreachable
+; <label>:15                                      ; preds = %9
+  %16 = load %struct.__sFILE** @__stderrp, align 8, !dbg !137, !tbaa !123
+  %17 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %16, i8* getelementptr inbounds ([49 x i8]* @.str1, i64 0, i64 0), i64 %11, i32 41, i8* getelementptr inbounds ([97 x i8]* @.str2, i64 0, i64 0)) #5, !dbg !137
+  tail call void @exit(i32 -1) #6, !dbg !137
+  unreachable, !dbg !137
 
-if.else14:                                        ; preds = %if.end
-  %cmp15 = icmp eq i32 %n, 0
-  br i1 %cmp15, label %if.end23, label %if.else18
+; <label>:18                                      ; preds = %7
+  %19 = icmp eq i32 %n, 0, !dbg !139
+  br i1 %19, label %25, label %20, !dbg !129
 
-if.else18:                                        ; preds = %if.else14
-  %4 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %conv19 = sext i32 %n to i64
-  %mul20 = mul i64 %conv19, 24
-  %call21 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %4, i8* getelementptr inbounds ([47 x i8]* @.str3, i64 0, i64 0), i64 %mul20, i32 41, i8* getelementptr inbounds ([85 x i8]* @.str2, i64 0, i64 0)) #4
-  tail call void @exit(i32 -1) #5
-  unreachable
+; <label>:20                                      ; preds = %18
+  %21 = load %struct.__sFILE** @__stderrp, align 8, !dbg !141, !tbaa !123
+  %22 = sext i32 %n to i64, !dbg !141
+  %23 = mul nsw i64 %22, 24, !dbg !141
+  %24 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %21, i8* getelementptr inbounds ([47 x i8]* @.str3, i64 0, i64 0), i64 %23, i32 41, i8* getelementptr inbounds ([97 x i8]* @.str2, i64 0, i64 0)) #5, !dbg !141
+  tail call void @exit(i32 -1) #6, !dbg !141
+  unreachable, !dbg !141
 
-if.end23:                                         ; preds = %if.else14, %if.then5
-  %base.0 = phi %struct._I2OP* [ %2, %if.then5 ], [ null, %if.else14 ]
-  tail call void @I2OP_initStorage(i32 %n, i32 %flag, %struct._I2OP* %base.0) #6
-  ret %struct._I2OP* %base.0
+; <label>:25                                      ; preds = %18, %9
+  %base.0 = phi %struct._I2OP* [ %13, %9 ], [ null, %18 ]
+  tail call void @I2OP_initStorage(i32 %n, i32 %flag, %struct._I2OP* %base.0) #7, !dbg !143
+  ret %struct._I2OP* %base.0, !dbg !144
 }

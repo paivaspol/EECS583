@@ -1,22 +1,28 @@
-define { double, double } @trace_su3(%struct.su3_matrix* nocapture %a) #0 {
-entry:
-  %real = getelementptr inbounds %struct.su3_matrix* %a, i64 0, i32 0, i64 0, i64 0, i32 0
-  %0 = load double* %real, align 8, !tbaa !0
-  %real5 = getelementptr inbounds %struct.su3_matrix* %a, i64 0, i32 0, i64 1, i64 1, i32 0
-  %1 = load double* %real5, align 8, !tbaa !0
-  %add = fadd double %0, %1
-  %imag = getelementptr inbounds %struct.su3_matrix* %a, i64 0, i32 0, i64 0, i64 0, i32 1
-  %2 = load double* %imag, align 8, !tbaa !0
-  %imag13 = getelementptr inbounds %struct.su3_matrix* %a, i64 0, i32 0, i64 1, i64 1, i32 1
-  %3 = load double* %imag13, align 8, !tbaa !0
-  %add14 = fadd double %2, %3
-  %real20 = getelementptr inbounds %struct.su3_matrix* %a, i64 0, i32 0, i64 2, i64 2, i32 0
-  %4 = load double* %real20, align 8, !tbaa !0
-  %add21 = fadd double %add, %4
-  %imag27 = getelementptr inbounds %struct.su3_matrix* %a, i64 0, i32 0, i64 2, i64 2, i32 1
-  %5 = load double* %imag27, align 8, !tbaa !0
-  %add28 = fadd double %add14, %5
-  %.fca.0.insert = insertvalue { double, double } undef, double %add21, 0
-  %.fca.1.insert = insertvalue { double, double } %.fca.0.insert, double %add28, 1
-  ret { double, double } %.fca.1.insert
+define { double, double } @trace_su3(%struct.su3_matrix* nocapture readonly %a) #0 {
+  tail call void @llvm.dbg.value(metadata %struct.su3_matrix* %a, i64 0, metadata !24, metadata !31), !dbg !32
+  tail call void @llvm.dbg.declare(metadata %struct.complex* undef, metadata !25, metadata !31), !dbg !33
+  tail call void @llvm.dbg.declare(metadata %struct.complex* undef, metadata !26, metadata !31), !dbg !34
+  %1 = getelementptr inbounds %struct.su3_matrix* %a, i64 0, i32 0, i64 0, i64 0, i32 0, !dbg !35
+  %2 = load double* %1, align 8, !dbg !35, !tbaa !37
+  %3 = getelementptr inbounds %struct.su3_matrix* %a, i64 0, i32 0, i64 1, i64 1, i32 0, !dbg !35
+  %4 = load double* %3, align 8, !dbg !35, !tbaa !37
+  %5 = fadd double %2, %4, !dbg !35
+  tail call void @llvm.dbg.value(metadata double %5, i64 0, metadata !25, metadata !42), !dbg !33
+  %6 = getelementptr inbounds %struct.su3_matrix* %a, i64 0, i32 0, i64 0, i64 0, i32 1, !dbg !35
+  %7 = load double* %6, align 8, !dbg !35, !tbaa !43
+  %8 = getelementptr inbounds %struct.su3_matrix* %a, i64 0, i32 0, i64 1, i64 1, i32 1, !dbg !35
+  %9 = load double* %8, align 8, !dbg !35, !tbaa !43
+  %10 = fadd double %7, %9, !dbg !35
+  tail call void @llvm.dbg.value(metadata double %10, i64 0, metadata !25, metadata !44), !dbg !33
+  %11 = getelementptr inbounds %struct.su3_matrix* %a, i64 0, i32 0, i64 2, i64 2, i32 0, !dbg !45
+  %12 = load double* %11, align 8, !dbg !45, !tbaa !37
+  %13 = fadd double %5, %12, !dbg !45
+  tail call void @llvm.dbg.value(metadata double %13, i64 0, metadata !26, metadata !42), !dbg !34
+  %14 = getelementptr inbounds %struct.su3_matrix* %a, i64 0, i32 0, i64 2, i64 2, i32 1, !dbg !45
+  %15 = load double* %14, align 8, !dbg !45, !tbaa !43
+  %16 = fadd double %10, %15, !dbg !45
+  tail call void @llvm.dbg.value(metadata double %16, i64 0, metadata !26, metadata !44), !dbg !34
+  %17 = insertvalue { double, double } undef, double %13, 0, !dbg !47
+  %18 = insertvalue { double, double } %17, double %16, 1, !dbg !47
+  ret { double, double } %18, !dbg !47
 }

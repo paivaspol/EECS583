@@ -1,21 +1,20 @@
 define void @FreeHistogram(%struct.histogram_s* nocapture %h) #0 {
-entry:
-  %histogram = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 0
-  %0 = load i32** %histogram, align 8, !tbaa !3
-  %1 = bitcast i32* %0 to i8*
-  tail call void @free(i8* %1) #4
-  %expect = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 7
-  %2 = load float** %expect, align 8, !tbaa !3
-  %cmp = icmp eq float* %2, null
-  br i1 %cmp, label %if.end, label %if.then
+  tail call void @llvm.dbg.value(metadata %struct.histogram_s* %h, i64 0, metadata !44, metadata !372), !dbg !422
+  %1 = bitcast %struct.histogram_s* %h to i8**, !dbg !423
+  %2 = load i8** %1, align 8, !dbg !423, !tbaa !408
+  tail call void @free(i8* %2) #8, !dbg !424
+  %3 = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 7, !dbg !425
+  %4 = load float** %3, align 8, !dbg !425, !tbaa !417
+  %5 = icmp eq float* %4, null, !dbg !427
+  br i1 %5, label %8, label %6, !dbg !428
 
-if.then:                                          ; preds = %entry
-  %3 = bitcast float* %2 to i8*
-  tail call void @free(i8* %3) #4
-  br label %if.end
+; <label>:6                                       ; preds = %0
+  %7 = bitcast float* %4 to i8*, !dbg !429
+  tail call void @free(i8* %7) #8, !dbg !430
+  br label %8, !dbg !430
 
-if.end:                                           ; preds = %entry, %if.then
-  %4 = bitcast %struct.histogram_s* %h to i8*
-  tail call void @free(i8* %4) #4
-  ret void
+; <label>:8                                       ; preds = %0, %6
+  %9 = bitcast %struct.histogram_s* %h to i8*, !dbg !431
+  tail call void @free(i8* %9) #8, !dbg !432
+  ret void, !dbg !433
 }

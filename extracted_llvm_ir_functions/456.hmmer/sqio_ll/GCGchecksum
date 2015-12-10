@@ -1,27 +1,34 @@
-define i32 @GCGchecksum(i8* nocapture %seq, i32 %len) #0 {
-entry:
-  %cmp6 = icmp sgt i32 %len, 0
-  br i1 %cmp6, label %for.body, label %for.end
+define i32 @GCGchecksum(i8* nocapture readonly %seq, i32 %len) #0 {
+  tail call void @llvm.dbg.value(metadata i8* %seq, i64 0, metadata !363, metadata !624), !dbg !2289
+  tail call void @llvm.dbg.value(metadata i32 %len, i64 0, metadata !364, metadata !624), !dbg !2290
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !366, metadata !624), !dbg !2291
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !365, metadata !624), !dbg !2292
+  %1 = icmp sgt i32 %len, 0, !dbg !2293
+  br i1 %1, label %.lr.ph, label %._crit_edge, !dbg !2296
 
-for.body:                                         ; preds = %entry, %for.body
-  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %entry ]
-  %chk.08 = phi i32 [ %rem2, %for.body ], [ 0, %entry ]
-  %0 = trunc i64 %indvars.iv to i32
-  %rem = srem i32 %0, 57
-  %add = add nsw i32 %rem, 1
-  %arrayidx = getelementptr inbounds i8* %seq, i64 %indvars.iv
-  %1 = load i8* %arrayidx, align 1, !tbaa !1
-  %conv = sext i8 %1 to i32
-  %call = tail call i32 @sre_toupper(i32 %conv) #8
-  %mul = mul nsw i32 %call, %add
-  %add1 = add nsw i32 %mul, %chk.08
-  %rem2 = srem i32 %add1, 10000
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %len
-  br i1 %exitcond, label %for.end, label %for.body
+.lr.ph:                                           ; preds = %0
+  %2 = add i32 %len, -1, !dbg !2296
+  br label %3, !dbg !2296
 
-for.end:                                          ; preds = %for.body, %entry
-  %chk.0.lcssa = phi i32 [ 0, %entry ], [ %rem2, %for.body ]
-  ret i32 %chk.0.lcssa
+; <label>:3                                       ; preds = %3, %.lr.ph
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %3 ]
+  %chk.02 = phi i32 [ 0, %.lr.ph ], [ %13, %3 ]
+  %4 = trunc i64 %indvars.iv to i32, !dbg !2297
+  %5 = srem i32 %4, 57, !dbg !2297
+  %6 = add nsw i32 %5, 1, !dbg !2298
+  %7 = getelementptr inbounds i8* %seq, i64 %indvars.iv, !dbg !2299
+  %8 = load i8* %7, align 1, !dbg !2299, !tbaa !861
+  %9 = sext i8 %8 to i32, !dbg !2300
+  %10 = tail call i32 @sre_toupper(i32 %9) #8, !dbg !2301
+  %11 = mul nsw i32 %10, %6, !dbg !2302
+  %12 = add nsw i32 %11, %chk.02, !dbg !2303
+  %13 = srem i32 %12, 10000, !dbg !2304
+  tail call void @llvm.dbg.value(metadata i32 %13, i64 0, metadata !366, metadata !624), !dbg !2291
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !2296
+  %exitcond = icmp eq i32 %4, %2, !dbg !2296
+  br i1 %exitcond, label %._crit_edge, label %3, !dbg !2296
+
+._crit_edge:                                      ; preds = %3, %0
+  %chk.0.lcssa = phi i32 [ 0, %0 ], [ %13, %3 ]
+  ret i32 %chk.0.lcssa, !dbg !2305
 }

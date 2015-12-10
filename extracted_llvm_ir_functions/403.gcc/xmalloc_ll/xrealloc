@@ -1,27 +1,31 @@
 define i8* @xrealloc(i8* %oldmem, i64 %size) #0 {
-entry:
-  %cmp = icmp eq i64 %size, 0
-  %.size = select i1 %cmp, i64 1, i64 %size
-  %tobool = icmp eq i8* %oldmem, null
-  br i1 %tobool, label %if.then1, label %if.else
+  tail call void @llvm.dbg.value(metadata i8* %oldmem, i64 0, metadata !39, metadata !48), !dbg !88
+  tail call void @llvm.dbg.value(metadata i64 %size, i64 0, metadata !40, metadata !48), !dbg !89
+  %1 = icmp eq i64 %size, 0, !dbg !90
+  %.size = select i1 %1, i64 1, i64 %size, !dbg !92
+  tail call void @llvm.dbg.value(metadata i64 %.size, i64 0, metadata !40, metadata !48), !dbg !89
+  %2 = icmp eq i8* %oldmem, null, !dbg !93
+  br i1 %2, label %3, label %5, !dbg !95
 
-if.then1:                                         ; preds = %entry
-  %call = tail call i8* @malloc(i64 %.size) #4
-  br label %if.end3
+; <label>:3                                       ; preds = %0
+  %4 = tail call i8* @malloc(i64 %.size) #5, !dbg !96
+  tail call void @llvm.dbg.value(metadata i8* %4, i64 0, metadata !41, metadata !48), !dbg !97
+  br label %7, !dbg !98
 
-if.else:                                          ; preds = %entry
-  %call2 = tail call i8* @realloc(i8* %oldmem, i64 %.size) #4
-  br label %if.end3
+; <label>:5                                       ; preds = %0
+  %6 = tail call i8* @realloc(i8* %oldmem, i64 %.size) #5, !dbg !99
+  tail call void @llvm.dbg.value(metadata i8* %6, i64 0, metadata !41, metadata !48), !dbg !97
+  br label %7
 
-if.end3:                                          ; preds = %if.else, %if.then1
-  %newmem.0 = phi i8* [ %call2, %if.else ], [ %call, %if.then1 ]
-  %tobool4 = icmp eq i8* %newmem.0, null
-  br i1 %tobool4, label %if.then5, label %if.end6
+; <label>:7                                       ; preds = %5, %3
+  %newmem.0 = phi i8* [ %6, %5 ], [ %4, %3 ]
+  %8 = icmp eq i8* %newmem.0, null, !dbg !100
+  br i1 %8, label %9, label %10, !dbg !102
 
-if.then5:                                         ; preds = %if.end3
-  tail call void @xmalloc_failed(i64 %.size) #6
-  unreachable
+; <label>:9                                       ; preds = %7
+  tail call void @xmalloc_failed(i64 %.size) #7, !dbg !103
+  unreachable, !dbg !103
 
-if.end6:                                          ; preds = %if.end3
-  ret i8* %newmem.0
+; <label>:10                                      ; preds = %7
+  ret i8* %newmem.0, !dbg !104
 }

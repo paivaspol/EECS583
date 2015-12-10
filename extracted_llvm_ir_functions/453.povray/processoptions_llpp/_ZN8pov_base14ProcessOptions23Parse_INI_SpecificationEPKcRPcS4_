@@ -1,0 +1,55 @@
+define i32 @_ZN8pov_base14ProcessOptions23Parse_INI_SpecificationEPKcRPcS4_(%"class.pov_base::ProcessOptions"* nocapture readnone %this, i8* %filespec, i8** nocapture dereferenceable(8) %filename, i8** nocapture dereferenceable(8) %sectionname) #3 align 2 {
+  tail call void @llvm.dbg.value(metadata %"class.pov_base::ProcessOptions"* %this, i64 0, metadata !682, metadata !1305), !dbg !1462
+  tail call void @llvm.dbg.value(metadata i8* %filespec, i64 0, metadata !683, metadata !1305), !dbg !1463
+  tail call void @llvm.dbg.value(metadata i8** %filename, i64 0, metadata !684, metadata !1305), !dbg !1464
+  tail call void @llvm.dbg.value(metadata i8** %sectionname, i64 0, metadata !685, metadata !1305), !dbg !1465
+  %1 = tail call i8* @strchr(i8* %filespec, i32 91) #10, !dbg !1466
+  tail call void @llvm.dbg.value(metadata i8* %1, i64 0, metadata !686, metadata !1305), !dbg !1467
+  %2 = icmp eq i8* %1, null, !dbg !1468
+  br i1 %2, label %3, label %8, !dbg !1469
+
+; <label>:3                                       ; preds = %0
+  %4 = tail call i64 @strlen(i8* %filespec) #10, !dbg !1470
+  %5 = add i64 %4, 1, !dbg !1472
+  %6 = tail call noalias i8* @_Znam(i64 %5) #12, !dbg !1473
+  store i8* %6, i8** %filename, align 8, !dbg !1474, !tbaa !1334
+  %7 = tail call i8* @strcpy(i8* %6, i8* %filespec) #10, !dbg !1475
+  br label %32, !dbg !1476
+
+; <label>:8                                       ; preds = %0
+  %9 = tail call i8* @strchr(i8* %filespec, i32 93) #10, !dbg !1477
+  tail call void @llvm.dbg.value(metadata i8* %9, i64 0, metadata !687, metadata !1305), !dbg !1478
+  %10 = icmp eq i8* %9, null, !dbg !1479
+  br i1 %10, label %32, label %11, !dbg !1481
+
+; <label>:11                                      ; preds = %8
+  %12 = ptrtoint i8* %9 to i64, !dbg !1482
+  %13 = ptrtoint i8* %1 to i64, !dbg !1482
+  %14 = sub i64 %12, %13, !dbg !1482
+  %15 = icmp sgt i64 %14, -1, !dbg !1484
+  %16 = select i1 %15, i64 %14, i64 -1, !dbg !1484
+  %17 = tail call noalias i8* @_Znam(i64 %16) #12, !dbg !1484
+  store i8* %17, i8** %sectionname, align 8, !dbg !1485, !tbaa !1334
+  %18 = getelementptr inbounds i8* %1, i64 1, !dbg !1486
+  %19 = add nsw i64 %14, -1, !dbg !1487
+  %20 = tail call i8* @strncpy(i8* %17, i8* %18, i64 %19) #10, !dbg !1488
+  %21 = load i8** %sectionname, align 8, !dbg !1489, !tbaa !1334
+  %22 = getelementptr inbounds i8* %21, i64 %19, !dbg !1489
+  store i8 0, i8* %22, align 1, !dbg !1490, !tbaa !1491
+  %23 = ptrtoint i8* %filespec to i64, !dbg !1492
+  %24 = sub i64 %13, %23, !dbg !1492
+  %25 = add nsw i64 %24, 1, !dbg !1493
+  %26 = icmp slt i64 %24, -1, !dbg !1494
+  %27 = select i1 %26, i64 -1, i64 %25, !dbg !1494
+  %28 = tail call noalias i8* @_Znam(i64 %27) #12, !dbg !1494
+  store i8* %28, i8** %filename, align 8, !dbg !1495, !tbaa !1334
+  %29 = tail call i8* @strncpy(i8* %28, i8* %filespec, i64 %24) #10, !dbg !1496
+  %30 = load i8** %filename, align 8, !dbg !1497, !tbaa !1334
+  %31 = getelementptr inbounds i8* %30, i64 %24, !dbg !1497
+  store i8 0, i8* %31, align 1, !dbg !1498, !tbaa !1491
+  br label %32
+
+; <label>:32                                      ; preds = %3, %11, %8
+  %.0 = phi i32 [ -1, %8 ], [ 0, %11 ], [ 0, %3 ]
+  ret i32 %.0, !dbg !1499
+}

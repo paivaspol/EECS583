@@ -1,40 +1,46 @@
-define i8* @sre_strtok(i8** nocapture %s, i8* nocapture %delim, i32* %len) #0 {
-entry:
-  %0 = load i8** %s, align 8, !tbaa !0
-  %call = tail call i64 @strspn(i8* %0, i8* %delim) #7
-  %add.ptr = getelementptr inbounds i8* %0, i64 %call
-  %1 = load i8* %add.ptr, align 1, !tbaa !1
-  %tobool = icmp eq i8 %1, 0
-  br i1 %tobool, label %return, label %if.end
+define i8* @sre_strtok(i8** nocapture %s, i8* nocapture readonly %delim, i32* %len) #0 {
+  tail call void @llvm.dbg.value(metadata i8** %s, i64 0, metadata !180, metadata !225), !dbg !488
+  tail call void @llvm.dbg.value(metadata i8* %delim, i64 0, metadata !181, metadata !225), !dbg !489
+  tail call void @llvm.dbg.value(metadata i32* %len, i64 0, metadata !182, metadata !225), !dbg !490
+  %1 = load i8** %s, align 8, !dbg !491, !tbaa !348
+  tail call void @llvm.dbg.value(metadata i8* %1, i64 0, metadata !183, metadata !225), !dbg !492
+  %2 = tail call i64 @strspn(i8* %1, i8* %delim) #5, !dbg !493
+  %3 = getelementptr inbounds i8* %1, i64 %2, !dbg !494
+  tail call void @llvm.dbg.value(metadata i8* %3, i64 0, metadata !183, metadata !225), !dbg !492
+  %4 = load i8* %3, align 1, !dbg !495, !tbaa !247
+  %5 = icmp eq i8 %4, 0, !dbg !495
+  br i1 %5, label %18, label %6, !dbg !497
 
-if.end:                                           ; preds = %entry
-  %call1 = tail call i64 @strcspn(i8* %add.ptr, i8* %delim) #7
-  %conv = trunc i64 %call1 to i32
-  %sext = shl i64 %call1, 32
-  %idx.ext = ashr exact i64 %sext, 32
-  %add.ptr.sum = add i64 %idx.ext, %call
-  %add.ptr2 = getelementptr inbounds i8* %0, i64 %add.ptr.sum
-  %2 = load i8* %add.ptr2, align 1, !tbaa !1
-  %cmp = icmp eq i8 %2, 0
-  br i1 %cmp, label %if.end7, label %if.else
+; <label>:6                                       ; preds = %0
+  %7 = tail call i64 @strcspn(i8* %3, i8* %delim) #5, !dbg !498
+  %8 = trunc i64 %7 to i32, !dbg !498
+  tail call void @llvm.dbg.value(metadata i32 %8, i64 0, metadata !185, metadata !225), !dbg !499
+  %sext = shl i64 %7, 32, !dbg !500
+  %9 = ashr exact i64 %sext, 32, !dbg !500
+  %.sum = add i64 %9, %2, !dbg !500
+  %10 = getelementptr inbounds i8* %1, i64 %.sum, !dbg !500
+  tail call void @llvm.dbg.value(metadata i8* %10, i64 0, metadata !184, metadata !225), !dbg !501
+  %11 = load i8* %10, align 1, !dbg !502, !tbaa !247
+  %12 = icmp eq i8 %11, 0, !dbg !504
+  br i1 %12, label %15, label %13, !dbg !505
 
-if.else:                                          ; preds = %if.end
-  store i8 0, i8* %add.ptr2, align 1, !tbaa !1
-  %add.ptr2.sum = add i64 %add.ptr.sum, 1
-  %add.ptr6 = getelementptr inbounds i8* %0, i64 %add.ptr2.sum
-  br label %if.end7
+; <label>:13                                      ; preds = %6
+  store i8 0, i8* %10, align 1, !dbg !506, !tbaa !247
+  %.sum1 = add i64 %.sum, 1, !dbg !508
+  %14 = getelementptr inbounds i8* %1, i64 %.sum1, !dbg !508
+  br label %15
 
-if.end7:                                          ; preds = %if.end, %if.else
-  %storemerge = phi i8* [ %add.ptr6, %if.else ], [ %add.ptr2, %if.end ]
-  store i8* %storemerge, i8** %s, align 8, !tbaa !0
-  %cmp8 = icmp eq i32* %len, null
-  br i1 %cmp8, label %return, label %if.then10
+; <label>:15                                      ; preds = %6, %13
+  %storemerge = phi i8* [ %14, %13 ], [ %10, %6 ]
+  store i8* %storemerge, i8** %s, align 8, !dbg !509, !tbaa !348
+  %16 = icmp eq i32* %len, null, !dbg !511
+  br i1 %16, label %18, label %17, !dbg !513
 
-if.then10:                                        ; preds = %if.end7
-  store i32 %conv, i32* %len, align 4, !tbaa !4
-  br label %return
+; <label>:17                                      ; preds = %15
+  store i32 %8, i32* %len, align 4, !dbg !514, !tbaa !257
+  br label %18, !dbg !515
 
-return:                                           ; preds = %if.then10, %if.end7, %entry
-  %retval.0 = phi i8* [ null, %entry ], [ %add.ptr, %if.end7 ], [ %add.ptr, %if.then10 ]
-  ret i8* %retval.0
+; <label>:18                                      ; preds = %17, %15, %0
+  %.0 = phi i8* [ null, %0 ], [ %3, %15 ], [ %3, %17 ]
+  ret i8* %.0, !dbg !516
 }

@@ -1,90 +1,97 @@
 define void @P7ReadNullModel(i8* %rndfile, float* nocapture %null, float* nocapture %ret_p1) #0 {
-entry:
-  %call = tail call %struct._IO_FILE* @fopen(i8* %rndfile, i8* getelementptr inbounds ([2 x i8]* @.str2, i64 0, i64 0)) #5
-  %cmp = icmp eq %struct._IO_FILE* %call, null
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata i8* %rndfile, i64 0, metadata !145, metadata !276), !dbg !718
+  tail call void @llvm.dbg.value(metadata float* %null, i64 0, metadata !146, metadata !276), !dbg !719
+  tail call void @llvm.dbg.value(metadata float* %ret_p1, i64 0, metadata !147, metadata !276), !dbg !720
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !151, metadata !276), !dbg !721
+  %1 = tail call %struct.__sFILE* @"\01_fopen"(i8* %rndfile, i8* getelementptr inbounds ([2 x i8]* @.str2, i64 0, i64 0)) #7, !dbg !722
+  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %1, i64 0, metadata !148, metadata !276), !dbg !724
+  %2 = icmp eq %struct.__sFILE* %1, null, !dbg !725
+  br i1 %2, label %3, label %4, !dbg !726
 
-if.then:                                          ; preds = %entry
-  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([35 x i8]* @.str24, i64 0, i64 0), i8* %rndfile) #5
-  br label %if.end
+; <label>:3                                       ; preds = %0
+  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([35 x i8]* @.str24, i64 0, i64 0), i8* %rndfile) #7, !dbg !727
+  br label %4, !dbg !727
 
-if.end:                                           ; preds = %if.then, %entry
-  %call1 = tail call i8* @Getword(%struct._IO_FILE* %call, i32 4) #5
-  %cmp2 = icmp eq i8* %call1, null
-  br i1 %cmp2, label %FAILURE, label %if.end4
+; <label>:4                                       ; preds = %3, %0
+  %5 = tail call i8* @Getword(%struct.__sFILE* %1, i32 4) #7, !dbg !728
+  tail call void @llvm.dbg.value(metadata i8* %5, i64 0, metadata !149, metadata !276), !dbg !730
+  %6 = icmp eq i8* %5, null, !dbg !731
+  br i1 %6, label %.loopexit, label %7, !dbg !732
 
-if.end4:                                          ; preds = %if.end
-  tail call void @s2upper(i8* %call1) #5
-  %call5 = tail call i32 @strcmp(i8* %call1, i8* getelementptr inbounds ([8 x i8]* @.str8, i64 0, i64 0)) #6
-  %cmp6 = icmp eq i32 %call5, 0
-  br i1 %cmp6, label %if.end13, label %if.else
+; <label>:7                                       ; preds = %4
+  tail call void @s2upper(i8* %5) #7, !dbg !733
+  %8 = tail call i32 @strcmp(i8* %5, i8* getelementptr inbounds ([8 x i8]* @.str8, i64 0, i64 0)) #7, !dbg !734
+  %9 = icmp eq i32 %8, 0, !dbg !736
+  br i1 %9, label %13, label %10, !dbg !737
 
-if.else:                                          ; preds = %if.end4
-  %call8 = tail call i32 @strcmp(i8* %call1, i8* getelementptr inbounds ([6 x i8]* @.str6, i64 0, i64 0)) #6
-  %cmp9 = icmp eq i32 %call8, 0
-  br i1 %cmp9, label %if.end13, label %FAILURE
+; <label>:10                                      ; preds = %7
+  %11 = tail call i32 @strcmp(i8* %5, i8* getelementptr inbounds ([6 x i8]* @.str6, i64 0, i64 0)) #7, !dbg !738
+  %12 = icmp eq i32 %11, 0, !dbg !740
+  br i1 %12, label %13, label %.loopexit, !dbg !741
 
-if.end13:                                         ; preds = %if.else, %if.end4
-  %type.0 = phi i32 [ 2, %if.end4 ], [ 3, %if.else ]
-  %0 = load i32* @Alphabet_type, align 4, !tbaa !0
-  %cmp14 = icmp eq i32 %0, 0
-  br i1 %cmp14, label %if.then15, label %if.else16
+; <label>:13                                      ; preds = %10, %7
+  %type.0 = phi i32 [ 2, %7 ], [ 3, %10 ]
+  %14 = load i32* @Alphabet_type, align 4, !dbg !742, !tbaa !308
+  %15 = icmp eq i32 %14, 0, !dbg !744
+  br i1 %15, label %16, label %17, !dbg !745
 
-if.then15:                                        ; preds = %if.end13
-  tail call void @SetAlphabet(i32 %type.0) #5
-  br label %for.cond.preheader
+; <label>:16                                      ; preds = %13
+  tail call void @SetAlphabet(i32 %type.0) #7, !dbg !746
+  br label %.preheader, !dbg !746
 
-if.else16:                                        ; preds = %if.end13
-  %cmp17 = icmp eq i32 %0, %type.0
-  br i1 %cmp17, label %for.cond.preheader, label %if.then18
+; <label>:17                                      ; preds = %13
+  %18 = icmp eq i32 %14, %type.0, !dbg !747
+  br i1 %18, label %.preheader, label %19, !dbg !749
 
-if.then18:                                        ; preds = %if.else16
-  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([59 x i8]* @.str25, i64 0, i64 0), i8* %rndfile) #5
-  br label %for.cond.preheader
+; <label>:19                                      ; preds = %17
+  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([59 x i8]* @.str25, i64 0, i64 0), i8* %rndfile) #7, !dbg !750
+  br label %.preheader, !dbg !750
 
-for.cond.preheader:                               ; preds = %if.else16, %if.then18, %if.then15
-  %1 = load i32* @Alphabet_size, align 4, !tbaa !0
-  %cmp2151 = icmp sgt i32 %1, 0
-  %call2252 = tail call i8* @Getword(%struct._IO_FILE* %call, i32 2) #5
-  %cmp2353 = icmp eq i8* %call2252, null
-  br i1 %cmp2151, label %for.body, label %for.end
+.preheader:                                       ; preds = %17, %19, %16
+  %20 = load i32* @Alphabet_size, align 4, !dbg !751, !tbaa !308
+  %21 = icmp sgt i32 %20, 0, !dbg !754
+  %22 = tail call i8* @Getword(%struct.__sFILE* %1, i32 2) #7, !dbg !755
+  tail call void @llvm.dbg.value(metadata i8* %22, i64 0, metadata !149, metadata !276), !dbg !730
+  %23 = icmp eq i8* %22, null, !dbg !758
+  br i1 %21, label %.lr.ph, label %._crit_edge, !dbg !759
 
-for.body:                                         ; preds = %for.cond.preheader, %if.end25
-  %indvars.iv = phi i64 [ %indvars.iv.next, %if.end25 ], [ 0, %for.cond.preheader ]
-  %cmp2356 = phi i1 [ %cmp23, %if.end25 ], [ %cmp2353, %for.cond.preheader ]
-  %call2255 = phi i8* [ %call22, %if.end25 ], [ %call2252, %for.cond.preheader ]
-  br i1 %cmp2356, label %FAILURE, label %if.end25
+.lr.ph:                                           ; preds = %.preheader, %26
+  %indvars.iv = phi i64 [ %indvars.iv.next, %26 ], [ 0, %.preheader ]
+  %24 = phi i1 [ %34, %26 ], [ %23, %.preheader ]
+  %25 = phi i8* [ %33, %26 ], [ %22, %.preheader ]
+  br i1 %24, label %.loopexit, label %26, !dbg !760
 
-if.end25:                                         ; preds = %for.body
-  %call26 = tail call double @atof(i8* %call2255) #6
-  %conv = fptrunc double %call26 to float
-  %arrayidx = getelementptr inbounds float* %null, i64 %indvars.iv
-  store float %conv, float* %arrayidx, align 4, !tbaa !3
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %2 = load i32* @Alphabet_size, align 4, !tbaa !0
-  %3 = trunc i64 %indvars.iv.next to i32
-  %cmp21 = icmp slt i32 %3, %2
-  %call22 = tail call i8* @Getword(%struct._IO_FILE* %call, i32 2) #5
-  %cmp23 = icmp eq i8* %call22, null
-  br i1 %cmp21, label %for.body, label %for.end
+; <label>:26                                      ; preds = %.lr.ph
+  %27 = tail call double @atof(i8* %25) #7, !dbg !761
+  %28 = fptrunc double %27 to float, !dbg !761
+  %29 = getelementptr inbounds float* %null, i64 %indvars.iv, !dbg !762
+  store float %28, float* %29, align 4, !dbg !763, !tbaa !297
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !759
+  %30 = load i32* @Alphabet_size, align 4, !dbg !751, !tbaa !308
+  %31 = sext i32 %30 to i64, !dbg !754
+  %32 = icmp slt i64 %indvars.iv.next, %31, !dbg !754
+  %33 = tail call i8* @Getword(%struct.__sFILE* %1, i32 2) #7, !dbg !755
+  tail call void @llvm.dbg.value(metadata i8* %33, i64 0, metadata !149, metadata !276), !dbg !730
+  %34 = icmp eq i8* %33, null, !dbg !758
+  br i1 %32, label %.lr.ph, label %._crit_edge, !dbg !759
 
-for.end:                                          ; preds = %if.end25, %for.cond.preheader
-  %cmp23.lcssa = phi i1 [ %cmp2353, %for.cond.preheader ], [ %cmp23, %if.end25 ]
-  %call22.lcssa = phi i8* [ %call2252, %for.cond.preheader ], [ %call22, %if.end25 ]
-  br i1 %cmp23.lcssa, label %FAILURE, label %if.end31
+._crit_edge:                                      ; preds = %26, %.preheader
+  %.lcssa2 = phi i1 [ %23, %.preheader ], [ %34, %26 ]
+  %.lcssa = phi i8* [ %22, %.preheader ], [ %33, %26 ]
+  br i1 %.lcssa2, label %.loopexit, label %35, !dbg !764
 
-if.end31:                                         ; preds = %for.end
-  %call32 = tail call double @atof(i8* %call22.lcssa) #6
-  %conv33 = fptrunc double %call32 to float
-  store float %conv33, float* %ret_p1, align 4, !tbaa !3
-  %call34 = tail call i32 @fclose(%struct._IO_FILE* %call) #5
-  br label %return
+; <label>:35                                      ; preds = %._crit_edge
+  %36 = tail call double @atof(i8* %.lcssa) #7, !dbg !765
+  %37 = fptrunc double %36 to float, !dbg !765
+  store float %37, float* %ret_p1, align 4, !dbg !766, !tbaa !297
+  %38 = tail call i32 @fclose(%struct.__sFILE* %1) #7, !dbg !767
+  br label %40, !dbg !768
 
-FAILURE:                                          ; preds = %for.body, %for.end, %if.else, %if.end
-  %call35 = tail call i32 @fclose(%struct._IO_FILE* %call) #5
-  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([42 x i8]* @.str26, i64 0, i64 0), i8* %rndfile) #5
-  br label %return
+.loopexit:                                        ; preds = %.lr.ph, %._crit_edge, %10, %4
+  %39 = tail call i32 @fclose(%struct.__sFILE* %1) #7, !dbg !769
+  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([42 x i8]* @.str26, i64 0, i64 0), i8* %rndfile) #7, !dbg !770
+  br label %40, !dbg !771
 
-return:                                           ; preds = %FAILURE, %if.end31
-  ret void
+; <label>:40                                      ; preds = %.loopexit, %35
+  ret void, !dbg !771
 }

@@ -1,26 +1,29 @@
-define internal fastcc i32 @s_pawn_mobility(i32 %square) #3 {
-entry:
-  %idxprom = sext i32 %square to i64
-  %arrayidx = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom
-  %0 = load i32* %arrayidx, align 4, !tbaa !0
-  %cmp = icmp eq i32 %0, 1
-  br i1 %cmp, label %if.then, label %if.else
+define internal fastcc i32 @s_pawn_mobility(i32 %square) #5 {
+  tail call void @llvm.dbg.value(metadata i32 %square, i64 0, metadata !52, metadata !100), !dbg !635
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !53, metadata !100), !dbg !636
+  %1 = sext i32 %square to i64, !dbg !637
+  %2 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %1, !dbg !637
+  %3 = load i32* %2, align 4, !dbg !637, !tbaa !105
+  %4 = icmp eq i32 %3, 1, !dbg !639
+  br i1 %4, label %5, label %11, !dbg !640
 
-if.then:                                          ; preds = %entry
-  %add = add nsw i32 %square, 12
-  %idxprom1 = sext i32 %add to i64
-  %arrayidx2 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom1
-  %1 = load i32* %arrayidx2, align 4, !tbaa !0
-  %cmp3 = icmp eq i32 %1, 13
-  %. = select i1 %cmp3, i32 8, i32 0
-  ret i32 %.
+; <label>:5                                       ; preds = %0
+  %6 = add nsw i32 %square, 12, !dbg !641
+  %7 = sext i32 %6 to i64, !dbg !644
+  %8 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %7, !dbg !644
+  %9 = load i32* %8, align 4, !dbg !644, !tbaa !105
+  %10 = icmp eq i32 %9, 13, !dbg !645
+  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !53, metadata !100), !dbg !636
+  %. = select i1 %10, i32 8, i32 0, !dbg !646
+  ret i32 %., !dbg !646
 
-if.else:                                          ; preds = %entry
-  %sub = add nsw i32 %square, -12
-  %idxprom5 = sext i32 %sub to i64
-  %arrayidx6 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom5
-  %2 = load i32* %arrayidx6, align 4, !tbaa !0
-  %cmp7 = icmp eq i32 %2, 13
-  %.15 = select i1 %cmp7, i32 8, i32 0
-  ret i32 %.15
+; <label>:11                                      ; preds = %0
+  %12 = add nsw i32 %square, -12, !dbg !647
+  %13 = sext i32 %12 to i64, !dbg !650
+  %14 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %13, !dbg !650
+  %15 = load i32* %14, align 4, !dbg !650, !tbaa !105
+  %16 = icmp eq i32 %15, 13, !dbg !651
+  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !53, metadata !100), !dbg !636
+  %.1 = select i1 %16, i32 8, i32 0, !dbg !652
+  ret i32 %.1, !dbg !653
 }

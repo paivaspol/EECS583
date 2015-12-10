@@ -1,237 +1,237 @@
 define i32 @ProbeTT(i32* nocapture %score, i32 %beta, i32* nocapture %best, i32* nocapture %threat, i32* nocapture %donull, i32 %depth) #0 {
-entry:
-  store i32 1, i32* %donull, align 4, !tbaa !3
-  %0 = load i32* @TTProbes, align 4, !tbaa !3
-  %inc = add i32 %0, 1
-  store i32 %inc, i32* @TTProbes, align 4, !tbaa !3
-  %1 = load i32* @hash, align 4, !tbaa !3
-  %2 = load i32* @TTSize, align 4, !tbaa !3
-  %rem = urem i32 %1, %2
-  %idxprom = zext i32 %rem to i64
-  %3 = load %struct.TType** @DP_TTable, align 8, !tbaa !0
-  %HashKey = getelementptr inbounds %struct.TType* %3, i64 %idxprom, i32 5
-  %4 = load i32* %HashKey, align 4, !tbaa !3
-  %cmp = icmp eq i32 %4, %1
-  br i1 %cmp, label %land.lhs.true, label %if.else75
+  tail call void @llvm.dbg.value(metadata i32* %score, i64 0, metadata !85, metadata !131), !dbg !387
+  tail call void @llvm.dbg.value(metadata i32 %beta, i64 0, metadata !86, metadata !131), !dbg !388
+  tail call void @llvm.dbg.value(metadata i32* %best, i64 0, metadata !87, metadata !131), !dbg !389
+  tail call void @llvm.dbg.value(metadata i32* %threat, i64 0, metadata !88, metadata !131), !dbg !390
+  tail call void @llvm.dbg.value(metadata i32* %donull, i64 0, metadata !89, metadata !131), !dbg !391
+  tail call void @llvm.dbg.value(metadata i32 %depth, i64 0, metadata !90, metadata !131), !dbg !392
+  store i32 1, i32* %donull, align 4, !dbg !393, !tbaa !123
+  %1 = load i32* @TTProbes, align 4, !dbg !394, !tbaa !123
+  %2 = add i32 %1, 1, !dbg !394
+  store i32 %2, i32* @TTProbes, align 4, !dbg !394, !tbaa !123
+  %3 = load i32* @hash, align 4, !dbg !395, !tbaa !123
+  %4 = load i32* @TTSize, align 4, !dbg !396, !tbaa !123
+  %5 = urem i32 %3, %4, !dbg !397
+  tail call void @llvm.dbg.value(metadata i32 %5, i64 0, metadata !91, metadata !131), !dbg !398
+  %6 = zext i32 %5 to i64, !dbg !399
+  %7 = load %struct.TType** @DP_TTable, align 8, !dbg !399, !tbaa !119
+  %8 = getelementptr inbounds %struct.TType* %7, i64 %6, i32 5, !dbg !401
+  %9 = load i32* %8, align 4, !dbg !401, !tbaa !274
+  %10 = icmp eq i32 %9, %3, !dbg !402
+  br i1 %10, label %11, label %70, !dbg !403
 
-land.lhs.true:                                    ; preds = %entry
-  %Hold_hash = getelementptr inbounds %struct.TType* %3, i64 %idxprom, i32 6
-  %5 = load i32* %Hold_hash, align 4, !tbaa !3
-  %6 = load i32* @hold_hash, align 4, !tbaa !3
-  %cmp3 = icmp eq i32 %5, %6
-  br i1 %cmp3, label %land.lhs.true4, label %if.else75
+; <label>:11                                      ; preds = %0
+  %12 = getelementptr inbounds %struct.TType* %7, i64 %6, i32 6, !dbg !404
+  %13 = load i32* %12, align 4, !dbg !404, !tbaa !278
+  %14 = load i32* @hold_hash, align 4, !dbg !405, !tbaa !123
+  %15 = icmp eq i32 %13, %14, !dbg !406
+  br i1 %15, label %16, label %70, !dbg !407
 
-land.lhs.true4:                                   ; preds = %land.lhs.true
-  %OnMove = getelementptr inbounds %struct.TType* %3, i64 %idxprom, i32 1
-  %7 = load i8* %OnMove, align 1, !tbaa !1
-  %conv = sext i8 %7 to i32
-  %8 = load i32* @white_to_move, align 4, !tbaa !3
-  %not.tobool = icmp eq i32 %8, 0
-  %conv8 = zext i1 %not.tobool to i32
-  %cmp9 = icmp eq i32 %conv, %conv8
-  br i1 %cmp9, label %if.then, label %if.else75
+; <label>:16                                      ; preds = %11
+  %17 = getelementptr inbounds %struct.TType* %7, i64 %6, i32 1, !dbg !408
+  %18 = load i8* %17, align 1, !dbg !408, !tbaa !291
+  %19 = sext i8 %18 to i32, !dbg !409
+  %20 = load i32* @white_to_move, align 4, !dbg !410, !tbaa !123
+  %not.2 = icmp eq i32 %20, 0, !dbg !410
+  %21 = zext i1 %not.2 to i32, !dbg !411
+  %22 = icmp eq i32 %19, %21, !dbg !412
+  br i1 %22, label %23, label %70, !dbg !413
 
-if.then:                                          ; preds = %land.lhs.true4
-  %9 = load i32* @TTHits, align 4, !tbaa !3
-  %inc11 = add i32 %9, 1
-  store i32 %inc11, i32* @TTHits, align 4, !tbaa !3
-  %Type = getelementptr inbounds %struct.TType* %3, i64 %idxprom, i32 3
-  %10 = load i8* %Type, align 1, !tbaa !1
-  %cmp15 = icmp eq i8 %10, 1
-  br i1 %cmp15, label %land.lhs.true17, label %if.then.if.end_crit_edge
+; <label>:23                                      ; preds = %16
+  %24 = load i32* @TTHits, align 4, !dbg !414, !tbaa !123
+  %25 = add i32 %24, 1, !dbg !414
+  store i32 %25, i32* @TTHits, align 4, !dbg !414, !tbaa !123
+  %26 = getelementptr inbounds %struct.TType* %7, i64 %6, i32 3, !dbg !416
+  %27 = load i8* %26, align 1, !dbg !416, !tbaa !229
+  %28 = icmp eq i8 %27, 1, !dbg !418
+  br i1 %28, label %29, label %._crit_edge6, !dbg !419
 
-if.then.if.end_crit_edge:                         ; preds = %if.then
-  %Depth38.pre = getelementptr inbounds %struct.TType* %3, i64 %idxprom, i32 0
-  br label %if.end
+._crit_edge6:                                     ; preds = %23
+  %.phi.trans.insert7 = getelementptr inbounds %struct.TType* %7, i64 %6, i32 0
+  %.pre8 = load i8* %.phi.trans.insert7, align 1, !dbg !420, !tbaa !221
+  br label %40, !dbg !419
 
-land.lhs.true17:                                  ; preds = %if.then
-  %sub18 = add nsw i32 %depth, -3
-  %Depth = getelementptr inbounds %struct.TType* %3, i64 %idxprom, i32 0
-  %11 = load i8* %Depth, align 1, !tbaa !1
-  %conv21 = sext i8 %11 to i32
-  %cmp22 = icmp sgt i32 %sub18, %conv21
-  br i1 %cmp22, label %if.end, label %land.lhs.true24
+; <label>:29                                      ; preds = %23
+  %30 = add nsw i32 %depth, -3, !dbg !422
+  %31 = getelementptr inbounds %struct.TType* %7, i64 %6, i32 0, !dbg !423
+  %32 = load i8* %31, align 1, !dbg !423, !tbaa !221
+  %33 = sext i8 %32 to i32, !dbg !424
+  %34 = icmp sgt i32 %30, %33, !dbg !425
+  br i1 %34, label %40, label %35, !dbg !426
 
-land.lhs.true24:                                  ; preds = %land.lhs.true17
-  %Bound = getelementptr inbounds %struct.TType* %3, i64 %idxprom, i32 7
-  %12 = load i32* %Bound, align 4, !tbaa !3
-  %cmp27 = icmp slt i32 %12, %beta
-  br i1 %cmp27, label %if.then29, label %if.end
+; <label>:35                                      ; preds = %29
+  %36 = getelementptr inbounds %struct.TType* %7, i64 %6, i32 7, !dbg !427
+  %37 = load i32* %36, align 4, !dbg !427, !tbaa !287
+  %38 = icmp slt i32 %37, %beta, !dbg !428
+  br i1 %38, label %39, label %40, !dbg !429
 
-if.then29:                                        ; preds = %land.lhs.true24
-  store i32 0, i32* %donull, align 4, !tbaa !3
-  br label %if.end
+; <label>:39                                      ; preds = %35
+  store i32 0, i32* %donull, align 4, !dbg !430, !tbaa !123
+  br label %40, !dbg !431
 
-if.end:                                           ; preds = %if.then.if.end_crit_edge, %land.lhs.true17, %if.then29, %land.lhs.true24
-  %Depth38.pre-phi = phi i8* [ %Depth38.pre, %if.then.if.end_crit_edge ], [ %Depth, %land.lhs.true17 ], [ %Depth, %if.then29 ], [ %Depth, %land.lhs.true24 ]
-  %Threat = getelementptr inbounds %struct.TType* %3, i64 %idxprom, i32 2
-  %13 = load i8* %Threat, align 1, !tbaa !1
-  %not.tobool32 = icmp ne i8 %13, 0
-  %inc34 = zext i1 %not.tobool32 to i32
-  %depth.inc34 = add nsw i32 %inc34, %depth
-  %14 = load i8* %Depth38.pre-phi, align 1, !tbaa !1
-  %conv39 = sext i8 %14 to i32
-  %cmp40 = icmp slt i32 %conv39, %depth.inc34
-  br i1 %cmp40, label %if.else66, label %if.then42
+; <label>:40                                      ; preds = %._crit_edge6, %29, %39, %35
+  %41 = phi i8 [ %.pre8, %._crit_edge6 ], [ %32, %29 ], [ %32, %39 ], [ %32, %35 ]
+  %42 = getelementptr inbounds %struct.TType* %7, i64 %6, i32 2, !dbg !432
+  %43 = load i8* %42, align 1, !dbg !432, !tbaa !295
+  %not.5 = icmp ne i8 %43, 0, !dbg !434
+  %44 = zext i1 %not.5 to i32, !dbg !434
+  %depth. = add nsw i32 %44, %depth, !dbg !434
+  %45 = sext i8 %41 to i32, !dbg !435
+  %46 = icmp slt i32 %45, %depth., !dbg !436
+  br i1 %46, label %65, label %47, !dbg !437
 
-if.then42:                                        ; preds = %if.end
-  %Bound45 = getelementptr inbounds %struct.TType* %3, i64 %idxprom, i32 7
-  %15 = load i32* %Bound45, align 4, !tbaa !3
-  store i32 %15, i32* %score, align 4, !tbaa !3
-  %cmp46 = icmp sgt i32 %15, 999500
-  br i1 %cmp46, label %if.then48, label %if.else
+; <label>:47                                      ; preds = %40
+  %48 = getelementptr inbounds %struct.TType* %7, i64 %6, i32 7, !dbg !438
+  %49 = load i32* %48, align 4, !dbg !438, !tbaa !287
+  store i32 %49, i32* %score, align 4, !dbg !440, !tbaa !123
+  %50 = icmp sgt i32 %49, 999500, !dbg !441
+  br i1 %50, label %51, label %54, !dbg !443
 
-if.then48:                                        ; preds = %if.then42
-  %16 = load i32* @ply, align 4, !tbaa !3
-  %sub49 = sub nsw i32 %15, %16
-  store i32 %sub49, i32* %score, align 4, !tbaa !3
-  br label %if.end54
+; <label>:51                                      ; preds = %47
+  %52 = load i32* @ply, align 4, !dbg !444, !tbaa !123
+  %53 = sub nsw i32 %49, %52, !dbg !445
+  store i32 %53, i32* %score, align 4, !dbg !445, !tbaa !123
+  br label %59, !dbg !446
 
-if.else:                                          ; preds = %if.then42
-  %cmp50 = icmp slt i32 %15, -999500
-  br i1 %cmp50, label %if.then52, label %if.end54
+; <label>:54                                      ; preds = %47
+  %55 = icmp slt i32 %49, -999500, !dbg !447
+  br i1 %55, label %56, label %59, !dbg !449
 
-if.then52:                                        ; preds = %if.else
-  %17 = load i32* @ply, align 4, !tbaa !3
-  %add = add nsw i32 %17, %15
-  store i32 %add, i32* %score, align 4, !tbaa !3
-  br label %if.end54
+; <label>:56                                      ; preds = %54
+  %57 = load i32* @ply, align 4, !dbg !450, !tbaa !123
+  %58 = add nsw i32 %57, %49, !dbg !451
+  store i32 %58, i32* %score, align 4, !dbg !451, !tbaa !123
+  br label %59, !dbg !452
 
-if.end54:                                         ; preds = %if.else, %if.then52, %if.then48
-  %Bestmove = getelementptr inbounds %struct.TType* %3, i64 %idxprom, i32 4
-  %18 = load i16* %Bestmove, align 2, !tbaa !4
-  %conv57 = zext i16 %18 to i32
-  store i32 %conv57, i32* %best, align 4, !tbaa !3
-  %19 = load i8* %Threat, align 1, !tbaa !1
-  %conv61 = sext i8 %19 to i32
-  store i32 %conv61, i32* %threat, align 4, !tbaa !3
-  %20 = load i8* %Type, align 1, !tbaa !1
-  %conv65 = sext i8 %20 to i32
-  br label %return
+; <label>:59                                      ; preds = %54, %56, %51
+  %60 = getelementptr inbounds %struct.TType* %7, i64 %6, i32 4, !dbg !453
+  %61 = load i16* %60, align 2, !dbg !453, !tbaa !284
+  %62 = zext i16 %61 to i32, !dbg !454
+  store i32 %62, i32* %best, align 4, !dbg !455, !tbaa !123
+  %63 = sext i8 %43 to i32, !dbg !456
+  store i32 %63, i32* %threat, align 4, !dbg !457, !tbaa !123
+  %64 = sext i8 %27 to i32, !dbg !458
+  br label %134, !dbg !459
 
-if.else66:                                        ; preds = %if.end
-  %Bestmove69 = getelementptr inbounds %struct.TType* %3, i64 %idxprom, i32 4
-  %21 = load i16* %Bestmove69, align 2, !tbaa !4
-  %conv70 = zext i16 %21 to i32
-  store i32 %conv70, i32* %best, align 4, !tbaa !3
-  %22 = load i8* %Threat, align 1, !tbaa !1
-  %conv74 = sext i8 %22 to i32
-  store i32 %conv74, i32* %threat, align 4, !tbaa !3
-  br label %return
+; <label>:65                                      ; preds = %40
+  %66 = getelementptr inbounds %struct.TType* %7, i64 %6, i32 4, !dbg !460
+  %67 = load i16* %66, align 2, !dbg !460, !tbaa !284
+  %68 = zext i16 %67 to i32, !dbg !462
+  store i32 %68, i32* %best, align 4, !dbg !463, !tbaa !123
+  %69 = sext i8 %43 to i32, !dbg !464
+  store i32 %69, i32* %threat, align 4, !dbg !465, !tbaa !123
+  br label %134, !dbg !466
 
-if.else75:                                        ; preds = %land.lhs.true4, %land.lhs.true, %entry
-  %23 = load %struct.TType** @AS_TTable, align 8, !tbaa !0
-  %HashKey78 = getelementptr inbounds %struct.TType* %23, i64 %idxprom, i32 5
-  %24 = load i32* %HashKey78, align 4, !tbaa !3
-  %cmp79 = icmp eq i32 %24, %1
-  br i1 %cmp79, label %land.lhs.true81, label %return
+; <label>:70                                      ; preds = %16, %11, %0
+  %71 = load %struct.TType** @AS_TTable, align 8, !dbg !467, !tbaa !119
+  %72 = getelementptr inbounds %struct.TType* %71, i64 %6, i32 5, !dbg !469
+  %73 = load i32* %72, align 4, !dbg !469, !tbaa !274
+  %74 = icmp eq i32 %73, %3, !dbg !470
+  br i1 %74, label %75, label %134, !dbg !471
 
-land.lhs.true81:                                  ; preds = %if.else75
-  %Hold_hash84 = getelementptr inbounds %struct.TType* %23, i64 %idxprom, i32 6
-  %25 = load i32* %Hold_hash84, align 4, !tbaa !3
-  %26 = load i32* @hold_hash, align 4, !tbaa !3
-  %cmp85 = icmp eq i32 %25, %26
-  br i1 %cmp85, label %land.lhs.true87, label %return
+; <label>:75                                      ; preds = %70
+  %76 = getelementptr inbounds %struct.TType* %71, i64 %6, i32 6, !dbg !472
+  %77 = load i32* %76, align 4, !dbg !472, !tbaa !278
+  %78 = load i32* @hold_hash, align 4, !dbg !473, !tbaa !123
+  %79 = icmp eq i32 %77, %78, !dbg !474
+  br i1 %79, label %80, label %134, !dbg !475
 
-land.lhs.true87:                                  ; preds = %land.lhs.true81
-  %OnMove90 = getelementptr inbounds %struct.TType* %23, i64 %idxprom, i32 1
-  %27 = load i8* %OnMove90, align 1, !tbaa !1
-  %conv91 = sext i8 %27 to i32
-  %28 = load i32* @white_to_move, align 4, !tbaa !3
-  %not.tobool92 = icmp eq i32 %28, 0
-  %conv95 = zext i1 %not.tobool92 to i32
-  %cmp96 = icmp eq i32 %conv91, %conv95
-  br i1 %cmp96, label %if.then98, label %return
+; <label>:80                                      ; preds = %75
+  %81 = getelementptr inbounds %struct.TType* %71, i64 %6, i32 1, !dbg !476
+  %82 = load i8* %81, align 1, !dbg !476, !tbaa !291
+  %83 = sext i8 %82 to i32, !dbg !477
+  %84 = load i32* @white_to_move, align 4, !dbg !478, !tbaa !123
+  %not. = icmp eq i32 %84, 0, !dbg !478
+  %85 = zext i1 %not. to i32, !dbg !479
+  %86 = icmp eq i32 %83, %85, !dbg !480
+  br i1 %86, label %87, label %134, !dbg !481
 
-if.then98:                                        ; preds = %land.lhs.true87
-  %29 = load i32* @TTHits, align 4, !tbaa !3
-  %inc99 = add i32 %29, 1
-  store i32 %inc99, i32* @TTHits, align 4, !tbaa !3
-  %Type102 = getelementptr inbounds %struct.TType* %23, i64 %idxprom, i32 3
-  %30 = load i8* %Type102, align 1, !tbaa !1
-  %cmp104 = icmp eq i8 %30, 1
-  br i1 %cmp104, label %land.lhs.true106, label %if.then98.if.end122_crit_edge
+; <label>:87                                      ; preds = %80
+  %88 = load i32* @TTHits, align 4, !dbg !482, !tbaa !123
+  %89 = add i32 %88, 1, !dbg !482
+  store i32 %89, i32* @TTHits, align 4, !dbg !482, !tbaa !123
+  %90 = getelementptr inbounds %struct.TType* %71, i64 %6, i32 3, !dbg !484
+  %91 = load i8* %90, align 1, !dbg !484, !tbaa !229
+  %92 = icmp eq i8 %91, 1, !dbg !486
+  br i1 %92, label %93, label %._crit_edge, !dbg !487
 
-if.then98.if.end122_crit_edge:                    ; preds = %if.then98
-  %Depth132.pre = getelementptr inbounds %struct.TType* %23, i64 %idxprom, i32 0
-  br label %if.end122
+._crit_edge:                                      ; preds = %87
+  %.phi.trans.insert = getelementptr inbounds %struct.TType* %71, i64 %6, i32 0
+  %.pre = load i8* %.phi.trans.insert, align 1, !dbg !488, !tbaa !221
+  br label %104, !dbg !487
 
-land.lhs.true106:                                 ; preds = %if.then98
-  %sub108 = add nsw i32 %depth, -3
-  %Depth111 = getelementptr inbounds %struct.TType* %23, i64 %idxprom, i32 0
-  %31 = load i8* %Depth111, align 1, !tbaa !1
-  %conv112 = sext i8 %31 to i32
-  %cmp113 = icmp sgt i32 %sub108, %conv112
-  br i1 %cmp113, label %if.end122, label %land.lhs.true115
+; <label>:93                                      ; preds = %87
+  %94 = add nsw i32 %depth, -3, !dbg !490
+  %95 = getelementptr inbounds %struct.TType* %71, i64 %6, i32 0, !dbg !491
+  %96 = load i8* %95, align 1, !dbg !491, !tbaa !221
+  %97 = sext i8 %96 to i32, !dbg !492
+  %98 = icmp sgt i32 %94, %97, !dbg !493
+  br i1 %98, label %104, label %99, !dbg !494
 
-land.lhs.true115:                                 ; preds = %land.lhs.true106
-  %Bound118 = getelementptr inbounds %struct.TType* %23, i64 %idxprom, i32 7
-  %32 = load i32* %Bound118, align 4, !tbaa !3
-  %cmp119 = icmp slt i32 %32, %beta
-  br i1 %cmp119, label %if.then121, label %if.end122
+; <label>:99                                      ; preds = %93
+  %100 = getelementptr inbounds %struct.TType* %71, i64 %6, i32 7, !dbg !495
+  %101 = load i32* %100, align 4, !dbg !495, !tbaa !287
+  %102 = icmp slt i32 %101, %beta, !dbg !496
+  br i1 %102, label %103, label %104, !dbg !497
 
-if.then121:                                       ; preds = %land.lhs.true115
-  store i32 0, i32* %donull, align 4, !tbaa !3
-  br label %if.end122
+; <label>:103                                     ; preds = %99
+  store i32 0, i32* %donull, align 4, !dbg !498, !tbaa !123
+  br label %104, !dbg !499
 
-if.end122:                                        ; preds = %if.then98.if.end122_crit_edge, %land.lhs.true106, %if.then121, %land.lhs.true115
-  %Depth132.pre-phi = phi i8* [ %Depth132.pre, %if.then98.if.end122_crit_edge ], [ %Depth111, %land.lhs.true106 ], [ %Depth111, %if.then121 ], [ %Depth111, %land.lhs.true115 ]
-  %Threat125 = getelementptr inbounds %struct.TType* %23, i64 %idxprom, i32 2
-  %33 = load i8* %Threat125, align 1, !tbaa !1
-  %not.tobool126 = icmp ne i8 %33, 0
-  %inc128 = zext i1 %not.tobool126 to i32
-  %depth.inc128 = add nsw i32 %inc128, %depth
-  %34 = load i8* %Depth132.pre-phi, align 1, !tbaa !1
-  %conv133 = sext i8 %34 to i32
-  %cmp134 = icmp slt i32 %conv133, %depth.inc128
-  br i1 %cmp134, label %if.else163, label %if.then136
+; <label>:104                                     ; preds = %._crit_edge, %93, %103, %99
+  %105 = phi i8 [ %.pre, %._crit_edge ], [ %96, %93 ], [ %96, %103 ], [ %96, %99 ]
+  %106 = getelementptr inbounds %struct.TType* %71, i64 %6, i32 2, !dbg !500
+  %107 = load i8* %106, align 1, !dbg !500, !tbaa !295
+  %not.4 = icmp ne i8 %107, 0, !dbg !502
+  %108 = zext i1 %not.4 to i32, !dbg !502
+  %depth.3 = add nsw i32 %108, %depth, !dbg !502
+  %109 = sext i8 %105 to i32, !dbg !503
+  %110 = icmp slt i32 %109, %depth.3, !dbg !504
+  br i1 %110, label %129, label %111, !dbg !505
 
-if.then136:                                       ; preds = %if.end122
-  %Bound139 = getelementptr inbounds %struct.TType* %23, i64 %idxprom, i32 7
-  %35 = load i32* %Bound139, align 4, !tbaa !3
-  store i32 %35, i32* %score, align 4, !tbaa !3
-  %cmp140 = icmp sgt i32 %35, 999500
-  br i1 %cmp140, label %if.then142, label %if.else144
+; <label>:111                                     ; preds = %104
+  %112 = getelementptr inbounds %struct.TType* %71, i64 %6, i32 7, !dbg !506
+  %113 = load i32* %112, align 4, !dbg !506, !tbaa !287
+  store i32 %113, i32* %score, align 4, !dbg !508, !tbaa !123
+  %114 = icmp sgt i32 %113, 999500, !dbg !509
+  br i1 %114, label %115, label %118, !dbg !511
 
-if.then142:                                       ; preds = %if.then136
-  %36 = load i32* @ply, align 4, !tbaa !3
-  %sub143 = sub nsw i32 %35, %36
-  store i32 %sub143, i32* %score, align 4, !tbaa !3
-  br label %if.end150
+; <label>:115                                     ; preds = %111
+  %116 = load i32* @ply, align 4, !dbg !512, !tbaa !123
+  %117 = sub nsw i32 %113, %116, !dbg !513
+  store i32 %117, i32* %score, align 4, !dbg !513, !tbaa !123
+  br label %123, !dbg !514
 
-if.else144:                                       ; preds = %if.then136
-  %cmp145 = icmp slt i32 %35, -999500
-  br i1 %cmp145, label %if.then147, label %if.end150
+; <label>:118                                     ; preds = %111
+  %119 = icmp slt i32 %113, -999500, !dbg !515
+  br i1 %119, label %120, label %123, !dbg !517
 
-if.then147:                                       ; preds = %if.else144
-  %37 = load i32* @ply, align 4, !tbaa !3
-  %add148 = add nsw i32 %37, %35
-  store i32 %add148, i32* %score, align 4, !tbaa !3
-  br label %if.end150
+; <label>:120                                     ; preds = %118
+  %121 = load i32* @ply, align 4, !dbg !518, !tbaa !123
+  %122 = add nsw i32 %121, %113, !dbg !519
+  store i32 %122, i32* %score, align 4, !dbg !519, !tbaa !123
+  br label %123, !dbg !520
 
-if.end150:                                        ; preds = %if.else144, %if.then147, %if.then142
-  %Bestmove153 = getelementptr inbounds %struct.TType* %23, i64 %idxprom, i32 4
-  %38 = load i16* %Bestmove153, align 2, !tbaa !4
-  %conv154 = zext i16 %38 to i32
-  store i32 %conv154, i32* %best, align 4, !tbaa !3
-  %39 = load i8* %Threat125, align 1, !tbaa !1
-  %conv158 = sext i8 %39 to i32
-  store i32 %conv158, i32* %threat, align 4, !tbaa !3
-  %40 = load i8* %Type102, align 1, !tbaa !1
-  %conv162 = sext i8 %40 to i32
-  br label %return
+; <label>:123                                     ; preds = %118, %120, %115
+  %124 = getelementptr inbounds %struct.TType* %71, i64 %6, i32 4, !dbg !521
+  %125 = load i16* %124, align 2, !dbg !521, !tbaa !284
+  %126 = zext i16 %125 to i32, !dbg !522
+  store i32 %126, i32* %best, align 4, !dbg !523, !tbaa !123
+  %127 = sext i8 %107 to i32, !dbg !524
+  store i32 %127, i32* %threat, align 4, !dbg !525, !tbaa !123
+  %128 = sext i8 %91 to i32, !dbg !526
+  br label %134, !dbg !527
 
-if.else163:                                       ; preds = %if.end122
-  %Bestmove166 = getelementptr inbounds %struct.TType* %23, i64 %idxprom, i32 4
-  %41 = load i16* %Bestmove166, align 2, !tbaa !4
-  %conv167 = zext i16 %41 to i32
-  store i32 %conv167, i32* %best, align 4, !tbaa !3
-  %42 = load i8* %Threat125, align 1, !tbaa !1
-  %conv171 = sext i8 %42 to i32
-  store i32 %conv171, i32* %threat, align 4, !tbaa !3
-  br label %return
+; <label>:129                                     ; preds = %104
+  %130 = getelementptr inbounds %struct.TType* %71, i64 %6, i32 4, !dbg !528
+  %131 = load i16* %130, align 2, !dbg !528, !tbaa !284
+  %132 = zext i16 %131 to i32, !dbg !530
+  store i32 %132, i32* %best, align 4, !dbg !531, !tbaa !123
+  %133 = sext i8 %107 to i32, !dbg !532
+  store i32 %133, i32* %threat, align 4, !dbg !533, !tbaa !123
+  br label %134, !dbg !534
 
-return:                                           ; preds = %if.else75, %land.lhs.true81, %land.lhs.true87, %if.else163, %if.end150, %if.else66, %if.end54
-  %retval.0 = phi i32 [ %conv65, %if.end54 ], [ 0, %if.else66 ], [ %conv162, %if.end150 ], [ 0, %if.else163 ], [ 4, %land.lhs.true87 ], [ 4, %land.lhs.true81 ], [ 4, %if.else75 ]
-  ret i32 %retval.0
+; <label>:134                                     ; preds = %70, %75, %80, %129, %123, %65, %59
+  %.0 = phi i32 [ %64, %59 ], [ 0, %65 ], [ %128, %123 ], [ 0, %129 ], [ 4, %80 ], [ 4, %75 ], [ 4, %70 ]
+  ret i32 %.0, !dbg !535
 }

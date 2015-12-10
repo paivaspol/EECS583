@@ -1,24 +1,26 @@
-define internal fastcc i32 @yn(i32 %bASK) #3 {
-  %1 = icmp eq i32 %bASK, 0
-  br i1 %1, label %8, label %.preheader
+define internal fastcc i32 @yn(i32 %bASK) #4 {
+  tail call void @llvm.dbg.value(metadata i32 %bASK, i64 0, metadata !294, metadata !372), !dbg !1091
+  %1 = icmp eq i32 %bASK, 0, !dbg !1092
+  br i1 %1, label %8, label %.preheader, !dbg !1094
 
 .preheader:                                       ; preds = %0, %.preheader
-  %2 = load %struct.__sFILE** @__stdinp, align 8, !tbaa !17
-  %3 = tail call i32 @fgetc(%struct.__sFILE* %2) #7
-  %4 = tail call i32 @__toupper(i32 %3) #7
-  %sext = shl i32 %4, 24
-  %5 = ashr exact i32 %sext, 24
+  %2 = load %struct.__sFILE** @__stdinp, align 8, !dbg !1095, !tbaa !436
+  %3 = tail call i32 @fgetc(%struct.__sFILE* %2) #8, !dbg !1098
+  tail call void @llvm.dbg.value(metadata i32 %3, i64 0, metadata !298, metadata !372) #7, !dbg !1099
+  %4 = tail call i32 @__toupper(i32 %3) #8, !dbg !1101
+  %sext = shl i32 %4, 24, !dbg !1102
+  %5 = ashr exact i32 %sext, 24, !dbg !1102
   switch i32 %5, label %.preheader [
     i32 89, label %.critedge
     i32 78, label %.critedge
-  ]
+  ], !dbg !1103
 
 .critedge:                                        ; preds = %.preheader, %.preheader
-  %6 = icmp eq i32 %5, 89
-  %7 = zext i1 %6 to i32
-  br label %8
+  %6 = icmp eq i32 %5, 89, !dbg !1104
+  %7 = zext i1 %6 to i32, !dbg !1104
+  br label %8, !dbg !1105
 
 ; <label>:8                                       ; preds = %0, %.critedge
   %.0 = phi i32 [ %7, %.critedge ], [ 0, %0 ]
-  ret i32 %.0
+  ret i32 %.0, !dbg !1106
 }

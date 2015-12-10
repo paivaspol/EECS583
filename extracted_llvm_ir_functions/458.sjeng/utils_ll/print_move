@@ -1,16 +1,19 @@
-define void @print_move(%struct.move_s* nocapture %moves, i32 %m, %struct._IO_FILE* nocapture %stream) #0 {
-entry:
+define void @print_move(%struct.move_s* nocapture readonly %moves, i32 %m, %struct.__sFILE* nocapture %stream) #0 {
   %move = alloca [256 x i8], align 16
-  %tmp = alloca %struct.move_s, align 8
-  %0 = getelementptr inbounds [256 x i8]* %move, i64 0, i64 0
-  call void @llvm.lifetime.start(i64 256, i8* %0) #1
-  %idxprom = sext i32 %m to i64
-  %arrayidx = getelementptr inbounds %struct.move_s* %moves, i64 %idxprom
-  %1 = bitcast %struct.move_s* %tmp to i8*
-  %2 = bitcast %struct.move_s* %arrayidx to i8*
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %1, i8* %2, i64 24, i32 4, i1 false), !tbaa.struct !5
-  call void @comp_to_san(%struct.move_s* byval align 8 %tmp, i8* %0) #13
-  %fputs = call i32 @fputs(i8* %0, %struct._IO_FILE* %stream)
-  call void @llvm.lifetime.end(i64 256, i8* %0) #1
-  ret void
+  %1 = alloca %struct.move_s, align 8
+  tail call void @llvm.dbg.value(metadata %struct.move_s* %moves, i64 0, metadata !235, metadata !388), !dbg !1353
+  tail call void @llvm.dbg.value(metadata i32 %m, i64 0, metadata !236, metadata !388), !dbg !1354
+  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %stream, i64 0, metadata !237, metadata !388), !dbg !1355
+  %2 = getelementptr inbounds [256 x i8]* %move, i64 0, i64 0, !dbg !1356
+  call void @llvm.lifetime.start(i64 256, i8* %2) #2, !dbg !1356
+  tail call void @llvm.dbg.declare(metadata [256 x i8]* %move, metadata !238, metadata !388), !dbg !1357
+  %3 = sext i32 %m to i64, !dbg !1358
+  %4 = getelementptr inbounds %struct.move_s* %moves, i64 %3, !dbg !1358
+  %5 = bitcast %struct.move_s* %1 to i8*, !dbg !1359
+  %6 = bitcast %struct.move_s* %4 to i8*, !dbg !1359
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %5, i8* %6, i64 24, i32 4, i1 false), !dbg !1359, !tbaa.struct !1081
+  call void @comp_to_san(%struct.move_s* byval align 8 %1, i8* %2) #11, !dbg !1359
+  %fputs = call i32 @fputs(i8* %2, %struct.__sFILE* %stream), !dbg !1360
+  call void @llvm.lifetime.end(i64 256, i8* %2) #2, !dbg !1361
+  ret void, !dbg !1361
 }

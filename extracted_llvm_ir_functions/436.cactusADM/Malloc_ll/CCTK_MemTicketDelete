@@ -1,15 +1,17 @@
 define i32 @CCTK_MemTicketDelete(i32 %this_ticket) #1 {
-  %1 = load %struct.cHandledData** @ticketDB, align 8, !tbaa !2
-  %2 = tail call i8* @Util_GetHandledData(%struct.cHandledData* %1, i32 %this_ticket) #6
-  %3 = icmp eq i8* %2, null
-  br i1 %3, label %7, label %4
+  tail call void @llvm.dbg.value(metadata i32 %this_ticket, i64 0, metadata !84, metadata !120), !dbg !249
+  %1 = load %struct.cHandledData** @ticketDB, align 8, !dbg !250, !tbaa !132
+  %2 = tail call i8* @Util_GetHandledData(%struct.cHandledData* %1, i32 %this_ticket) #7, !dbg !251
+  %3 = icmp eq i8* %2, null, !dbg !252
+  br i1 %3, label %7, label %4, !dbg !254
 
 ; <label>:4                                       ; preds = %0
-  %5 = load %struct.cHandledData** @ticketDB, align 8, !tbaa !2
-  %6 = tail call i32 @Util_DeleteHandle(%struct.cHandledData* %5, i32 %this_ticket) #6
-  br label %7
+  %5 = load %struct.cHandledData** @ticketDB, align 8, !dbg !255, !tbaa !132
+  %6 = tail call i32 @Util_DeleteHandle(%struct.cHandledData* %5, i32 %this_ticket) #7, !dbg !257
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !85, metadata !120), !dbg !258
+  br label %7, !dbg !259
 
 ; <label>:7                                       ; preds = %0, %4
   %ret_val.0 = phi i32 [ 0, %4 ], [ -1, %0 ]
-  ret i32 %ret_val.0
+  ret i32 %ret_val.0, !dbg !260
 }

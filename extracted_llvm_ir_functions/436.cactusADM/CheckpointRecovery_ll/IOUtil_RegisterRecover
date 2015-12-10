@@ -1,18 +1,22 @@
 define i32 @IOUtil_RegisterRecover(i8* %name, i32 (%struct.cGH*, i8*, i32)* %func) #1 {
-  %1 = load %struct.cHandledData** @RecoverFunctions, align 8, !tbaa !2
-  %2 = tail call i32 @Util_GetHandle(%struct.cHandledData* %1, i8* %name, i8** null) #7
-  %3 = icmp slt i32 %2, 0
-  br i1 %3, label %4, label %9
+  tail call void @llvm.dbg.value(metadata i8* %name, i64 0, metadata !89, metadata !598), !dbg !599
+  tail call void @llvm.dbg.value(metadata i32 (%struct.cGH*, i8*, i32)* %func, i64 0, metadata !90, metadata !598), !dbg !600
+  %1 = load %struct.cHandledData** @RecoverFunctions, align 8, !dbg !601, !tbaa !602
+  %2 = tail call i32 @Util_GetHandle(%struct.cHandledData* %1, i8* %name, i8** null) #7, !dbg !606
+  tail call void @llvm.dbg.value(metadata i32 %2, i64 0, metadata !91, metadata !598), !dbg !607
+  %3 = icmp slt i32 %2, 0, !dbg !608
+  br i1 %3, label %4, label %9, !dbg !610
 
 ; <label>:4                                       ; preds = %0
-  %5 = bitcast i32 (%struct.cGH*, i8*, i32)* %func to i8*
-  %6 = tail call i32 @Util_NewHandle(%struct.cHandledData** @RecoverFunctions, i8* %name, i8* %5) #7
-  %7 = load i32* @num_functions, align 4, !tbaa !6
-  %8 = add nsw i32 %7, 1
-  store i32 %8, i32* @num_functions, align 4, !tbaa !6
-  br label %9
+  %5 = bitcast i32 (%struct.cGH*, i8*, i32)* %func to i8*, !dbg !611
+  %6 = tail call i32 @Util_NewHandle(%struct.cHandledData** @RecoverFunctions, i8* %name, i8* %5) #7, !dbg !613
+  tail call void @llvm.dbg.value(metadata i32 %6, i64 0, metadata !91, metadata !598), !dbg !607
+  %7 = load i32* @num_functions, align 4, !dbg !614, !tbaa !615
+  %8 = add nsw i32 %7, 1, !dbg !614
+  store i32 %8, i32* @num_functions, align 4, !dbg !614, !tbaa !615
+  br label %9, !dbg !617
 
 ; <label>:9                                       ; preds = %0, %4
   %handle.0 = phi i32 [ %6, %4 ], [ -1, %0 ]
-  ret i32 %handle.0
+  ret i32 %handle.0, !dbg !618
 }

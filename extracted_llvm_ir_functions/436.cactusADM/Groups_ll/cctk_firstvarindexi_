@@ -1,22 +1,25 @@
 define void @cctk_firstvarindexi_(i32* nocapture %first, i32* nocapture readonly %group) #2 {
-  %1 = load i32* %group, align 4, !tbaa !6
-  %2 = icmp sgt i32 %1, -1
-  %3 = load i32* @n_groups, align 4
-  %4 = icmp sgt i32 %3, %1
-  %or.cond.i = and i1 %2, %4
-  br i1 %or.cond.i, label %5, label %CCTK_FirstVarIndexI.exit
+  tail call void @llvm.dbg.value(metadata i32* %first, i64 0, metadata !232, metadata !483), !dbg !953
+  tail call void @llvm.dbg.value(metadata i32* %group, i64 0, metadata !233, metadata !483), !dbg !954
+  %1 = load i32* %group, align 4, !dbg !955, !tbaa !502
+  tail call void @llvm.dbg.value(metadata i32 %1, i64 0, metadata !229, metadata !483), !dbg !956
+  %2 = icmp sgt i32 %1, -1, !dbg !958
+  %3 = load i32* @n_groups, align 4, !dbg !959
+  %4 = icmp sgt i32 %3, %1, !dbg !960
+  %or.cond.i = and i1 %2, %4, !dbg !961
+  br i1 %or.cond.i, label %5, label %CCTK_FirstVarIndexI.exit, !dbg !961
 
 ; <label>:5                                       ; preds = %0
-  %6 = sext i32 %1 to i64
-  %7 = load %struct.cGroupDefinition** @groups, align 8, !tbaa !2
-  %8 = getelementptr inbounds %struct.cGroupDefinition* %7, i64 %6, i32 14
-  %9 = load %struct.cVariableDefinition** %8, align 8, !tbaa !12
-  %10 = getelementptr inbounds %struct.cVariableDefinition* %9, i64 0, i32 1
-  %11 = load i32* %10, align 4, !tbaa !15
-  br label %CCTK_FirstVarIndexI.exit
+  %6 = sext i32 %1 to i64, !dbg !962
+  %7 = load %struct.cGroupDefinition** @groups, align 8, !dbg !962, !tbaa !487
+  %8 = getelementptr inbounds %struct.cGroupDefinition* %7, i64 %6, i32 14, !dbg !963
+  %9 = load %struct.cVariableDefinition** %8, align 8, !dbg !963, !tbaa !601
+  %10 = getelementptr inbounds %struct.cVariableDefinition* %9, i64 0, i32 1, !dbg !964
+  %11 = load i32* %10, align 4, !dbg !964, !tbaa !610
+  br label %CCTK_FirstVarIndexI.exit, !dbg !965
 
 CCTK_FirstVarIndexI.exit:                         ; preds = %0, %5
-  %12 = phi i32 [ %11, %5 ], [ -1, %0 ]
-  store i32 %12, i32* %first, align 4, !tbaa !6
-  ret void
+  %12 = phi i32 [ %11, %5 ], [ -1, %0 ], !dbg !965
+  store i32 %12, i32* %first, align 4, !dbg !966, !tbaa !502
+  ret void, !dbg !967
 }

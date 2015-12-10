@@ -1,90 +1,115 @@
 define void @Chv_fastBunchParlettPivot(%struct._Chv* %chv, i32* %mark, i32 %tag, i32* %pirow, i32* %pjcol) #0 {
-entry:
   %maxdiag = alloca double, align 8
   %gamma_r = alloca double, align 8
   %gamma_s = alloca double, align 8
   %nD = alloca i32, align 4
   %nL = alloca i32, align 4
   %nU = alloca i32, align 4
-  %cmp = icmp eq %struct._Chv* %chv, null
-  %cmp1 = icmp eq i32* %mark, null
-  %or.cond = or i1 %cmp, %cmp1
-  %cmp3 = icmp eq i32* %pirow, null
-  %or.cond58 = or i1 %or.cond, %cmp3
-  %cmp5 = icmp eq i32* %pjcol, null
-  %or.cond59 = or i1 %or.cond58, %cmp5
-  br i1 %or.cond59, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata %struct._Chv* %chv, i64 0, metadata !142, metadata !161), !dbg !1172
+  tail call void @llvm.dbg.value(metadata i32* %mark, i64 0, metadata !143, metadata !161), !dbg !1173
+  tail call void @llvm.dbg.value(metadata i32 %tag, i64 0, metadata !144, metadata !161), !dbg !1174
+  tail call void @llvm.dbg.value(metadata i32* %pirow, i64 0, metadata !145, metadata !161), !dbg !1175
+  tail call void @llvm.dbg.value(metadata i32* %pjcol, i64 0, metadata !146, metadata !161), !dbg !1176
+  %1 = icmp eq %struct._Chv* %chv, null, !dbg !1177
+  %2 = icmp eq i32* %mark, null, !dbg !1179
+  %or.cond = or i1 %1, %2, !dbg !1180
+  %3 = icmp eq i32* %pirow, null, !dbg !1181
+  %or.cond3 = or i1 %or.cond, %3, !dbg !1180
+  %4 = icmp eq i32* %pjcol, null, !dbg !1182
+  %or.cond5 = or i1 %or.cond3, %4, !dbg !1180
+  br i1 %or.cond5, label %5, label %8, !dbg !1180
 
-if.then:                                          ; preds = %entry
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([71 x i8]* @.str16, i64 0, i64 0), %struct._Chv* %chv, i32* %mark, i32 %tag, i32* %pirow, i32* %pjcol) #5
-  call void @exit(i32 -1) #6
-  unreachable
+; <label>:5                                       ; preds = %0
+  %6 = load %struct.__sFILE** @__stderrp, align 8, !dbg !1183, !tbaa !173
+  %7 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %6, i8* getelementptr inbounds ([71 x i8]* @.str16, i64 0, i64 0), %struct._Chv* %chv, i32* %mark, i32 %tag, i32* %pirow, i32* %pjcol) #6, !dbg !1185
+  tail call void @exit(i32 -1) #7, !dbg !1186
+  unreachable, !dbg !1186
 
-if.end:                                           ; preds = %entry
-  call void @Chv_dimensions(%struct._Chv* %chv, i32* %nD, i32* %nL, i32* %nU) #5
-  %call6 = call double* @Chv_entries(%struct._Chv* %chv) #5
-  store i32 -1, i32* %pjcol, align 4, !tbaa !3
-  store i32 -1, i32* %pirow, align 4, !tbaa !3
-  %call7 = call i32 @Chv_maxabsInDiagonal11(%struct._Chv* %chv, i32* %mark, i32 %tag, double* %maxdiag) #8
-  %cmp8 = icmp eq i32 %call7, -1
-  br i1 %cmp8, label %if.then9, label %if.end10
+; <label>:8                                       ; preds = %0
+  tail call void @llvm.dbg.value(metadata i32* %nD, i64 0, metadata !151, metadata !161), !dbg !1187
+  tail call void @llvm.dbg.value(metadata i32* %nL, i64 0, metadata !152, metadata !161), !dbg !1188
+  tail call void @llvm.dbg.value(metadata i32* %nU, i64 0, metadata !153, metadata !161), !dbg !1189
+  call void @Chv_dimensions(%struct._Chv* %chv, i32* %nD, i32* %nL, i32* %nU) #6, !dbg !1190
+  %9 = call double* @Chv_entries(%struct._Chv* %chv) #6, !dbg !1191
+  call void @llvm.dbg.value(metadata double* %9, i64 0, metadata !150, metadata !161), !dbg !1192
+  store i32 -1, i32* %pjcol, align 4, !dbg !1193, !tbaa !201
+  store i32 -1, i32* %pirow, align 4, !dbg !1194, !tbaa !201
+  call void @llvm.dbg.value(metadata double* %maxdiag, i64 0, metadata !147, metadata !161), !dbg !1195
+  %10 = call i32 @Chv_maxabsInDiagonal11(%struct._Chv* %chv, i32* %mark, i32 %tag, double* %maxdiag) #9, !dbg !1196
+  call void @llvm.dbg.value(metadata i32 %10, i64 0, metadata !154, metadata !161), !dbg !1197
+  %11 = icmp eq i32 %10, -1, !dbg !1198
+  br i1 %11, label %12, label %13, !dbg !1200
 
-if.then9:                                         ; preds = %if.end
-  store i32 -1, i32* %pjcol, align 4, !tbaa !3
-  store i32 -1, i32* %pirow, align 4, !tbaa !3
-  br label %return
+; <label>:12                                      ; preds = %8
+  store i32 -1, i32* %pjcol, align 4, !dbg !1201, !tbaa !201
+  store i32 -1, i32* %pirow, align 4, !dbg !1203, !tbaa !201
+  br label %32, !dbg !1204
 
-if.end10:                                         ; preds = %if.end
-  store double 0.000000e+00, double* %gamma_r, align 8, !tbaa !4
-  %call11 = call i32 @Chv_maxabsInRow11(%struct._Chv* %chv, i32 %call7, i32* %mark, i32 %tag, double* %gamma_r) #8
-  %cmp12 = icmp eq i32 %call11, -1
-  br i1 %cmp12, label %if.then13, label %if.end14
+; <label>:13                                      ; preds = %8
+  call void @llvm.dbg.value(metadata i32 -1, i64 0, metadata !155, metadata !161), !dbg !1205
+  call void @llvm.dbg.value(metadata double 0.000000e+00, i64 0, metadata !148, metadata !161), !dbg !1206
+  store double 0.000000e+00, double* %gamma_r, align 8, !dbg !1207, !tbaa !219
+  call void @llvm.dbg.value(metadata double* %gamma_r, i64 0, metadata !148, metadata !161), !dbg !1206
+  %14 = call i32 @Chv_maxabsInRow11(%struct._Chv* %chv, i32 %10, i32* %mark, i32 %tag, double* %gamma_r) #9, !dbg !1208
+  call void @llvm.dbg.value(metadata i32 %14, i64 0, metadata !155, metadata !161), !dbg !1205
+  %15 = icmp eq i32 %14, -1, !dbg !1209
+  br i1 %15, label %16, label %17, !dbg !1211
 
-if.then13:                                        ; preds = %if.end10
-  store i32 %call7, i32* %pjcol, align 4, !tbaa !3
-  store i32 %call7, i32* %pirow, align 4, !tbaa !3
-  br label %return
+; <label>:16                                      ; preds = %13
+  store i32 %10, i32* %pjcol, align 4, !dbg !1212, !tbaa !201
+  store i32 %10, i32* %pirow, align 4, !dbg !1214, !tbaa !201
+  br label %32, !dbg !1215
 
-if.end14:                                         ; preds = %if.end10
-  %1 = load double* %maxdiag, align 8, !tbaa !4
-  %2 = load double* %gamma_r, align 8, !tbaa !4
-  %mul = fmul double %2, 6.404000e-01
-  %cmp15 = fcmp ult double %1, %mul
-  br i1 %cmp15, label %while.body.preheader, label %if.then16
+; <label>:17                                      ; preds = %13
+  call void @llvm.dbg.value(metadata double* %maxdiag, i64 0, metadata !147, metadata !161), !dbg !1195
+  %18 = load double* %maxdiag, align 8, !dbg !1216, !tbaa !219
+  call void @llvm.dbg.value(metadata double* %gamma_r, i64 0, metadata !148, metadata !161), !dbg !1206
+  %19 = load double* %gamma_r, align 8, !dbg !1218, !tbaa !219
+  %20 = fmul double %19, 6.404000e-01, !dbg !1219
+  %21 = fcmp ult double %18, %20, !dbg !1220
+  br i1 %21, label %.preheader, label %24, !dbg !1221
 
-while.body.preheader:                             ; preds = %if.end14
-  %call1760 = call i32 @Chv_maxabsInRow11(%struct._Chv* %chv, i32 %call11, i32* %mark, i32 %tag, double* %gamma_s) #8
-  %cmp1861 = icmp eq i32 %call1760, %call7
-  br i1 %cmp1861, label %if.then21, label %lor.lhs.false19
+.preheader:                                       ; preds = %17
+  call void @llvm.dbg.value(metadata double* %gamma_s, i64 0, metadata !149, metadata !161), !dbg !1222
+  %22 = call i32 @Chv_maxabsInRow11(%struct._Chv* %chv, i32 %14, i32* %mark, i32 %tag, double* %gamma_s) #9, !dbg !1223
+  call void @llvm.dbg.value(metadata i32 %22, i64 0, metadata !156, metadata !161), !dbg !1226
+  %23 = icmp eq i32 %22, %10, !dbg !1227
+  br i1 %23, label %._crit_edge, label %.lr.ph, !dbg !1229
 
-if.then16:                                        ; preds = %if.end14
-  store i32 %call7, i32* %pjcol, align 4, !tbaa !3
-  store i32 %call7, i32* %pirow, align 4, !tbaa !3
-  br label %return
+; <label>:24                                      ; preds = %17
+  store i32 %10, i32* %pjcol, align 4, !dbg !1230, !tbaa !201
+  store i32 %10, i32* %pirow, align 4, !dbg !1232, !tbaa !201
+  br label %32, !dbg !1233
 
-lor.lhs.false19:                                  ; preds = %while.body.preheader, %if.else22
-  %call1764 = phi i32 [ %call17, %if.else22 ], [ %call1760, %while.body.preheader ]
-  %r.063 = phi i32 [ %s.062, %if.else22 ], [ %call7, %while.body.preheader ]
-  %s.062 = phi i32 [ %call1764, %if.else22 ], [ %call11, %while.body.preheader ]
-  %3 = load double* %gamma_s, align 8, !tbaa !4
-  %4 = load double* %gamma_r, align 8, !tbaa !4
-  %cmp20 = fcmp oeq double %3, %4
-  br i1 %cmp20, label %if.then21, label %if.else22
+.lr.ph:                                           ; preds = %.preheader, %29
+  %25 = phi i32 [ %30, %29 ], [ %22, %.preheader ]
+  %r.07 = phi i32 [ %s.06, %29 ], [ %10, %.preheader ]
+  %s.06 = phi i32 [ %25, %29 ], [ %14, %.preheader ]
+  call void @llvm.dbg.value(metadata double* %gamma_s, i64 0, metadata !149, metadata !161), !dbg !1222
+  %26 = load double* %gamma_s, align 8, !dbg !1234, !tbaa !219
+  call void @llvm.dbg.value(metadata double* %gamma_r, i64 0, metadata !148, metadata !161), !dbg !1206
+  %27 = load double* %gamma_r, align 8, !dbg !1235, !tbaa !219
+  %28 = fcmp oeq double %26, %27, !dbg !1236
+  br i1 %28, label %._crit_edge, label %29, !dbg !1237
 
-if.then21:                                        ; preds = %if.else22, %lor.lhs.false19, %while.body.preheader
-  %r.0.lcssa = phi i32 [ %call7, %while.body.preheader ], [ %r.063, %lor.lhs.false19 ], [ %s.062, %if.else22 ]
-  %s.0.lcssa = phi i32 [ %call11, %while.body.preheader ], [ %s.062, %lor.lhs.false19 ], [ %call1764, %if.else22 ]
-  store i32 %r.0.lcssa, i32* %pirow, align 4, !tbaa !3
-  store i32 %s.0.lcssa, i32* %pjcol, align 4, !tbaa !3
-  br label %return
+._crit_edge:                                      ; preds = %29, %.lr.ph, %.preheader
+  %r.0.lcssa = phi i32 [ %10, %.preheader ], [ %s.06, %29 ], [ %r.07, %.lr.ph ]
+  %s.0.lcssa = phi i32 [ %14, %.preheader ], [ %25, %29 ], [ %s.06, %.lr.ph ]
+  store i32 %r.0.lcssa, i32* %pirow, align 4, !dbg !1238, !tbaa !201
+  store i32 %s.0.lcssa, i32* %pjcol, align 4, !dbg !1240, !tbaa !201
+  br label %32, !dbg !1241
 
-if.else22:                                        ; preds = %lor.lhs.false19
-  store double %3, double* %gamma_r, align 8, !tbaa !4
-  %call17 = call i32 @Chv_maxabsInRow11(%struct._Chv* %chv, i32 %call1764, i32* %mark, i32 %tag, double* %gamma_s) #8
-  %cmp18 = icmp eq i32 %call17, %s.062
-  br i1 %cmp18, label %if.then21, label %lor.lhs.false19
+; <label>:29                                      ; preds = %.lr.ph
+  call void @llvm.dbg.value(metadata i32 %25, i64 0, metadata !154, metadata !161), !dbg !1197
+  call void @llvm.dbg.value(metadata double %26, i64 0, metadata !148, metadata !161), !dbg !1206
+  store double %26, double* %gamma_r, align 8, !dbg !1242, !tbaa !219
+  call void @llvm.dbg.value(metadata i32 %30, i64 0, metadata !155, metadata !161), !dbg !1205
+  call void @llvm.dbg.value(metadata double* %gamma_s, i64 0, metadata !149, metadata !161), !dbg !1222
+  %30 = call i32 @Chv_maxabsInRow11(%struct._Chv* %chv, i32 %25, i32* %mark, i32 %tag, double* %gamma_s) #9, !dbg !1223
+  call void @llvm.dbg.value(metadata i32 %30, i64 0, metadata !156, metadata !161), !dbg !1226
+  %31 = icmp eq i32 %30, %s.06, !dbg !1227
+  br i1 %31, label %._crit_edge, label %.lr.ph, !dbg !1229
 
-return:                                           ; preds = %if.then21, %if.then16, %if.then13, %if.then9
-  ret void
+; <label>:32                                      ; preds = %._crit_edge, %24, %16, %12
+  ret void, !dbg !1244
 }

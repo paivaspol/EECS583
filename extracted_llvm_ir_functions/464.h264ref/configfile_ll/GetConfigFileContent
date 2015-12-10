@@ -1,58 +1,62 @@
 define noalias i8* @GetConfigFileContent(i8* %Filename) #2 {
-entry:
-  %call = tail call %struct._IO_FILE* @fopen(i8* %Filename, i8* getelementptr inbounds ([2 x i8]* @.str162, i64 0, i64 0)) #11
-  %cmp = icmp eq %struct._IO_FILE* %call, null
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata i8* %Filename, i64 0, metadata !63, metadata !858), !dbg !2018
+  %1 = tail call %struct.__sFILE* @"\01_fopen"(i8* %Filename, i8* getelementptr inbounds ([2 x i8]* @.str162, i64 0, i64 0)) #10, !dbg !2019
+  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %1, i64 0, metadata !66, metadata !858), !dbg !2021
+  %2 = icmp eq %struct.__sFILE* %1, null, !dbg !2022
+  br i1 %2, label %3, label %5, !dbg !2023
 
-if.then:                                          ; preds = %entry
-  %call1 = tail call i32 (i8*, i64, i8*, ...)* @snprintf(i8* getelementptr inbounds ([300 x i8]* @errortext, i64 0, i64 0), i64 300, i8* getelementptr inbounds ([35 x i8]* @.str163, i64 0, i64 0), i8* %Filename) #11
-  br label %return
+; <label>:3                                       ; preds = %0
+  %4 = tail call i32 (i8*, i64, i32, i64, i8*, ...)* @__snprintf_chk(i8* getelementptr inbounds ([300 x i8]* @errortext, i64 0, i64 0), i64 300, i32 0, i64 300, i8* getelementptr inbounds ([35 x i8]* @.str163, i64 0, i64 0), i8* %Filename) #10, !dbg !2024
+  br label %29, !dbg !2026
 
-if.end:                                           ; preds = %entry
-  %call2 = tail call i32 @fseek(%struct._IO_FILE* %call, i64 0, i32 2) #11
-  %cmp3 = icmp eq i32 %call2, 0
-  br i1 %cmp3, label %if.end6, label %if.then4
+; <label>:5                                       ; preds = %0
+  %6 = tail call i32 @fseek(%struct.__sFILE* %1, i64 0, i32 2) #10, !dbg !2027
+  %7 = icmp eq i32 %6, 0, !dbg !2029
+  br i1 %7, label %10, label %8, !dbg !2030
 
-if.then4:                                         ; preds = %if.end
-  %call5 = tail call i32 (i8*, i64, i8*, ...)* @snprintf(i8* getelementptr inbounds ([300 x i8]* @errortext, i64 0, i64 0), i64 300, i8* getelementptr inbounds ([39 x i8]* @.str164, i64 0, i64 0), i8* %Filename) #11
-  br label %return
+; <label>:8                                       ; preds = %5
+  %9 = tail call i32 (i8*, i64, i32, i64, i8*, ...)* @__snprintf_chk(i8* getelementptr inbounds ([300 x i8]* @errortext, i64 0, i64 0), i64 300, i32 0, i64 300, i8* getelementptr inbounds ([39 x i8]* @.str164, i64 0, i64 0), i8* %Filename) #10, !dbg !2031
+  br label %29, !dbg !2033
 
-if.end6:                                          ; preds = %if.end
-  %call7 = tail call i64 @ftell(%struct._IO_FILE* %call) #11
-  %0 = icmp ugt i64 %call7, 60000
-  br i1 %0, label %if.then10, label %if.end12
+; <label>:10                                      ; preds = %5
+  %11 = tail call i64 @ftell(%struct.__sFILE* %1) #10, !dbg !2034
+  tail call void @llvm.dbg.value(metadata i64 %11, i64 0, metadata !64, metadata !858), !dbg !2035
+  %12 = icmp ugt i64 %11, 60000, !dbg !2036
+  br i1 %12, label %13, label %15, !dbg !2036
 
-if.then10:                                        ; preds = %if.end6
-  %call11 = tail call i32 (i8*, i64, i8*, ...)* @snprintf(i8* getelementptr inbounds ([300 x i8]* @errortext, i64 0, i64 0), i64 300, i8* getelementptr inbounds ([71 x i8]* @.str165, i64 0, i64 0), i64 %call7, i8* %Filename) #11
-  br label %return
+; <label>:13                                      ; preds = %10
+  %14 = tail call i32 (i8*, i64, i32, i64, i8*, ...)* @__snprintf_chk(i8* getelementptr inbounds ([300 x i8]* @errortext, i64 0, i64 0), i64 300, i32 0, i64 300, i8* getelementptr inbounds ([71 x i8]* @.str165, i64 0, i64 0), i64 %11, i8* %Filename) #10, !dbg !2038
+  br label %29, !dbg !2040
 
-if.end12:                                         ; preds = %if.end6
-  %call13 = tail call i32 @fseek(%struct._IO_FILE* %call, i64 0, i32 0) #11
-  %cmp14 = icmp eq i32 %call13, 0
-  br i1 %cmp14, label %if.end17, label %if.then15
+; <label>:15                                      ; preds = %10
+  %16 = tail call i32 @fseek(%struct.__sFILE* %1, i64 0, i32 0) #10, !dbg !2041
+  %17 = icmp eq i32 %16, 0, !dbg !2043
+  br i1 %17, label %20, label %18, !dbg !2044
 
-if.then15:                                        ; preds = %if.end12
-  %call16 = tail call i32 (i8*, i64, i8*, ...)* @snprintf(i8* getelementptr inbounds ([300 x i8]* @errortext, i64 0, i64 0), i64 300, i8* getelementptr inbounds ([39 x i8]* @.str164, i64 0, i64 0), i8* %Filename) #11
-  br label %return
+; <label>:18                                      ; preds = %15
+  %19 = tail call i32 (i8*, i64, i32, i64, i8*, ...)* @__snprintf_chk(i8* getelementptr inbounds ([300 x i8]* @errortext, i64 0, i64 0), i64 300, i32 0, i64 300, i8* getelementptr inbounds ([39 x i8]* @.str164, i64 0, i64 0), i8* %Filename) #10, !dbg !2045
+  br label %29, !dbg !2047
 
-if.end17:                                         ; preds = %if.end12
-  %add = add nsw i64 %call7, 1
-  %call18 = tail call noalias i8* @malloc(i64 %add) #11
-  %cmp19 = icmp eq i8* %call18, null
-  br i1 %cmp19, label %if.then20, label %if.end21
+; <label>:20                                      ; preds = %15
+  %21 = add nsw i64 %11, 1, !dbg !2048
+  %22 = tail call i8* @malloc(i64 %21) #10, !dbg !2050
+  tail call void @llvm.dbg.value(metadata i8* %22, i64 0, metadata !126, metadata !858), !dbg !2051
+  %23 = icmp eq i8* %22, null, !dbg !2052
+  br i1 %23, label %24, label %25, !dbg !2053
 
-if.then20:                                        ; preds = %if.end17
-  tail call void @no_mem_exit(i8* getelementptr inbounds ([26 x i8]* @.str166, i64 0, i64 0)) #11
-  br label %if.end21
+; <label>:24                                      ; preds = %20
+  tail call void @no_mem_exit(i8* getelementptr inbounds ([26 x i8]* @.str166, i64 0, i64 0)) #10, !dbg !2054
+  br label %25, !dbg !2054
 
-if.end21:                                         ; preds = %if.then20, %if.end17
-  %call22 = tail call i64 @fread(i8* %call18, i64 1, i64 %call7, %struct._IO_FILE* %call) #11
-  %arrayidx = getelementptr inbounds i8* %call18, i64 %call22
-  store i8 0, i8* %arrayidx, align 1, !tbaa !1
-  %call23 = tail call i32 @fclose(%struct._IO_FILE* %call) #11
-  br label %return
+; <label>:25                                      ; preds = %24, %20
+  %26 = tail call i64 @fread(i8* %22, i64 1, i64 %11, %struct.__sFILE* %1) #10, !dbg !2055
+  tail call void @llvm.dbg.value(metadata i64 %26, i64 0, metadata !64, metadata !858), !dbg !2035
+  %27 = getelementptr inbounds i8* %22, i64 %26, !dbg !2056
+  store i8 0, i8* %27, align 1, !dbg !2057, !tbaa !971
+  %28 = tail call i32 @fclose(%struct.__sFILE* %1) #10, !dbg !2058
+  br label %29, !dbg !2059
 
-return:                                           ; preds = %if.end21, %if.then15, %if.then10, %if.then4, %if.then
-  %retval.0 = phi i8* [ null, %if.then ], [ null, %if.then4 ], [ null, %if.then10 ], [ null, %if.then15 ], [ %call18, %if.end21 ]
-  ret i8* %retval.0
+; <label>:29                                      ; preds = %25, %18, %13, %8, %3
+  %.0 = phi i8* [ null, %3 ], [ null, %8 ], [ null, %13 ], [ null, %18 ], [ %22, %25 ]
+  ret i8* %.0, !dbg !2060
 }

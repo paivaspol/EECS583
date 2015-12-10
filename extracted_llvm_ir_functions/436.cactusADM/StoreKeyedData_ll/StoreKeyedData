@@ -1,36 +1,40 @@
 define i32 @StoreKeyedData(%struct.PKeyedData** nocapture %storage, i32 %key, i8* %data) #1 {
-  %1 = tail call i8* @malloc(i64 32) #4
-  %2 = icmp eq i8* %1, null
-  br i1 %2, label %18, label %3
+  tail call void @llvm.dbg.value(metadata %struct.PKeyedData** %storage, i64 0, metadata !28, metadata !55), !dbg !56
+  tail call void @llvm.dbg.value(metadata i32 %key, i64 0, metadata !29, metadata !55), !dbg !57
+  tail call void @llvm.dbg.value(metadata i8* %data, i64 0, metadata !30, metadata !55), !dbg !58
+  %1 = tail call i8* @malloc(i64 32) #5, !dbg !59
+  %2 = icmp eq i8* %1, null, !dbg !60
+  br i1 %2, label %18, label %3, !dbg !62
 
 ; <label>:3                                       ; preds = %0
-  %4 = getelementptr inbounds i8* %1, i64 16
-  %5 = bitcast i8* %4 to i32*
-  store i32 %key, i32* %5, align 4, !tbaa !2
-  %6 = getelementptr inbounds i8* %1, i64 24
-  %7 = bitcast i8* %6 to i8**
-  store i8* %data, i8** %7, align 8, !tbaa !8
-  %8 = bitcast %struct.PKeyedData** %storage to i64*
-  %9 = load i64* %8, align 8, !tbaa !9
-  %10 = getelementptr inbounds i8* %1, i64 8
-  %11 = bitcast i8* %10 to i64*
-  store i64 %9, i64* %11, align 8, !tbaa !10
-  %12 = bitcast i8* %1 to %struct.PKeyedData**
-  store %struct.PKeyedData* null, %struct.PKeyedData** %12, align 8, !tbaa !11
-  %13 = icmp eq i64 %9, 0
-  br i1 %13, label %16, label %14
+  %4 = getelementptr inbounds i8* %1, i64 16, !dbg !63
+  %5 = bitcast i8* %4 to i32*, !dbg !63
+  store i32 %key, i32* %5, align 4, !dbg !65, !tbaa !66
+  %6 = getelementptr inbounds i8* %1, i64 24, !dbg !72
+  %7 = bitcast i8* %6 to i8**, !dbg !72
+  store i8* %data, i8** %7, align 8, !dbg !73, !tbaa !74
+  %8 = bitcast %struct.PKeyedData** %storage to i64*, !dbg !75
+  %9 = load i64* %8, align 8, !dbg !75, !tbaa !76
+  %10 = getelementptr inbounds i8* %1, i64 8, !dbg !77
+  %11 = bitcast i8* %10 to i64*, !dbg !78
+  store i64 %9, i64* %11, align 8, !dbg !78, !tbaa !79
+  %12 = bitcast i8* %1 to %struct.PKeyedData**, !dbg !80
+  store %struct.PKeyedData* null, %struct.PKeyedData** %12, align 8, !dbg !81, !tbaa !82
+  %13 = icmp eq i64 %9, 0, !dbg !83
+  br i1 %13, label %16, label %14, !dbg !85
 
 ; <label>:14                                      ; preds = %3
-  %15 = inttoptr i64 %9 to i8**
-  store i8* %1, i8** %15, align 8, !tbaa !11
-  br label %16
+  %15 = inttoptr i64 %9 to i8**, !dbg !86
+  store i8* %1, i8** %15, align 8, !dbg !86, !tbaa !82
+  br label %16, !dbg !87
 
 ; <label>:16                                      ; preds = %3, %14
-  %17 = bitcast %struct.PKeyedData** %storage to i8**
-  store i8* %1, i8** %17, align 8, !tbaa !9
-  br label %18
+  %17 = bitcast %struct.PKeyedData** %storage to i8**, !dbg !88
+  store i8* %1, i8** %17, align 8, !dbg !88, !tbaa !76
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !31, metadata !55), !dbg !89
+  br label %18, !dbg !90
 
 ; <label>:18                                      ; preds = %0, %16
   %return_code.0 = phi i32 [ 0, %16 ], [ 1, %0 ]
-  ret i32 %return_code.0
+  ret i32 %return_code.0, !dbg !91
 }

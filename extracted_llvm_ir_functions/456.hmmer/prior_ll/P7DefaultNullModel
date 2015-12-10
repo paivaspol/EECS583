@@ -1,41 +1,51 @@
 define void @P7DefaultNullModel(float* nocapture %null, float* nocapture %ret_p1) #0 {
-entry:
-  %0 = load i32* @Alphabet_type, align 4, !tbaa !0
-  %cmp = icmp eq i32 %0, 3
-  %1 = load i32* @Alphabet_size, align 4, !tbaa !0
-  %cmp122 = icmp sgt i32 %1, 0
-  br i1 %cmp, label %for.cond.preheader, label %for.cond4.preheader
+  tail call void @llvm.dbg.value(metadata float* %null, i64 0, metadata !138, metadata !276), !dbg !691
+  tail call void @llvm.dbg.value(metadata float* %ret_p1, i64 0, metadata !139, metadata !276), !dbg !692
+  %1 = load i32* @Alphabet_type, align 4, !dbg !693, !tbaa !308
+  %2 = icmp eq i32 %1, 3, !dbg !695
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !140, metadata !276), !dbg !696
+  %3 = load i32* @Alphabet_size, align 4, !dbg !697, !tbaa !308
+  %4 = icmp sgt i32 %3, 0, !dbg !701
+  br i1 %2, label %.preheader, label %.preheader1, !dbg !702
 
-for.cond4.preheader:                              ; preds = %entry
-  br i1 %cmp122, label %for.body6, label %if.end
+.preheader1:                                      ; preds = %0
+  br i1 %4, label %.lr.ph5, label %.loopexit, !dbg !703
 
-for.cond.preheader:                               ; preds = %entry
-  br i1 %cmp122, label %for.body, label %if.end
+.lr.ph5:                                          ; preds = %.preheader1
+  %5 = sext i32 %3 to i64, !dbg !703
+  br label %14, !dbg !703
 
-for.body:                                         ; preds = %for.cond.preheader, %for.body
-  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %for.cond.preheader ]
-  %arrayidx = getelementptr inbounds [0 x float]* @aafq, i64 0, i64 %indvars.iv
-  %2 = load float* %arrayidx, align 4, !tbaa !3
-  %arrayidx3 = getelementptr inbounds float* %null, i64 %indvars.iv
-  store float %2, float* %arrayidx3, align 4, !tbaa !3
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %3 = trunc i64 %indvars.iv.next to i32
-  %cmp1 = icmp slt i32 %3, %1
-  br i1 %cmp1, label %for.body, label %if.end
+.preheader:                                       ; preds = %0
+  br i1 %4, label %.lr.ph, label %.loopexit, !dbg !706
 
-for.body6:                                        ; preds = %for.cond4.preheader, %for.body6
-  %indvars.iv28 = phi i64 [ %indvars.iv.next29, %for.body6 ], [ 0, %for.cond4.preheader ]
-  %conv = sitofp i32 %1 to float
-  %conv8 = fdiv float 1.000000e+00, %conv
-  %arrayidx10 = getelementptr inbounds float* %null, i64 %indvars.iv28
-  store float %conv8, float* %arrayidx10, align 4, !tbaa !3
-  %indvars.iv.next29 = add i64 %indvars.iv28, 1
-  %4 = trunc i64 %indvars.iv.next29 to i32
-  %cmp5 = icmp slt i32 %4, %1
-  br i1 %cmp5, label %for.body6, label %if.end
+.lr.ph:                                           ; preds = %.preheader
+  %6 = sext i32 %3 to i64, !dbg !706
+  br label %7, !dbg !706
 
-if.end:                                           ; preds = %for.cond4.preheader, %for.body6, %for.cond.preheader, %for.body
-  %storemerge = phi float [ 0x3FEFE8A940000000, %for.body ], [ 0x3FEFE8A940000000, %for.cond.preheader ], [ 0x3FEFF7D100000000, %for.body6 ], [ 0x3FEFF7D100000000, %for.cond4.preheader ]
-  store float %storemerge, float* %ret_p1, align 4, !tbaa !3
-  ret void
+; <label>:7                                       ; preds = %.lr.ph, %7
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %7 ]
+  %8 = getelementptr inbounds [0 x float]* @aafq, i64 0, i64 %indvars.iv, !dbg !707
+  %9 = bitcast float* %8 to i32*, !dbg !707
+  %10 = load i32* %9, align 4, !dbg !707, !tbaa !297
+  %11 = getelementptr inbounds float* %null, i64 %indvars.iv, !dbg !708
+  %12 = bitcast float* %11 to i32*, !dbg !709
+  store i32 %10, i32* %12, align 4, !dbg !709, !tbaa !297
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !706
+  %13 = icmp slt i64 %indvars.iv.next, %6, !dbg !701
+  br i1 %13, label %7, label %.loopexit, !dbg !706
+
+; <label>:14                                      ; preds = %.lr.ph5, %14
+  %indvars.iv7 = phi i64 [ 0, %.lr.ph5 ], [ %indvars.iv.next8, %14 ]
+  %15 = sitofp i32 %3 to float, !dbg !710
+  %16 = fdiv float 1.000000e+00, %15, !dbg !712
+  %17 = getelementptr inbounds float* %null, i64 %indvars.iv7, !dbg !713
+  store float %16, float* %17, align 4, !dbg !714, !tbaa !297
+  %indvars.iv.next8 = add nuw nsw i64 %indvars.iv7, 1, !dbg !703
+  %18 = icmp slt i64 %indvars.iv.next8, %5, !dbg !715
+  br i1 %18, label %14, label %.loopexit, !dbg !703
+
+.loopexit:                                        ; preds = %14, %7, %.preheader1, %.preheader
+  %storemerge = phi float [ 0x3FEFE8A940000000, %.preheader ], [ 0x3FEFF7D100000000, %.preheader1 ], [ 0x3FEFE8A940000000, %7 ], [ 0x3FEFF7D100000000, %14 ]
+  store float %storemerge, float* %ret_p1, align 4, !dbg !716, !tbaa !297
+  ret void, !dbg !717
 }

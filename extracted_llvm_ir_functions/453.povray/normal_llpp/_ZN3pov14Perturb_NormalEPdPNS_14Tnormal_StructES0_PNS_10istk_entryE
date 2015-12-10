@@ -1,0 +1,1667 @@
+define void @_ZN3pov14Perturb_NormalEPdPNS_14Tnormal_StructES0_PNS_10istk_entryE(double* %Layer_Normal, %"struct.pov::Tnormal_Struct"* %Tnormal, double* %EPoint, %"struct.pov::istk_entry"* %Intersection) #0 {
+  %t1.i = alloca [3 x double], align 16
+  %newnormal.i = alloca [3 x double], align 16
+  %pert.i = alloca [3 x double], align 16
+  %value2.i = alloca [3 x double], align 16
+  %bump_turb.i = alloca [3 x double], align 16
+  %Prev.i = alloca %"struct.pov::Blend_Map_Entry"*, align 8
+  %Cur.i = alloca %"struct.pov::Blend_Map_Entry"*, align 8
+  %TPoint = alloca [3 x double], align 16
+  %P1 = alloca [3 x double], align 16
+  %Prev = alloca %"struct.pov::Blend_Map_Entry"*, align 8
+  %Cur = alloca %"struct.pov::Blend_Map_Entry"*, align 8
+  %UV_Coords = alloca <2 x i64>, align 16, !dbg !1514
+  tail call void @llvm.dbg.value(metadata double* %Layer_Normal, i64 0, metadata !855, metadata !1398), !dbg !1515
+  tail call void @llvm.dbg.value(metadata %"struct.pov::Tnormal_Struct"* %Tnormal, i64 0, metadata !856, metadata !1398), !dbg !1516
+  tail call void @llvm.dbg.value(metadata double* %EPoint, i64 0, metadata !857, metadata !1398), !dbg !1517
+  tail call void @llvm.dbg.value(metadata %"struct.pov::istk_entry"* %Intersection, i64 0, metadata !858, metadata !1398), !dbg !1518
+  tail call void @llvm.dbg.declare(metadata [3 x double]* %TPoint, metadata !859, metadata !1398), !dbg !1519
+  tail call void @llvm.dbg.declare(metadata [3 x double]* %P1, metadata !860, metadata !1398), !dbg !1520
+  %1 = icmp eq %"struct.pov::Tnormal_Struct"* %Tnormal, null, !dbg !1521
+  tail call void @llvm.dbg.declare(metadata [3 x double]* %bump_turb.i, metadata !918, metadata !1398), !dbg !1523
+  tail call void @llvm.dbg.declare(metadata [3 x double]* %bump_turb.i, metadata !925, metadata !1398), !dbg !1528
+  tail call void @llvm.dbg.declare(metadata [3 x double]* %bump_turb.i, metadata !962, metadata !1398), !dbg !1530
+  tail call void @llvm.dbg.declare(metadata [3 x double]* %value2.i, metadata !963, metadata !1398), !dbg !1532
+  tail call void @llvm.dbg.declare(metadata [3 x double]* %bump_turb.i, metadata !995, metadata !1398), !dbg !1533
+  tail call void @llvm.dbg.declare(metadata [3 x double]* %value2.i, metadata !996, metadata !1398), !dbg !1535
+  tail call void @llvm.dbg.declare(metadata [3 x double]* %t1.i, metadata !998, metadata !1398), !dbg !1536
+  tail call void @llvm.dbg.declare(metadata [3 x double]* %newnormal.i, metadata !1000, metadata !1398), !dbg !1537
+  tail call void @llvm.dbg.declare(metadata [3 x double]* %pert.i, metadata !1001, metadata !1398), !dbg !1538
+  tail call void @llvm.dbg.declare(metadata [3 x double]* %bump_turb.i, metadata !1088, metadata !1398), !dbg !1539
+  tail call void @llvm.dbg.declare(metadata [3 x double]* %value2.i, metadata !1089, metadata !1398), !dbg !1541
+  br i1 %1, label %938, label %2, !dbg !1542
+
+; <label>:2                                       ; preds = %0
+  %3 = getelementptr inbounds %"struct.pov::Tnormal_Struct"* %Tnormal, i64 0, i32 9, !dbg !1543
+  %4 = load %"struct.pov::Blend_Map_Struct"** %3, align 8, !dbg !1543, !tbaa !1472
+  tail call void @llvm.dbg.value(metadata %"struct.pov::Blend_Map_Struct"* %4, i64 0, metadata !865, metadata !1398), !dbg !1544
+  %5 = icmp eq %"struct.pov::Blend_Map_Struct"* %4, null, !dbg !1545
+  br i1 %5, label %.thread, label %6, !dbg !1546
+
+; <label>:6                                       ; preds = %2
+  %7 = getelementptr inbounds %"struct.pov::Blend_Map_Struct"* %4, i64 0, i32 3, !dbg !1547
+  %8 = load i8* %7, align 1, !dbg !1547, !tbaa !1488
+  %9 = icmp eq i8 %8, 1, !dbg !1548
+  br i1 %9, label %10, label %.thread, !dbg !1549
+
+; <label>:10                                      ; preds = %6
+  %11 = getelementptr inbounds %"struct.pov::Tnormal_Struct"* %Tnormal, i64 0, i32 0, !dbg !1550
+  %12 = load i16* %11, align 2, !dbg !1550, !tbaa !1463
+  switch i16 %12, label %62 [
+    i16 3, label %13
+    i16 2, label %.thread
+  ], !dbg !1551
+
+; <label>:13                                      ; preds = %10
+  %14 = getelementptr inbounds %"struct.pov::Blend_Map_Struct"* %4, i64 0, i32 4, !dbg !1552
+  %15 = bitcast %"struct.pov::Blend_Map_Entry"** %14 to i64*, !dbg !1552
+  %16 = load i64* %15, align 8, !dbg !1552, !tbaa !1491
+  %17 = bitcast %"struct.pov::Blend_Map_Entry"** %Cur to i64*, !dbg !1553
+  store i64 %16, i64* %17, align 8, !dbg !1553, !tbaa !1494
+  %18 = getelementptr inbounds %"struct.pov::istk_entry"* %Intersection, i64 0, i32 5, !dbg !1554
+  %19 = load %"struct.pov::Object_Struct"** %18, align 8, !dbg !1554, !tbaa !1555
+  %20 = getelementptr inbounds %"struct.pov::Object_Struct"* %19, i64 0, i32 0, !dbg !1554
+  %21 = load %"struct.pov::Method_Struct"** %20, align 8, !dbg !1554, !tbaa !1558
+  %22 = getelementptr inbounds %"struct.pov::Method_Struct"* %21, i64 0, i32 3, !dbg !1554
+  %23 = load void (double*, %"struct.pov::Object_Struct"*, %"struct.pov::istk_entry"*)** %22, align 8, !dbg !1554, !tbaa !1561
+  %24 = bitcast <2 x i64>* %UV_Coords to double*, !dbg !1554
+  call void %23(double* %24, %"struct.pov::Object_Struct"* %19, %"struct.pov::istk_entry"* %Intersection) #5, !dbg !1554
+  %25 = load <2 x i64>* %UV_Coords, align 16, !dbg !1514, !tbaa !1563
+  %26 = bitcast [3 x double]* %TPoint to <2 x i64>*, !dbg !1564
+  store <2 x i64> %25, <2 x i64>* %26, align 16, !dbg !1564, !tbaa !1563
+  %27 = getelementptr inbounds [3 x double]* %TPoint, i64 0, i64 2, !dbg !1565
+  store double 0.000000e+00, double* %27, align 16, !dbg !1566, !tbaa !1563
+  call void @llvm.dbg.value(metadata %"struct.pov::Blend_Map_Entry"** %Cur, i64 0, metadata !867, metadata !1398), !dbg !1567
+  %28 = load %"struct.pov::Blend_Map_Entry"** %Cur, align 8, !dbg !1568, !tbaa !1494
+  %29 = getelementptr inbounds %"struct.pov::Blend_Map_Entry"* %28, i64 0, i32 2, !dbg !1569
+  %30 = bitcast %union.anon* %29 to %"struct.pov::Tnormal_Struct"**, !dbg !1570
+  %31 = load %"struct.pov::Tnormal_Struct"** %30, align 8, !dbg !1570, !tbaa !1494
+  %32 = getelementptr inbounds [3 x double]* %TPoint, i64 0, i64 0, !dbg !1571
+  call void @_ZN3pov14Perturb_NormalEPdPNS_14Tnormal_StructES0_PNS_10istk_entryE(double* %Layer_Normal, %"struct.pov::Tnormal_Struct"* %31, double* %32, %"struct.pov::istk_entry"* %Intersection) #5, !dbg !1572
+  call void @llvm.dbg.value(metadata double* %Layer_Normal, i64 0, metadata !878, metadata !1398) #4, !dbg !1573
+  call void @llvm.dbg.value(metadata double* %Layer_Normal, i64 0, metadata !888, metadata !1398) #4, !dbg !1575
+  %33 = getelementptr inbounds double* %Layer_Normal, i64 1, !dbg !1577
+  %34 = bitcast double* %Layer_Normal to <2 x double>*, !dbg !1578
+  %35 = load <2 x double>* %34, align 8, !dbg !1578, !tbaa !1563
+  %36 = extractelement <2 x double> %35, i32 0, !dbg !1579
+  %37 = fmul double %36, %36, !dbg !1579
+  %38 = extractelement <2 x double> %35, i32 1, !dbg !1580
+  %39 = fmul double %38, %38, !dbg !1580
+  %40 = fadd double %37, %39, !dbg !1581
+  %41 = getelementptr inbounds double* %Layer_Normal, i64 2, !dbg !1582
+  %42 = load double* %41, align 8, !dbg !1582, !tbaa !1563
+  %43 = fmul double %42, %42, !dbg !1583
+  %44 = fadd double %40, %43, !dbg !1584
+  %45 = call double @sqrt(double %44) #6, !dbg !1585
+  call void @llvm.dbg.value(metadata double %45, i64 0, metadata !887, metadata !1398) #4, !dbg !1586
+  call void @llvm.dbg.value(metadata double %45, i64 0, metadata !879, metadata !1398) #4, !dbg !1587
+  call void @llvm.dbg.value(metadata double %45, i64 0, metadata !879, metadata !1398) #4, !dbg !1587
+  call void @llvm.dbg.value(metadata double* %Layer_Normal, i64 0, metadata !893, metadata !1398) #4, !dbg !1588
+  call void @llvm.dbg.value(metadata double %45, i64 0, metadata !894, metadata !1398) #4, !dbg !1590
+  %46 = fdiv double 1.000000e+00, %45, !dbg !1591
+  call void @llvm.dbg.value(metadata double %46, i64 0, metadata !895, metadata !1398) #4, !dbg !1592
+  %47 = insertelement <2 x double> undef, double %46, i32 0, !dbg !1593
+  %48 = insertelement <2 x double> %47, double %46, i32 1, !dbg !1593
+  %49 = fmul <2 x double> %48, %35, !dbg !1593
+  %50 = bitcast double* %Layer_Normal to <2 x double>*, !dbg !1593
+  store <2 x double> %49, <2 x double>* %50, align 8, !dbg !1593, !tbaa !1563
+  %51 = fmul double %42, %46, !dbg !1594
+  store double %51, double* %41, align 8, !dbg !1594, !tbaa !1563
+  %52 = getelementptr inbounds %"struct.pov::istk_entry"* %Intersection, i64 0, i32 3, i64 0, !dbg !1595
+  tail call void @llvm.dbg.value(metadata double* %52, i64 0, metadata !900, metadata !1398), !dbg !1596
+  tail call void @llvm.dbg.value(metadata double* %Layer_Normal, i64 0, metadata !901, metadata !1398), !dbg !1598
+  %53 = extractelement <2 x double> %49, i32 0, !dbg !1599
+  store double %53, double* %52, align 8, !dbg !1599, !tbaa !1563
+  %54 = bitcast double* %33 to i64*, !dbg !1600
+  %55 = load i64* %54, align 8, !dbg !1600, !tbaa !1563
+  %56 = getelementptr inbounds %"struct.pov::istk_entry"* %Intersection, i64 0, i32 3, i64 1, !dbg !1601
+  %57 = bitcast double* %56 to i64*, !dbg !1602
+  store i64 %55, i64* %57, align 8, !dbg !1602, !tbaa !1563
+  %58 = bitcast double* %41 to i64*, !dbg !1603
+  %59 = load i64* %58, align 8, !dbg !1603, !tbaa !1563
+  %60 = getelementptr inbounds %"struct.pov::istk_entry"* %Intersection, i64 0, i32 3, i64 2, !dbg !1604
+  %61 = bitcast double* %60 to i64*, !dbg !1605
+  store i64 %59, i64* %61, align 8, !dbg !1605, !tbaa !1563
+  br label %938, !dbg !1606
+
+; <label>:62                                      ; preds = %10
+  %63 = getelementptr inbounds [3 x double]* %TPoint, i64 0, i64 0, !dbg !1607
+  %64 = bitcast %"struct.pov::Tnormal_Struct"* %Tnormal to %"struct.pov::Pattern_Struct"*, !dbg !1610
+  call void @_ZN3pov11Warp_EPointEPdS0_PNS_14Pattern_StructE(double* %63, double* %EPoint, %"struct.pov::Pattern_Struct"* %64) #5, !dbg !1611
+  %65 = call double @_ZN3pov13Evaluate_TPatEPNS_14Pattern_StructEPdPNS_10istk_entryE(%"struct.pov::Pattern_Struct"* %64, double* %63, %"struct.pov::istk_entry"* %Intersection) #5, !dbg !1612
+  call void @llvm.dbg.value(metadata double %65, i64 0, metadata !861, metadata !1398), !dbg !1613
+  call void @llvm.dbg.value(metadata %"struct.pov::Blend_Map_Entry"** %Prev, i64 0, metadata !866, metadata !1398), !dbg !1614
+  call void @llvm.dbg.value(metadata %"struct.pov::Blend_Map_Entry"** %Cur, i64 0, metadata !867, metadata !1398), !dbg !1567
+  call void @_ZN3pov16Search_Blend_MapEdPNS_16Blend_Map_StructEPPNS_15Blend_Map_EntryES4_(double %65, %"struct.pov::Blend_Map_Struct"* %4, %"struct.pov::Blend_Map_Entry"** %Prev, %"struct.pov::Blend_Map_Entry"** %Cur) #5, !dbg !1615
+  %66 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 28), align 8, !dbg !1616, !tbaa !1618
+  %67 = icmp sgt i32 %66, 310, !dbg !1626
+  br i1 %67, label %68, label %73, !dbg !1627
+
+; <label>:68                                      ; preds = %62
+  %69 = getelementptr inbounds %"struct.pov::Tnormal_Struct"* %Tnormal, i64 0, i32 2, !dbg !1628
+  %70 = load i16* %69, align 2, !dbg !1628, !tbaa !1458
+  %71 = zext i16 %70 to i32, !dbg !1628
+  %72 = and i32 %71, 8, !dbg !1628
+  call void @_ZN3pov11Warp_NormalEPdS0_PNS_14Pattern_StructEi(double* %Layer_Normal, double* %Layer_Normal, %"struct.pov::Pattern_Struct"* %64, i32 %72) #5, !dbg !1629
+  br label %73, !dbg !1629
+
+; <label>:73                                      ; preds = %68, %62
+  tail call void @llvm.dbg.value(metadata double* %92, i64 0, metadata !900, metadata !1398), !dbg !1630
+  tail call void @llvm.dbg.value(metadata double* %Layer_Normal, i64 0, metadata !901, metadata !1398), !dbg !1632
+  %74 = getelementptr inbounds double* %Layer_Normal, i64 1, !dbg !1633
+  %75 = bitcast double* %74 to i64*, !dbg !1633
+  %76 = bitcast double* %Layer_Normal to <2 x i64>*, !dbg !1634
+  %77 = load <2 x i64>* %76, align 8, !dbg !1634, !tbaa !1563
+  %78 = bitcast [3 x double]* %P1 to <2 x i64>*, !dbg !1635
+  store <2 x i64> %77, <2 x i64>* %78, align 16, !dbg !1635, !tbaa !1563
+  %79 = getelementptr inbounds double* %Layer_Normal, i64 2, !dbg !1636
+  %80 = bitcast double* %79 to i64*, !dbg !1636
+  %81 = load i64* %80, align 8, !dbg !1636, !tbaa !1563
+  %82 = getelementptr inbounds [3 x double]* %P1, i64 0, i64 2, !dbg !1637
+  %83 = bitcast double* %82 to i64*, !dbg !1638
+  store i64 %81, i64* %83, align 16, !dbg !1638, !tbaa !1563
+  call void @_ZN3pov11Warp_EPointEPdS0_PNS_14Pattern_StructE(double* %63, double* %EPoint, %"struct.pov::Pattern_Struct"* %64) #5, !dbg !1639
+  call void @llvm.dbg.value(metadata %"struct.pov::Blend_Map_Entry"** %Cur, i64 0, metadata !867, metadata !1398), !dbg !1567
+  %84 = load %"struct.pov::Blend_Map_Entry"** %Cur, align 8, !dbg !1640, !tbaa !1494
+  %85 = getelementptr inbounds %"struct.pov::Blend_Map_Entry"* %84, i64 0, i32 2, !dbg !1641
+  %86 = bitcast %union.anon* %85 to %"struct.pov::Tnormal_Struct"**, !dbg !1642
+  %87 = load %"struct.pov::Tnormal_Struct"** %86, align 8, !dbg !1642, !tbaa !1494
+  call void @_ZN3pov14Perturb_NormalEPdPNS_14Tnormal_StructES0_PNS_10istk_entryE(double* %Layer_Normal, %"struct.pov::Tnormal_Struct"* %87, double* %63, %"struct.pov::istk_entry"* %Intersection) #5, !dbg !1643
+  call void @llvm.dbg.value(metadata %"struct.pov::Blend_Map_Entry"** %Prev, i64 0, metadata !866, metadata !1398), !dbg !1614
+  %88 = load %"struct.pov::Blend_Map_Entry"** %Prev, align 8, !dbg !1644, !tbaa !1494
+  call void @llvm.dbg.value(metadata %"struct.pov::Blend_Map_Entry"** %Cur, i64 0, metadata !867, metadata !1398), !dbg !1567
+  %89 = load %"struct.pov::Blend_Map_Entry"** %Cur, align 8, !dbg !1646, !tbaa !1494
+  %90 = icmp eq %"struct.pov::Blend_Map_Entry"* %88, %89, !dbg !1647
+  br i1 %90, label %125, label %91, !dbg !1648
+
+; <label>:91                                      ; preds = %73
+  %92 = getelementptr inbounds [3 x double]* %P1, i64 0, i64 0, !dbg !1649
+  %93 = getelementptr inbounds %"struct.pov::Blend_Map_Entry"* %88, i64 0, i32 2, !dbg !1650
+  %94 = bitcast %union.anon* %93 to %"struct.pov::Tnormal_Struct"**, !dbg !1652
+  %95 = load %"struct.pov::Tnormal_Struct"** %94, align 8, !dbg !1652, !tbaa !1494
+  call void @_ZN3pov14Perturb_NormalEPdPNS_14Tnormal_StructES0_PNS_10istk_entryE(double* %92, %"struct.pov::Tnormal_Struct"* %95, double* %63, %"struct.pov::istk_entry"* %Intersection) #5, !dbg !1653
+  call void @llvm.dbg.value(metadata %"struct.pov::Blend_Map_Entry"** %Prev, i64 0, metadata !866, metadata !1398), !dbg !1614
+  %96 = load %"struct.pov::Blend_Map_Entry"** %Prev, align 8, !dbg !1654, !tbaa !1494
+  %97 = getelementptr inbounds %"struct.pov::Blend_Map_Entry"* %96, i64 0, i32 0, !dbg !1655
+  %98 = load float* %97, align 4, !dbg !1655, !tbaa !1656
+  %99 = fpext float %98 to double, !dbg !1654
+  %100 = fsub double %65, %99, !dbg !1658
+  call void @llvm.dbg.value(metadata %"struct.pov::Blend_Map_Entry"** %Cur, i64 0, metadata !867, metadata !1398), !dbg !1567
+  %101 = load %"struct.pov::Blend_Map_Entry"** %Cur, align 8, !dbg !1659, !tbaa !1494
+  %102 = getelementptr inbounds %"struct.pov::Blend_Map_Entry"* %101, i64 0, i32 0, !dbg !1660
+  %103 = load float* %102, align 4, !dbg !1660, !tbaa !1656
+  %104 = fsub float %103, %98, !dbg !1661
+  %105 = fpext float %104 to double, !dbg !1662
+  %106 = fdiv double %100, %105, !dbg !1663
+  call void @llvm.dbg.value(metadata double %106, i64 0, metadata !862, metadata !1398), !dbg !1664
+  %107 = fsub double 1.000000e+00, %106, !dbg !1665
+  call void @llvm.dbg.value(metadata double %107, i64 0, metadata !861, metadata !1398), !dbg !1613
+  tail call void @llvm.dbg.value(metadata double* %Layer_Normal, i64 0, metadata !906, metadata !1398), !dbg !1666
+  tail call void @llvm.dbg.value(metadata double %107, i64 0, metadata !907, metadata !1398), !dbg !1668
+  tail call void @llvm.dbg.value(metadata double* %92, i64 0, metadata !908, metadata !1398), !dbg !1669
+  tail call void @llvm.dbg.value(metadata double %106, i64 0, metadata !909, metadata !1398), !dbg !1670
+  tail call void @llvm.dbg.value(metadata double* %Layer_Normal, i64 0, metadata !910, metadata !1398), !dbg !1671
+  %108 = bitcast [3 x double]* %P1 to <2 x double>*, !dbg !1672
+  %109 = load <2 x double>* %108, align 16, !dbg !1672, !tbaa !1563
+  %110 = insertelement <2 x double> undef, double %107, i32 0, !dbg !1673
+  %111 = insertelement <2 x double> %110, double %107, i32 1, !dbg !1673
+  %112 = fmul <2 x double> %111, %109, !dbg !1673
+  %113 = bitcast double* %Layer_Normal to <2 x double>*, !dbg !1674
+  %114 = load <2 x double>* %113, align 8, !dbg !1674, !tbaa !1563
+  %115 = insertelement <2 x double> undef, double %106, i32 0, !dbg !1675
+  %116 = insertelement <2 x double> %115, double %106, i32 1, !dbg !1675
+  %117 = fmul <2 x double> %116, %114, !dbg !1675
+  %118 = fadd <2 x double> %112, %117, !dbg !1676
+  %119 = bitcast double* %Layer_Normal to <2 x double>*, !dbg !1677
+  store <2 x double> %118, <2 x double>* %119, align 8, !dbg !1677, !tbaa !1563
+  %120 = load double* %82, align 16, !dbg !1678, !tbaa !1563
+  %121 = fmul double %107, %120, !dbg !1679
+  %122 = load double* %79, align 8, !dbg !1680, !tbaa !1563
+  %123 = fmul double %106, %122, !dbg !1681
+  %124 = fadd double %121, %123, !dbg !1682
+  store double %124, double* %79, align 8, !dbg !1683, !tbaa !1563
+  br label %125, !dbg !1684
+
+; <label>:125                                     ; preds = %73, %91
+  %126 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 28), align 8, !dbg !1685, !tbaa !1618
+  %127 = icmp sgt i32 %126, 310, !dbg !1687
+  br i1 %127, label %128, label %133, !dbg !1688
+
+; <label>:128                                     ; preds = %125
+  %129 = getelementptr inbounds %"struct.pov::Tnormal_Struct"* %Tnormal, i64 0, i32 2, !dbg !1689
+  %130 = load i16* %129, align 2, !dbg !1689, !tbaa !1458
+  %131 = zext i16 %130 to i32, !dbg !1689
+  %132 = and i32 %131, 8, !dbg !1689
+  call void @_ZN3pov13UnWarp_NormalEPdS0_PNS_14Pattern_StructEi(double* %Layer_Normal, double* %Layer_Normal, %"struct.pov::Pattern_Struct"* %64, i32 %132) #5, !dbg !1690
+  br label %133, !dbg !1690
+
+; <label>:133                                     ; preds = %128, %125
+  call void @llvm.dbg.value(metadata double* %Layer_Normal, i64 0, metadata !878, metadata !1398) #4, !dbg !1691
+  call void @llvm.dbg.value(metadata double* %Layer_Normal, i64 0, metadata !888, metadata !1398) #4, !dbg !1693
+  %134 = bitcast double* %Layer_Normal to <2 x double>*, !dbg !1695
+  %135 = load <2 x double>* %134, align 8, !dbg !1695, !tbaa !1563
+  %136 = extractelement <2 x double> %135, i32 0, !dbg !1696
+  %137 = fmul double %136, %136, !dbg !1696
+  %138 = extractelement <2 x double> %135, i32 1, !dbg !1697
+  %139 = fmul double %138, %138, !dbg !1697
+  %140 = fadd double %137, %139, !dbg !1698
+  %141 = load double* %79, align 8, !dbg !1699, !tbaa !1563
+  %142 = fmul double %141, %141, !dbg !1700
+  %143 = fadd double %140, %142, !dbg !1701
+  %144 = call double @sqrt(double %143) #6, !dbg !1702
+  call void @llvm.dbg.value(metadata double %144, i64 0, metadata !887, metadata !1398) #4, !dbg !1703
+  call void @llvm.dbg.value(metadata double %144, i64 0, metadata !879, metadata !1398) #4, !dbg !1704
+  call void @llvm.dbg.value(metadata double %144, i64 0, metadata !879, metadata !1398) #4, !dbg !1704
+  call void @llvm.dbg.value(metadata double* %Layer_Normal, i64 0, metadata !893, metadata !1398) #4, !dbg !1705
+  call void @llvm.dbg.value(metadata double %144, i64 0, metadata !894, metadata !1398) #4, !dbg !1707
+  %145 = fdiv double 1.000000e+00, %144, !dbg !1708
+  call void @llvm.dbg.value(metadata double %145, i64 0, metadata !895, metadata !1398) #4, !dbg !1709
+  %146 = insertelement <2 x double> undef, double %145, i32 0, !dbg !1710
+  %147 = insertelement <2 x double> %146, double %145, i32 1, !dbg !1710
+  %148 = fmul <2 x double> %147, %135, !dbg !1710
+  %149 = bitcast double* %Layer_Normal to <2 x double>*, !dbg !1710
+  store <2 x double> %148, <2 x double>* %149, align 8, !dbg !1710, !tbaa !1563
+  %150 = fmul double %141, %145, !dbg !1711
+  store double %150, double* %79, align 8, !dbg !1711, !tbaa !1563
+  %151 = getelementptr inbounds %"struct.pov::istk_entry"* %Intersection, i64 0, i32 3, i64 0, !dbg !1712
+  tail call void @llvm.dbg.value(metadata double* %151, i64 0, metadata !900, metadata !1398), !dbg !1713
+  tail call void @llvm.dbg.value(metadata double* %Layer_Normal, i64 0, metadata !901, metadata !1398), !dbg !1715
+  %152 = extractelement <2 x double> %148, i32 0, !dbg !1716
+  store double %152, double* %151, align 8, !dbg !1716, !tbaa !1563
+  %153 = load i64* %75, align 8, !dbg !1717, !tbaa !1563
+  %154 = getelementptr inbounds %"struct.pov::istk_entry"* %Intersection, i64 0, i32 3, i64 1, !dbg !1718
+  %155 = bitcast double* %154 to i64*, !dbg !1719
+  store i64 %153, i64* %155, align 8, !dbg !1719, !tbaa !1563
+  %156 = load i64* %80, align 8, !dbg !1720, !tbaa !1563
+  %157 = getelementptr inbounds %"struct.pov::istk_entry"* %Intersection, i64 0, i32 3, i64 2, !dbg !1721
+  %158 = bitcast double* %157 to i64*, !dbg !1722
+  store i64 %156, i64* %158, align 8, !dbg !1722, !tbaa !1563
+  br label %938, !dbg !1723
+
+.thread:                                          ; preds = %10, %6, %2
+  %159 = getelementptr inbounds %"struct.pov::Tnormal_Struct"* %Tnormal, i64 0, i32 0, !dbg !1724
+  %160 = load i16* %159, align 2, !dbg !1724, !tbaa !1463
+  %161 = icmp ult i16 %160, 12, !dbg !1725
+  %162 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 28), align 8, !dbg !1726, !tbaa !1618
+  %163 = icmp sgt i32 %162, 310, !dbg !1728
+  br i1 %161, label %164, label %782, !dbg !1729
+
+; <label>:164                                     ; preds = %.thread
+  %165 = bitcast %"struct.pov::Tnormal_Struct"* %Tnormal to %"struct.pov::Pattern_Struct"*, !dbg !1730
+  br i1 %163, label %166, label %._crit_edge, !dbg !1732
+
+; <label>:166                                     ; preds = %164
+  %167 = getelementptr inbounds %"struct.pov::Tnormal_Struct"* %Tnormal, i64 0, i32 2, !dbg !1733
+  %168 = load i16* %167, align 2, !dbg !1733, !tbaa !1458
+  %169 = zext i16 %168 to i32, !dbg !1733
+  %170 = and i32 %169, 8, !dbg !1733
+  tail call void @_ZN3pov11Warp_NormalEPdS0_PNS_14Pattern_StructEi(double* %Layer_Normal, double* %Layer_Normal, %"struct.pov::Pattern_Struct"* %165, i32 %170) #5, !dbg !1734
+  br label %._crit_edge, !dbg !1735
+
+._crit_edge:                                      ; preds = %164, %166
+  %171 = getelementptr inbounds [3 x double]* %TPoint, i64 0, i64 0, !dbg !1736
+  call void @_ZN3pov11Warp_EPointEPdS0_PNS_14Pattern_StructE(double* %171, double* %EPoint, %"struct.pov::Pattern_Struct"* %165) #5, !dbg !1737
+  %172 = load i16* %159, align 2, !dbg !1738, !tbaa !1463
+  %173 = zext i16 %172 to i32, !dbg !1739
+  switch i32 %173, label %773 [
+    i32 4, label %174
+    i32 8, label %175
+    i32 11, label %196
+    i32 6, label %221
+    i32 5, label %277
+    i32 7, label %341
+    i32 9, label %385
+    i32 10, label %461
+    i32 2, label %720
+  ], !dbg !1740
+
+; <label>:174                                     ; preds = %._crit_edge
+  call void @_ZN3pov8bump_mapEPdPNS_14Tnormal_StructES0_(double* %171, %"struct.pov::Tnormal_Struct"* %Tnormal, double* %Layer_Normal) #5, !dbg !1741
+  br label %_ZN3povL7ripplesEPdPNS_14Tnormal_StructES0_.exit, !dbg !1742
+
+; <label>:175                                     ; preds = %._crit_edge
+  %176 = bitcast [3 x double]* %bump_turb.i to i8*, !dbg !1743
+  call void @llvm.lifetime.start(i64 24, i8* %176), !dbg !1743
+  call void @llvm.dbg.value(metadata double* %171, i64 0, metadata !915, metadata !1398), !dbg !1743
+  call void @llvm.dbg.value(metadata %"struct.pov::Tnormal_Struct"* %Tnormal, i64 0, metadata !916, metadata !1398), !dbg !1744
+  call void @llvm.dbg.value(metadata double* %Layer_Normal, i64 0, metadata !917, metadata !1398), !dbg !1745
+  %177 = getelementptr inbounds [3 x double]* %bump_turb.i, i64 0, i64 0, !dbg !1746
+  call void @_ZN3pov6DNoiseEPdS0_(double* %177, double* %171) #5, !dbg !1747
+  %178 = getelementptr inbounds %"struct.pov::Tnormal_Struct"* %Tnormal, i64 0, i32 11, !dbg !1748
+  %179 = load float* %178, align 4, !dbg !1748, !tbaa !1404
+  %180 = fpext float %179 to double, !dbg !1749
+  call void @llvm.dbg.value(metadata double* %Layer_Normal, i64 0, metadata !1056, metadata !1398), !dbg !1750
+  call void @llvm.dbg.value(metadata double %180, i64 0, metadata !1057, metadata !1398), !dbg !1752
+  call void @llvm.dbg.value(metadata double* %177, i64 0, metadata !1058, metadata !1398), !dbg !1753
+  %181 = bitcast [3 x double]* %bump_turb.i to <2 x double>*, !dbg !1754
+  %182 = load <2 x double>* %181, align 16, !dbg !1754, !tbaa !1563
+  %183 = insertelement <2 x double> undef, double %180, i32 0, !dbg !1755
+  %184 = insertelement <2 x double> %183, double %180, i32 1, !dbg !1755
+  %185 = fmul <2 x double> %182, %184, !dbg !1755
+  %186 = bitcast double* %Layer_Normal to <2 x double>*, !dbg !1756
+  %187 = load <2 x double>* %186, align 8, !dbg !1756, !tbaa !1563
+  %188 = fadd <2 x double> %187, %185, !dbg !1756
+  %189 = bitcast double* %Layer_Normal to <2 x double>*, !dbg !1756
+  store <2 x double> %188, <2 x double>* %189, align 8, !dbg !1756, !tbaa !1563
+  %190 = getelementptr inbounds [3 x double]* %bump_turb.i, i64 0, i64 2, !dbg !1757
+  %191 = load double* %190, align 16, !dbg !1757, !tbaa !1563
+  %192 = fmul double %180, %191, !dbg !1758
+  %193 = getelementptr inbounds double* %Layer_Normal, i64 2, !dbg !1759
+  %194 = load double* %193, align 8, !dbg !1760, !tbaa !1563
+  %195 = fadd double %194, %192, !dbg !1760
+  store double %195, double* %193, align 8, !dbg !1760, !tbaa !1563
+  call void @llvm.lifetime.end(i64 24, i8* %176), !dbg !1761
+  br label %_ZN3povL7ripplesEPdPNS_14Tnormal_StructES0_.exit, !dbg !1762
+
+; <label>:196                                     ; preds = %._crit_edge
+  %197 = bitcast [3 x double]* %bump_turb.i to i8*, !dbg !1763
+  call void @llvm.lifetime.start(i64 24, i8* %197), !dbg !1763
+  call void @llvm.dbg.value(metadata double* %171, i64 0, metadata !921, metadata !1398), !dbg !1763
+  call void @llvm.dbg.value(metadata %"struct.pov::Tnormal_Struct"* %Tnormal, i64 0, metadata !922, metadata !1398), !dbg !1764
+  call void @llvm.dbg.value(metadata double* %Layer_Normal, i64 0, metadata !923, metadata !1398), !dbg !1765
+  %198 = call double @_ZN3pov5NoiseEPdPNS_14Pattern_StructE(double* %171, %"struct.pov::Pattern_Struct"* %165) #5, !dbg !1766
+  call void @llvm.dbg.value(metadata double %198, i64 0, metadata !924, metadata !1398), !dbg !1767
+  %199 = fmul double %198, %198, !dbg !1768
+  %200 = fmul double %198, %199, !dbg !1769
+  %201 = getelementptr inbounds %"struct.pov::Tnormal_Struct"* %Tnormal, i64 0, i32 11, !dbg !1770
+  %202 = load float* %201, align 4, !dbg !1770, !tbaa !1404
+  %203 = fpext float %202 to double, !dbg !1771
+  %204 = fmul double %200, %203, !dbg !1772
+  call void @llvm.dbg.value(metadata double %204, i64 0, metadata !924, metadata !1398), !dbg !1767
+  %205 = getelementptr inbounds [3 x double]* %bump_turb.i, i64 0, i64 0, !dbg !1773
+  call void @_ZN3pov6DNoiseEPdS0_(double* %205, double* %171) #5, !dbg !1774
+  call void @llvm.dbg.value(metadata double* %Layer_Normal, i64 0, metadata !1056, metadata !1398), !dbg !1775
+  call void @llvm.dbg.value(metadata double %204, i64 0, metadata !1057, metadata !1398), !dbg !1777
+  call void @llvm.dbg.value(metadata double* %205, i64 0, metadata !1058, metadata !1398), !dbg !1778
+  %206 = bitcast [3 x double]* %bump_turb.i to <2 x double>*, !dbg !1779
+  %207 = load <2 x double>* %206, align 16, !dbg !1779, !tbaa !1563
+  %208 = insertelement <2 x double> undef, double %204, i32 0, !dbg !1780
+  %209 = insertelement <2 x double> %208, double %204, i32 1, !dbg !1780
+  %210 = fmul <2 x double> %209, %207, !dbg !1780
+  %211 = bitcast double* %Layer_Normal to <2 x double>*, !dbg !1781
+  %212 = load <2 x double>* %211, align 8, !dbg !1781, !tbaa !1563
+  %213 = fadd <2 x double> %212, %210, !dbg !1781
+  %214 = bitcast double* %Layer_Normal to <2 x double>*, !dbg !1781
+  store <2 x double> %213, <2 x double>* %214, align 8, !dbg !1781, !tbaa !1563
+  %215 = getelementptr inbounds [3 x double]* %bump_turb.i, i64 0, i64 2, !dbg !1782
+  %216 = load double* %215, align 16, !dbg !1782, !tbaa !1563
+  %217 = fmul double %204, %216, !dbg !1783
+  %218 = getelementptr inbounds double* %Layer_Normal, i64 2, !dbg !1784
+  %219 = load double* %218, align 8, !dbg !1785, !tbaa !1563
+  %220 = fadd double %219, %217, !dbg !1785
+  store double %220, double* %218, align 8, !dbg !1785, !tbaa !1563
+  call void @llvm.lifetime.end(i64 24, i8* %197), !dbg !1786
+  br label %_ZN3povL7ripplesEPdPNS_14Tnormal_StructES0_.exit, !dbg !1787
+
+; <label>:221                                     ; preds = %._crit_edge
+  call void @llvm.dbg.value(metadata double* %171, i64 0, metadata !928, metadata !1398), !dbg !1788
+  call void @llvm.dbg.value(metadata %"struct.pov::Tnormal_Struct"* %Tnormal, i64 0, metadata !929, metadata !1398), !dbg !1790
+  call void @llvm.dbg.value(metadata double* %Layer_Normal, i64 0, metadata !930, metadata !1398), !dbg !1791
+  call void @llvm.dbg.declare(metadata [3 x double]* undef, metadata !935, metadata !1398), !dbg !1792
+  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !931, metadata !1398), !dbg !1793
+  %222 = load i32* @_ZN3pov15Number_Of_WavesE, align 4, !dbg !1794, !tbaa !1797
+  %223 = icmp eq i32 %222, 0, !dbg !1798
+  br i1 %223, label %_ZN3povL7ripplesEPdPNS_14Tnormal_StructES0_.exit, label %.lr.ph.i, !dbg !1799
+
+.lr.ph.i:                                         ; preds = %221
+  %224 = getelementptr inbounds [3 x double]* %TPoint, i64 0, i64 2, !dbg !1800
+  %225 = getelementptr inbounds %"struct.pov::Tnormal_Struct"* %Tnormal, i64 0, i32 4, !dbg !1803
+  %226 = getelementptr inbounds %"struct.pov::Tnormal_Struct"* %Tnormal, i64 0, i32 5, !dbg !1804
+  %227 = getelementptr inbounds %"struct.pov::Tnormal_Struct"* %Tnormal, i64 0, i32 11, !dbg !1805
+  %228 = getelementptr inbounds double* %Layer_Normal, i64 2, !dbg !1806
+  br label %229, !dbg !1799
+
+; <label>:229                                     ; preds = %229, %.lr.ph.i
+  %indvars.iv = phi i64 [ %indvars.iv.next, %229 ], [ 0, %.lr.ph.i ]
+  %230 = load [3 x double]** @_ZN3pov12Wave_SourcesE, align 8, !dbg !1808, !tbaa !1494
+  %231 = getelementptr inbounds [3 x double]* %230, i64 %indvars.iv, i64 0, !dbg !1808
+  call void @llvm.dbg.value(metadata double* undef, i64 0, metadata !940, metadata !1398), !dbg !1809
+  call void @llvm.dbg.value(metadata double* %171, i64 0, metadata !941, metadata !1398), !dbg !1810
+  call void @llvm.dbg.value(metadata double* %231, i64 0, metadata !942, metadata !1398), !dbg !1811
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !935, metadata !1812), !dbg !1792
+  %232 = bitcast [3 x double]* %TPoint to <2 x double>*, !dbg !1813
+  %233 = load <2 x double>* %232, align 16, !dbg !1813, !tbaa !1563
+  %234 = bitcast double* %231 to <2 x double>*, !dbg !1814
+  %235 = load <2 x double>* %234, align 8, !dbg !1814, !tbaa !1563
+  %236 = fsub <2 x double> %233, %235, !dbg !1815
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !935, metadata !1816), !dbg !1792
+  %237 = load double* %224, align 16, !dbg !1800, !tbaa !1563
+  %238 = getelementptr inbounds [3 x double]* %230, i64 %indvars.iv, i64 2, !dbg !1817
+  %239 = load double* %238, align 8, !dbg !1817, !tbaa !1563
+  %240 = fsub double %237, %239, !dbg !1818
+  call void @llvm.dbg.value(metadata double %240, i64 0, metadata !935, metadata !1819), !dbg !1792
+  call void @llvm.dbg.value(metadata double* undef, i64 0, metadata !888, metadata !1398) #4, !dbg !1820
+  %241 = extractelement <2 x double> %236, i32 0, !dbg !1822
+  %242 = fmul double %241, %241, !dbg !1822
+  %243 = extractelement <2 x double> %236, i32 1, !dbg !1823
+  %244 = fmul double %243, %243, !dbg !1823
+  %245 = fadd double %242, %244, !dbg !1824
+  %246 = fmul double %240, %240, !dbg !1825
+  %247 = fadd double %245, %246, !dbg !1826
+  %248 = call double @sqrt(double %247) #6, !dbg !1827
+  call void @llvm.dbg.value(metadata double %248, i64 0, metadata !887, metadata !1398), !dbg !1828
+  call void @llvm.dbg.value(metadata double %248, i64 0, metadata !932, metadata !1398), !dbg !1829
+  call void @llvm.dbg.value(metadata double %248, i64 0, metadata !932, metadata !1398), !dbg !1829
+  call void @llvm.dbg.value(metadata double %248, i64 0, metadata !932, metadata !1398), !dbg !1829
+  call void @llvm.dbg.value(metadata double %248, i64 0, metadata !932, metadata !1398), !dbg !1829
+  %249 = fcmp oeq double %248, 0.000000e+00, !dbg !1830
+  call void @llvm.dbg.value(metadata double 1.000000e+00, i64 0, metadata !932, metadata !1398), !dbg !1829
+  call void @llvm.dbg.value(metadata double 1.000000e+00, i64 0, metadata !887, metadata !1398), !dbg !1828
+  call void @llvm.dbg.value(metadata double 1.000000e+00, i64 0, metadata !932, metadata !1398), !dbg !1829
+  call void @llvm.dbg.value(metadata double 1.000000e+00, i64 0, metadata !932, metadata !1398), !dbg !1829
+  call void @llvm.dbg.value(metadata double 1.000000e+00, i64 0, metadata !932, metadata !1398), !dbg !1829
+  call void @llvm.dbg.value(metadata double 1.000000e+00, i64 0, metadata !932, metadata !1398), !dbg !1829
+  %250 = select i1 %249, double 1.000000e+00, double %248, !dbg !1832
+  %251 = load float* %225, align 4, !dbg !1803, !tbaa !1833
+  %252 = fpext float %251 to double, !dbg !1834
+  %253 = fmul double %250, %252, !dbg !1835
+  %254 = load float* %226, align 4, !dbg !1804, !tbaa !1836
+  %255 = fpext float %254 to double, !dbg !1837
+  %256 = fadd double %253, %255, !dbg !1838
+  call void @llvm.dbg.value(metadata double %256, i64 0, metadata !934, metadata !1398), !dbg !1839
+  %257 = call double @_ZN3pov9cycloidalEd(double %256) #5, !dbg !1840
+  %258 = load float* %227, align 4, !dbg !1805, !tbaa !1404
+  %259 = fpext float %258 to double, !dbg !1841
+  %260 = fmul double %257, %259, !dbg !1842
+  call void @llvm.dbg.value(metadata double %260, i64 0, metadata !933, metadata !1398), !dbg !1843
+  %261 = load i32* @_ZN3pov15Number_Of_WavesE, align 4, !dbg !1844, !tbaa !1797
+  %262 = uitofp i32 %261 to double, !dbg !1844
+  %263 = fmul double %250, %262, !dbg !1845
+  %264 = fdiv double %260, %263, !dbg !1846
+  call void @llvm.dbg.value(metadata double* %Layer_Normal, i64 0, metadata !1056, metadata !1398), !dbg !1847
+  call void @llvm.dbg.value(metadata double %264, i64 0, metadata !1057, metadata !1398), !dbg !1848
+  call void @llvm.dbg.value(metadata double* undef, i64 0, metadata !1058, metadata !1398), !dbg !1849
+  %265 = insertelement <2 x double> undef, double %264, i32 0, !dbg !1850
+  %266 = insertelement <2 x double> %265, double %264, i32 1, !dbg !1850
+  %267 = fmul <2 x double> %236, %266, !dbg !1850
+  %268 = bitcast double* %Layer_Normal to <2 x double>*, !dbg !1851
+  %269 = load <2 x double>* %268, align 8, !dbg !1851, !tbaa !1563
+  %270 = fadd <2 x double> %267, %269, !dbg !1851
+  %271 = bitcast double* %Layer_Normal to <2 x double>*, !dbg !1851
+  store <2 x double> %270, <2 x double>* %271, align 8, !dbg !1851, !tbaa !1563
+  %272 = fmul double %240, %264, !dbg !1852
+  %273 = load double* %228, align 8, !dbg !1853, !tbaa !1563
+  %274 = fadd double %272, %273, !dbg !1853
+  store double %274, double* %228, align 8, !dbg !1853, !tbaa !1563
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !1799
+  %275 = zext i32 %261 to i64, !dbg !1798
+  %276 = icmp ult i64 %indvars.iv.next, %275, !dbg !1798
+  br i1 %276, label %229, label %_ZN3povL7ripplesEPdPNS_14Tnormal_StructES0_.exit, !dbg !1799
+
+; <label>:277                                     ; preds = %._crit_edge
+  call void @llvm.dbg.value(metadata double* %171, i64 0, metadata !945, metadata !1398), !dbg !1854
+  call void @llvm.dbg.value(metadata %"struct.pov::Tnormal_Struct"* %Tnormal, i64 0, metadata !946, metadata !1398), !dbg !1856
+  call void @llvm.dbg.value(metadata double* %Layer_Normal, i64 0, metadata !947, metadata !1398), !dbg !1857
+  call void @llvm.dbg.declare(metadata [3 x double]* undef, metadata !953, metadata !1398), !dbg !1858
+  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !948, metadata !1398), !dbg !1859
+  %278 = load i32* @_ZN3pov15Number_Of_WavesE, align 4, !dbg !1860, !tbaa !1797
+  %279 = icmp eq i32 %278, 0, !dbg !1863
+  br i1 %279, label %_ZN3povL7ripplesEPdPNS_14Tnormal_StructES0_.exit, label %.lr.ph.i1, !dbg !1864
+
+.lr.ph.i1:                                        ; preds = %277
+  %280 = getelementptr inbounds [3 x double]* %TPoint, i64 0, i64 2, !dbg !1865
+  %281 = getelementptr inbounds %"struct.pov::Tnormal_Struct"* %Tnormal, i64 0, i32 4, !dbg !1868
+  %282 = getelementptr inbounds %"struct.pov::Tnormal_Struct"* %Tnormal, i64 0, i32 5, !dbg !1869
+  %283 = getelementptr inbounds %"struct.pov::Tnormal_Struct"* %Tnormal, i64 0, i32 11, !dbg !1870
+  %284 = getelementptr inbounds double* %Layer_Normal, i64 2, !dbg !1871
+  %.pre.i = load double** @_ZN3pov9frequencyE, align 8, !dbg !1873, !tbaa !1494
+  br label %285, !dbg !1864
+
+; <label>:285                                     ; preds = %285, %.lr.ph.i1
+  %indvars.iv21 = phi i64 [ %indvars.iv.next22, %285 ], [ 0, %.lr.ph.i1 ]
+  %286 = phi double* [ %321, %285 ], [ %.pre.i, %.lr.ph.i1 ], !dbg !1874
+  %287 = load [3 x double]** @_ZN3pov12Wave_SourcesE, align 8, !dbg !1874, !tbaa !1494
+  %288 = getelementptr inbounds [3 x double]* %287, i64 %indvars.iv21, i64 0, !dbg !1874
+  call void @llvm.dbg.value(metadata double* undef, i64 0, metadata !940, metadata !1398), !dbg !1875
+  call void @llvm.dbg.value(metadata double* %171, i64 0, metadata !941, metadata !1398), !dbg !1876
+  call void @llvm.dbg.value(metadata double* %288, i64 0, metadata !942, metadata !1398), !dbg !1877
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !953, metadata !1812), !dbg !1858
+  %289 = bitcast [3 x double]* %TPoint to <2 x double>*, !dbg !1878
+  %290 = load <2 x double>* %289, align 16, !dbg !1878, !tbaa !1563
+  %291 = bitcast double* %288 to <2 x double>*, !dbg !1879
+  %292 = load <2 x double>* %291, align 8, !dbg !1879, !tbaa !1563
+  %293 = fsub <2 x double> %290, %292, !dbg !1880
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !953, metadata !1816), !dbg !1858
+  %294 = load double* %280, align 16, !dbg !1865, !tbaa !1563
+  %295 = getelementptr inbounds [3 x double]* %287, i64 %indvars.iv21, i64 2, !dbg !1881
+  %296 = load double* %295, align 8, !dbg !1881, !tbaa !1563
+  %297 = fsub double %294, %296, !dbg !1882
+  call void @llvm.dbg.value(metadata double %297, i64 0, metadata !953, metadata !1819), !dbg !1858
+  call void @llvm.dbg.value(metadata double* undef, i64 0, metadata !888, metadata !1398) #4, !dbg !1883
+  %298 = extractelement <2 x double> %293, i32 0, !dbg !1885
+  %299 = fmul double %298, %298, !dbg !1885
+  %300 = extractelement <2 x double> %293, i32 1, !dbg !1886
+  %301 = fmul double %300, %300, !dbg !1886
+  %302 = fadd double %299, %301, !dbg !1887
+  %303 = fmul double %297, %297, !dbg !1888
+  %304 = fadd double %302, %303, !dbg !1889
+  %305 = call double @sqrt(double %304) #6, !dbg !1890
+  call void @llvm.dbg.value(metadata double %305, i64 0, metadata !887, metadata !1398), !dbg !1891
+  call void @llvm.dbg.value(metadata double %305, i64 0, metadata !949, metadata !1398), !dbg !1892
+  call void @llvm.dbg.value(metadata double %305, i64 0, metadata !949, metadata !1398), !dbg !1892
+  call void @llvm.dbg.value(metadata double %305, i64 0, metadata !949, metadata !1398), !dbg !1892
+  call void @llvm.dbg.value(metadata double %305, i64 0, metadata !949, metadata !1398), !dbg !1892
+  %306 = fcmp oeq double %305, 0.000000e+00, !dbg !1893
+  call void @llvm.dbg.value(metadata double 1.000000e+00, i64 0, metadata !949, metadata !1398), !dbg !1892
+  call void @llvm.dbg.value(metadata double 1.000000e+00, i64 0, metadata !887, metadata !1398), !dbg !1891
+  call void @llvm.dbg.value(metadata double 1.000000e+00, i64 0, metadata !949, metadata !1398), !dbg !1892
+  call void @llvm.dbg.value(metadata double 1.000000e+00, i64 0, metadata !949, metadata !1398), !dbg !1892
+  call void @llvm.dbg.value(metadata double 1.000000e+00, i64 0, metadata !949, metadata !1398), !dbg !1892
+  call void @llvm.dbg.value(metadata double 1.000000e+00, i64 0, metadata !949, metadata !1398), !dbg !1892
+  %307 = select i1 %306, double 1.000000e+00, double %305, !dbg !1895
+  %308 = load float* %281, align 4, !dbg !1868, !tbaa !1833
+  %309 = fpext float %308 to double, !dbg !1896
+  %310 = fmul double %307, %309, !dbg !1897
+  %311 = getelementptr inbounds double* %286, i64 %indvars.iv21, !dbg !1873
+  %312 = load double* %311, align 8, !dbg !1873, !tbaa !1563
+  %313 = fmul double %312, %310, !dbg !1898
+  %314 = load float* %282, align 4, !dbg !1869, !tbaa !1836
+  %315 = fpext float %314 to double, !dbg !1899
+  %316 = fadd double %313, %315, !dbg !1900
+  call void @llvm.dbg.value(metadata double %316, i64 0, metadata !951, metadata !1398), !dbg !1901
+  %317 = call double @_ZN3pov9cycloidalEd(double %316) #5, !dbg !1902
+  call void @llvm.dbg.value(metadata double %317, i64 0, metadata !952, metadata !1398), !dbg !1903
+  %318 = load float* %283, align 4, !dbg !1870, !tbaa !1404
+  %319 = fpext float %318 to double, !dbg !1904
+  %320 = fmul double %317, %319, !dbg !1905
+  %321 = load double** @_ZN3pov9frequencyE, align 8, !dbg !1906, !tbaa !1494
+  %322 = getelementptr inbounds double* %321, i64 %indvars.iv21, !dbg !1906
+  %323 = load double* %322, align 8, !dbg !1906, !tbaa !1563
+  %324 = fdiv double %320, %323, !dbg !1907
+  call void @llvm.dbg.value(metadata double %324, i64 0, metadata !950, metadata !1398), !dbg !1908
+  %325 = load i32* @_ZN3pov15Number_Of_WavesE, align 4, !dbg !1909, !tbaa !1797
+  %326 = uitofp i32 %325 to double, !dbg !1909
+  %327 = fmul double %307, %326, !dbg !1910
+  %328 = fdiv double %324, %327, !dbg !1911
+  call void @llvm.dbg.value(metadata double* %Layer_Normal, i64 0, metadata !1056, metadata !1398), !dbg !1912
+  call void @llvm.dbg.value(metadata double %328, i64 0, metadata !1057, metadata !1398), !dbg !1913
+  call void @llvm.dbg.value(metadata double* undef, i64 0, metadata !1058, metadata !1398), !dbg !1914
+  %329 = insertelement <2 x double> undef, double %328, i32 0, !dbg !1915
+  %330 = insertelement <2 x double> %329, double %328, i32 1, !dbg !1915
+  %331 = fmul <2 x double> %293, %330, !dbg !1915
+  %332 = bitcast double* %Layer_Normal to <2 x double>*, !dbg !1916
+  %333 = load <2 x double>* %332, align 8, !dbg !1916, !tbaa !1563
+  %334 = fadd <2 x double> %331, %333, !dbg !1916
+  %335 = bitcast double* %Layer_Normal to <2 x double>*, !dbg !1916
+  store <2 x double> %334, <2 x double>* %335, align 8, !dbg !1916, !tbaa !1563
+  %336 = fmul double %297, %328, !dbg !1917
+  %337 = load double* %284, align 8, !dbg !1918, !tbaa !1563
+  %338 = fadd double %336, %337, !dbg !1918
+  store double %338, double* %284, align 8, !dbg !1918, !tbaa !1563
+  %indvars.iv.next22 = add nuw nsw i64 %indvars.iv21, 1, !dbg !1864
+  %339 = zext i32 %325 to i64, !dbg !1863
+  %340 = icmp ult i64 %indvars.iv.next22, %339, !dbg !1863
+  br i1 %340, label %285, label %_ZN3povL7ripplesEPdPNS_14Tnormal_StructES0_.exit, !dbg !1864
+
+; <label>:341                                     ; preds = %._crit_edge
+  %342 = bitcast [3 x double]* %bump_turb.i to i8*, !dbg !1919
+  call void @llvm.lifetime.start(i64 24, i8* %342), !dbg !1919
+  %343 = bitcast [3 x double]* %value2.i to i8*, !dbg !1919
+  call void @llvm.lifetime.start(i64 24, i8* %343), !dbg !1919
+  call void @llvm.dbg.value(metadata double* %171, i64 0, metadata !956, metadata !1398), !dbg !1919
+  call void @llvm.dbg.value(metadata %"struct.pov::Tnormal_Struct"* %Tnormal, i64 0, metadata !957, metadata !1398), !dbg !1920
+  call void @llvm.dbg.value(metadata double* %Layer_Normal, i64 0, metadata !958, metadata !1398), !dbg !1921
+  call void @llvm.dbg.value(metadata double 1.000000e+00, i64 0, metadata !960, metadata !1398), !dbg !1922
+  call void @llvm.dbg.declare(metadata [3 x double]* undef, metadata !961, metadata !1398), !dbg !1923
+  call void @llvm.dbg.value(metadata double* undef, i64 0, metadata !968, metadata !1398), !dbg !1924
+  call void @llvm.dbg.value(metadata double 0.000000e+00, i64 0, metadata !969, metadata !1398), !dbg !1926
+  call void @llvm.dbg.value(metadata double 0.000000e+00, i64 0, metadata !970, metadata !1398), !dbg !1927
+  call void @llvm.dbg.value(metadata double 0.000000e+00, i64 0, metadata !971, metadata !1398), !dbg !1928
+  call void @llvm.dbg.value(metadata double 0.000000e+00, i64 0, metadata !961, metadata !1812), !dbg !1923
+  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !959, metadata !1398), !dbg !1929
+  %344 = getelementptr inbounds [3 x double]* %value2.i, i64 0, i64 0, !dbg !1930
+  %345 = getelementptr inbounds [3 x double]* %TPoint, i64 0, i64 2, !dbg !1934
+  %346 = getelementptr inbounds [3 x double]* %value2.i, i64 0, i64 2, !dbg !1936
+  %347 = getelementptr inbounds [3 x double]* %bump_turb.i, i64 0, i64 0, !dbg !1937
+  %348 = getelementptr inbounds [3 x double]* %bump_turb.i, i64 0, i64 2, !dbg !1938
+  br label %349, !dbg !1939
+
+; <label>:349                                     ; preds = %349, %341
+  %scale.04.i = phi double [ 1.000000e+00, %341 ], [ %369, %349 ], !dbg !1940
+  %i.03.i = phi i32 [ 0, %341 ], [ %370, %349 ], !dbg !1940
+  %350 = phi double [ 0.000000e+00, %341 ], [ %368, %349 ], !dbg !1940
+  %351 = phi <2 x double> [ zeroinitializer, %341 ], [ %364, %349 ], !dbg !1940
+  call void @llvm.dbg.value(metadata double* %344, i64 0, metadata !976, metadata !1398), !dbg !1941
+  call void @llvm.dbg.value(metadata double* %171, i64 0, metadata !977, metadata !1398), !dbg !1942
+  %352 = bitcast [3 x double]* %TPoint to <2 x double>*, !dbg !1943
+  %353 = load <2 x double>* %352, align 16, !dbg !1943, !tbaa !1563
+  %354 = insertelement <2 x double> undef, double %scale.04.i, i32 0, !dbg !1944
+  %355 = insertelement <2 x double> %354, double %scale.04.i, i32 1, !dbg !1944
+  %356 = fmul <2 x double> %353, %355, !dbg !1944
+  %357 = bitcast [3 x double]* %value2.i to <2 x double>*, !dbg !1945
+  store <2 x double> %356, <2 x double>* %357, align 16, !dbg !1945, !tbaa !1563
+  %358 = load double* %345, align 16, !dbg !1934, !tbaa !1563
+  %359 = fmul double %scale.04.i, %358, !dbg !1946
+  store double %359, double* %346, align 16, !dbg !1947, !tbaa !1563
+  call void @_ZN3pov6DNoiseEPdS0_(double* %347, double* %344) #5, !dbg !1948
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !961, metadata !1812), !dbg !1923
+  %360 = bitcast [3 x double]* %bump_turb.i to <2 x double>*, !dbg !1949
+  %361 = load <2 x double>* %360, align 16, !dbg !1949, !tbaa !1563
+  %362 = fdiv <2 x double> %361, %355, !dbg !1950
+  %363 = call <2 x double> @llvm.fabs.v2f64(<2 x double> %362), !dbg !1951
+  %364 = fadd <2 x double> %351, %363, !dbg !1952
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !961, metadata !1816), !dbg !1923
+  %365 = load double* %348, align 16, !dbg !1938, !tbaa !1563
+  %366 = fdiv double %365, %scale.04.i, !dbg !1953
+  %367 = call double @fabs(double %366) #6, !dbg !1954
+  %368 = fadd double %350, %367, !dbg !1955
+  call void @llvm.dbg.value(metadata double %368, i64 0, metadata !961, metadata !1819), !dbg !1923
+  %369 = fmul double %scale.04.i, 2.000000e+00, !dbg !1956
+  %370 = add nuw nsw i32 %i.03.i, 1, !dbg !1957
+  call void @llvm.dbg.value(metadata i32 %370, i64 0, metadata !959, metadata !1398), !dbg !1929
+  %exitcond.i = icmp eq i32 %370, 10, !dbg !1939
+  br i1 %exitcond.i, label %_ZN3povL8wrinklesEPdPNS_14Tnormal_StructES0_.exit, label %349, !dbg !1939
+
+_ZN3povL8wrinklesEPdPNS_14Tnormal_StructES0_.exit: ; preds = %349
+  %371 = getelementptr inbounds %"struct.pov::Tnormal_Struct"* %Tnormal, i64 0, i32 11, !dbg !1958
+  %372 = load float* %371, align 4, !dbg !1958, !tbaa !1404
+  %373 = fpext float %372 to double, !dbg !1959
+  call void @llvm.dbg.value(metadata double* %Layer_Normal, i64 0, metadata !1056, metadata !1398), !dbg !1960
+  call void @llvm.dbg.value(metadata double %373, i64 0, metadata !1057, metadata !1398), !dbg !1962
+  call void @llvm.dbg.value(metadata double* undef, i64 0, metadata !1058, metadata !1398), !dbg !1963
+  %374 = insertelement <2 x double> undef, double %373, i32 0, !dbg !1964
+  %375 = insertelement <2 x double> %374, double %373, i32 1, !dbg !1964
+  %376 = fmul <2 x double> %364, %375, !dbg !1964
+  %377 = bitcast double* %Layer_Normal to <2 x double>*, !dbg !1965
+  %378 = load <2 x double>* %377, align 8, !dbg !1965, !tbaa !1563
+  %379 = fadd <2 x double> %378, %376, !dbg !1965
+  %380 = bitcast double* %Layer_Normal to <2 x double>*, !dbg !1965
+  store <2 x double> %379, <2 x double>* %380, align 8, !dbg !1965, !tbaa !1563
+  %381 = fmul double %368, %373, !dbg !1966
+  %382 = getelementptr inbounds double* %Layer_Normal, i64 2, !dbg !1967
+  %383 = load double* %382, align 8, !dbg !1968, !tbaa !1563
+  %384 = fadd double %381, %383, !dbg !1968
+  store double %384, double* %382, align 8, !dbg !1968, !tbaa !1563
+  call void @llvm.lifetime.end(i64 24, i8* %342), !dbg !1969
+  call void @llvm.lifetime.end(i64 24, i8* %343), !dbg !1969
+  br label %_ZN3povL7ripplesEPdPNS_14Tnormal_StructES0_.exit, !dbg !1970
+
+; <label>:385                                     ; preds = %._crit_edge
+  call void @llvm.dbg.value(metadata double* %171, i64 0, metadata !981, metadata !1398), !dbg !1971
+  call void @llvm.dbg.value(metadata %"struct.pov::Tnormal_Struct"* %Tnormal, i64 0, metadata !982, metadata !1398), !dbg !1973
+  call void @llvm.dbg.value(metadata double* %Layer_Normal, i64 0, metadata !983, metadata !1398), !dbg !1974
+  call void @llvm.dbg.declare(metadata [3 x double]* undef, metadata !984, metadata !1398), !dbg !1975
+  %386 = load double* %171, align 16, !dbg !1976, !tbaa !1563
+  %387 = fcmp ult double %386, 0.000000e+00, !dbg !1977
+  br i1 %387, label %390, label %388, !dbg !1977
+
+; <label>:388                                     ; preds = %385
+  %389 = call double @floor(double %386) #6, !dbg !1977
+  br label %395, !dbg !1977
+
+; <label>:390                                     ; preds = %385
+  %391 = fsub double 0.000000e+00, %386, !dbg !1977
+  %392 = call double @floor(double %391) #6, !dbg !1977
+  %393 = fsub double 0.000000e+00, %392, !dbg !1977
+  %394 = fadd double %393, -1.000000e+00, !dbg !1977
+  br label %395, !dbg !1977
+
+; <label>:395                                     ; preds = %390, %388
+  %396 = phi double [ %389, %388 ], [ %394, %390 ], !dbg !1977
+  %397 = fsub double %386, %396, !dbg !1978
+  %398 = fadd double %397, -5.000000e-01, !dbg !1979
+  call void @llvm.dbg.value(metadata double %398, i64 0, metadata !984, metadata !1812), !dbg !1975
+  %399 = getelementptr inbounds [3 x double]* %TPoint, i64 0, i64 1, !dbg !1980
+  %400 = load double* %399, align 8, !dbg !1980, !tbaa !1563
+  %401 = fcmp ult double %400, 0.000000e+00, !dbg !1981
+  br i1 %401, label %404, label %402, !dbg !1981
+
+; <label>:402                                     ; preds = %395
+  %403 = call double @floor(double %400) #6, !dbg !1981
+  br label %409, !dbg !1981
+
+; <label>:404                                     ; preds = %395
+  %405 = fsub double 0.000000e+00, %400, !dbg !1981
+  %406 = call double @floor(double %405) #6, !dbg !1981
+  %407 = fsub double 0.000000e+00, %406, !dbg !1981
+  %408 = fadd double %407, -1.000000e+00, !dbg !1981
+  br label %409, !dbg !1981
+
+; <label>:409                                     ; preds = %404, %402
+  %410 = phi double [ %403, %402 ], [ %408, %404 ], !dbg !1981
+  %411 = fsub double %400, %410, !dbg !1982
+  %412 = fadd double %411, -5.000000e-01, !dbg !1983
+  call void @llvm.dbg.value(metadata double %412, i64 0, metadata !984, metadata !1816), !dbg !1975
+  %413 = getelementptr inbounds [3 x double]* %TPoint, i64 0, i64 2, !dbg !1984
+  %414 = load double* %413, align 16, !dbg !1984, !tbaa !1563
+  %415 = fcmp ult double %414, 0.000000e+00, !dbg !1985
+  br i1 %415, label %418, label %416, !dbg !1985
+
+; <label>:416                                     ; preds = %409
+  %417 = call double @floor(double %414) #6, !dbg !1985
+  br label %_ZN3povL7quiltedEPdPNS_14Tnormal_StructES0_.exit, !dbg !1985
+
+; <label>:418                                     ; preds = %409
+  %419 = fsub double 0.000000e+00, %414, !dbg !1985
+  %420 = call double @floor(double %419) #6, !dbg !1985
+  %421 = fsub double 0.000000e+00, %420, !dbg !1985
+  %422 = fadd double %421, -1.000000e+00, !dbg !1985
+  br label %_ZN3povL7quiltedEPdPNS_14Tnormal_StructES0_.exit, !dbg !1985
+
+_ZN3povL7quiltedEPdPNS_14Tnormal_StructES0_.exit: ; preds = %416, %418
+  %423 = phi double [ %417, %416 ], [ %422, %418 ], !dbg !1985
+  %424 = fsub double %414, %423, !dbg !1986
+  %425 = fadd double %424, -5.000000e-01, !dbg !1987
+  call void @llvm.dbg.value(metadata double %425, i64 0, metadata !984, metadata !1819), !dbg !1975
+  %426 = fmul double %398, %398, !dbg !1988
+  %427 = fmul double %412, %412, !dbg !1989
+  %428 = fadd double %426, %427, !dbg !1990
+  %429 = fmul double %425, %425, !dbg !1991
+  %430 = fadd double %428, %429, !dbg !1992
+  %431 = call double @sqrt(double %430) #6, !dbg !1993
+  call void @llvm.dbg.value(metadata double %431, i64 0, metadata !985, metadata !1398), !dbg !1994
+  %432 = getelementptr inbounds %"struct.pov::Tnormal_Struct"* %Tnormal, i64 0, i32 10, !dbg !1995
+  %433 = bitcast %union.anon.25* %432 to %struct.anon.27*, !dbg !1996
+  %434 = bitcast %union.anon.25* %432 to float*, !dbg !1997
+  %435 = load float* %434, align 4, !dbg !1997, !tbaa !1998
+  %436 = fpext float %435 to double, !dbg !2000
+  %437 = getelementptr inbounds %struct.anon.27* %433, i64 0, i32 1, !dbg !2001
+  %438 = load float* %437, align 4, !dbg !2001, !tbaa !2002
+  %439 = fpext float %438 to double, !dbg !2003
+  %440 = call double @_ZN3pov11quilt_cubicEddd(double %431, double %436, double %439) #5, !dbg !2004
+  call void @llvm.dbg.value(metadata double %440, i64 0, metadata !985, metadata !1398), !dbg !1994
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !984, metadata !1812), !dbg !1975
+  %441 = insertelement <2 x double> undef, double %398, i32 0, !dbg !2005
+  %442 = insertelement <2 x double> %441, double %412, i32 1, !dbg !2005
+  %443 = insertelement <2 x double> undef, double %440, i32 0, !dbg !2005
+  %444 = insertelement <2 x double> %443, double %440, i32 1, !dbg !2005
+  %445 = fmul <2 x double> %442, %444, !dbg !2005
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !984, metadata !1816), !dbg !1975
+  %446 = fmul double %425, %440, !dbg !2006
+  call void @llvm.dbg.value(metadata double %446, i64 0, metadata !984, metadata !1819), !dbg !1975
+  %447 = getelementptr inbounds %"struct.pov::Tnormal_Struct"* %Tnormal, i64 0, i32 11, !dbg !2007
+  %448 = load float* %447, align 4, !dbg !2007, !tbaa !1404
+  %449 = fpext float %448 to double, !dbg !2008
+  call void @llvm.dbg.value(metadata double* %Layer_Normal, i64 0, metadata !1056, metadata !1398), !dbg !2009
+  call void @llvm.dbg.value(metadata double %449, i64 0, metadata !1057, metadata !1398), !dbg !2011
+  call void @llvm.dbg.value(metadata double* undef, i64 0, metadata !1058, metadata !1398), !dbg !2012
+  %450 = insertelement <2 x double> undef, double %449, i32 0, !dbg !2013
+  %451 = insertelement <2 x double> %450, double %449, i32 1, !dbg !2013
+  %452 = fmul <2 x double> %445, %451, !dbg !2013
+  %453 = bitcast double* %Layer_Normal to <2 x double>*, !dbg !2014
+  %454 = load <2 x double>* %453, align 8, !dbg !2014, !tbaa !1563
+  %455 = fadd <2 x double> %454, %452, !dbg !2014
+  %456 = bitcast double* %Layer_Normal to <2 x double>*, !dbg !2014
+  store <2 x double> %455, <2 x double>* %456, align 8, !dbg !2014, !tbaa !1563
+  %457 = fmul double %446, %449, !dbg !2015
+  %458 = getelementptr inbounds double* %Layer_Normal, i64 2, !dbg !2016
+  %459 = load double* %458, align 8, !dbg !2017, !tbaa !1563
+  %460 = fadd double %457, %459, !dbg !2017
+  store double %460, double* %458, align 8, !dbg !2017, !tbaa !1563
+  br label %_ZN3povL7ripplesEPdPNS_14Tnormal_StructES0_.exit, !dbg !2018
+
+; <label>:461                                     ; preds = %._crit_edge
+  %462 = bitcast [3 x double]* %bump_turb.i to i8*, !dbg !2019
+  call void @llvm.lifetime.start(i64 24, i8* %462), !dbg !2019
+  %463 = bitcast [3 x double]* %value2.i to i8*, !dbg !2019
+  call void @llvm.lifetime.start(i64 24, i8* %463), !dbg !2019
+  %464 = bitcast [3 x double]* %t1.i to i8*, !dbg !2019
+  call void @llvm.lifetime.start(i64 24, i8* %464), !dbg !2019
+  %465 = bitcast [3 x double]* %newnormal.i to i8*, !dbg !2019
+  call void @llvm.lifetime.start(i64 24, i8* %465), !dbg !2019
+  %466 = bitcast [3 x double]* %pert.i to i8*, !dbg !2019
+  call void @llvm.lifetime.start(i64 24, i8* %466), !dbg !2019
+  call void @llvm.dbg.value(metadata double* %171, i64 0, metadata !988, metadata !1398), !dbg !2019
+  call void @llvm.dbg.value(metadata %"struct.pov::Tnormal_Struct"* %Tnormal, i64 0, metadata !989, metadata !1398), !dbg !2020
+  call void @llvm.dbg.value(metadata double* %Layer_Normal, i64 0, metadata !990, metadata !1398), !dbg !2021
+  call void @llvm.dbg.declare(metadata [3 x double]* undef, metadata !997, metadata !1398), !dbg !2022
+  call void @llvm.dbg.declare(metadata [3 x double]* undef, metadata !999, metadata !1398), !dbg !2023
+  %467 = getelementptr inbounds %"struct.pov::Tnormal_Struct"* %Tnormal, i64 0, i32 10, i32 0, i32 0, i64 2, !dbg !2024
+  %468 = load double* %467, align 8, !dbg !2025, !tbaa !1563
+  call void @llvm.dbg.value(metadata double %468, i64 0, metadata !1005, metadata !1398), !dbg !2026
+  %469 = fcmp oeq double %468, 2.000000e+00, !dbg !2027
+  %470 = fcmp oeq double %468, 1.000000e+00, !dbg !2028
+  call void @llvm.dbg.value(metadata double* %Layer_Normal, i64 0, metadata !1010, metadata !1398) #4, !dbg !2029
+  call void @llvm.dbg.value(metadata double* %Layer_Normal, i64 0, metadata !1011, metadata !1398) #4, !dbg !2031
+  call void @llvm.dbg.value(metadata double* %Layer_Normal, i64 0, metadata !888, metadata !1398) #4, !dbg !2032
+  %471 = bitcast double* %Layer_Normal to <2 x double>*, !dbg !2034
+  %472 = load <2 x double>* %471, align 8, !dbg !2034, !tbaa !1563
+  %473 = extractelement <2 x double> %472, i32 0, !dbg !2035
+  %474 = fmul double %473, %473, !dbg !2035
+  %475 = extractelement <2 x double> %472, i32 1, !dbg !2036
+  %476 = fmul double %475, %475, !dbg !2036
+  %477 = fadd double %474, %476, !dbg !2037
+  %478 = getelementptr inbounds double* %Layer_Normal, i64 2, !dbg !2038
+  %479 = load double* %478, align 8, !dbg !2038, !tbaa !1563
+  %480 = fmul double %479, %479, !dbg !2039
+  %481 = fadd double %477, %480, !dbg !2040
+  %482 = call double @sqrt(double %481) #6, !dbg !2041
+  call void @llvm.dbg.value(metadata double %482, i64 0, metadata !887, metadata !1398) #4, !dbg !2042
+  call void @llvm.dbg.value(metadata double %482, i64 0, metadata !1012, metadata !1398) #4, !dbg !2043
+  call void @llvm.dbg.value(metadata double %482, i64 0, metadata !1012, metadata !1398) #4, !dbg !2043
+  call void @llvm.dbg.value(metadata double* %Layer_Normal, i64 0, metadata !1015, metadata !1398) #4, !dbg !2044
+  call void @llvm.dbg.value(metadata double* %Layer_Normal, i64 0, metadata !1016, metadata !1398) #4, !dbg !2046
+  call void @llvm.dbg.value(metadata double %482, i64 0, metadata !1017, metadata !1398) #4, !dbg !2047
+  %483 = fdiv double 1.000000e+00, %482, !dbg !2048
+  call void @llvm.dbg.value(metadata double %483, i64 0, metadata !1018, metadata !1398) #4, !dbg !2049
+  %484 = insertelement <2 x double> undef, double %483, i32 0, !dbg !2050
+  %485 = insertelement <2 x double> %484, double %483, i32 1, !dbg !2050
+  %486 = fmul <2 x double> %485, %472, !dbg !2050
+  %487 = bitcast double* %Layer_Normal to <2 x double>*, !dbg !2051
+  store <2 x double> %486, <2 x double>* %487, align 8, !dbg !2051, !tbaa !1563
+  %488 = fmul double %479, %483, !dbg !2052
+  store double %488, double* %478, align 8, !dbg !2053, !tbaa !1563
+  %489 = getelementptr inbounds %"struct.pov::Tnormal_Struct"* %Tnormal, i64 0, i32 10, i32 0, i32 0, i64 1, !dbg !2054
+  %490 = load double* %489, align 8, !dbg !2054, !tbaa !2056
+  %491 = fcmp une double %490, 0.000000e+00, !dbg !2058
+  %492 = getelementptr inbounds [3 x double]* %value2.i, i64 0, i64 0, !dbg !2059
+  call void @llvm.dbg.value(metadata double* %492, i64 0, metadata !900, metadata !1398), !dbg !2061
+  br i1 %491, label %493, label %504, !dbg !2063
+
+; <label>:493                                     ; preds = %461
+  call void @llvm.dbg.value(metadata double* %171, i64 0, metadata !901, metadata !1398), !dbg !2064
+  %494 = bitcast [3 x double]* %TPoint to <2 x i64>*, !dbg !2065
+  %495 = load <2 x i64>* %494, align 16, !dbg !2065, !tbaa !1563
+  %496 = bitcast [3 x double]* %value2.i to <2 x i64>*, !dbg !2066
+  store <2 x i64> %495, <2 x i64>* %496, align 16, !dbg !2066, !tbaa !1563
+  %497 = getelementptr inbounds [3 x double]* %TPoint, i64 0, i64 2, !dbg !2067
+  %498 = bitcast double* %497 to i64*, !dbg !2067
+  %499 = load i64* %498, align 16, !dbg !2067, !tbaa !1563
+  %500 = getelementptr inbounds [3 x double]* %value2.i, i64 0, i64 2, !dbg !2068
+  %501 = bitcast double* %500 to i64*, !dbg !2069
+  store i64 %499, i64* %501, align 16, !dbg !2069, !tbaa !1563
+  %502 = bitcast <2 x i64> %495 to <2 x double>, !dbg !2070
+  %503 = bitcast i64 %499 to double, !dbg !2070
+  br label %507, !dbg !2071
+
+; <label>:504                                     ; preds = %461
+  call void @llvm.dbg.value(metadata double* %Layer_Normal, i64 0, metadata !901, metadata !1398), !dbg !2072
+  %505 = bitcast [3 x double]* %value2.i to <2 x double>*, !dbg !2075
+  store <2 x double> %486, <2 x double>* %505, align 16, !dbg !2075, !tbaa !1563
+  %506 = getelementptr inbounds [3 x double]* %value2.i, i64 0, i64 2, !dbg !2076
+  store double %488, double* %506, align 16, !dbg !2077, !tbaa !1563
+  br label %507, !dbg !2070
+
+; <label>:507                                     ; preds = %504, %493
+  %508 = phi double [ %488, %504 ], [ %503, %493 ], !dbg !2070
+  %509 = phi <2 x double> [ %486, %504 ], [ %502, %493 ], !dbg !2070
+  %510 = getelementptr inbounds %"struct.pov::Tnormal_Struct"* %Tnormal, i64 0, i32 10, i32 0, i32 0, i64 0, !dbg !2078
+  %511 = load double* %510, align 8, !dbg !2078, !tbaa !2080
+  %512 = fcmp olt double %511, 1.000000e-06, !dbg !2081
+  br i1 %512, label %515, label %513, !dbg !2082
+
+; <label>:513                                     ; preds = %507
+  %514 = fdiv double 1.000000e+00, %511, !dbg !2083
+  call void @llvm.dbg.value(metadata double %514, i64 0, metadata !1002, metadata !1398), !dbg !2085
+  br label %515, !dbg !2070
+
+; <label>:515                                     ; preds = %513, %507
+  %scale.0.i = phi double [ %514, %513 ], [ 1.000000e+06, %507 ], !dbg !2070
+  call void @llvm.dbg.value(metadata double* %492, i64 0, metadata !1021, metadata !1398), !dbg !2086
+  call void @llvm.dbg.value(metadata double %scale.0.i, i64 0, metadata !1022, metadata !1398), !dbg !2088
+  %516 = getelementptr inbounds [3 x double]* %value2.i, i64 0, i64 1, !dbg !2089
+  %517 = insertelement <2 x double> undef, double %scale.0.i, i32 0, !dbg !2090
+  %518 = insertelement <2 x double> %517, double %scale.0.i, i32 1, !dbg !2090
+  %519 = fmul <2 x double> %509, %518, !dbg !2090
+  %520 = bitcast [3 x double]* %value2.i to <2 x double>*, !dbg !2090
+  store <2 x double> %519, <2 x double>* %520, align 16, !dbg !2090, !tbaa !1563
+  %521 = getelementptr inbounds [3 x double]* %value2.i, i64 0, i64 2, !dbg !2091
+  %522 = fmul double %508, %scale.0.i, !dbg !2092
+  store double %522, double* %521, align 16, !dbg !2092, !tbaa !1563
+  %523 = getelementptr inbounds [3 x double]* %t1.i, i64 0, i64 0, !dbg !2093
+  %524 = call i32 @_ZN3pov10PickInCubeEPdS0_(double* %492, double* %523) #5, !dbg !2094
+  call void @llvm.dbg.value(metadata i32 %524, i64 0, metadata !992, metadata !1398), !dbg !2095
+  %525 = load i32* @_ZZN3povL6facetsEPdPNS_14Tnormal_StructES0_E8lastseed, align 4, !dbg !2096, !tbaa !1797
+  %526 = icmp eq i32 %524, %525, !dbg !2098
+  br i1 %526, label %575, label %527, !dbg !2099
+
+; <label>:527                                     ; preds = %515
+  store i32 0, i32* @_ZZN3povL6facetsEPdPNS_14Tnormal_StructES0_E3cvc, align 4, !dbg !2100, !tbaa !1797
+  call void @llvm.dbg.value(metadata double -2.000000e+00, i64 0, metadata !999, metadata !1812), !dbg !2023
+  %528 = getelementptr inbounds [3 x double]* %bump_turb.i, i64 0, i64 0, !dbg !2102
+  %529 = getelementptr inbounds [3 x double]* %bump_turb.i, i64 0, i64 2, !dbg !2114
+  %530 = getelementptr inbounds [3 x double]* %t1.i, i64 0, i64 2, !dbg !2116
+  %531 = bitcast double* %530 to i64*, !dbg !2116
+  br label %.preheader3.i, !dbg !2117
+
+.preheader3.i:                                    ; preds = %571, %527
+  %storemerge18.i = phi double [ -2.000000e+00, %527 ], [ %572, %571 ], !dbg !2070
+  call void @llvm.dbg.value(metadata double -2.000000e+00, i64 0, metadata !999, metadata !1816), !dbg !2023
+  %532 = call double @fabs(double %storemerge18.i) #6, !dbg !2118
+  %533 = fcmp ogt double %532, 1.500000e+00, !dbg !2119
+  %534 = zext i1 %533 to i32, !dbg !2120
+  br label %.preheader.i, !dbg !2121
+
+.preheader.i:                                     ; preds = %568, %.preheader3.i
+  %storemerge7.i = phi double [ -2.000000e+00, %.preheader3.i ], [ %569, %568 ], !dbg !2070
+  call void @llvm.dbg.value(metadata double -2.000000e+00, i64 0, metadata !999, metadata !1819), !dbg !2023
+  %535 = call double @fabs(double %storemerge7.i) #6, !dbg !2122
+  %536 = fcmp ogt double %535, 1.500000e+00, !dbg !2123
+  %537 = zext i1 %536 to i32, !dbg !2124
+  %538 = add nuw nsw i32 %537, %534, !dbg !2125
+  %539 = insertelement <2 x double> undef, double %storemerge18.i, i32 0, !dbg !2126
+  %540 = insertelement <2 x double> %539, double %storemerge7.i, i32 1, !dbg !2126
+  br label %541, !dbg !2127
+
+; <label>:541                                     ; preds = %565, %.preheader.i
+  %storemerge26.i = phi double [ -2.000000e+00, %.preheader.i ], [ %566, %565 ], !dbg !2070
+  %542 = call double @fabs(double %storemerge26.i) #6, !dbg !2128
+  %543 = fcmp ogt double %542, 1.500000e+00, !dbg !2129
+  %544 = zext i1 %543 to i32, !dbg !2130
+  %545 = add nuw nsw i32 %538, %544, !dbg !2131
+  %546 = icmp ult i32 %545, 2, !dbg !2132
+  br i1 %546, label %547, label %565, !dbg !2133
+
+; <label>:547                                     ; preds = %541
+  call void @llvm.dbg.value(metadata double* %528, i64 0, metadata !1025, metadata !1398), !dbg !2134
+  call void @llvm.dbg.value(metadata double* %492, i64 0, metadata !1026, metadata !1398), !dbg !2135
+  call void @llvm.dbg.value(metadata double* undef, i64 0, metadata !1027, metadata !1398), !dbg !2136
+  %548 = bitcast [3 x double]* %value2.i to <2 x double>*, !dbg !2137
+  %549 = load <2 x double>* %548, align 16, !dbg !2137, !tbaa !1563
+  %550 = fadd <2 x double> %540, %549, !dbg !2126
+  %551 = bitcast [3 x double]* %bump_turb.i to <2 x double>*, !dbg !2138
+  store <2 x double> %550, <2 x double>* %551, align 16, !dbg !2138, !tbaa !1563
+  %552 = load double* %521, align 16, !dbg !2139, !tbaa !1563
+  %553 = fadd double %storemerge26.i, %552, !dbg !2140
+  store double %553, double* %529, align 16, !dbg !2141, !tbaa !1563
+  %554 = call i32 @_ZN3pov10PickInCubeEPdS0_(double* %528, double* %523) #5, !dbg !2142
+  %555 = load i32* @_ZZN3povL6facetsEPdPNS_14Tnormal_StructES0_E3cvc, align 4, !dbg !2143, !tbaa !1797
+  %556 = sext i32 %555 to i64, !dbg !2144
+  %557 = getelementptr inbounds [81 x [3 x double]]* @_ZZN3povL6facetsEPdPNS_14Tnormal_StructES0_E2cv, i64 0, i64 %556, !dbg !2144
+  %558 = bitcast [3 x double]* %t1.i to <2 x i64>*, !dbg !2145
+  %559 = load <2 x i64>* %558, align 16, !dbg !2145, !tbaa !1563
+  %560 = bitcast [3 x double]* %557 to <2 x i64>*, !dbg !2146
+  store <2 x i64> %559, <2 x i64>* %560, align 8, !dbg !2146, !tbaa !1563
+  %561 = load i64* %531, align 16, !dbg !2116, !tbaa !1563
+  %562 = getelementptr inbounds [81 x [3 x double]]* @_ZZN3povL6facetsEPdPNS_14Tnormal_StructES0_E2cv, i64 0, i64 %556, i64 2, !dbg !2147
+  %563 = bitcast double* %562 to i64*, !dbg !2148
+  store i64 %561, i64* %563, align 8, !dbg !2148, !tbaa !1563
+  %564 = add nsw i32 %555, 1, !dbg !2149
+  store i32 %564, i32* @_ZZN3povL6facetsEPdPNS_14Tnormal_StructES0_E3cvc, align 4, !dbg !2149, !tbaa !1797
+  br label %565, !dbg !2150
+
+; <label>:565                                     ; preds = %547, %541
+  %566 = fadd double %storemerge26.i, 1.000000e+00, !dbg !2151
+  call void @llvm.dbg.value(metadata double %566, i64 0, metadata !999, metadata !1819), !dbg !2023
+  %567 = fcmp olt double %566, 2.500000e+00, !dbg !2152
+  br i1 %567, label %541, label %568, !dbg !2127
+
+; <label>:568                                     ; preds = %565
+  %569 = fadd double %storemerge7.i, 1.000000e+00, !dbg !2153
+  call void @llvm.dbg.value(metadata double %569, i64 0, metadata !999, metadata !1816), !dbg !2023
+  %570 = fcmp olt double %569, 2.500000e+00, !dbg !2154
+  br i1 %570, label %.preheader.i, label %571, !dbg !2121
+
+; <label>:571                                     ; preds = %568
+  %572 = fadd double %storemerge18.i, 1.000000e+00, !dbg !2155
+  call void @llvm.dbg.value(metadata double %572, i64 0, metadata !999, metadata !1812), !dbg !2023
+  %573 = fcmp olt double %572, 2.500000e+00, !dbg !2156
+  br i1 %573, label %.preheader3.i, label %574, !dbg !2117
+
+; <label>:574                                     ; preds = %571
+  store i32 %524, i32* @_ZZN3povL6facetsEPdPNS_14Tnormal_StructES0_E8lastseed, align 4, !dbg !2157, !tbaa !1797
+  br label %575, !dbg !2158
+
+; <label>:575                                     ; preds = %574, %515
+  call void @llvm.dbg.value(metadata double* undef, i64 0, metadata !940, metadata !1398), !dbg !2159
+  call void @llvm.dbg.value(metadata !2161, i64 0, metadata !941, metadata !1398), !dbg !2162
+  call void @llvm.dbg.value(metadata double* %492, i64 0, metadata !942, metadata !1398), !dbg !2163
+  %576 = load double* %492, align 16, !dbg !2164, !tbaa !1563
+  %577 = load <2 x double>* bitcast ([81 x [3 x double]]* @_ZZN3povL6facetsEPdPNS_14Tnormal_StructES0_E2cv to <2 x double>*), align 16, !dbg !2165, !tbaa !1563
+  %578 = extractelement <2 x double> %577, i32 0, !dbg !2166
+  %579 = fsub double %578, %576, !dbg !2166
+  call void @llvm.dbg.value(metadata double %579, i64 0, metadata !997, metadata !1812), !dbg !2022
+  %580 = load double* %516, align 8, !dbg !2167, !tbaa !1563
+  %581 = extractelement <2 x double> %577, i32 1, !dbg !2168
+  %582 = fsub double %581, %580, !dbg !2168
+  call void @llvm.dbg.value(metadata double %582, i64 0, metadata !997, metadata !1816), !dbg !2022
+  %583 = load double* getelementptr inbounds ([81 x [3 x double]]* @_ZZN3povL6facetsEPdPNS_14Tnormal_StructES0_E2cv, i64 0, i64 0, i64 2), align 16, !dbg !2169, !tbaa !1563
+  %584 = load double* %521, align 16, !dbg !2170, !tbaa !1563
+  %585 = fsub double %583, %584, !dbg !2171
+  call void @llvm.dbg.value(metadata double %585, i64 0, metadata !997, metadata !1819), !dbg !2022
+  %586 = bitcast <2 x double> %577 to <2 x i64>, !dbg !2070
+  %587 = bitcast double %583 to i64, !dbg !2070
+  br i1 %469, label %588, label %594, !dbg !2172
+
+; <label>:588                                     ; preds = %575
+  call void @llvm.dbg.value(metadata double* undef, i64 0, metadata !1032, metadata !1398), !dbg !2173
+  %589 = fmul double %579, %579, !dbg !2177
+  %590 = fmul double %582, %582, !dbg !2178
+  %591 = fadd double %589, %590, !dbg !2179
+  %592 = fmul double %585, %585, !dbg !2180
+  %593 = fadd double %591, %592, !dbg !2181
+  call void @llvm.dbg.value(metadata double %593, i64 0, metadata !994, metadata !1398), !dbg !2182
+  br label %607, !dbg !2183
+
+; <label>:594                                     ; preds = %575
+  br i1 %470, label %595, label %598, !dbg !2184
+
+; <label>:595                                     ; preds = %594
+  %596 = fadd double %579, %582, !dbg !2186
+  %597 = fadd double %596, %585, !dbg !2189
+  call void @llvm.dbg.value(metadata double %597, i64 0, metadata !994, metadata !1398), !dbg !2182
+  br label %607, !dbg !2190
+
+; <label>:598                                     ; preds = %594
+  %599 = call double @fabs(double %579) #6, !dbg !2191
+  %600 = call double @llvm.pow.f64(double %599, double %468), !dbg !2193
+  %601 = call double @fabs(double %582) #6, !dbg !2194
+  %602 = call double @llvm.pow.f64(double %601, double %468), !dbg !2195
+  %603 = fadd double %600, %602, !dbg !2196
+  %604 = call double @fabs(double %585) #6, !dbg !2197
+  %605 = call double @llvm.pow.f64(double %604, double %468), !dbg !2198
+  %606 = fadd double %603, %605, !dbg !2199
+  call void @llvm.dbg.value(metadata double %606, i64 0, metadata !994, metadata !1398), !dbg !2182
+  br label %607, !dbg !2070
+
+; <label>:607                                     ; preds = %598, %595, %588
+  %minsum.0.i = phi double [ %593, %588 ], [ %597, %595 ], [ %606, %598 ], !dbg !2070
+  %608 = getelementptr inbounds [3 x double]* %newnormal.i, i64 0, i64 0, !dbg !2200
+  call void @llvm.dbg.value(metadata double* %608, i64 0, metadata !900, metadata !1398), !dbg !2201
+  call void @llvm.dbg.value(metadata !2161, i64 0, metadata !901, metadata !1398), !dbg !2203
+  %609 = bitcast [3 x double]* %newnormal.i to <2 x double>*, !dbg !2204
+  store <2 x double> %577, <2 x double>* %609, align 16, !dbg !2204, !tbaa !1563
+  %610 = getelementptr inbounds [3 x double]* %newnormal.i, i64 0, i64 2, !dbg !2205
+  store double %583, double* %610, align 16, !dbg !2206, !tbaa !1563
+  call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !991, metadata !1398), !dbg !2207
+  %611 = load i32* @_ZZN3povL6facetsEPdPNS_14Tnormal_StructES0_E3cvc, align 4, !dbg !2208, !tbaa !1797
+  %612 = icmp sgt i32 %611, 1, !dbg !2211
+  br i1 %612, label %.lr.ph.i3, label %._crit_edge.i, !dbg !2212
+
+.lr.ph.i3:                                        ; preds = %607
+  %613 = sext i32 %611 to i64
+  %614 = add nsw i64 %613, -1, !dbg !2212
+  br label %615, !dbg !2212
+
+; <label>:615                                     ; preds = %654, %.lr.ph.i3
+  %616 = phi i64 [ %587, %.lr.ph.i3 ], [ %655, %654 ], !dbg !2070
+  %indvars.iv.i = phi i64 [ 1, %.lr.ph.i3 ], [ %indvars.iv.next.i, %654 ], !dbg !2070
+  %minsum.14.i = phi double [ %minsum.0.i, %.lr.ph.i3 ], [ %minsum.2.i, %654 ], !dbg !2070
+  %617 = phi <2 x i64> [ %586, %.lr.ph.i3 ], [ %656, %654 ], !dbg !2070
+  %618 = getelementptr inbounds [81 x [3 x double]]* @_ZZN3povL6facetsEPdPNS_14Tnormal_StructES0_E2cv, i64 0, i64 %indvars.iv.i, i64 0, !dbg !2213
+  call void @llvm.dbg.value(metadata double* undef, i64 0, metadata !940, metadata !1398), !dbg !2215
+  call void @llvm.dbg.value(metadata double* %618, i64 0, metadata !941, metadata !1398), !dbg !2217
+  call void @llvm.dbg.value(metadata double* %492, i64 0, metadata !942, metadata !1398), !dbg !2218
+  %619 = bitcast double* %618 to <2 x double>*, !dbg !2219
+  %620 = load <2 x double>* %619, align 8, !dbg !2219, !tbaa !1563
+  %621 = extractelement <2 x double> %620, i32 0, !dbg !2220
+  %622 = fsub double %621, %576, !dbg !2220
+  call void @llvm.dbg.value(metadata double %622, i64 0, metadata !997, metadata !1812), !dbg !2022
+  %623 = extractelement <2 x double> %620, i32 1, !dbg !2221
+  %624 = fsub double %623, %580, !dbg !2221
+  call void @llvm.dbg.value(metadata double %624, i64 0, metadata !997, metadata !1816), !dbg !2022
+  %625 = getelementptr inbounds [81 x [3 x double]]* @_ZZN3povL6facetsEPdPNS_14Tnormal_StructES0_E2cv, i64 0, i64 %indvars.iv.i, i64 2, !dbg !2222
+  %626 = load double* %625, align 8, !dbg !2222, !tbaa !1563
+  %627 = fsub double %626, %584, !dbg !2223
+  call void @llvm.dbg.value(metadata double %627, i64 0, metadata !997, metadata !1819), !dbg !2022
+  %628 = bitcast <2 x double> %620 to <2 x i64>, !dbg !2070
+  %629 = bitcast double %626 to i64, !dbg !2070
+  br i1 %469, label %630, label %636, !dbg !2224
+
+; <label>:630                                     ; preds = %615
+  call void @llvm.dbg.value(metadata double* undef, i64 0, metadata !1032, metadata !1398), !dbg !2225
+  %631 = fmul double %622, %622, !dbg !2229
+  %632 = fmul double %624, %624, !dbg !2230
+  %633 = fadd double %631, %632, !dbg !2231
+  %634 = fmul double %627, %627, !dbg !2232
+  %635 = fadd double %633, %634, !dbg !2233
+  call void @llvm.dbg.value(metadata double %635, i64 0, metadata !993, metadata !1398), !dbg !2234
+  call void @llvm.dbg.value(metadata double %635, i64 0, metadata !1037, metadata !1398), !dbg !2235
+  call void @llvm.dbg.value(metadata double %635, i64 0, metadata !993, metadata !1398), !dbg !2234
+  call void @llvm.dbg.value(metadata double %635, i64 0, metadata !993, metadata !1398), !dbg !2234
+  call void @llvm.dbg.value(metadata double %635, i64 0, metadata !993, metadata !1398), !dbg !2234
+  br label %649, !dbg !2239
+
+; <label>:636                                     ; preds = %615
+  br i1 %470, label %637, label %640, !dbg !2240
+
+; <label>:637                                     ; preds = %636
+  %638 = fadd double %622, %624, !dbg !2242
+  %639 = fadd double %638, %627, !dbg !2245
+  call void @llvm.dbg.value(metadata double %639, i64 0, metadata !993, metadata !1398), !dbg !2234
+  call void @llvm.dbg.value(metadata double %639, i64 0, metadata !1037, metadata !1398), !dbg !2235
+  call void @llvm.dbg.value(metadata double %639, i64 0, metadata !993, metadata !1398), !dbg !2234
+  call void @llvm.dbg.value(metadata double %639, i64 0, metadata !993, metadata !1398), !dbg !2234
+  call void @llvm.dbg.value(metadata double %639, i64 0, metadata !993, metadata !1398), !dbg !2234
+  br label %649, !dbg !2246
+
+; <label>:640                                     ; preds = %636
+  %641 = call double @fabs(double %622) #6, !dbg !2247
+  %642 = call double @llvm.pow.f64(double %641, double %468), !dbg !2249
+  %643 = call double @fabs(double %624) #6, !dbg !2250
+  %644 = call double @llvm.pow.f64(double %643, double %468), !dbg !2251
+  %645 = fadd double %642, %644, !dbg !2252
+  %646 = call double @fabs(double %627) #6, !dbg !2253
+  %647 = call double @llvm.pow.f64(double %646, double %468), !dbg !2254
+  %648 = fadd double %645, %647, !dbg !2255
+  call void @llvm.dbg.value(metadata double %648, i64 0, metadata !993, metadata !1398), !dbg !2234
+  call void @llvm.dbg.value(metadata double %648, i64 0, metadata !1037, metadata !1398), !dbg !2235
+  call void @llvm.dbg.value(metadata double %648, i64 0, metadata !993, metadata !1398), !dbg !2234
+  call void @llvm.dbg.value(metadata double %648, i64 0, metadata !993, metadata !1398), !dbg !2234
+  call void @llvm.dbg.value(metadata double %648, i64 0, metadata !993, metadata !1398), !dbg !2234
+  br label %649, !dbg !2070
+
+; <label>:649                                     ; preds = %640, %637, %630
+  %650 = phi double [ %639, %637 ], [ %648, %640 ], [ %635, %630 ], !dbg !2070
+  %651 = fcmp olt double %650, %minsum.14.i, !dbg !2256
+  br i1 %651, label %652, label %654, !dbg !2258
+
+; <label>:652                                     ; preds = %649
+  call void @llvm.dbg.value(metadata double %650, i64 0, metadata !994, metadata !1398), !dbg !2182
+  call void @llvm.dbg.value(metadata double* %608, i64 0, metadata !900, metadata !1398), !dbg !2259
+  call void @llvm.dbg.value(metadata double* %618, i64 0, metadata !901, metadata !1398), !dbg !2262
+  %653 = bitcast [3 x double]* %newnormal.i to <2 x double>*, !dbg !2263
+  store <2 x double> %620, <2 x double>* %653, align 16, !dbg !2263, !tbaa !1563
+  store double %626, double* %610, align 16, !dbg !2264, !tbaa !1563
+  br label %654, !dbg !2265
+
+; <label>:654                                     ; preds = %652, %649
+  %655 = phi i64 [ %629, %652 ], [ %616, %649 ], !dbg !2070
+  %minsum.2.i = phi double [ %650, %652 ], [ %minsum.14.i, %649 ], !dbg !2070
+  %656 = phi <2 x i64> [ %628, %652 ], [ %617, %649 ], !dbg !2070
+  %indvars.iv.next.i = add nuw nsw i64 %indvars.iv.i, 1, !dbg !2212
+  %exitcond = icmp eq i64 %indvars.iv.i, %614, !dbg !2212
+  br i1 %exitcond, label %._crit_edge.i, label %615, !dbg !2212
+
+._crit_edge.i:                                    ; preds = %654, %607
+  %657 = phi i64 [ %587, %607 ], [ %655, %654 ], !dbg !2070
+  %658 = phi <2 x i64> [ %586, %607 ], [ %656, %654 ], !dbg !2070
+  %659 = load double* %489, align 8, !dbg !2266, !tbaa !2056
+  %660 = fcmp une double %659, 0.000000e+00, !dbg !2267
+  br i1 %660, label %661, label %695, !dbg !2268
+
+; <label>:661                                     ; preds = %._crit_edge.i
+  %662 = getelementptr inbounds [3 x double]* %pert.i, i64 0, i64 0, !dbg !2269
+  call void @_ZN3pov6DNoiseEPdS0_(double* %662, double* %608) #5, !dbg !2270
+  call void @llvm.dbg.value(metadata double* %662, i64 0, metadata !1038, metadata !1398), !dbg !2271
+  call void @llvm.dbg.value(metadata double* %Layer_Normal, i64 0, metadata !1039, metadata !1398), !dbg !2272
+  %663 = bitcast [3 x double]* %pert.i to <2 x double>*, !dbg !2273
+  %664 = load <2 x double>* %663, align 16, !dbg !2273, !tbaa !1563
+  %665 = bitcast double* %Layer_Normal to <2 x double>*, !dbg !2274
+  %666 = load <2 x double>* %665, align 8, !dbg !2274, !tbaa !1563
+  %667 = extractelement <2 x double> %666, i32 0, !dbg !2275
+  %668 = extractelement <2 x double> %664, i32 0, !dbg !2275
+  %669 = fmul double %668, %667, !dbg !2275
+  %670 = extractelement <2 x double> %666, i32 1, !dbg !2276
+  %671 = extractelement <2 x double> %664, i32 1, !dbg !2276
+  %672 = fmul double %671, %670, !dbg !2276
+  %673 = fadd double %669, %672, !dbg !2277
+  %674 = getelementptr inbounds [3 x double]* %pert.i, i64 0, i64 2, !dbg !2278
+  %675 = load double* %674, align 16, !dbg !2278, !tbaa !1563
+  %676 = load double* %478, align 8, !dbg !2279, !tbaa !1563
+  %677 = fmul double %675, %676, !dbg !2280
+  %678 = fadd double %673, %677, !dbg !2281
+  call void @llvm.dbg.value(metadata double %678, i64 0, metadata !1037, metadata !1398), !dbg !2235
+  call void @llvm.dbg.value(metadata double %678, i64 0, metadata !993, metadata !1398), !dbg !2234
+  call void @llvm.dbg.value(metadata double %678, i64 0, metadata !993, metadata !1398), !dbg !2234
+  call void @llvm.dbg.value(metadata double %678, i64 0, metadata !993, metadata !1398), !dbg !2234
+  call void @llvm.dbg.value(metadata double* %608, i64 0, metadata !976, metadata !1398), !dbg !2282
+  call void @llvm.dbg.value(metadata double* %Layer_Normal, i64 0, metadata !977, metadata !1398), !dbg !2284
+  call void @llvm.dbg.value(metadata double %678, i64 0, metadata !978, metadata !1398), !dbg !2285
+  %679 = insertelement <2 x double> undef, double %678, i32 0, !dbg !2286
+  %680 = insertelement <2 x double> %679, double %678, i32 1, !dbg !2286
+  %681 = fmul <2 x double> %680, %666, !dbg !2286
+  %682 = bitcast [3 x double]* %newnormal.i to <2 x double>*, !dbg !2287
+  store <2 x double> %681, <2 x double>* %682, align 16, !dbg !2287, !tbaa !1563
+  %683 = fmul double %676, %678, !dbg !2288
+  store double %683, double* %610, align 16, !dbg !2289, !tbaa !1563
+  call void @llvm.dbg.value(metadata double* %662, i64 0, metadata !1042, metadata !1398), !dbg !2290
+  call void @llvm.dbg.value(metadata double* %608, i64 0, metadata !1043, metadata !1398), !dbg !2292
+  %684 = fsub <2 x double> %664, %681, !dbg !2293
+  %685 = bitcast [3 x double]* %pert.i to <2 x double>*, !dbg !2293
+  store <2 x double> %684, <2 x double>* %685, align 16, !dbg !2293, !tbaa !1563
+  %686 = fsub double %675, %683, !dbg !2294
+  store double %686, double* %674, align 16, !dbg !2294, !tbaa !1563
+  %687 = load double* %489, align 8, !dbg !2295, !tbaa !2056
+  call void @llvm.dbg.value(metadata double* %Layer_Normal, i64 0, metadata !1056, metadata !1398), !dbg !2296
+  call void @llvm.dbg.value(metadata double %687, i64 0, metadata !1057, metadata !1398), !dbg !2298
+  call void @llvm.dbg.value(metadata double* %662, i64 0, metadata !1058, metadata !1398), !dbg !2299
+  %688 = insertelement <2 x double> undef, double %687, i32 0, !dbg !2300
+  %689 = insertelement <2 x double> %688, double %687, i32 1, !dbg !2300
+  %690 = fmul <2 x double> %684, %689, !dbg !2300
+  %691 = fadd <2 x double> %666, %690, !dbg !2301
+  %692 = bitcast double* %Layer_Normal to <2 x double>*, !dbg !2301
+  store <2 x double> %691, <2 x double>* %692, align 8, !dbg !2301, !tbaa !1563
+  %693 = fmul double %687, %686, !dbg !2302
+  %694 = fadd double %676, %693, !dbg !2303
+  store double %694, double* %478, align 8, !dbg !2303, !tbaa !1563
+  br label %700, !dbg !2304
+
+; <label>:695                                     ; preds = %._crit_edge.i
+  call void @llvm.dbg.value(metadata double* %Layer_Normal, i64 0, metadata !900, metadata !1398), !dbg !2305
+  call void @llvm.dbg.value(metadata double* %608, i64 0, metadata !901, metadata !1398), !dbg !2308
+  %696 = bitcast double* %Layer_Normal to <2 x i64>*, !dbg !2309
+  store <2 x i64> %658, <2 x i64>* %696, align 8, !dbg !2309, !tbaa !1563
+  %697 = bitcast double* %478 to i64*, !dbg !2310
+  store i64 %657, i64* %697, align 8, !dbg !2310, !tbaa !1563
+  %698 = bitcast <2 x i64> %658 to <2 x double>, !dbg !2070
+  %699 = bitcast i64 %657 to double, !dbg !2070
+  br label %700, !dbg !2070
+
+; <label>:700                                     ; preds = %695, %661
+  %701 = phi double [ %699, %695 ], [ %694, %661 ], !dbg !2070
+  %702 = phi <2 x double> [ %698, %695 ], [ %691, %661 ], !dbg !2070
+  %703 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 28), align 8, !dbg !2311, !tbaa !1618
+  %704 = icmp slt i32 %703, 311, !dbg !2313
+  br i1 %704, label %705, label %_ZN3povL6facetsEPdPNS_14Tnormal_StructES0_.exit, !dbg !2314
+
+; <label>:705                                     ; preds = %700
+  call void @llvm.dbg.value(metadata double* %Layer_Normal, i64 0, metadata !1010, metadata !1398) #4, !dbg !2315
+  call void @llvm.dbg.value(metadata double* %Layer_Normal, i64 0, metadata !1011, metadata !1398) #4, !dbg !2317
+  call void @llvm.dbg.value(metadata double* %Layer_Normal, i64 0, metadata !888, metadata !1398) #4, !dbg !2318
+  %706 = extractelement <2 x double> %702, i32 0, !dbg !2320
+  %707 = fmul double %706, %706, !dbg !2320
+  %708 = extractelement <2 x double> %702, i32 1, !dbg !2321
+  %709 = fmul double %708, %708, !dbg !2321
+  %710 = fadd double %709, %707, !dbg !2322
+  %711 = fmul double %701, %701, !dbg !2323
+  %712 = fadd double %711, %710, !dbg !2324
+  %713 = call double @sqrt(double %712) #6, !dbg !2325
+  call void @llvm.dbg.value(metadata double %713, i64 0, metadata !887, metadata !1398) #4, !dbg !2326
+  call void @llvm.dbg.value(metadata double %713, i64 0, metadata !1012, metadata !1398) #4, !dbg !2327
+  call void @llvm.dbg.value(metadata double %713, i64 0, metadata !1012, metadata !1398) #4, !dbg !2327
+  call void @llvm.dbg.value(metadata double* %Layer_Normal, i64 0, metadata !1015, metadata !1398) #4, !dbg !2328
+  call void @llvm.dbg.value(metadata double* %Layer_Normal, i64 0, metadata !1016, metadata !1398) #4, !dbg !2330
+  call void @llvm.dbg.value(metadata double %713, i64 0, metadata !1017, metadata !1398) #4, !dbg !2331
+  %714 = fdiv double 1.000000e+00, %713, !dbg !2332
+  call void @llvm.dbg.value(metadata double %714, i64 0, metadata !1018, metadata !1398) #4, !dbg !2333
+  %715 = insertelement <2 x double> undef, double %714, i32 0, !dbg !2334
+  %716 = insertelement <2 x double> %715, double %714, i32 1, !dbg !2334
+  %717 = fmul <2 x double> %716, %702, !dbg !2334
+  %718 = bitcast double* %Layer_Normal to <2 x double>*, !dbg !2335
+  store <2 x double> %717, <2 x double>* %718, align 8, !dbg !2335, !tbaa !1563
+  %719 = fmul double %701, %714, !dbg !2336
+  store double %719, double* %478, align 8, !dbg !2337, !tbaa !1563
+  br label %_ZN3povL6facetsEPdPNS_14Tnormal_StructES0_.exit, !dbg !2338
+
+_ZN3povL6facetsEPdPNS_14Tnormal_StructES0_.exit:  ; preds = %700, %705
+  call void @llvm.lifetime.end(i64 24, i8* %462), !dbg !2339
+  call void @llvm.lifetime.end(i64 24, i8* %463), !dbg !2339
+  call void @llvm.lifetime.end(i64 24, i8* %464), !dbg !2339
+  call void @llvm.lifetime.end(i64 24, i8* %465), !dbg !2339
+  call void @llvm.lifetime.end(i64 24, i8* %466), !dbg !2339
+  br label %_ZN3povL7ripplesEPdPNS_14Tnormal_StructES0_.exit, !dbg !2340
+
+; <label>:720                                     ; preds = %._crit_edge
+  %721 = bitcast [3 x double]* %bump_turb.i to i8*, !dbg !2341
+  call void @llvm.lifetime.start(i64 24, i8* %721), !dbg !2341
+  %722 = bitcast [3 x double]* %value2.i to i8*, !dbg !2341
+  call void @llvm.lifetime.start(i64 24, i8* %722), !dbg !2341
+  call void @llvm.dbg.value(metadata double* %171, i64 0, metadata !1080, metadata !1398), !dbg !2341
+  call void @llvm.dbg.value(metadata %"struct.pov::Tnormal_Struct"* %Tnormal, i64 0, metadata !1081, metadata !1398), !dbg !2342
+  call void @llvm.dbg.value(metadata double* %Layer_Normal, i64 0, metadata !1082, metadata !1398), !dbg !2343
+  call void @llvm.dbg.value(metadata %"struct.pov::istk_entry"* %Intersection, i64 0, metadata !1083, metadata !1398), !dbg !2344
+  %723 = load %"struct.pov::Blend_Map_Struct"** %3, align 8, !dbg !2345, !tbaa !1472
+  call void @llvm.dbg.value(metadata %"struct.pov::Blend_Map_Struct"* %723, i64 0, metadata !1085, metadata !1398), !dbg !2346
+  call void @llvm.dbg.value(metadata float 0.000000e+00, i64 0, metadata !1087, metadata !1398), !dbg !2347
+  call void @llvm.dbg.value(metadata double 0.000000e+00, i64 0, metadata !969, metadata !1398), !dbg !2348
+  call void @llvm.dbg.value(metadata double 0.000000e+00, i64 0, metadata !970, metadata !1398), !dbg !2350
+  call void @llvm.dbg.value(metadata double 0.000000e+00, i64 0, metadata !971, metadata !1398), !dbg !2351
+  %724 = getelementptr inbounds [3 x double]* %bump_turb.i, i64 0, i64 2, !dbg !2352
+  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !1084, metadata !1398), !dbg !2353
+  %725 = getelementptr inbounds %"struct.pov::Blend_Map_Struct"* %723, i64 0, i32 1, !dbg !2354
+  %726 = bitcast [3 x double]* %bump_turb.i to i8*, !dbg !2354
+  call void @llvm.memset.p0i8.i64(i8* %726, i8 0, i64 24, i32 16, i1 false), !dbg !2357
+  %727 = load i16* %725, align 2, !dbg !2354, !tbaa !1480
+  %728 = icmp sgt i16 %727, 0, !dbg !2358
+  br i1 %728, label %.lr.ph, label %._ZN3povL18Do_Average_NormalsEPdPNS_14Tnormal_StructES0_PNS_10istk_entryE.exit_crit_edge33, !dbg !2359
+
+._ZN3povL18Do_Average_NormalsEPdPNS_14Tnormal_StructES0_PNS_10istk_entryE.exit_crit_edge33: ; preds = %720
+  %.pre38 = getelementptr inbounds double* %Layer_Normal, i64 2, !dbg !2360
+  br label %_ZN3povL18Do_Average_NormalsEPdPNS_14Tnormal_StructES0_PNS_10istk_entryE.exit, !dbg !2359
+
+.lr.ph:                                           ; preds = %720
+  %729 = getelementptr inbounds %"struct.pov::Blend_Map_Struct"* %723, i64 0, i32 4, !dbg !2362
+  %730 = getelementptr inbounds [3 x double]* %value2.i, i64 0, i64 0, !dbg !2364
+  %731 = getelementptr inbounds double* %Layer_Normal, i64 2, !dbg !2365
+  %732 = bitcast double* %731 to i64*, !dbg !2365
+  %733 = getelementptr inbounds [3 x double]* %value2.i, i64 0, i64 2, !dbg !2367
+  %734 = bitcast double* %733 to i64*, !dbg !2368
+  br label %735, !dbg !2359
+
+; <label>:735                                     ; preds = %.lr.ph, %735
+  %indvars.iv23 = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next24, %735 ]
+  %Total.0.i13 = phi float [ 0.000000e+00, %.lr.ph ], [ %760, %735 ]
+  %736 = load %"struct.pov::Blend_Map_Entry"** %729, align 8, !dbg !2362, !tbaa !1491
+  %737 = getelementptr inbounds %"struct.pov::Blend_Map_Entry"* %736, i64 %indvars.iv23, i32 0, !dbg !2369
+  %738 = load float* %737, align 4, !dbg !2369, !tbaa !1656
+  call void @llvm.dbg.value(metadata float %738, i64 0, metadata !1086, metadata !1398), !dbg !2370
+  call void @llvm.dbg.value(metadata double* %730, i64 0, metadata !900, metadata !1398), !dbg !2371
+  call void @llvm.dbg.value(metadata double* %Layer_Normal, i64 0, metadata !901, metadata !1398), !dbg !2372
+  %739 = bitcast double* %Layer_Normal to <2 x i64>*, !dbg !2373
+  %740 = load <2 x i64>* %739, align 8, !dbg !2373, !tbaa !1563
+  %741 = bitcast [3 x double]* %value2.i to <2 x i64>*, !dbg !2374
+  store <2 x i64> %740, <2 x i64>* %741, align 16, !dbg !2374, !tbaa !1563
+  %742 = load i64* %732, align 8, !dbg !2365, !tbaa !1563
+  store i64 %742, i64* %734, align 16, !dbg !2368, !tbaa !1563
+  %743 = getelementptr inbounds %"struct.pov::Blend_Map_Entry"* %736, i64 %indvars.iv23, i32 2, !dbg !2375
+  %744 = bitcast %union.anon* %743 to %"struct.pov::Tnormal_Struct"**, !dbg !2376
+  %745 = load %"struct.pov::Tnormal_Struct"** %744, align 8, !dbg !2376, !tbaa !1494
+  call void @_ZN3pov14Perturb_NormalEPdPNS_14Tnormal_StructES0_PNS_10istk_entryE(double* %730, %"struct.pov::Tnormal_Struct"* %745, double* %171, %"struct.pov::istk_entry"* %Intersection) #5, !dbg !2377
+  %746 = fpext float %738 to double, !dbg !2378
+  call void @llvm.dbg.value(metadata double %746, i64 0, metadata !1057, metadata !1398), !dbg !2379
+  call void @llvm.dbg.value(metadata double* %730, i64 0, metadata !1058, metadata !1398), !dbg !2381
+  %747 = bitcast [3 x double]* %value2.i to <2 x double>*, !dbg !2382
+  %748 = load <2 x double>* %747, align 16, !dbg !2382, !tbaa !1563
+  %749 = insertelement <2 x double> undef, double %746, i32 0, !dbg !2383
+  %750 = insertelement <2 x double> %749, double %746, i32 1, !dbg !2383
+  %751 = fmul <2 x double> %748, %750, !dbg !2383
+  %752 = bitcast [3 x double]* %bump_turb.i to <2 x double>*, !dbg !2384
+  %753 = load <2 x double>* %752, align 16, !dbg !2384, !tbaa !1563
+  %754 = fadd <2 x double> %753, %751, !dbg !2384
+  %755 = bitcast [3 x double]* %bump_turb.i to <2 x double>*, !dbg !2384
+  store <2 x double> %754, <2 x double>* %755, align 16, !dbg !2384, !tbaa !1563
+  %756 = load double* %733, align 16, !dbg !2385, !tbaa !1563
+  %757 = fmul double %746, %756, !dbg !2386
+  %758 = load double* %724, align 16, !dbg !2387, !tbaa !1563
+  %759 = fadd double %758, %757, !dbg !2387
+  store double %759, double* %724, align 16, !dbg !2387, !tbaa !1563
+  %760 = fadd float %Total.0.i13, %738, !dbg !2388
+  call void @llvm.dbg.value(metadata float %760, i64 0, metadata !1087, metadata !1398), !dbg !2347
+  %indvars.iv.next24 = add nuw nsw i64 %indvars.iv23, 1, !dbg !2359
+  %761 = load i16* %725, align 2, !dbg !2354, !tbaa !1480
+  %762 = sext i16 %761 to i64, !dbg !2358
+  %763 = icmp slt i64 %indvars.iv.next24, %762, !dbg !2358
+  br i1 %763, label %735, label %._ZN3povL18Do_Average_NormalsEPdPNS_14Tnormal_StructES0_PNS_10istk_entryE.exit_crit_edge, !dbg !2359
+
+._ZN3povL18Do_Average_NormalsEPdPNS_14Tnormal_StructES0_PNS_10istk_entryE.exit_crit_edge: ; preds = %735
+  %phitmp = fpext float %760 to double, !dbg !2359
+  %764 = extractelement <2 x double> %754, i32 0, !dbg !2359
+  %765 = extractelement <2 x double> %754, i32 1, !dbg !2359
+  br label %_ZN3povL18Do_Average_NormalsEPdPNS_14Tnormal_StructES0_PNS_10istk_entryE.exit, !dbg !2359
+
+_ZN3povL18Do_Average_NormalsEPdPNS_14Tnormal_StructES0_PNS_10istk_entryE.exit: ; preds = %._ZN3povL18Do_Average_NormalsEPdPNS_14Tnormal_StructES0_PNS_10istk_entryE.exit_crit_edge33, %._ZN3povL18Do_Average_NormalsEPdPNS_14Tnormal_StructES0_PNS_10istk_entryE.exit_crit_edge
+  %.pre-phi39 = phi double* [ %.pre38, %._ZN3povL18Do_Average_NormalsEPdPNS_14Tnormal_StructES0_PNS_10istk_entryE.exit_crit_edge33 ], [ %731, %._ZN3povL18Do_Average_NormalsEPdPNS_14Tnormal_StructES0_PNS_10istk_entryE.exit_crit_edge ], !dbg !2360
+  %766 = phi double [ 0.000000e+00, %._ZN3povL18Do_Average_NormalsEPdPNS_14Tnormal_StructES0_PNS_10istk_entryE.exit_crit_edge33 ], [ %759, %._ZN3povL18Do_Average_NormalsEPdPNS_14Tnormal_StructES0_PNS_10istk_entryE.exit_crit_edge ]
+  %767 = phi double [ 0.000000e+00, %._ZN3povL18Do_Average_NormalsEPdPNS_14Tnormal_StructES0_PNS_10istk_entryE.exit_crit_edge33 ], [ %765, %._ZN3povL18Do_Average_NormalsEPdPNS_14Tnormal_StructES0_PNS_10istk_entryE.exit_crit_edge ]
+  %768 = phi double [ 0.000000e+00, %._ZN3povL18Do_Average_NormalsEPdPNS_14Tnormal_StructES0_PNS_10istk_entryE.exit_crit_edge33 ], [ %764, %._ZN3povL18Do_Average_NormalsEPdPNS_14Tnormal_StructES0_PNS_10istk_entryE.exit_crit_edge ]
+  %Total.0.i.lcssa = phi double [ 0.000000e+00, %._ZN3povL18Do_Average_NormalsEPdPNS_14Tnormal_StructES0_PNS_10istk_entryE.exit_crit_edge33 ], [ %phitmp, %._ZN3povL18Do_Average_NormalsEPdPNS_14Tnormal_StructES0_PNS_10istk_entryE.exit_crit_edge ]
+  %.pre-phi37 = getelementptr inbounds double* %Layer_Normal, i64 1, !dbg !2389
+  call void @llvm.dbg.value(metadata double* %Layer_Normal, i64 0, metadata !1015, metadata !1398), !dbg !2390
+  call void @llvm.dbg.value(metadata double %Total.0.i.lcssa, i64 0, metadata !1017, metadata !1398), !dbg !2391
+  %769 = fdiv double 1.000000e+00, %Total.0.i.lcssa, !dbg !2392
+  call void @llvm.dbg.value(metadata double %769, i64 0, metadata !1018, metadata !1398), !dbg !2393
+  %770 = fmul double %769, %768, !dbg !2394
+  store double %770, double* %Layer_Normal, align 8, !dbg !2395, !tbaa !1563
+  %771 = fmul double %769, %767, !dbg !2396
+  store double %771, double* %.pre-phi37, align 8, !dbg !2397, !tbaa !1563
+  %772 = fmul double %769, %766, !dbg !2398
+  store double %772, double* %.pre-phi39, align 8, !dbg !2399, !tbaa !1563
+  call void @llvm.lifetime.end(i64 24, i8* %721), !dbg !2400
+  call void @llvm.lifetime.end(i64 24, i8* %722), !dbg !2400
+  br label %_ZN3povL7ripplesEPdPNS_14Tnormal_StructES0_.exit, !dbg !2401
+
+; <label>:773                                     ; preds = %._crit_edge
+  %774 = call i32 (i8*, ...)* @_ZN3pov5ErrorEPKcz(i8* getelementptr inbounds ([36 x i8]* @.str4, i64 0, i64 0)) #5, !dbg !2402
+  br label %_ZN3povL7ripplesEPdPNS_14Tnormal_StructES0_.exit, !dbg !2403
+
+_ZN3povL7ripplesEPdPNS_14Tnormal_StructES0_.exit: ; preds = %285, %229, %277, %221, %773, %_ZN3povL18Do_Average_NormalsEPdPNS_14Tnormal_StructES0_PNS_10istk_entryE.exit, %_ZN3povL6facetsEPdPNS_14Tnormal_StructES0_.exit, %_ZN3povL7quiltedEPdPNS_14Tnormal_StructES0_.exit, %_ZN3povL8wrinklesEPdPNS_14Tnormal_StructES0_.exit, %196, %175, %174
+  %775 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 28), align 8, !dbg !2404, !tbaa !1618
+  %776 = icmp sgt i32 %775, 310, !dbg !2406
+  br i1 %776, label %777, label %.thread5, !dbg !2407
+
+; <label>:777                                     ; preds = %_ZN3povL7ripplesEPdPNS_14Tnormal_StructES0_.exit
+  %778 = getelementptr inbounds %"struct.pov::Tnormal_Struct"* %Tnormal, i64 0, i32 2, !dbg !2408
+  %779 = load i16* %778, align 2, !dbg !2408, !tbaa !1458
+  %780 = zext i16 %779 to i32, !dbg !2408
+  %781 = and i32 %780, 8, !dbg !2408
+  call void @_ZN3pov13UnWarp_NormalEPdS0_PNS_14Pattern_StructEi(double* %Layer_Normal, double* %Layer_Normal, %"struct.pov::Pattern_Struct"* %165, i32 %781) #5, !dbg !2410
+  br label %901, !dbg !2411
+
+; <label>:782                                     ; preds = %.thread
+  br i1 %163, label %783, label %789, !dbg !2412
+
+; <label>:783                                     ; preds = %782
+  %784 = bitcast %"struct.pov::Tnormal_Struct"* %Tnormal to %"struct.pov::Pattern_Struct"*, !dbg !2414
+  %785 = getelementptr inbounds %"struct.pov::Tnormal_Struct"* %Tnormal, i64 0, i32 2, !dbg !2417
+  %786 = load i16* %785, align 2, !dbg !2417, !tbaa !1458
+  %787 = zext i16 %786 to i32, !dbg !2417
+  %788 = and i32 %787, 8, !dbg !2417
+  tail call void @_ZN3pov11Warp_NormalEPdS0_PNS_14Pattern_StructEi(double* %Layer_Normal, double* %Layer_Normal, %"struct.pov::Pattern_Struct"* %784, i32 %788) #5, !dbg !2418
+  %.pre = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 28), align 8, !dbg !2419, !tbaa !1618
+  br label %789, !dbg !2421
+
+; <label>:789                                     ; preds = %783, %782
+  %790 = phi i32 [ %.pre, %783 ], [ %162, %782 ]
+  %791 = getelementptr inbounds %"struct.pov::Tnormal_Struct"* %Tnormal, i64 0, i32 11, !dbg !2422
+  %792 = load float* %791, align 4, !dbg !2422, !tbaa !1404
+  %793 = fpext float %792 to double, !dbg !2423
+  %794 = fmul double %793, -5.000000e+00, !dbg !2424
+  tail call void @llvm.dbg.value(metadata double %794, i64 0, metadata !863, metadata !1398), !dbg !2425
+  %795 = getelementptr inbounds %"struct.pov::Tnormal_Struct"* %Tnormal, i64 0, i32 12, !dbg !2426
+  %796 = load float* %795, align 4, !dbg !2426, !tbaa !1414
+  %797 = fpext float %796 to double, !dbg !2427
+  %798 = fdiv double 2.000000e-02, %797, !dbg !2428
+  %799 = fmul double %794, %798, !dbg !2429
+  tail call void @llvm.dbg.value(metadata double %799, i64 0, metadata !863, metadata !1398), !dbg !2425
+  %800 = icmp sgt i32 %790, 310, !dbg !2430
+  %801 = getelementptr inbounds [3 x double]* %TPoint, i64 0, i64 0, !dbg !2431
+  br i1 %800, label %802, label %804, !dbg !2432
+
+; <label>:802                                     ; preds = %789
+  %803 = bitcast %"struct.pov::Tnormal_Struct"* %Tnormal to %"struct.pov::Pattern_Struct"*, !dbg !2433
+  call void @_ZN3pov11Warp_EPointEPdS0_PNS_14Pattern_StructE(double* %801, double* %EPoint, %"struct.pov::Pattern_Struct"* %803) #5, !dbg !2434
+  %.pre28 = getelementptr inbounds [3 x double]* %TPoint, i64 0, i64 1, !dbg !2435
+  %.pre29 = getelementptr inbounds [3 x double]* %TPoint, i64 0, i64 2, !dbg !2440
+  br label %.preheader, !dbg !2434
+
+; <label>:804                                     ; preds = %789
+  tail call void @llvm.dbg.value(metadata double* %801, i64 0, metadata !900, metadata !1398), !dbg !2441
+  tail call void @llvm.dbg.value(metadata double* %EPoint, i64 0, metadata !901, metadata !1398), !dbg !2443
+  %805 = bitcast double* %EPoint to <2 x i64>*, !dbg !2444
+  %806 = load <2 x i64>* %805, align 8, !dbg !2444, !tbaa !1563
+  %807 = getelementptr inbounds [3 x double]* %TPoint, i64 0, i64 1, !dbg !2445
+  %808 = bitcast [3 x double]* %TPoint to <2 x i64>*, !dbg !2446
+  store <2 x i64> %806, <2 x i64>* %808, align 16, !dbg !2446, !tbaa !1563
+  %809 = getelementptr inbounds double* %EPoint, i64 2, !dbg !2447
+  %810 = bitcast double* %809 to i64*, !dbg !2447
+  %811 = load i64* %810, align 8, !dbg !2447, !tbaa !1563
+  %812 = getelementptr inbounds [3 x double]* %TPoint, i64 0, i64 2, !dbg !2448
+  %813 = bitcast double* %812 to i64*, !dbg !2449
+  store i64 %811, i64* %813, align 16, !dbg !2449, !tbaa !1563
+  %.pre31 = bitcast %"struct.pov::Tnormal_Struct"* %Tnormal to %"struct.pov::Pattern_Struct"*, !dbg !2450
+  br label %.preheader
+
+.preheader:                                       ; preds = %804, %802
+  %.pre-phi32 = phi %"struct.pov::Pattern_Struct"* [ %.pre31, %804 ], [ %803, %802 ], !dbg !2450
+  %.pre-phi30 = phi double* [ %812, %804 ], [ %.pre29, %802 ], !dbg !2440
+  %.pre-phi = phi double* [ %807, %804 ], [ %.pre28, %802 ], !dbg !2435
+  %814 = getelementptr inbounds [3 x double]* %P1, i64 0, i64 0, !dbg !2452
+  %815 = getelementptr inbounds [3 x double]* %P1, i64 0, i64 2, !dbg !2453
+  %816 = bitcast %"struct.pov::Blend_Map_Entry"** %Prev.i to i8*, !dbg !2454
+  %817 = bitcast %"struct.pov::Blend_Map_Entry"** %Cur.i to i8*, !dbg !2454
+  %818 = getelementptr inbounds double* %Layer_Normal, i64 2, !dbg !2456
+  br label %819, !dbg !2458
+
+; <label>:819                                     ; preds = %_ZN3povL12Do_Slope_MapEdPNS_16Blend_Map_StructE.exit, %.preheader
+  %indvars.iv25 = phi i64 [ 0, %.preheader ], [ %indvars.iv.next26, %_ZN3povL12Do_Slope_MapEdPNS_16Blend_Map_StructE.exit ]
+  %820 = load float* %795, align 4, !dbg !2459, !tbaa !1414
+  %821 = fpext float %820 to double, !dbg !2460
+  %822 = getelementptr inbounds [4 x [3 x double]]* @_ZN3povL12Pyramid_VectE, i64 0, i64 %indvars.iv25, i64 0, !dbg !2461
+  tail call void @llvm.dbg.value(metadata double* %814, i64 0, metadata !1048, metadata !1398), !dbg !2462
+  tail call void @llvm.dbg.value(metadata double* %801, i64 0, metadata !1049, metadata !1398), !dbg !2463
+  tail call void @llvm.dbg.value(metadata double %821, i64 0, metadata !1050, metadata !1398), !dbg !2464
+  tail call void @llvm.dbg.value(metadata double* %822, i64 0, metadata !1051, metadata !1398), !dbg !2465
+  %823 = load double* %801, align 16, !dbg !2466, !tbaa !1563
+  %824 = bitcast double* %822 to <2 x double>*, !dbg !2467
+  %825 = load <2 x double>* %824, align 8, !dbg !2467, !tbaa !1563
+  %826 = load double* %.pre-phi, align 8, !dbg !2435, !tbaa !1563
+  %827 = insertelement <2 x double> undef, double %821, i32 0, !dbg !2468
+  %828 = insertelement <2 x double> %827, double %821, i32 1, !dbg !2468
+  %829 = fmul <2 x double> %828, %825, !dbg !2468
+  %830 = insertelement <2 x double> undef, double %823, i32 0, !dbg !2469
+  %831 = insertelement <2 x double> %830, double %826, i32 1, !dbg !2469
+  %832 = fadd <2 x double> %831, %829, !dbg !2469
+  %833 = bitcast [3 x double]* %P1 to <2 x double>*, !dbg !2470
+  store <2 x double> %832, <2 x double>* %833, align 16, !dbg !2470, !tbaa !1563
+  %834 = load double* %.pre-phi30, align 16, !dbg !2440, !tbaa !1563
+  %835 = getelementptr inbounds [4 x [3 x double]]* @_ZN3povL12Pyramid_VectE, i64 0, i64 %indvars.iv25, i64 2, !dbg !2471
+  %836 = load double* %835, align 8, !dbg !2471, !tbaa !1563
+  %837 = fmul double %821, %836, !dbg !2472
+  %838 = fadd double %834, %837, !dbg !2473
+  store double %838, double* %815, align 16, !dbg !2474, !tbaa !1563
+  %839 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 28), align 8, !dbg !2475, !tbaa !1618
+  %840 = icmp slt i32 %839, 311, !dbg !2476
+  br i1 %840, label %841, label %842, !dbg !2477
+
+; <label>:841                                     ; preds = %819
+  call void @_ZN3pov11Warp_EPointEPdS0_PNS_14Pattern_StructE(double* %814, double* %814, %"struct.pov::Pattern_Struct"* %.pre-phi32) #5, !dbg !2478
+  br label %842, !dbg !2478
+
+; <label>:842                                     ; preds = %841, %819
+  %843 = call double @_ZN3pov13Evaluate_TPatEPNS_14Pattern_StructEPdPNS_10istk_entryE(%"struct.pov::Pattern_Struct"* %.pre-phi32, double* %814, %"struct.pov::istk_entry"* %Intersection) #5, !dbg !2479
+  call void @llvm.lifetime.start(i64 8, i8* %816), !dbg !2454
+  call void @llvm.lifetime.start(i64 8, i8* %817), !dbg !2454
+  call void @llvm.dbg.value(metadata double %843, i64 0, metadata !1063, metadata !1398), !dbg !2454
+  call void @llvm.dbg.value(metadata %"struct.pov::Blend_Map_Struct"* %4, i64 0, metadata !1064, metadata !1398), !dbg !2480
+  br i1 %5, label %_ZN3povL12Do_Slope_MapEdPNS_16Blend_Map_StructE.exit, label %844, !dbg !2481
+
+; <label>:844                                     ; preds = %842
+  call void @llvm.dbg.value(metadata %"struct.pov::Blend_Map_Entry"** %Prev.i, i64 0, metadata !1066, metadata !1398), !dbg !2482
+  call void @llvm.dbg.value(metadata %"struct.pov::Blend_Map_Entry"** %Cur.i, i64 0, metadata !1067, metadata !1398), !dbg !2483
+  call void @_ZN3pov16Search_Blend_MapEdPNS_16Blend_Map_StructEPPNS_15Blend_Map_EntryES4_(double %843, %"struct.pov::Blend_Map_Struct"* %4, %"struct.pov::Blend_Map_Entry"** %Prev.i, %"struct.pov::Blend_Map_Entry"** %Cur.i) #5, !dbg !2484
+  call void @llvm.dbg.value(metadata %"struct.pov::Blend_Map_Entry"** %Prev.i, i64 0, metadata !1066, metadata !1398), !dbg !2482
+  %845 = load %"struct.pov::Blend_Map_Entry"** %Prev.i, align 8, !dbg !2485, !tbaa !1494
+  call void @llvm.dbg.value(metadata %"struct.pov::Blend_Map_Entry"** %Cur.i, i64 0, metadata !1067, metadata !1398), !dbg !2483
+  %846 = load %"struct.pov::Blend_Map_Entry"** %Cur.i, align 8, !dbg !2487, !tbaa !1494
+  %847 = icmp eq %"struct.pov::Blend_Map_Entry"* %845, %846, !dbg !2488
+  %848 = getelementptr inbounds %"struct.pov::Blend_Map_Entry"* %846, i64 0, i32 2, i32 0, i64 0, !dbg !2489
+  %849 = load double* %848, align 8, !dbg !2489
+  br i1 %847, label %_ZN3povL12Do_Slope_MapEdPNS_16Blend_Map_StructE.exit, label %850, !dbg !2490
+
+; <label>:850                                     ; preds = %844
+  %851 = getelementptr inbounds %"struct.pov::Blend_Map_Entry"* %845, i64 0, i32 0, !dbg !2491
+  %852 = load float* %851, align 4, !dbg !2491, !tbaa !1656
+  %853 = fpext float %852 to double, !dbg !2492
+  %854 = fsub double %843, %853, !dbg !2493
+  %855 = getelementptr inbounds %"struct.pov::Blend_Map_Entry"* %846, i64 0, i32 0, !dbg !2494
+  %856 = load float* %855, align 4, !dbg !2494, !tbaa !1656
+  %857 = fsub float %856, %852, !dbg !2495
+  %858 = fpext float %857 to double, !dbg !2496
+  %859 = fdiv double %854, %858, !dbg !2497
+  call void @llvm.dbg.value(metadata double %859, i64 0, metadata !1065, metadata !1398), !dbg !2498
+  %860 = getelementptr inbounds %"struct.pov::Blend_Map_Entry"* %845, i64 0, i32 2, i32 0, i64 0, !dbg !2499
+  call void @llvm.dbg.value(metadata double %859, i64 0, metadata !1072, metadata !1398), !dbg !2500
+  call void @llvm.dbg.value(metadata double* %860, i64 0, metadata !1073, metadata !1398), !dbg !2502
+  call void @llvm.dbg.value(metadata double* %848, i64 0, metadata !1074, metadata !1398), !dbg !2503
+  %861 = fmul double %859, %859, !dbg !2504
+  call void @llvm.dbg.value(metadata double %861, i64 0, metadata !1075, metadata !1398), !dbg !2505
+  %862 = fmul double %859, %861, !dbg !2506
+  call void @llvm.dbg.value(metadata double %862, i64 0, metadata !1076, metadata !1398), !dbg !2507
+  %863 = getelementptr inbounds %"struct.pov::Blend_Map_Entry"* %845, i64 0, i32 2, i32 0, i64 1, !dbg !2508
+  %864 = load double* %863, align 8, !dbg !2508, !tbaa !1563
+  %865 = getelementptr inbounds %"struct.pov::Blend_Map_Entry"* %846, i64 0, i32 2, i32 0, i64 1, !dbg !2509
+  %866 = load double* %865, align 8, !dbg !2509, !tbaa !1563
+  %867 = fadd double %864, %866, !dbg !2510
+  %868 = load double* %860, align 8, !dbg !2511, !tbaa !1563
+  %869 = fsub double %868, %849, !dbg !2512
+  %870 = fmul double %869, 2.000000e+00, !dbg !2513
+  %871 = fadd double %867, %870, !dbg !2514
+  %872 = fmul double %862, %871, !dbg !2515
+  call void @llvm.dbg.value(metadata double %872, i64 0, metadata !1077, metadata !1398), !dbg !2516
+  %873 = fmul double %864, 2.000000e+00, !dbg !2517
+  %874 = fadd double %873, %866, !dbg !2518
+  %875 = fmul double %869, 3.000000e+00, !dbg !2519
+  %876 = fadd double %874, %875, !dbg !2520
+  %877 = fmul double %861, %876, !dbg !2521
+  %878 = fsub double %872, %877, !dbg !2522
+  call void @llvm.dbg.value(metadata double %878, i64 0, metadata !1077, metadata !1398), !dbg !2516
+  %879 = fmul double %859, %864, !dbg !2523
+  %880 = fadd double %879, %868, !dbg !2524
+  %881 = fadd double %880, %878, !dbg !2525
+  call void @llvm.dbg.value(metadata double %881, i64 0, metadata !1077, metadata !1398), !dbg !2516
+  br label %_ZN3povL12Do_Slope_MapEdPNS_16Blend_Map_StructE.exit, !dbg !2526
+
+_ZN3povL12Do_Slope_MapEdPNS_16Blend_Map_StructE.exit: ; preds = %842, %844, %850
+  %.0.i = phi double [ %881, %850 ], [ %843, %842 ], [ %849, %844 ], !dbg !2489
+  call void @llvm.lifetime.end(i64 8, i8* %816), !dbg !2527
+  call void @llvm.lifetime.end(i64 8, i8* %817), !dbg !2527
+  call void @llvm.dbg.value(metadata double %.0.i, i64 0, metadata !861, metadata !1398), !dbg !1613
+  %882 = fmul double %799, %.0.i, !dbg !2528
+  tail call void @llvm.dbg.value(metadata double* %Layer_Normal, i64 0, metadata !1056, metadata !1398), !dbg !2529
+  tail call void @llvm.dbg.value(metadata double %882, i64 0, metadata !1057, metadata !1398), !dbg !2530
+  tail call void @llvm.dbg.value(metadata double* %822, i64 0, metadata !1058, metadata !1398), !dbg !2531
+  %883 = insertelement <2 x double> undef, double %882, i32 0, !dbg !2532
+  %884 = insertelement <2 x double> %883, double %882, i32 1, !dbg !2532
+  %885 = fmul <2 x double> %884, %825, !dbg !2532
+  %886 = bitcast double* %Layer_Normal to <2 x double>*, !dbg !2533
+  %887 = load <2 x double>* %886, align 8, !dbg !2533, !tbaa !1563
+  %888 = fadd <2 x double> %887, %885, !dbg !2533
+  %889 = bitcast double* %Layer_Normal to <2 x double>*, !dbg !2533
+  store <2 x double> %888, <2 x double>* %889, align 8, !dbg !2533, !tbaa !1563
+  %890 = fmul double %882, %836, !dbg !2534
+  %891 = load double* %818, align 8, !dbg !2535, !tbaa !1563
+  %892 = fadd double %891, %890, !dbg !2535
+  store double %892, double* %818, align 8, !dbg !2535, !tbaa !1563
+  %indvars.iv.next26 = add nuw nsw i64 %indvars.iv25, 1, !dbg !2458
+  %exitcond27 = icmp eq i64 %indvars.iv.next26, 4, !dbg !2458
+  br i1 %exitcond27, label %893, label %819, !dbg !2458
+
+; <label>:893                                     ; preds = %_ZN3povL12Do_Slope_MapEdPNS_16Blend_Map_StructE.exit
+  %894 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 28), align 8, !dbg !2536, !tbaa !1618
+  %895 = icmp sgt i32 %894, 310, !dbg !2538
+  br i1 %895, label %896, label %.thread5, !dbg !2539
+
+; <label>:896                                     ; preds = %893
+  %897 = getelementptr inbounds %"struct.pov::Tnormal_Struct"* %Tnormal, i64 0, i32 2, !dbg !2540
+  %898 = load i16* %897, align 2, !dbg !2540, !tbaa !1458
+  %899 = zext i16 %898 to i32, !dbg !2540
+  %900 = and i32 %899, 8, !dbg !2540
+  call void @_ZN3pov13UnWarp_NormalEPdS0_PNS_14Pattern_StructEi(double* %Layer_Normal, double* %Layer_Normal, %"struct.pov::Pattern_Struct"* %.pre-phi32, i32 %900) #5, !dbg !2542
+  br label %901, !dbg !2543
+
+; <label>:901                                     ; preds = %896, %777
+  %.pr4 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 28), align 8, !dbg !2544, !tbaa !1618
+  %902 = icmp slt i32 %.pr4, 311, !dbg !2546
+  br i1 %902, label %.thread5, label %921, !dbg !2547
+
+.thread5:                                         ; preds = %_ZN3povL7ripplesEPdPNS_14Tnormal_StructES0_.exit, %893, %901
+  call void @llvm.dbg.value(metadata double* %Layer_Normal, i64 0, metadata !878, metadata !1398) #4, !dbg !2548
+  call void @llvm.dbg.value(metadata double* %Layer_Normal, i64 0, metadata !888, metadata !1398) #4, !dbg !2550
+  %903 = bitcast double* %Layer_Normal to <2 x double>*, !dbg !2552
+  %904 = load <2 x double>* %903, align 8, !dbg !2552, !tbaa !1563
+  %905 = extractelement <2 x double> %904, i32 0, !dbg !2553
+  %906 = fmul double %905, %905, !dbg !2553
+  %907 = extractelement <2 x double> %904, i32 1, !dbg !2554
+  %908 = fmul double %907, %907, !dbg !2554
+  %909 = fadd double %906, %908, !dbg !2555
+  %910 = getelementptr inbounds double* %Layer_Normal, i64 2, !dbg !2556
+  %911 = load double* %910, align 8, !dbg !2556, !tbaa !1563
+  %912 = fmul double %911, %911, !dbg !2557
+  %913 = fadd double %909, %912, !dbg !2558
+  %914 = call double @sqrt(double %913) #6, !dbg !2559
+  call void @llvm.dbg.value(metadata double %914, i64 0, metadata !887, metadata !1398) #4, !dbg !2560
+  call void @llvm.dbg.value(metadata double %914, i64 0, metadata !879, metadata !1398) #4, !dbg !2561
+  call void @llvm.dbg.value(metadata double %914, i64 0, metadata !879, metadata !1398) #4, !dbg !2561
+  call void @llvm.dbg.value(metadata double* %Layer_Normal, i64 0, metadata !893, metadata !1398) #4, !dbg !2562
+  call void @llvm.dbg.value(metadata double %914, i64 0, metadata !894, metadata !1398) #4, !dbg !2564
+  %915 = fdiv double 1.000000e+00, %914, !dbg !2565
+  call void @llvm.dbg.value(metadata double %915, i64 0, metadata !895, metadata !1398) #4, !dbg !2566
+  %916 = insertelement <2 x double> undef, double %915, i32 0, !dbg !2567
+  %917 = insertelement <2 x double> %916, double %915, i32 1, !dbg !2567
+  %918 = fmul <2 x double> %917, %904, !dbg !2567
+  %919 = bitcast double* %Layer_Normal to <2 x double>*, !dbg !2567
+  store <2 x double> %918, <2 x double>* %919, align 8, !dbg !2567, !tbaa !1563
+  %920 = fmul double %911, %915, !dbg !2568
+  store double %920, double* %910, align 8, !dbg !2568, !tbaa !1563
+  br label %921, !dbg !2569
+
+; <label>:921                                     ; preds = %.thread5, %901
+  %922 = icmp eq %"struct.pov::istk_entry"* %Intersection, null, !dbg !2570
+  br i1 %922, label %938, label %923, !dbg !2572
+
+; <label>:923                                     ; preds = %921
+  %924 = getelementptr inbounds %"struct.pov::istk_entry"* %Intersection, i64 0, i32 3, i64 0, !dbg !2573
+  tail call void @llvm.dbg.value(metadata double* %924, i64 0, metadata !900, metadata !1398), !dbg !2574
+  tail call void @llvm.dbg.value(metadata double* %Layer_Normal, i64 0, metadata !901, metadata !1398), !dbg !2576
+  %925 = bitcast double* %Layer_Normal to i64*, !dbg !2577
+  %926 = load i64* %925, align 8, !dbg !2577, !tbaa !1563
+  %927 = bitcast double* %924 to i64*, !dbg !2578
+  store i64 %926, i64* %927, align 8, !dbg !2578, !tbaa !1563
+  %928 = getelementptr inbounds double* %Layer_Normal, i64 1, !dbg !2579
+  %929 = bitcast double* %928 to i64*, !dbg !2579
+  %930 = load i64* %929, align 8, !dbg !2579, !tbaa !1563
+  %931 = getelementptr inbounds %"struct.pov::istk_entry"* %Intersection, i64 0, i32 3, i64 1, !dbg !2580
+  %932 = bitcast double* %931 to i64*, !dbg !2581
+  store i64 %930, i64* %932, align 8, !dbg !2581, !tbaa !1563
+  %933 = getelementptr inbounds double* %Layer_Normal, i64 2, !dbg !2582
+  %934 = bitcast double* %933 to i64*, !dbg !2582
+  %935 = load i64* %934, align 8, !dbg !2582, !tbaa !1563
+  %936 = getelementptr inbounds %"struct.pov::istk_entry"* %Intersection, i64 0, i32 3, i64 2, !dbg !2583
+  %937 = bitcast double* %936 to i64*, !dbg !2584
+  store i64 %935, i64* %937, align 8, !dbg !2584, !tbaa !1563
+  br label %938, !dbg !2585
+
+; <label>:938                                     ; preds = %921, %0, %13, %133, %923
+  ret void, !dbg !2586
+}

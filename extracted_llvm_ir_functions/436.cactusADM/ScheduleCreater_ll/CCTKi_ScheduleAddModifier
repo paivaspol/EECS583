@@ -1,51 +1,59 @@
 define noalias %struct.T_SCHED_MODIFIER* @CCTKi_ScheduleAddModifier(%struct.T_SCHED_MODIFIER* %orig, i8* nocapture readonly %modifier, i8* %argument) #1 {
-  %1 = tail call i8* @malloc(i64 24) #8
-  %2 = bitcast i8* %1 to %struct.T_SCHED_MODIFIER*
-  %3 = icmp eq i8* %1, null
-  br i1 %3, label %27, label %4
+  tail call void @llvm.dbg.value(metadata %struct.T_SCHED_MODIFIER* %orig, i64 0, metadata !65, metadata !195), !dbg !196
+  tail call void @llvm.dbg.value(metadata i8* %modifier, i64 0, metadata !66, metadata !195), !dbg !197
+  tail call void @llvm.dbg.value(metadata i8* %argument, i64 0, metadata !67, metadata !195), !dbg !198
+  %1 = tail call i8* @malloc(i64 24) #8, !dbg !199
+  %2 = bitcast i8* %1 to %struct.T_SCHED_MODIFIER*, !dbg !200
+  tail call void @llvm.dbg.value(metadata %struct.T_SCHED_MODIFIER* %2, i64 0, metadata !68, metadata !195), !dbg !201
+  %3 = icmp eq i8* %1, null, !dbg !202
+  br i1 %3, label %27, label %4, !dbg !204
 
 ; <label>:4                                       ; preds = %0
-  %5 = tail call i64 @strlen(i8* %argument) #8
-  %6 = add i64 %5, 1
-  %7 = tail call i8* @malloc(i64 %6) #8
-  %8 = getelementptr inbounds i8* %1, i64 16
-  %9 = bitcast i8* %8 to i8**
-  store i8* %7, i8** %9, align 8, !tbaa !2
-  %10 = icmp eq i8* %7, null
-  br i1 %10, label %26, label %11
+  %5 = tail call i64 @strlen(i8* %argument) #8, !dbg !205
+  %6 = add i64 %5, 1, !dbg !207
+  %7 = tail call i8* @malloc(i64 %6) #8, !dbg !208
+  %8 = getelementptr inbounds i8* %1, i64 16, !dbg !209
+  %9 = bitcast i8* %8 to i8**, !dbg !209
+  store i8* %7, i8** %9, align 8, !dbg !210, !tbaa !211
+  %10 = icmp eq i8* %7, null, !dbg !216
+  br i1 %10, label %26, label %11, !dbg !218
 
 ; <label>:11                                      ; preds = %4
-  %12 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %7, i1 false)
-  %13 = tail call i8* @__strcpy_chk(i8* %7, i8* %argument, i64 %12) #8
-  %14 = tail call i32 @strcmp(i8* %modifier, i8* getelementptr inbounds ([7 x i8]* @.str2, i64 0, i64 0)) #8
-  %15 = icmp eq i32 %14, 0
-  br i1 %15, label %ScheduleTranslateModifierType.exit, label %16
+  %12 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %7, i1 false), !dbg !219
+  %13 = tail call i8* @__strcpy_chk(i8* %7, i8* %argument, i64 %12) #8, !dbg !219
+  tail call void @llvm.dbg.value(metadata i8* %modifier, i64 0, metadata !159, metadata !195) #7, !dbg !221
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !160, metadata !195) #7, !dbg !223
+  %14 = tail call i32 @strcmp(i8* %modifier, i8* getelementptr inbounds ([7 x i8]* @.str2, i64 0, i64 0)) #8, !dbg !224
+  %15 = icmp eq i32 %14, 0, !dbg !224
+  br i1 %15, label %ScheduleTranslateModifierType.exit, label %16, !dbg !226
 
 ; <label>:16                                      ; preds = %11
-  %17 = tail call i32 @strcmp(i8* %modifier, i8* getelementptr inbounds ([6 x i8]* @.str3, i64 0, i64 0)) #8
-  %18 = icmp eq i32 %17, 0
-  br i1 %18, label %ScheduleTranslateModifierType.exit, label %19
+  %17 = tail call i32 @strcmp(i8* %modifier, i8* getelementptr inbounds ([6 x i8]* @.str3, i64 0, i64 0)) #8, !dbg !227
+  %18 = icmp eq i32 %17, 0, !dbg !227
+  br i1 %18, label %ScheduleTranslateModifierType.exit, label %19, !dbg !229
 
 ; <label>:19                                      ; preds = %16
-  %20 = tail call i32 @strcmp(i8* %modifier, i8* getelementptr inbounds ([6 x i8]* @.str4, i64 0, i64 0)) #8
-  %21 = icmp eq i32 %20, 0
-  %..i = select i1 %21, i32 3, i32 0
-  br label %ScheduleTranslateModifierType.exit
+  %20 = tail call i32 @strcmp(i8* %modifier, i8* getelementptr inbounds ([6 x i8]* @.str4, i64 0, i64 0)) #8, !dbg !230
+  %21 = icmp eq i32 %20, 0, !dbg !230
+  tail call void @llvm.dbg.value(metadata i32 3, i64 0, metadata !160, metadata !195) #7, !dbg !223
+  %..i = select i1 %21, i32 3, i32 0, !dbg !232
+  br label %ScheduleTranslateModifierType.exit, !dbg !232
 
 ScheduleTranslateModifierType.exit:               ; preds = %11, %16, %19
   %22 = phi i32 [ %..i, %19 ], [ 1, %11 ], [ 2, %16 ]
-  %23 = getelementptr inbounds i8* %1, i64 8
-  %24 = bitcast i8* %23 to i32*
-  store i32 %22, i32* %24, align 4, !tbaa !7
-  %25 = bitcast i8* %1 to %struct.T_SCHED_MODIFIER**
-  store %struct.T_SCHED_MODIFIER* %orig, %struct.T_SCHED_MODIFIER** %25, align 8, !tbaa !8
-  br label %27
+  %23 = getelementptr inbounds i8* %1, i64 8, !dbg !233
+  %24 = bitcast i8* %23 to i32*, !dbg !233
+  store i32 %22, i32* %24, align 4, !dbg !234, !tbaa !235
+  %25 = bitcast i8* %1 to %struct.T_SCHED_MODIFIER**, !dbg !236
+  store %struct.T_SCHED_MODIFIER* %orig, %struct.T_SCHED_MODIFIER** %25, align 8, !dbg !237, !tbaa !238
+  br label %27, !dbg !239
 
 ; <label>:26                                      ; preds = %4
-  tail call void @free(i8* %1) #9
+  tail call void @free(i8* %1) #9, !dbg !240
+  tail call void @llvm.dbg.value(metadata %struct.T_SCHED_MODIFIER* null, i64 0, metadata !68, metadata !195), !dbg !201
   br label %27
 
 ; <label>:27                                      ; preds = %0, %ScheduleTranslateModifierType.exit, %26
   %this.0 = phi %struct.T_SCHED_MODIFIER* [ %2, %ScheduleTranslateModifierType.exit ], [ null, %26 ], [ %2, %0 ]
-  ret %struct.T_SCHED_MODIFIER* %this.0
+  ret %struct.T_SCHED_MODIFIER* %this.0, !dbg !242
 }

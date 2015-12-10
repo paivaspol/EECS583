@@ -1,22 +1,24 @@
 define void @Drand_setNormal(%struct._Drand* %drand, double %mean, double %sigma) #0 {
-entry:
-  %cmp = icmp ne %struct._Drand* %drand, null
-  %cmp1 = fcmp ugt double %sigma, 0.000000e+00
-  %or.cond = and i1 %cmp, %cmp1
-  br i1 %or.cond, label %if.end, label %if.then
+  tail call void @llvm.dbg.value(metadata %struct._Drand* %drand, i64 0, metadata !49, metadata !56), !dbg !149
+  tail call void @llvm.dbg.value(metadata double %mean, i64 0, metadata !50, metadata !56), !dbg !150
+  tail call void @llvm.dbg.value(metadata double %sigma, i64 0, metadata !51, metadata !56), !dbg !151
+  %1 = icmp eq %struct._Drand* %drand, null, !dbg !152
+  %2 = fcmp ole double %sigma, 0.000000e+00, !dbg !154
+  %or.cond = or i1 %1, %2, !dbg !155
+  br i1 %or.cond, label %3, label %6, !dbg !155
 
-if.then:                                          ; preds = %entry
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([55 x i8]* @.str4, i64 0, i64 0), %struct._Drand* %drand, double %mean, double %sigma) #4
-  tail call void @exit(i32 -1) #5
-  unreachable
+; <label>:3                                       ; preds = %0
+  %4 = load %struct.__sFILE** @__stderrp, align 8, !dbg !156, !tbaa !63
+  %5 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %4, i8* getelementptr inbounds ([55 x i8]* @.str4, i64 0, i64 0), %struct._Drand* %drand, double %mean, double %sigma) #6, !dbg !158
+  tail call void @exit(i32 -1) #7, !dbg !159
+  unreachable, !dbg !159
 
-if.end:                                           ; preds = %entry
-  %mode = getelementptr inbounds %struct._Drand* %drand, i64 0, i32 8
-  store i32 2, i32* %mode, align 4, !tbaa !4
-  %mean2 = getelementptr inbounds %struct._Drand* %drand, i64 0, i32 6
-  store double %mean, double* %mean2, align 8, !tbaa !3
-  %sigma3 = getelementptr inbounds %struct._Drand* %drand, i64 0, i32 7
-  store double %sigma, double* %sigma3, align 8, !tbaa !3
-  ret void
+; <label>:6                                       ; preds = %0
+  %7 = getelementptr inbounds %struct._Drand* %drand, i64 0, i32 8, !dbg !160
+  store i32 2, i32* %7, align 4, !dbg !161, !tbaa !141
+  %8 = getelementptr inbounds %struct._Drand* %drand, i64 0, i32 6, !dbg !162
+  store double %mean, double* %8, align 8, !dbg !163, !tbaa !164
+  %9 = getelementptr inbounds %struct._Drand* %drand, i64 0, i32 7, !dbg !165
+  store double %sigma, double* %9, align 8, !dbg !166, !tbaa !167
+  ret void, !dbg !168
 }

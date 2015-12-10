@@ -43,7 +43,7 @@ def parse_file(input_filename, out_filename, sources_path, buckets):
                 found = False
                 if os.path.isdir(sources_path + this_path):
                     for f in os.listdir(sources_path + this_path):
-                        if f == words[1]:                                                    
+                        if words[1] in f:                                                    
                             found = True
                             out_file.write(this_path +"/" + f + "\t" + str(find_bucket(buckets, float(words[2]))) + "\n")
                     

@@ -1,50 +1,53 @@
-define void @MSAFileWrite(%struct._IO_FILE* %fp, %struct.msa_struct* %msa, i32 %outfmt, i32 %do_oneline) #0 {
-entry:
-  switch i32 %outfmt, label %sw.default [
-    i32 105, label %sw.bb
-    i32 104, label %sw.bb1
-    i32 103, label %sw.bb2
-    i32 106, label %sw.bb3
-    i32 102, label %sw.bb4
-    i32 101, label %sw.bb5
-  ]
+define void @MSAFileWrite(%struct.__sFILE* %fp, %struct.msa_struct* %msa, i32 %outfmt, i32 %do_oneline) #0 {
+  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %fp, i64 0, metadata !350, metadata !481), !dbg !1679
+  tail call void @llvm.dbg.value(metadata %struct.msa_struct* %msa, i64 0, metadata !351, metadata !481), !dbg !1680
+  tail call void @llvm.dbg.value(metadata i32 %outfmt, i64 0, metadata !352, metadata !481), !dbg !1681
+  tail call void @llvm.dbg.value(metadata i32 %do_oneline, i64 0, metadata !353, metadata !481), !dbg !1682
+  switch i32 %outfmt, label %10 [
+    i32 105, label %1
+    i32 104, label %2
+    i32 103, label %3
+    i32 106, label %4
+    i32 102, label %5
+    i32 101, label %6
+  ], !dbg !1683
 
-sw.bb:                                            ; preds = %entry
-  tail call void @WriteA2M(%struct._IO_FILE* %fp, %struct.msa_struct* %msa) #6
-  br label %sw.epilog
+; <label>:1                                       ; preds = %0
+  tail call void @WriteA2M(%struct.__sFILE* %fp, %struct.msa_struct* %msa) #7, !dbg !1684
+  br label %11, !dbg !1686
 
-sw.bb1:                                           ; preds = %entry
-  tail call void @WriteClustal(%struct._IO_FILE* %fp, %struct.msa_struct* %msa) #6
-  br label %sw.epilog
+; <label>:2                                       ; preds = %0
+  tail call void @WriteClustal(%struct.__sFILE* %fp, %struct.msa_struct* %msa) #7, !dbg !1687
+  br label %11, !dbg !1688
 
-sw.bb2:                                           ; preds = %entry
-  tail call void @WriteMSF(%struct._IO_FILE* %fp, %struct.msa_struct* %msa) #6
-  br label %sw.epilog
+; <label>:3                                       ; preds = %0
+  tail call void @WriteMSF(%struct.__sFILE* %fp, %struct.msa_struct* %msa) #7, !dbg !1689
+  br label %11, !dbg !1690
 
-sw.bb3:                                           ; preds = %entry
-  tail call void @WritePhylip(%struct._IO_FILE* %fp, %struct.msa_struct* %msa) #6
-  br label %sw.epilog
+; <label>:4                                       ; preds = %0
+  tail call void @WritePhylip(%struct.__sFILE* %fp, %struct.msa_struct* %msa) #7, !dbg !1691
+  br label %11, !dbg !1692
 
-sw.bb4:                                           ; preds = %entry
-  tail call void @WriteSELEX(%struct._IO_FILE* %fp, %struct.msa_struct* %msa) #6
-  br label %sw.epilog
+; <label>:5                                       ; preds = %0
+  tail call void @WriteSELEX(%struct.__sFILE* %fp, %struct.msa_struct* %msa) #7, !dbg !1693
+  br label %11, !dbg !1694
 
-sw.bb5:                                           ; preds = %entry
-  %tobool = icmp eq i32 %do_oneline, 0
-  br i1 %tobool, label %if.else, label %if.then
+; <label>:6                                       ; preds = %0
+  %7 = icmp eq i32 %do_oneline, 0, !dbg !1695
+  br i1 %7, label %9, label %8, !dbg !1697
 
-if.then:                                          ; preds = %sw.bb5
-  tail call void @WriteStockholmOneBlock(%struct._IO_FILE* %fp, %struct.msa_struct* %msa) #6
-  br label %sw.epilog
+; <label>:8                                       ; preds = %6
+  tail call void @WriteStockholmOneBlock(%struct.__sFILE* %fp, %struct.msa_struct* %msa) #7, !dbg !1698
+  br label %11, !dbg !1698
 
-if.else:                                          ; preds = %sw.bb5
-  tail call void @WriteStockholm(%struct._IO_FILE* %fp, %struct.msa_struct* %msa) #6
-  br label %sw.epilog
+; <label>:9                                       ; preds = %6
+  tail call void @WriteStockholm(%struct.__sFILE* %fp, %struct.msa_struct* %msa) #7, !dbg !1699
+  br label %11
 
-sw.default:                                       ; preds = %entry
-  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([42 x i8]* @.str20, i64 0, i64 0), i32 %outfmt) #6
-  br label %sw.epilog
+; <label>:10                                      ; preds = %0
+  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([42 x i8]* @.str24, i64 0, i64 0), i32 %outfmt) #7, !dbg !1700
+  br label %11, !dbg !1701
 
-sw.epilog:                                        ; preds = %if.then, %if.else, %sw.default, %sw.bb4, %sw.bb3, %sw.bb2, %sw.bb1, %sw.bb
-  ret void
+; <label>:11                                      ; preds = %8, %9, %10, %5, %4, %3, %2, %1
+  ret void, !dbg !1702
 }

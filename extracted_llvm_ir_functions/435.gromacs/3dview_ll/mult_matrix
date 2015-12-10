@@ -1,40 +1,45 @@
-define void @mult_matrix([4 x float]* nocapture %A, [4 x float]* nocapture readonly %B, [4 x float]* nocapture readonly %C) #3 {
-  br label %.preheader
+define void @mult_matrix([4 x float]* nocapture %A, [4 x float]* nocapture readonly %B, [4 x float]* nocapture readonly %C) #4 {
+  tail call void @llvm.dbg.value(metadata [4 x float]* %A, i64 0, metadata !126, metadata !259), !dbg !377
+  tail call void @llvm.dbg.value(metadata [4 x float]* %B, i64 0, metadata !127, metadata !259), !dbg !378
+  tail call void @llvm.dbg.value(metadata [4 x float]* %C, i64 0, metadata !128, metadata !259), !dbg !379
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !129, metadata !259), !dbg !380
+  br label %.preheader, !dbg !381
 
 .preheader:                                       ; preds = %12, %0
   %indvars.iv8 = phi i64 [ 0, %0 ], [ %indvars.iv.next9, %12 ]
-  br label %1
+  br label %1, !dbg !383
 
 ; <label>:1                                       ; preds = %11, %.preheader
   %indvars.iv4 = phi i64 [ 0, %.preheader ], [ %indvars.iv.next5, %11 ]
-  %2 = getelementptr inbounds [4 x float]* %A, i64 %indvars.iv8, i64 %indvars.iv4
-  store float 0.000000e+00, float* %2, align 4, !tbaa !14
-  br label %3
+  %2 = getelementptr inbounds [4 x float]* %A, i64 %indvars.iv8, i64 %indvars.iv4, !dbg !386
+  store float 0.000000e+00, float* %2, align 4, !dbg !389, !tbaa !308
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !131, metadata !259), !dbg !390
+  br label %3, !dbg !391
 
 ; <label>:3                                       ; preds = %3, %1
-  %4 = phi float [ 0.000000e+00, %1 ], [ %10, %3 ]
+  %4 = phi float [ 0.000000e+00, %1 ], [ %10, %3 ], !dbg !393
   %indvars.iv = phi i64 [ 0, %1 ], [ %indvars.iv.next, %3 ]
-  %5 = getelementptr inbounds [4 x float]* %B, i64 %indvars.iv8, i64 %indvars.iv
-  %6 = load float* %5, align 4, !tbaa !14
-  %7 = getelementptr inbounds [4 x float]* %C, i64 %indvars.iv, i64 %indvars.iv4
-  %8 = load float* %7, align 4, !tbaa !14
-  %9 = fmul float %6, %8
-  %10 = fadd float %4, %9
-  store float %10, float* %2, align 4, !tbaa !14
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %exitcond = icmp eq i64 %indvars.iv.next, 4
-  br i1 %exitcond, label %11, label %3
+  %5 = getelementptr inbounds [4 x float]* %B, i64 %indvars.iv8, i64 %indvars.iv, !dbg !393
+  %6 = load float* %5, align 4, !dbg !393, !tbaa !308
+  %7 = getelementptr inbounds [4 x float]* %C, i64 %indvars.iv, i64 %indvars.iv4, !dbg !395
+  %8 = load float* %7, align 4, !dbg !395, !tbaa !308
+  %9 = fmul float %6, %8, !dbg !396
+  %10 = fadd float %4, %9, !dbg !397
+  store float %10, float* %2, align 4, !dbg !397, !tbaa !308
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !391
+  %exitcond = icmp eq i64 %indvars.iv.next, 4, !dbg !391
+  br i1 %exitcond, label %11, label %3, !dbg !391
 
 ; <label>:11                                      ; preds = %3
-  %indvars.iv.next5 = add nuw nsw i64 %indvars.iv4, 1
-  %exitcond6 = icmp eq i64 %indvars.iv.next5, 4
-  br i1 %exitcond6, label %12, label %1
+  %indvars.iv.next5 = add nuw nsw i64 %indvars.iv4, 1, !dbg !383
+  %exitcond6 = icmp eq i64 %indvars.iv.next5, 4, !dbg !383
+  br i1 %exitcond6, label %12, label %1, !dbg !383
 
 ; <label>:12                                      ; preds = %11
-  %indvars.iv.next9 = add nuw nsw i64 %indvars.iv8, 1
-  %exitcond10 = icmp eq i64 %indvars.iv.next9, 4
-  br i1 %exitcond10, label %13, label %.preheader
+  %indvars.iv.next9 = add nuw nsw i64 %indvars.iv8, 1, !dbg !381
+  %exitcond10 = icmp eq i64 %indvars.iv.next9, 4, !dbg !381
+  br i1 %exitcond10, label %13, label %.preheader, !dbg !381
 
 ; <label>:13                                      ; preds = %12
-  ret void
+  ret void, !dbg !398
 }

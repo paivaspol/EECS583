@@ -1,49 +1,51 @@
-define i32 @CheckParameterName(i8* nocapture %s, i32* nocapture %type) #0 {
-entry:
-  store i32 0, i32* %type, align 4, !tbaa !0
-  br label %while.body
+define i32 @CheckParameterName(i8* nocapture readonly %s, i32* nocapture %type) #0 {
+  tail call void @llvm.dbg.value(metadata i8* %s, i64 0, metadata !20, metadata !666), !dbg !667
+  tail call void @llvm.dbg.value(metadata i32* %type, i64 0, metadata !21, metadata !666), !dbg !668
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !22, metadata !666), !dbg !669
+  store i32 0, i32* %type, align 4, !dbg !670, !tbaa !671
+  br label %1, !dbg !675
 
-while.cond:                                       ; preds = %while.body
-  %inc = add nsw i32 %i.039, 1
-  %arraydecay = getelementptr inbounds [6 x [20 x i8]]* @MatrixType4x4, i64 0, i64 %indvars.iv.next43, i64 0
-  %cmp = icmp ne i8* %arraydecay, null
-  %0 = trunc i64 %indvars.iv.next43 to i32
-  %cmp1 = icmp slt i32 %0, 6
-  %or.cond = and i1 %cmp, %cmp1
-  br i1 %or.cond, label %while.body, label %while.end
+; <label>:1                                       ; preds = %0, %5
+  %indvars.iv10 = phi i64 [ 0, %0 ], [ %indvars.iv.next11, %5 ]
+  %2 = phi i8* [ getelementptr inbounds ([6 x [20 x i8]]* @MatrixType4x4, i64 0, i64 0, i64 0), %0 ], [ %6, %5 ]
+  %3 = tail call i32 @strcmp(i8* %2, i8* %s) #6, !dbg !676
+  %4 = icmp eq i32 %3, 0, !dbg !679
+  br i1 %4, label %.critedge1.loopexit5, label %5, !dbg !680
 
-while.body:                                       ; preds = %entry, %while.cond
-  %indvars.iv42 = phi i64 [ 0, %entry ], [ %indvars.iv.next43, %while.cond ]
-  %arraydecay40 = phi i8* [ getelementptr inbounds ([6 x [20 x i8]]* @MatrixType4x4, i64 0, i64 0, i64 0), %entry ], [ %arraydecay, %while.cond ]
-  %i.039 = phi i32 [ 0, %entry ], [ %inc, %while.cond ]
-  %call = tail call i32 @strcmp(i8* %arraydecay40, i8* %s) #5
-  %cmp5 = icmp eq i32 %call, 0
-  %indvars.iv.next43 = add i64 %indvars.iv42, 1
-  br i1 %cmp5, label %return, label %while.cond
+; <label>:5                                       ; preds = %1
+  %indvars.iv.next11 = add nuw nsw i64 %indvars.iv10, 1, !dbg !675
+  %6 = getelementptr inbounds [6 x [20 x i8]]* @MatrixType4x4, i64 0, i64 %indvars.iv.next11, i64 0, !dbg !681
+  %7 = icmp ne i8* %6, null, !dbg !682
+  %8 = icmp slt i64 %indvars.iv.next11, 6, !dbg !683
+  %or.cond = and i1 %8, %7, !dbg !675
+  br i1 %or.cond, label %1, label %.critedge, !dbg !675
 
-while.end:                                        ; preds = %while.cond
-  store i32 1, i32* %type, align 4, !tbaa !0
-  br label %while.body14
+.critedge:                                        ; preds = %5
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !22, metadata !666), !dbg !669
+  store i32 1, i32* %type, align 4, !dbg !684, !tbaa !671
+  br label %9, !dbg !685
 
-while.cond6:                                      ; preds = %while.body14
-  %inc22 = add nsw i32 %i.135, 1
-  %arraydecay9 = getelementptr inbounds [2 x [20 x i8]]* @MatrixType8x8, i64 0, i64 %indvars.iv.next, i64 0
-  %cmp10 = icmp ne i8* %arraydecay9, null
-  %1 = trunc i64 %indvars.iv.next to i32
-  %cmp12 = icmp slt i32 %1, 2
-  %or.cond34 = and i1 %cmp10, %cmp12
-  br i1 %or.cond34, label %while.body14, label %return
+; <label>:9                                       ; preds = %.critedge, %14
+  %indvars.iv = phi i64 [ 0, %.critedge ], [ %indvars.iv.next, %14 ]
+  %10 = phi i8* [ getelementptr inbounds ([2 x [20 x i8]]* @MatrixType8x8, i64 0, i64 0, i64 0), %.critedge ], [ %15, %14 ]
+  %11 = tail call i32 @strcmp(i8* %10, i8* %s) #6, !dbg !686
+  %12 = icmp eq i32 %11, 0, !dbg !689
+  %13 = trunc i64 %indvars.iv to i32, !dbg !690
+  br i1 %12, label %.critedge1, label %14, !dbg !690
 
-while.body14:                                     ; preds = %while.end, %while.cond6
-  %indvars.iv = phi i64 [ 0, %while.end ], [ %indvars.iv.next, %while.cond6 ]
-  %arraydecay936 = phi i8* [ getelementptr inbounds ([2 x [20 x i8]]* @MatrixType8x8, i64 0, i64 0, i64 0), %while.end ], [ %arraydecay9, %while.cond6 ]
-  %i.135 = phi i32 [ 0, %while.end ], [ %inc22, %while.cond6 ]
-  %call18 = tail call i32 @strcmp(i8* %arraydecay936, i8* %s) #5
-  %cmp19 = icmp eq i32 %call18, 0
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  br i1 %cmp19, label %return, label %while.cond6
+; <label>:14                                      ; preds = %9
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !685
+  %15 = getelementptr inbounds [2 x [20 x i8]]* @MatrixType8x8, i64 0, i64 %indvars.iv.next, i64 0, !dbg !691
+  %16 = icmp ne i8* %15, null, !dbg !692
+  %17 = icmp slt i64 %indvars.iv.next, 2, !dbg !693
+  %or.cond4 = and i1 %17, %16, !dbg !685
+  br i1 %or.cond4, label %9, label %.critedge1, !dbg !685
 
-return:                                           ; preds = %while.body, %while.cond6, %while.body14
-  %retval.0 = phi i32 [ -1, %while.cond6 ], [ %i.135, %while.body14 ], [ %i.039, %while.body ]
-  ret i32 %retval.0
+.critedge1.loopexit5:                             ; preds = %1
+  %18 = trunc i64 %indvars.iv10 to i32
+  br label %.critedge1
+
+.critedge1:                                       ; preds = %14, %9, %.critedge1.loopexit5
+  %.0 = phi i32 [ %18, %.critedge1.loopexit5 ], [ %13, %9 ], [ -1, %14 ]
+  ret i32 %.0, !dbg !694
 }

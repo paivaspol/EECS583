@@ -1,32 +1,36 @@
 define i32 @Util_SplitFilename(i8** nocapture %dir, i8** nocapture %file, i8* %string) #1 {
-  %1 = tail call i8* @Util_Strdup(i8* %string) #8
-  store i8* %1, i8** %file, align 8, !tbaa !2
-  %2 = icmp eq i8* %1, null
+  tail call void @llvm.dbg.value(metadata i8** %dir, i64 0, metadata !57, metadata !107), !dbg !248
+  tail call void @llvm.dbg.value(metadata i8** %file, i64 0, metadata !58, metadata !107), !dbg !249
+  tail call void @llvm.dbg.value(metadata i8* %string, i64 0, metadata !59, metadata !107), !dbg !250
+  %1 = tail call i8* @Util_Strdup(i8* %string) #8, !dbg !251
+  store i8* %1, i8** %file, align 8, !dbg !252, !tbaa !112
+  %2 = icmp eq i8* %1, null, !dbg !253
   %3 = ptrtoint i8* %1 to i64
-  br i1 %2, label %12, label %4
+  br i1 %2, label %12, label %4, !dbg !255
 
 ; <label>:4                                       ; preds = %0
-  %5 = tail call i8* @strrchr(i8* %1, i32 47) #7
-  %6 = icmp eq i8* %5, null
-  br i1 %6, label %11, label %7
+  %5 = tail call i8* @strrchr(i8* %1, i32 47) #7, !dbg !256
+  tail call void @llvm.dbg.value(metadata i8* %5, i64 0, metadata !60, metadata !107), !dbg !258
+  %6 = icmp eq i8* %5, null, !dbg !259
+  br i1 %6, label %11, label %7, !dbg !261
 
 ; <label>:7                                       ; preds = %4
-  %8 = bitcast i8** %dir to i64*
-  store i64 %3, i64* %8, align 8, !tbaa !2
-  store i8 0, i8* %5, align 1, !tbaa !6
-  %9 = getelementptr inbounds i8* %5, i64 1
-  %10 = tail call i8* @Util_Strdup(i8* %9) #8
-  store i8* %10, i8** %file, align 8, !tbaa !2
-  br label %12
+  %8 = bitcast i8** %dir to i64*, !dbg !262
+  store i64 %3, i64* %8, align 8, !dbg !262, !tbaa !112
+  store i8 0, i8* %5, align 1, !dbg !264, !tbaa !148
+  %9 = getelementptr inbounds i8* %5, i64 1, !dbg !265
+  %10 = tail call i8* @Util_Strdup(i8* %9) #8, !dbg !266
+  store i8* %10, i8** %file, align 8, !dbg !267, !tbaa !112
+  br label %12, !dbg !268
 
 ; <label>:11                                      ; preds = %4
-  store i8* null, i8** %dir, align 8, !tbaa !2
-  %.pre = load i8** %file, align 8, !tbaa !2
+  store i8* null, i8** %dir, align 8, !dbg !269, !tbaa !112
+  %.pre = load i8** %file, align 8, !dbg !271, !tbaa !112
   br label %12
 
 ; <label>:12                                      ; preds = %0, %7, %11
   %13 = phi i8* [ null, %0 ], [ %10, %7 ], [ %.pre, %11 ]
-  %not. = icmp eq i8* %13, null
-  %14 = sext i1 %not. to i32
-  ret i32 %14
+  %not. = icmp eq i8* %13, null, !dbg !271
+  %14 = sext i1 %not. to i32, !dbg !271
+  ret i32 %14, !dbg !272
 }

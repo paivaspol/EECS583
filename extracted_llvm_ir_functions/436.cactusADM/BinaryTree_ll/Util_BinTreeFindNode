@@ -3,29 +3,33 @@ define %struct.T_TREE* @Util_BinTreeFindNode(%struct.T_TREE* readonly %root, i8*
 
 tailrecurse:                                      ; preds = %tailrecurse.backedge, %0
   %root.tr = phi %struct.T_TREE* [ %root, %0 ], [ %root.tr.be, %tailrecurse.backedge ]
-  %1 = getelementptr inbounds %struct.T_TREE* %root.tr, i64 0, i32 3
-  %2 = load i8** %1, align 8, !tbaa !2
-  %3 = tail call i32 %compare(i8* %data, i8* %2) #4
-  %4 = icmp slt i32 %3, 0
-  br i1 %4, label %5, label %7
+  tail call void @llvm.dbg.value(metadata %struct.T_TREE* %root.tr, i64 0, metadata !74, metadata !86), !dbg !219
+  tail call void @llvm.dbg.value(metadata i8* %data, i64 0, metadata !75, metadata !86), !dbg !220
+  tail call void @llvm.dbg.value(metadata i32 (i8*, i8*)* %compare, i64 0, metadata !76, metadata !86), !dbg !221
+  %1 = getelementptr inbounds %struct.T_TREE* %root.tr, i64 0, i32 3, !dbg !222
+  %2 = load i8** %1, align 8, !dbg !222, !tbaa !104
+  %3 = tail call i32 %compare(i8* %data, i8* %2) #5, !dbg !224
+  tail call void @llvm.dbg.value(metadata i32 %3, i64 0, metadata !77, metadata !86), !dbg !225
+  %4 = icmp slt i32 %3, 0, !dbg !226
+  br i1 %4, label %5, label %7, !dbg !227
 
 ; <label>:5                                       ; preds = %tailrecurse
-  %6 = getelementptr inbounds %struct.T_TREE* %root.tr, i64 0, i32 0
-  br label %tailrecurse.backedge
+  %6 = getelementptr inbounds %struct.T_TREE* %root.tr, i64 0, i32 0, !dbg !228
+  br label %tailrecurse.backedge, !dbg !230
 
 tailrecurse.backedge:                             ; preds = %5, %9
   %root.tr.be.in = phi %struct.T_TREE** [ %6, %5 ], [ %10, %9 ]
-  %root.tr.be = load %struct.T_TREE** %root.tr.be.in, align 8
+  %root.tr.be = load %struct.T_TREE** %root.tr.be.in, align 8, !dbg !228
   br label %tailrecurse
 
 ; <label>:7                                       ; preds = %tailrecurse
-  %8 = icmp sgt i32 %3, 0
-  br i1 %8, label %9, label %11
+  %8 = icmp sgt i32 %3, 0, !dbg !231
+  br i1 %8, label %9, label %11, !dbg !233
 
 ; <label>:9                                       ; preds = %7
-  %10 = getelementptr inbounds %struct.T_TREE* %root.tr, i64 0, i32 1
-  br label %tailrecurse.backedge
+  %10 = getelementptr inbounds %struct.T_TREE* %root.tr, i64 0, i32 1, !dbg !234
+  br label %tailrecurse.backedge, !dbg !236
 
 ; <label>:11                                      ; preds = %7
-  ret %struct.T_TREE* %root.tr
+  ret %struct.T_TREE* %root.tr, !dbg !237
 }

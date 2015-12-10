@@ -1,38 +1,39 @@
 define void @SeqfilePosition(%struct.ReadSeqVars* %sqfp, %struct.ssioffset_s* %offset) #0 {
-entry:
-  %do_stdin = getelementptr inbounds %struct.ReadSeqVars* %sqfp, i64 0, i32 22
-  %0 = load i32* %do_stdin, align 4, !tbaa !0
-  %tobool = icmp eq i32 %0, 0
-  br i1 %tobool, label %lor.lhs.false, label %if.then
+  tail call void @llvm.dbg.value(metadata %struct.ReadSeqVars* %sqfp, i64 0, metadata !276, metadata !624), !dbg !820
+  tail call void @llvm.dbg.value(metadata %struct.ssioffset_s* %offset, i64 0, metadata !277, metadata !624), !dbg !821
+  %1 = getelementptr inbounds %struct.ReadSeqVars* %sqfp, i64 0, i32 22, !dbg !822
+  %2 = load i32* %1, align 4, !dbg !822, !tbaa !674
+  %3 = icmp eq i32 %2, 0, !dbg !824
+  br i1 %3, label %4, label %12, !dbg !825
 
-lor.lhs.false:                                    ; preds = %entry
-  %do_gzip = getelementptr inbounds %struct.ReadSeqVars* %sqfp, i64 0, i32 21
-  %1 = load i32* %do_gzip, align 4, !tbaa !0
-  %tobool1 = icmp eq i32 %1, 0
-  br i1 %tobool1, label %lor.lhs.false2, label %if.then
+; <label>:4                                       ; preds = %0
+  %5 = getelementptr inbounds %struct.ReadSeqVars* %sqfp, i64 0, i32 21, !dbg !826
+  %6 = load i32* %5, align 4, !dbg !826, !tbaa !677
+  %7 = icmp eq i32 %6, 0, !dbg !827
+  br i1 %7, label %8, label %12, !dbg !828
 
-lor.lhs.false2:                                   ; preds = %lor.lhs.false
-  %format = getelementptr inbounds %struct.ReadSeqVars* %sqfp, i64 0, i32 20
-  %2 = load i32* %format, align 4, !tbaa !0
-  %cmp = icmp sgt i32 %2, 100
-  br i1 %cmp, label %if.then, label %if.end
+; <label>:8                                       ; preds = %4
+  %9 = getelementptr inbounds %struct.ReadSeqVars* %sqfp, i64 0, i32 20, !dbg !829
+  %10 = load i32* %9, align 4, !dbg !829, !tbaa !753
+  %11 = icmp sgt i32 %10, 100, !dbg !829
+  br i1 %11, label %12, label %13, !dbg !830
 
-if.then:                                          ; preds = %lor.lhs.false, %entry, %lor.lhs.false2
-  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([65 x i8]* @.str, i64 0, i64 0)) #8
-  br label %if.end
+; <label>:12                                      ; preds = %4, %0, %8
+  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([65 x i8]* @.str, i64 0, i64 0)) #8, !dbg !831
+  br label %13, !dbg !831
 
-if.end:                                           ; preds = %if.then, %lor.lhs.false2
-  %f = getelementptr inbounds %struct.ReadSeqVars* %sqfp, i64 0, i32 0
-  %3 = load %struct._IO_FILE** %f, align 8, !tbaa !3
-  %call = tail call i32 @SSISetFilePosition(%struct._IO_FILE* %3, %struct.ssioffset_s* %offset) #8
-  %cmp3 = icmp eq i32 %call, 0
-  br i1 %cmp3, label %if.end5, label %if.then4
+; <label>:13                                      ; preds = %12, %8
+  %14 = getelementptr inbounds %struct.ReadSeqVars* %sqfp, i64 0, i32 0, !dbg !832
+  %15 = load %struct.__sFILE** %14, align 8, !dbg !832, !tbaa !671
+  %16 = tail call i32 @SSISetFilePosition(%struct.__sFILE* %15, %struct.ssioffset_s* %offset) #8, !dbg !834
+  %17 = icmp eq i32 %16, 0, !dbg !835
+  br i1 %17, label %19, label %18, !dbg !836
 
-if.then4:                                         ; preds = %if.end
-  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0)) #8
-  br label %if.end5
+; <label>:18                                      ; preds = %13
+  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0)) #8, !dbg !837
+  br label %19, !dbg !837
 
-if.end5:                                          ; preds = %if.end, %if.then4
-  tail call fastcc void @SeqfileGetLine(%struct.ReadSeqVars* %sqfp) #7
-  ret void
+; <label>:19                                      ; preds = %13, %18
+  tail call fastcc void @SeqfileGetLine(%struct.ReadSeqVars* %sqfp) #7, !dbg !838
+  ret void, !dbg !839
 }

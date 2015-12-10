@@ -1,0 +1,28 @@
+define internal fastcc zeroext i8 @hasSuffix(i8* nocapture readonly %s, i8* nocapture readonly %suffix) #8 {
+  tail call void @llvm.dbg.value(metadata i8* %s, i64 0, metadata !287, metadata !524), !dbg !2590
+  tail call void @llvm.dbg.value(metadata i8* %suffix, i64 0, metadata !288, metadata !524), !dbg !2591
+  %1 = tail call i64 @strlen(i8* %s) #9, !dbg !2592
+  %2 = trunc i64 %1 to i32, !dbg !2592
+  tail call void @llvm.dbg.value(metadata i32 %2, i64 0, metadata !289, metadata !524), !dbg !2593
+  %3 = tail call i64 @strlen(i8* %suffix) #9, !dbg !2594
+  %4 = trunc i64 %3 to i32, !dbg !2594
+  tail call void @llvm.dbg.value(metadata i32 %4, i64 0, metadata !290, metadata !524), !dbg !2595
+  %5 = icmp slt i32 %2, %4, !dbg !2596
+  br i1 %5, label %12, label %6, !dbg !2598
+
+; <label>:6                                       ; preds = %0
+  %sext = shl i64 %1, 32, !dbg !2599
+  %7 = ashr exact i64 %sext, 32, !dbg !2599
+  %sext1 = shl i64 %3, 32, !dbg !2601
+  %8 = ashr exact i64 %sext1, 32, !dbg !2601
+  %.sum = sub nsw i64 %7, %8, !dbg !2601
+  %9 = getelementptr inbounds i8* %s, i64 %.sum, !dbg !2601
+  %10 = tail call i32 @strcmp(i8* %9, i8* %suffix) #9, !dbg !2602
+  %11 = icmp eq i32 %10, 0, !dbg !2603
+  %. = zext i1 %11 to i8, !dbg !2604
+  br label %12, !dbg !2604
+
+; <label>:12                                      ; preds = %6, %0
+  %.0 = phi i8 [ 0, %0 ], [ %., %6 ]
+  ret i8 %.0, !dbg !2605
+}

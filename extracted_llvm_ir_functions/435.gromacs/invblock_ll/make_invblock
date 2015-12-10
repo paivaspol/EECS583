@@ -1,70 +1,75 @@
 define i32* @make_invblock(%struct.t_block* nocapture readonly %block, i32 %nr) #3 {
-  %1 = tail call i8* @save_calloc(i8* getelementptr inbounds ([9 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([68 x i8]* @.str1, i64 0, i64 0), i32 42, i32 %nr, i32 4) #5
-  %2 = bitcast i8* %1 to i32*
-  %3 = icmp sgt i32 %nr, 0
-  br i1 %3, label %.lr.ph6, label %.preheader
+  tail call void @llvm.dbg.value(metadata %struct.t_block* %block, i64 0, metadata !101, metadata !110), !dbg !149
+  tail call void @llvm.dbg.value(metadata i32 %nr, i64 0, metadata !102, metadata !110), !dbg !150
+  %1 = tail call i8* @save_calloc(i8* getelementptr inbounds ([9 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([68 x i8]* @.str1, i64 0, i64 0), i32 42, i32 %nr, i32 4) #6, !dbg !151
+  %2 = bitcast i8* %1 to i32*, !dbg !151
+  tail call void @llvm.dbg.value(metadata i32* %2, i64 0, metadata !105, metadata !110), !dbg !152
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !103, metadata !110), !dbg !153
+  %3 = icmp sgt i32 %nr, 0, !dbg !154
+  br i1 %3, label %.lr.ph6, label %.preheader, !dbg !157
 
 .lr.ph6:                                          ; preds = %0
-  %4 = add i32 %nr, -1
+  %4 = add i32 %nr, -1, !dbg !157
   %5 = zext i32 %4 to i64
-  %6 = shl nuw nsw i64 %5, 2
-  %7 = add nuw nsw i64 %6, 4
-  call void @llvm.memset.p0i8.i64(i8* %1, i8 -1, i64 %7, i32 4, i1 false)
-  br label %.preheader
+  %6 = shl nuw nsw i64 %5, 2, !dbg !157
+  %7 = add nuw nsw i64 %6, 4, !dbg !157
+  call void @llvm.memset.p0i8.i64(i8* %1, i8 -1, i64 %7, i32 4, i1 false), !dbg !158
+  br label %.preheader, !dbg !157
 
 .preheader:                                       ; preds = %.lr.ph6, %0
-  %8 = getelementptr inbounds %struct.t_block* %block, i64 0, i32 1
-  %9 = load i32* %8, align 4, !tbaa !14
-  %10 = icmp sgt i32 %9, 0
-  br i1 %10, label %.lr.ph3, label %._crit_edge
+  %8 = getelementptr inbounds %struct.t_block* %block, i64 0, i32 1, !dbg !159
+  %9 = load i32* %8, align 4, !dbg !159, !tbaa !162
+  %10 = icmp sgt i32 %9, 0, !dbg !164
+  br i1 %10, label %.lr.ph3, label %._crit_edge, !dbg !165
 
 .lr.ph3:                                          ; preds = %.preheader
-  %11 = getelementptr inbounds %struct.t_block* %block, i64 0, i32 2
-  %12 = load i32** %11, align 8, !tbaa !16
-  %13 = getelementptr inbounds %struct.t_block* %block, i64 0, i32 4
-  %.pre11 = load i32* %12, align 4, !tbaa !17
-  br label %18
+  %11 = getelementptr inbounds %struct.t_block* %block, i64 0, i32 2, !dbg !166
+  %12 = load i32** %11, align 8, !dbg !166, !tbaa !168
+  %13 = getelementptr inbounds %struct.t_block* %block, i64 0, i32 4, !dbg !169
+  %.pre11 = load i32* %12, align 4, !dbg !171, !tbaa !172
+  br label %18, !dbg !165
 
 ..loopexit_crit_edge:                             ; preds = %26
-  %.pre = load i32* %8, align 4, !tbaa !14
-  br label %.loopexit
+  %.pre = load i32* %8, align 4, !dbg !159, !tbaa !162
+  br label %.loopexit, !dbg !173
 
 .loopexit:                                        ; preds = %..loopexit_crit_edge, %18
   %14 = phi i32 [ %32, %..loopexit_crit_edge ], [ %22, %18 ]
-  %15 = phi i32 [ %.pre, %..loopexit_crit_edge ], [ %20, %18 ]
-  %16 = sext i32 %15 to i64
-  %17 = icmp slt i64 %indvars.iv.next8, %16
-  br i1 %17, label %18, label %._crit_edge
+  %15 = phi i32 [ %.pre, %..loopexit_crit_edge ], [ %20, %18 ], !dbg !159
+  %16 = sext i32 %15 to i64, !dbg !164
+  %17 = icmp slt i64 %indvars.iv.next8, %16, !dbg !164
+  br i1 %17, label %18, label %._crit_edge, !dbg !165
 
 ; <label>:18                                      ; preds = %.lr.ph3, %.loopexit
-  %19 = phi i32 [ %.pre11, %.lr.ph3 ], [ %14, %.loopexit ]
+  %19 = phi i32 [ %.pre11, %.lr.ph3 ], [ %14, %.loopexit ], !dbg !171
   %20 = phi i32 [ %9, %.lr.ph3 ], [ %15, %.loopexit ]
   %indvars.iv7 = phi i64 [ 0, %.lr.ph3 ], [ %indvars.iv.next8, %.loopexit ]
-  %indvars.iv.next8 = add nuw nsw i64 %indvars.iv7, 1
-  %21 = getelementptr inbounds i32* %12, i64 %indvars.iv.next8
-  %22 = load i32* %21, align 4, !tbaa !17
-  %23 = icmp slt i32 %19, %22
-  br i1 %23, label %.lr.ph, label %.loopexit
+  tail call void @llvm.dbg.value(metadata i32 %19, i64 0, metadata !104, metadata !110), !dbg !174
+  %indvars.iv.next8 = add nuw nsw i64 %indvars.iv7, 1, !dbg !165
+  %21 = getelementptr inbounds i32* %12, i64 %indvars.iv.next8, !dbg !175
+  %22 = load i32* %21, align 4, !dbg !175, !tbaa !172
+  %23 = icmp slt i32 %19, %22, !dbg !176
+  br i1 %23, label %.lr.ph, label %.loopexit, !dbg !173
 
 .lr.ph:                                           ; preds = %18
-  %24 = load i32** %13, align 8, !tbaa !18
+  %24 = load i32** %13, align 8, !dbg !169, !tbaa !177
   %25 = sext i32 %19 to i64
-  br label %26
+  br label %26, !dbg !173
 
 ; <label>:26                                      ; preds = %.lr.ph, %26
   %indvars.iv = phi i64 [ %25, %.lr.ph ], [ %indvars.iv.next, %26 ]
-  %27 = getelementptr inbounds i32* %24, i64 %indvars.iv
-  %28 = load i32* %27, align 4, !tbaa !17
-  %29 = sext i32 %28 to i64
-  %30 = getelementptr inbounds i32* %2, i64 %29
-  %31 = trunc i64 %indvars.iv7 to i32
-  store i32 %31, i32* %30, align 4, !tbaa !17
-  %indvars.iv.next = add nsw i64 %indvars.iv, 1
-  %32 = load i32* %21, align 4, !tbaa !17
-  %33 = sext i32 %32 to i64
-  %34 = icmp slt i64 %indvars.iv.next, %33
-  br i1 %34, label %26, label %..loopexit_crit_edge
+  %27 = getelementptr inbounds i32* %24, i64 %indvars.iv, !dbg !178
+  %28 = load i32* %27, align 4, !dbg !178, !tbaa !172
+  %29 = sext i32 %28 to i64, !dbg !179
+  %30 = getelementptr inbounds i32* %2, i64 %29, !dbg !179
+  %31 = trunc i64 %indvars.iv7 to i32, !dbg !180
+  store i32 %31, i32* %30, align 4, !dbg !180, !tbaa !172
+  %indvars.iv.next = add nsw i64 %indvars.iv, 1, !dbg !173
+  %32 = load i32* %21, align 4, !dbg !175, !tbaa !172
+  %33 = sext i32 %32 to i64, !dbg !176
+  %34 = icmp slt i64 %indvars.iv.next, %33, !dbg !176
+  br i1 %34, label %26, label %..loopexit_crit_edge, !dbg !173
 
 ._crit_edge:                                      ; preds = %.loopexit, %.preheader
-  ret i32* %2
+  ret i32* %2, !dbg !181
 }

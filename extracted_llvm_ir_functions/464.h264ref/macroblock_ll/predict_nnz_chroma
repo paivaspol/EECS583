@@ -1,270 +1,288 @@
 define i32 @predict_nnz_chroma(i32 %i, i32 %j) #0 {
-entry:
   %pix = alloca %struct.pix_pos, align 4
-  %0 = load %struct.ImageParameters** @img, align 8, !tbaa !0
-  %current_mb_nr = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 3
-  %1 = load i32* %current_mb_nr, align 4, !tbaa !3
-  %idxprom = sext i32 %j to i64
-  %arrayidx = getelementptr inbounds [12 x i32]* @predict_nnz_chroma.j_off_tab, i64 0, i64 %idxprom
-  %2 = load i32* %arrayidx, align 4, !tbaa !3
-  %yuv_format = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 159
-  %3 = load i32* %yuv_format, align 4, !tbaa !3
-  %cmp = icmp eq i32 %3, 3
-  br i1 %cmp, label %if.else, label %if.then
+  tail call void @llvm.dbg.value(metadata i32 %i, i64 0, metadata !1044, metadata !1584), !dbg !7697
+  tail call void @llvm.dbg.value(metadata i32 %j, i64 0, metadata !1045, metadata !1584), !dbg !7698
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !1047, metadata !1584), !dbg !7699
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !1048, metadata !1584), !dbg !7700
+  %1 = load %struct.ImageParameters** @img, align 8, !dbg !7701, !tbaa !1587
+  %2 = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 3, !dbg !7702
+  %3 = load i32* %2, align 4, !dbg !7702, !tbaa !1593
+  tail call void @llvm.dbg.value(metadata i32 %3, i64 0, metadata !1049, metadata !1584), !dbg !7703
+  tail call void @llvm.dbg.declare(metadata [12 x i32]* @predict_nnz_chroma.j_off_tab, metadata !1050, metadata !1584), !dbg !7704
+  %4 = sext i32 %j to i64, !dbg !7705
+  %5 = getelementptr inbounds [12 x i32]* @predict_nnz_chroma.j_off_tab, i64 0, i64 %4, !dbg !7705
+  %6 = load i32* %5, align 4, !dbg !7705, !tbaa !1719
+  tail call void @llvm.dbg.value(metadata i32 %6, i64 0, metadata !1054, metadata !1584), !dbg !7706
+  %7 = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 159, !dbg !7707
+  %8 = load i32* %7, align 4, !dbg !7707, !tbaa !1669
+  %9 = icmp eq i32 %8, 3, !dbg !7709
+  br i1 %9, label %103, label %10, !dbg !7710
 
-if.then:                                          ; preds = %entry
-  %rem = srem i32 %i, 2
-  %sub = add nsw i32 %j, -4
-  call void @getChroma4x4Neighbour(i32 %1, i32 %rem, i32 %sub, i32 -1, i32 0, %struct.pix_pos* %pix) #7
-  %available = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 0
-  %4 = load i32* %available, align 4, !tbaa !3
-  %tobool = icmp eq i32 %4, 0
-  br i1 %tobool, label %if.end19, label %land.lhs.true
+; <label>:10                                      ; preds = %0
+  %11 = srem i32 %i, 2, !dbg !7711
+  %12 = add nsw i32 %j, -4, !dbg !7713
+  tail call void @llvm.dbg.value(metadata %struct.pix_pos* %pix, i64 0, metadata !1046, metadata !1584), !dbg !7714
+  call void @getChroma4x4Neighbour(i32 %3, i32 %11, i32 %12, i32 -1, i32 0, %struct.pix_pos* %pix) #7, !dbg !7715
+  %13 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 0, !dbg !7716
+  %14 = load i32* %13, align 4, !dbg !7716, !tbaa !4795
+  %15 = icmp eq i32 %14, 0, !dbg !7718
+  br i1 %15, label %.thread, label %16, !dbg !7719
 
-land.lhs.true:                                    ; preds = %if.then
-  %5 = load %struct.pic_parameter_set_rbsp_t** @active_pps, align 8, !tbaa !0
-  %constrained_intra_pred_flag = getelementptr inbounds %struct.pic_parameter_set_rbsp_t* %5, i64 0, i32 27
-  %6 = load i32* %constrained_intra_pred_flag, align 4, !tbaa !1
-  %tobool1 = icmp eq i32 %6, 0
-  br i1 %tobool1, label %if.then10, label %land.lhs.true2
+; <label>:16                                      ; preds = %10
+  %17 = load %struct.pic_parameter_set_rbsp_t** @active_pps, align 8, !dbg !7720, !tbaa !1587
+  %18 = getelementptr inbounds %struct.pic_parameter_set_rbsp_t* %17, i64 0, i32 27, !dbg !7721
+  %19 = load i32* %18, align 4, !dbg !7721, !tbaa !7639
+  %20 = icmp eq i32 %19, 0, !dbg !7720
+  br i1 %20, label %thread-pre-split.thread, label %21, !dbg !7722
 
-land.lhs.true2:                                   ; preds = %land.lhs.true
-  %7 = load %struct.InputParameters** @input, align 8, !tbaa !0
-  %partition_mode = getelementptr inbounds %struct.InputParameters* %7, i64 0, i32 61
-  %8 = load i32* %partition_mode, align 4, !tbaa !3
-  %cmp3 = icmp eq i32 %8, 0
-  br i1 %cmp3, label %if.then10, label %if.end
+; <label>:21                                      ; preds = %16
+  %22 = load %struct.InputParameters** @input, align 8, !dbg !7723, !tbaa !1587
+  %23 = getelementptr inbounds %struct.InputParameters* %22, i64 0, i32 61, !dbg !7724
+  %24 = load i32* %23, align 4, !dbg !7724, !tbaa !2551
+  %25 = icmp eq i32 %24, 0, !dbg !7725
+  br i1 %25, label %thread-pre-split.thread, label %thread-pre-split, !dbg !7726
 
-if.end:                                           ; preds = %land.lhs.true2
-  %mb_addr = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 1
-  %9 = load i32* %mb_addr, align 4, !tbaa !3
-  %idxprom5 = sext i32 %9 to i64
-  %10 = load %struct.ImageParameters** @img, align 8, !tbaa !0
-  %intra_block = getelementptr inbounds %struct.ImageParameters* %10, i64 0, i32 54
-  %11 = load i32** %intra_block, align 8, !tbaa !0
-  %arrayidx6 = getelementptr inbounds i32* %11, i64 %idxprom5
-  %12 = load i32* %arrayidx6, align 4, !tbaa !3
-  %and = and i32 %12, %4
-  store i32 %and, i32* %available, align 4, !tbaa !3
-  %tobool9 = icmp eq i32 %and, 0
-  br i1 %tobool9, label %if.end19, label %if.then10
+thread-pre-split:                                 ; preds = %21
+  %26 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 1, !dbg !7727
+  %27 = load i32* %26, align 4, !dbg !7727, !tbaa !4809
+  %28 = sext i32 %27 to i64, !dbg !7729
+  %29 = load %struct.ImageParameters** @img, align 8, !dbg !7729, !tbaa !1587
+  %30 = getelementptr inbounds %struct.ImageParameters* %29, i64 0, i32 54, !dbg !7730
+  %31 = load i32** %30, align 8, !dbg !7730, !tbaa !2494
+  %32 = getelementptr inbounds i32* %31, i64 %28, !dbg !7729
+  %33 = load i32* %32, align 4, !dbg !7729, !tbaa !1719
+  %34 = and i32 %33, %14, !dbg !7731
+  store i32 %34, i32* %13, align 4, !dbg !7731, !tbaa !4795
+  %35 = icmp eq i32 %34, 0, !dbg !7732
+  br i1 %35, label %.thread, label %thread-pre-split.thread, !dbg !7734
 
-if.then10:                                        ; preds = %land.lhs.true2, %land.lhs.true, %if.end
-  %y = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 3
-  %13 = load i32* %y, align 4, !tbaa !3
-  %add = add nsw i32 %13, 4
-  %idxprom11 = sext i32 %add to i64
-  %div = sdiv i32 %i, 2
-  %mul = shl i32 %div, 1
-  %x = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 2
-  %14 = load i32* %x, align 4, !tbaa !3
-  %add12 = add nsw i32 %mul, %14
-  %idxprom13 = sext i32 %add12 to i64
-  %mb_addr14 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 1
-  %15 = load i32* %mb_addr14, align 4, !tbaa !3
-  %idxprom15 = sext i32 %15 to i64
-  %16 = load %struct.ImageParameters** @img, align 8, !tbaa !0
-  %nz_coeff = getelementptr inbounds %struct.ImageParameters* %16, i64 0, i32 28
-  %17 = load i32**** %nz_coeff, align 8, !tbaa !0
-  %arrayidx16 = getelementptr inbounds i32*** %17, i64 %idxprom15
-  %18 = load i32*** %arrayidx16, align 8, !tbaa !0
-  %arrayidx17 = getelementptr inbounds i32** %18, i64 %idxprom13
-  %19 = load i32** %arrayidx17, align 8, !tbaa !0
-  %arrayidx18 = getelementptr inbounds i32* %19, i64 %idxprom11
-  %20 = load i32* %arrayidx18, align 4, !tbaa !3
-  br label %if.end19
+thread-pre-split.thread:                          ; preds = %21, %16, %thread-pre-split
+  %36 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 3, !dbg !7735
+  %37 = load i32* %36, align 4, !dbg !7735, !tbaa !7655
+  %38 = add nsw i32 %37, 4, !dbg !7737
+  %39 = sext i32 %38 to i64, !dbg !7738
+  %40 = sdiv i32 %i, 2, !dbg !7739
+  %41 = shl nsw i32 %40, 1, !dbg !7740
+  %42 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 2, !dbg !7741
+  %43 = load i32* %42, align 4, !dbg !7741, !tbaa !7658
+  %44 = add nsw i32 %41, %43, !dbg !7742
+  %45 = sext i32 %44 to i64, !dbg !7738
+  %46 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 1, !dbg !7743
+  %47 = load i32* %46, align 4, !dbg !7743, !tbaa !4809
+  %48 = sext i32 %47 to i64, !dbg !7738
+  %49 = load %struct.ImageParameters** @img, align 8, !dbg !7738, !tbaa !1587
+  %50 = getelementptr inbounds %struct.ImageParameters* %49, i64 0, i32 28, !dbg !7744
+  %51 = load i32**** %50, align 8, !dbg !7744, !tbaa !5793
+  %52 = getelementptr inbounds i32*** %51, i64 %48, !dbg !7738
+  %53 = load i32*** %52, align 8, !dbg !7738, !tbaa !1587
+  %54 = getelementptr inbounds i32** %53, i64 %45, !dbg !7738
+  %55 = load i32** %54, align 8, !dbg !7738, !tbaa !1587
+  %56 = getelementptr inbounds i32* %55, i64 %39, !dbg !7738
+  %57 = load i32* %56, align 4, !dbg !7738, !tbaa !1719
+  call void @llvm.dbg.value(metadata i32 %57, i64 0, metadata !1047, metadata !1584), !dbg !7699
+  call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !1048, metadata !1584), !dbg !7700
+  br label %.thread, !dbg !7745
 
-if.end19:                                         ; preds = %if.then, %if.end, %if.then10
-  %cnt.0 = phi i32 [ 1, %if.then10 ], [ 0, %if.end ], [ 0, %if.then ]
-  %pred_nnz.0 = phi i32 [ %20, %if.then10 ], [ 0, %if.end ], [ 0, %if.then ]
-  call void @getChroma4x4Neighbour(i32 %1, i32 %rem, i32 %sub, i32 0, i32 -1, %struct.pix_pos* %pix) #7
-  %21 = load i32* %available, align 4, !tbaa !3
-  %tobool23 = icmp eq i32 %21, 0
-  br i1 %tobool23, label %if.end130, label %land.lhs.true24
+.thread:                                          ; preds = %10, %thread-pre-split, %thread-pre-split.thread
+  %cnt.0 = phi i32 [ 1, %thread-pre-split.thread ], [ 0, %thread-pre-split ], [ 0, %10 ]
+  %pred_nnz.0 = phi i32 [ %57, %thread-pre-split.thread ], [ 0, %thread-pre-split ], [ 0, %10 ]
+  call void @llvm.dbg.value(metadata %struct.pix_pos* %pix, i64 0, metadata !1046, metadata !1584), !dbg !7714
+  call void @getChroma4x4Neighbour(i32 %3, i32 %11, i32 %12, i32 0, i32 -1, %struct.pix_pos* %pix) #7, !dbg !7746
+  %58 = load i32* %13, align 4, !dbg !7747, !tbaa !4795
+  %59 = icmp eq i32 %58, 0, !dbg !7749
+  br i1 %59, label %.thread10, label %60, !dbg !7750
 
-land.lhs.true24:                                  ; preds = %if.end19
-  %22 = load %struct.pic_parameter_set_rbsp_t** @active_pps, align 8, !tbaa !0
-  %constrained_intra_pred_flag25 = getelementptr inbounds %struct.pic_parameter_set_rbsp_t* %22, i64 0, i32 27
-  %23 = load i32* %constrained_intra_pred_flag25, align 4, !tbaa !1
-  %tobool26 = icmp eq i32 %23, 0
-  br i1 %tobool26, label %if.then40, label %land.lhs.true27
+; <label>:60                                      ; preds = %.thread
+  %61 = load %struct.pic_parameter_set_rbsp_t** @active_pps, align 8, !dbg !7751, !tbaa !1587
+  %62 = getelementptr inbounds %struct.pic_parameter_set_rbsp_t* %61, i64 0, i32 27, !dbg !7752
+  %63 = load i32* %62, align 4, !dbg !7752, !tbaa !7639
+  %64 = icmp eq i32 %63, 0, !dbg !7751
+  br i1 %64, label %thread-pre-split1.thread, label %65, !dbg !7753
 
-land.lhs.true27:                                  ; preds = %land.lhs.true24
-  %24 = load %struct.InputParameters** @input, align 8, !tbaa !0
-  %partition_mode28 = getelementptr inbounds %struct.InputParameters* %24, i64 0, i32 61
-  %25 = load i32* %partition_mode28, align 4, !tbaa !3
-  %cmp29 = icmp eq i32 %25, 0
-  br i1 %cmp29, label %if.then40, label %if.end37
+; <label>:65                                      ; preds = %60
+  %66 = load %struct.InputParameters** @input, align 8, !dbg !7754, !tbaa !1587
+  %67 = getelementptr inbounds %struct.InputParameters* %66, i64 0, i32 61, !dbg !7755
+  %68 = load i32* %67, align 4, !dbg !7755, !tbaa !2551
+  %69 = icmp eq i32 %68, 0, !dbg !7756
+  br i1 %69, label %thread-pre-split1.thread, label %thread-pre-split1, !dbg !7757
 
-if.end37:                                         ; preds = %land.lhs.true27
-  %mb_addr31 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 1
-  %26 = load i32* %mb_addr31, align 4, !tbaa !3
-  %idxprom32 = sext i32 %26 to i64
-  %27 = load %struct.ImageParameters** @img, align 8, !tbaa !0
-  %intra_block33 = getelementptr inbounds %struct.ImageParameters* %27, i64 0, i32 54
-  %28 = load i32** %intra_block33, align 8, !tbaa !0
-  %arrayidx34 = getelementptr inbounds i32* %28, i64 %idxprom32
-  %29 = load i32* %arrayidx34, align 4, !tbaa !3
-  %and36 = and i32 %29, %21
-  store i32 %and36, i32* %available, align 4, !tbaa !3
-  %tobool39 = icmp eq i32 %and36, 0
-  br i1 %tobool39, label %if.end130, label %if.then40
+thread-pre-split1:                                ; preds = %65
+  %70 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 1, !dbg !7758
+  %71 = load i32* %70, align 4, !dbg !7758, !tbaa !4809
+  %72 = sext i32 %71 to i64, !dbg !7760
+  %73 = load %struct.ImageParameters** @img, align 8, !dbg !7760, !tbaa !1587
+  %74 = getelementptr inbounds %struct.ImageParameters* %73, i64 0, i32 54, !dbg !7761
+  %75 = load i32** %74, align 8, !dbg !7761, !tbaa !2494
+  %76 = getelementptr inbounds i32* %75, i64 %72, !dbg !7760
+  %77 = load i32* %76, align 4, !dbg !7760, !tbaa !1719
+  %78 = and i32 %77, %58, !dbg !7762
+  store i32 %78, i32* %13, align 4, !dbg !7762, !tbaa !4795
+  %79 = icmp eq i32 %78, 0, !dbg !7763
+  br i1 %79, label %.thread10, label %thread-pre-split1.thread, !dbg !7765
 
-if.then40:                                        ; preds = %land.lhs.true27, %land.lhs.true24, %if.end37
-  %y41 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 3
-  %30 = load i32* %y41, align 4, !tbaa !3
-  %add42 = add nsw i32 %30, 4
-  %idxprom43 = sext i32 %add42 to i64
-  %div44 = sdiv i32 %i, 2
-  %mul45 = shl i32 %div44, 1
-  %x46 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 2
-  %31 = load i32* %x46, align 4, !tbaa !3
-  %add47 = add nsw i32 %mul45, %31
-  %idxprom48 = sext i32 %add47 to i64
-  %mb_addr49 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 1
-  %32 = load i32* %mb_addr49, align 4, !tbaa !3
-  %idxprom50 = sext i32 %32 to i64
-  %33 = load %struct.ImageParameters** @img, align 8, !tbaa !0
-  %nz_coeff51 = getelementptr inbounds %struct.ImageParameters* %33, i64 0, i32 28
-  %34 = load i32**** %nz_coeff51, align 8, !tbaa !0
-  %arrayidx52 = getelementptr inbounds i32*** %34, i64 %idxprom50
-  %35 = load i32*** %arrayidx52, align 8, !tbaa !0
-  %arrayidx53 = getelementptr inbounds i32** %35, i64 %idxprom48
-  %36 = load i32** %arrayidx53, align 8, !tbaa !0
-  %arrayidx54 = getelementptr inbounds i32* %36, i64 %idxprom43
-  %37 = load i32* %arrayidx54, align 4, !tbaa !3
-  %add55 = add nsw i32 %37, %pred_nnz.0
-  br label %if.end125
+thread-pre-split1.thread:                         ; preds = %65, %60, %thread-pre-split1
+  %80 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 3, !dbg !7766
+  %81 = load i32* %80, align 4, !dbg !7766, !tbaa !7655
+  %82 = add nsw i32 %81, 4, !dbg !7768
+  %83 = sext i32 %82 to i64, !dbg !7769
+  %84 = sdiv i32 %i, 2, !dbg !7770
+  %85 = shl nsw i32 %84, 1, !dbg !7771
+  %86 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 2, !dbg !7772
+  %87 = load i32* %86, align 4, !dbg !7772, !tbaa !7658
+  %88 = add nsw i32 %85, %87, !dbg !7773
+  %89 = sext i32 %88 to i64, !dbg !7769
+  %90 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 1, !dbg !7774
+  %91 = load i32* %90, align 4, !dbg !7774, !tbaa !4809
+  %92 = sext i32 %91 to i64, !dbg !7769
+  %93 = load %struct.ImageParameters** @img, align 8, !dbg !7769, !tbaa !1587
+  %94 = getelementptr inbounds %struct.ImageParameters* %93, i64 0, i32 28, !dbg !7775
+  %95 = load i32**** %94, align 8, !dbg !7775, !tbaa !5793
+  %96 = getelementptr inbounds i32*** %95, i64 %92, !dbg !7769
+  %97 = load i32*** %96, align 8, !dbg !7769, !tbaa !1587
+  %98 = getelementptr inbounds i32** %97, i64 %89, !dbg !7769
+  %99 = load i32** %98, align 8, !dbg !7769, !tbaa !1587
+  %100 = getelementptr inbounds i32* %99, i64 %83, !dbg !7769
+  %101 = load i32* %100, align 4, !dbg !7769, !tbaa !1719
+  %102 = add nsw i32 %101, %pred_nnz.0, !dbg !7776
+  call void @llvm.dbg.value(metadata i32 %102, i64 0, metadata !1047, metadata !1584), !dbg !7699
+  br label %189, !dbg !7777
 
-if.else:                                          ; preds = %entry
-  %sub58 = sub nsw i32 %j, %2
-  call void @getChroma4x4Neighbour(i32 %1, i32 %i, i32 %sub58, i32 -1, i32 0, %struct.pix_pos* %pix) #7
-  %available59 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 0
-  %38 = load i32* %available59, align 4, !tbaa !3
-  %tobool60 = icmp eq i32 %38, 0
-  br i1 %tobool60, label %if.end90, label %land.lhs.true61
+; <label>:103                                     ; preds = %0
+  %104 = sub nsw i32 %j, %6, !dbg !7778
+  tail call void @llvm.dbg.value(metadata %struct.pix_pos* %pix, i64 0, metadata !1046, metadata !1584), !dbg !7714
+  call void @getChroma4x4Neighbour(i32 %3, i32 %i, i32 %104, i32 -1, i32 0, %struct.pix_pos* %pix) #7, !dbg !7780
+  %105 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 0, !dbg !7781
+  %106 = load i32* %105, align 4, !dbg !7781, !tbaa !4795
+  %107 = icmp eq i32 %106, 0, !dbg !7783
+  br i1 %107, label %.thread6, label %108, !dbg !7784
 
-land.lhs.true61:                                  ; preds = %if.else
-  %39 = load %struct.pic_parameter_set_rbsp_t** @active_pps, align 8, !tbaa !0
-  %constrained_intra_pred_flag62 = getelementptr inbounds %struct.pic_parameter_set_rbsp_t* %39, i64 0, i32 27
-  %40 = load i32* %constrained_intra_pred_flag62, align 4, !tbaa !1
-  %tobool63 = icmp eq i32 %40, 0
-  br i1 %tobool63, label %if.then77, label %land.lhs.true64
+; <label>:108                                     ; preds = %103
+  %109 = load %struct.pic_parameter_set_rbsp_t** @active_pps, align 8, !dbg !7785, !tbaa !1587
+  %110 = getelementptr inbounds %struct.pic_parameter_set_rbsp_t* %109, i64 0, i32 27, !dbg !7786
+  %111 = load i32* %110, align 4, !dbg !7786, !tbaa !7639
+  %112 = icmp eq i32 %111, 0, !dbg !7785
+  br i1 %112, label %thread-pre-split4.thread, label %113, !dbg !7787
 
-land.lhs.true64:                                  ; preds = %land.lhs.true61
-  %41 = load %struct.InputParameters** @input, align 8, !tbaa !0
-  %partition_mode65 = getelementptr inbounds %struct.InputParameters* %41, i64 0, i32 61
-  %42 = load i32* %partition_mode65, align 4, !tbaa !3
-  %cmp66 = icmp eq i32 %42, 0
-  br i1 %cmp66, label %if.then77, label %if.end74
+; <label>:113                                     ; preds = %108
+  %114 = load %struct.InputParameters** @input, align 8, !dbg !7788, !tbaa !1587
+  %115 = getelementptr inbounds %struct.InputParameters* %114, i64 0, i32 61, !dbg !7789
+  %116 = load i32* %115, align 4, !dbg !7789, !tbaa !2551
+  %117 = icmp eq i32 %116, 0, !dbg !7790
+  br i1 %117, label %thread-pre-split4.thread, label %thread-pre-split4, !dbg !7791
 
-if.end74:                                         ; preds = %land.lhs.true64
-  %mb_addr68 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 1
-  %43 = load i32* %mb_addr68, align 4, !tbaa !3
-  %idxprom69 = sext i32 %43 to i64
-  %44 = load %struct.ImageParameters** @img, align 8, !tbaa !0
-  %intra_block70 = getelementptr inbounds %struct.ImageParameters* %44, i64 0, i32 54
-  %45 = load i32** %intra_block70, align 8, !tbaa !0
-  %arrayidx71 = getelementptr inbounds i32* %45, i64 %idxprom69
-  %46 = load i32* %arrayidx71, align 4, !tbaa !3
-  %and73 = and i32 %46, %38
-  store i32 %and73, i32* %available59, align 4, !tbaa !3
-  %tobool76 = icmp eq i32 %and73, 0
-  br i1 %tobool76, label %if.end90, label %if.then77
+thread-pre-split4:                                ; preds = %113
+  %118 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 1, !dbg !7792
+  %119 = load i32* %118, align 4, !dbg !7792, !tbaa !4809
+  %120 = sext i32 %119 to i64, !dbg !7794
+  %121 = load %struct.ImageParameters** @img, align 8, !dbg !7794, !tbaa !1587
+  %122 = getelementptr inbounds %struct.ImageParameters* %121, i64 0, i32 54, !dbg !7795
+  %123 = load i32** %122, align 8, !dbg !7795, !tbaa !2494
+  %124 = getelementptr inbounds i32* %123, i64 %120, !dbg !7794
+  %125 = load i32* %124, align 4, !dbg !7794, !tbaa !1719
+  %126 = and i32 %125, %106, !dbg !7796
+  store i32 %126, i32* %105, align 4, !dbg !7796, !tbaa !4795
+  %127 = icmp eq i32 %126, 0, !dbg !7797
+  br i1 %127, label %.thread6, label %thread-pre-split4.thread, !dbg !7799
 
-if.then77:                                        ; preds = %land.lhs.true64, %land.lhs.true61, %if.end74
-  %y78 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 3
-  %47 = load i32* %y78, align 4, !tbaa !3
-  %add79 = add nsw i32 %47, %2
-  %idxprom80 = sext i32 %add79 to i64
-  %x81 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 2
-  %48 = load i32* %x81, align 4, !tbaa !3
-  %idxprom82 = sext i32 %48 to i64
-  %mb_addr83 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 1
-  %49 = load i32* %mb_addr83, align 4, !tbaa !3
-  %idxprom84 = sext i32 %49 to i64
-  %50 = load %struct.ImageParameters** @img, align 8, !tbaa !0
-  %nz_coeff85 = getelementptr inbounds %struct.ImageParameters* %50, i64 0, i32 28
-  %51 = load i32**** %nz_coeff85, align 8, !tbaa !0
-  %arrayidx86 = getelementptr inbounds i32*** %51, i64 %idxprom84
-  %52 = load i32*** %arrayidx86, align 8, !tbaa !0
-  %arrayidx87 = getelementptr inbounds i32** %52, i64 %idxprom82
-  %53 = load i32** %arrayidx87, align 8, !tbaa !0
-  %arrayidx88 = getelementptr inbounds i32* %53, i64 %idxprom80
-  %54 = load i32* %arrayidx88, align 4, !tbaa !3
-  br label %if.end90
+thread-pre-split4.thread:                         ; preds = %113, %108, %thread-pre-split4
+  %128 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 3, !dbg !7800
+  %129 = load i32* %128, align 4, !dbg !7800, !tbaa !7655
+  %130 = add nsw i32 %129, %6, !dbg !7802
+  %131 = sext i32 %130 to i64, !dbg !7803
+  %132 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 2, !dbg !7804
+  %133 = load i32* %132, align 4, !dbg !7804, !tbaa !7658
+  %134 = sext i32 %133 to i64, !dbg !7803
+  %135 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 1, !dbg !7805
+  %136 = load i32* %135, align 4, !dbg !7805, !tbaa !4809
+  %137 = sext i32 %136 to i64, !dbg !7803
+  %138 = load %struct.ImageParameters** @img, align 8, !dbg !7803, !tbaa !1587
+  %139 = getelementptr inbounds %struct.ImageParameters* %138, i64 0, i32 28, !dbg !7806
+  %140 = load i32**** %139, align 8, !dbg !7806, !tbaa !5793
+  %141 = getelementptr inbounds i32*** %140, i64 %137, !dbg !7803
+  %142 = load i32*** %141, align 8, !dbg !7803, !tbaa !1587
+  %143 = getelementptr inbounds i32** %142, i64 %134, !dbg !7803
+  %144 = load i32** %143, align 8, !dbg !7803, !tbaa !1587
+  %145 = getelementptr inbounds i32* %144, i64 %131, !dbg !7803
+  %146 = load i32* %145, align 4, !dbg !7803, !tbaa !1719
+  call void @llvm.dbg.value(metadata i32 %146, i64 0, metadata !1047, metadata !1584), !dbg !7699
+  call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !1048, metadata !1584), !dbg !7700
+  br label %.thread6, !dbg !7807
 
-if.end90:                                         ; preds = %if.else, %if.end74, %if.then77
-  %cnt.1 = phi i32 [ 1, %if.then77 ], [ 0, %if.end74 ], [ 0, %if.else ]
-  %pred_nnz.1 = phi i32 [ %54, %if.then77 ], [ 0, %if.end74 ], [ 0, %if.else ]
-  call void @getChroma4x4Neighbour(i32 %1, i32 %i, i32 %sub58, i32 0, i32 -1, %struct.pix_pos* %pix) #7
-  %55 = load i32* %available59, align 4, !tbaa !3
-  %tobool93 = icmp eq i32 %55, 0
-  br i1 %tobool93, label %if.end130, label %land.lhs.true94
+.thread6:                                         ; preds = %103, %thread-pre-split4, %thread-pre-split4.thread
+  %cnt.1 = phi i32 [ 1, %thread-pre-split4.thread ], [ 0, %thread-pre-split4 ], [ 0, %103 ]
+  %pred_nnz.1 = phi i32 [ %146, %thread-pre-split4.thread ], [ 0, %thread-pre-split4 ], [ 0, %103 ]
+  call void @llvm.dbg.value(metadata %struct.pix_pos* %pix, i64 0, metadata !1046, metadata !1584), !dbg !7714
+  call void @getChroma4x4Neighbour(i32 %3, i32 %i, i32 %104, i32 0, i32 -1, %struct.pix_pos* %pix) #7, !dbg !7808
+  %147 = load i32* %105, align 4, !dbg !7809, !tbaa !4795
+  %148 = icmp eq i32 %147, 0, !dbg !7811
+  br i1 %148, label %.thread10, label %149, !dbg !7812
 
-land.lhs.true94:                                  ; preds = %if.end90
-  %56 = load %struct.pic_parameter_set_rbsp_t** @active_pps, align 8, !tbaa !0
-  %constrained_intra_pred_flag95 = getelementptr inbounds %struct.pic_parameter_set_rbsp_t* %56, i64 0, i32 27
-  %57 = load i32* %constrained_intra_pred_flag95, align 4, !tbaa !1
-  %tobool96 = icmp eq i32 %57, 0
-  br i1 %tobool96, label %if.then110, label %land.lhs.true97
+; <label>:149                                     ; preds = %.thread6
+  %150 = load %struct.pic_parameter_set_rbsp_t** @active_pps, align 8, !dbg !7813, !tbaa !1587
+  %151 = getelementptr inbounds %struct.pic_parameter_set_rbsp_t* %150, i64 0, i32 27, !dbg !7814
+  %152 = load i32* %151, align 4, !dbg !7814, !tbaa !7639
+  %153 = icmp eq i32 %152, 0, !dbg !7813
+  br i1 %153, label %thread-pre-split7.thread, label %154, !dbg !7815
 
-land.lhs.true97:                                  ; preds = %land.lhs.true94
-  %58 = load %struct.InputParameters** @input, align 8, !tbaa !0
-  %partition_mode98 = getelementptr inbounds %struct.InputParameters* %58, i64 0, i32 61
-  %59 = load i32* %partition_mode98, align 4, !tbaa !3
-  %cmp99 = icmp eq i32 %59, 0
-  br i1 %cmp99, label %if.then110, label %if.end107
+; <label>:154                                     ; preds = %149
+  %155 = load %struct.InputParameters** @input, align 8, !dbg !7816, !tbaa !1587
+  %156 = getelementptr inbounds %struct.InputParameters* %155, i64 0, i32 61, !dbg !7817
+  %157 = load i32* %156, align 4, !dbg !7817, !tbaa !2551
+  %158 = icmp eq i32 %157, 0, !dbg !7818
+  br i1 %158, label %thread-pre-split7.thread, label %thread-pre-split7, !dbg !7819
 
-if.end107:                                        ; preds = %land.lhs.true97
-  %mb_addr101 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 1
-  %60 = load i32* %mb_addr101, align 4, !tbaa !3
-  %idxprom102 = sext i32 %60 to i64
-  %61 = load %struct.ImageParameters** @img, align 8, !tbaa !0
-  %intra_block103 = getelementptr inbounds %struct.ImageParameters* %61, i64 0, i32 54
-  %62 = load i32** %intra_block103, align 8, !tbaa !0
-  %arrayidx104 = getelementptr inbounds i32* %62, i64 %idxprom102
-  %63 = load i32* %arrayidx104, align 4, !tbaa !3
-  %and106 = and i32 %63, %55
-  store i32 %and106, i32* %available59, align 4, !tbaa !3
-  %tobool109 = icmp eq i32 %and106, 0
-  br i1 %tobool109, label %if.end130, label %if.then110
+thread-pre-split7:                                ; preds = %154
+  %159 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 1, !dbg !7820
+  %160 = load i32* %159, align 4, !dbg !7820, !tbaa !4809
+  %161 = sext i32 %160 to i64, !dbg !7822
+  %162 = load %struct.ImageParameters** @img, align 8, !dbg !7822, !tbaa !1587
+  %163 = getelementptr inbounds %struct.ImageParameters* %162, i64 0, i32 54, !dbg !7823
+  %164 = load i32** %163, align 8, !dbg !7823, !tbaa !2494
+  %165 = getelementptr inbounds i32* %164, i64 %161, !dbg !7822
+  %166 = load i32* %165, align 4, !dbg !7822, !tbaa !1719
+  %167 = and i32 %166, %147, !dbg !7824
+  store i32 %167, i32* %105, align 4, !dbg !7824, !tbaa !4795
+  %168 = icmp eq i32 %167, 0, !dbg !7825
+  br i1 %168, label %.thread10, label %thread-pre-split7.thread, !dbg !7827
 
-if.then110:                                       ; preds = %land.lhs.true97, %land.lhs.true94, %if.end107
-  %y111 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 3
-  %64 = load i32* %y111, align 4, !tbaa !3
-  %add112 = add nsw i32 %64, %2
-  %idxprom113 = sext i32 %add112 to i64
-  %x114 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 2
-  %65 = load i32* %x114, align 4, !tbaa !3
-  %idxprom115 = sext i32 %65 to i64
-  %mb_addr116 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 1
-  %66 = load i32* %mb_addr116, align 4, !tbaa !3
-  %idxprom117 = sext i32 %66 to i64
-  %67 = load %struct.ImageParameters** @img, align 8, !tbaa !0
-  %nz_coeff118 = getelementptr inbounds %struct.ImageParameters* %67, i64 0, i32 28
-  %68 = load i32**** %nz_coeff118, align 8, !tbaa !0
-  %arrayidx119 = getelementptr inbounds i32*** %68, i64 %idxprom117
-  %69 = load i32*** %arrayidx119, align 8, !tbaa !0
-  %arrayidx120 = getelementptr inbounds i32** %69, i64 %idxprom115
-  %70 = load i32** %arrayidx120, align 8, !tbaa !0
-  %arrayidx121 = getelementptr inbounds i32* %70, i64 %idxprom113
-  %71 = load i32* %arrayidx121, align 4, !tbaa !3
-  %add122 = add nsw i32 %71, %pred_nnz.1
-  br label %if.end125
+thread-pre-split7.thread:                         ; preds = %154, %149, %thread-pre-split7
+  %169 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 3, !dbg !7828
+  %170 = load i32* %169, align 4, !dbg !7828, !tbaa !7655
+  %171 = add nsw i32 %170, %6, !dbg !7830
+  %172 = sext i32 %171 to i64, !dbg !7831
+  %173 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 2, !dbg !7832
+  %174 = load i32* %173, align 4, !dbg !7832, !tbaa !7658
+  %175 = sext i32 %174 to i64, !dbg !7831
+  %176 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 1, !dbg !7833
+  %177 = load i32* %176, align 4, !dbg !7833, !tbaa !4809
+  %178 = sext i32 %177 to i64, !dbg !7831
+  %179 = load %struct.ImageParameters** @img, align 8, !dbg !7831, !tbaa !1587
+  %180 = getelementptr inbounds %struct.ImageParameters* %179, i64 0, i32 28, !dbg !7834
+  %181 = load i32**** %180, align 8, !dbg !7834, !tbaa !5793
+  %182 = getelementptr inbounds i32*** %181, i64 %178, !dbg !7831
+  %183 = load i32*** %182, align 8, !dbg !7831, !tbaa !1587
+  %184 = getelementptr inbounds i32** %183, i64 %175, !dbg !7831
+  %185 = load i32** %184, align 8, !dbg !7831, !tbaa !1587
+  %186 = getelementptr inbounds i32* %185, i64 %172, !dbg !7831
+  %187 = load i32* %186, align 4, !dbg !7831, !tbaa !1719
+  %188 = add nsw i32 %187, %pred_nnz.1, !dbg !7835
+  call void @llvm.dbg.value(metadata i32 %188, i64 0, metadata !1047, metadata !1584), !dbg !7699
+  br label %189, !dbg !7836
 
-if.end125:                                        ; preds = %if.then110, %if.then40
-  %cnt.0.sink = phi i32 [ %cnt.0, %if.then40 ], [ %cnt.1, %if.then110 ]
-  %pred_nnz.2 = phi i32 [ %add55, %if.then40 ], [ %add122, %if.then110 ]
-  %cmp126 = icmp eq i32 %cnt.0.sink, 1
-  br i1 %cmp126, label %if.then127, label %if.end130
+; <label>:189                                     ; preds = %thread-pre-split7.thread, %thread-pre-split1.thread
+  %cnt.0.sink = phi i32 [ %cnt.0, %thread-pre-split1.thread ], [ %cnt.1, %thread-pre-split7.thread ]
+  %pred_nnz.2 = phi i32 [ %102, %thread-pre-split1.thread ], [ %188, %thread-pre-split7.thread ]
+  %190 = icmp eq i32 %cnt.0.sink, 1, !dbg !7837
+  br i1 %190, label %191, label %.thread10, !dbg !7839
 
-if.then127:                                       ; preds = %if.end125
-  %inc128 = add nsw i32 %pred_nnz.2, 1
-  %div129 = sdiv i32 %inc128, 2
-  br label %if.end130
+; <label>:191                                     ; preds = %189
+  %192 = add nsw i32 %pred_nnz.2, 1, !dbg !7840
+  call void @llvm.dbg.value(metadata i32 %192, i64 0, metadata !1047, metadata !1584), !dbg !7699
+  %193 = sdiv i32 %192, 2, !dbg !7842
+  call void @llvm.dbg.value(metadata i32 %193, i64 0, metadata !1047, metadata !1584), !dbg !7699
+  br label %.thread10, !dbg !7843
 
-if.end130:                                        ; preds = %if.end90, %if.end19, %if.end107, %if.end37, %if.then127, %if.end125
-  %pred_nnz.3 = phi i32 [ %div129, %if.then127 ], [ %pred_nnz.2, %if.end125 ], [ %pred_nnz.0, %if.end37 ], [ %pred_nnz.1, %if.end107 ], [ %pred_nnz.0, %if.end19 ], [ %pred_nnz.1, %if.end90 ]
-  ret i32 %pred_nnz.3
+.thread10:                                        ; preds = %.thread6, %.thread, %thread-pre-split7, %thread-pre-split1, %191, %189
+  %pred_nnz.3 = phi i32 [ %193, %191 ], [ %pred_nnz.2, %189 ], [ %pred_nnz.1, %thread-pre-split7 ], [ %pred_nnz.0, %thread-pre-split1 ], [ %pred_nnz.0, %.thread ], [ %pred_nnz.1, %.thread6 ]
+  ret i32 %pred_nnz.3, !dbg !7844
 }

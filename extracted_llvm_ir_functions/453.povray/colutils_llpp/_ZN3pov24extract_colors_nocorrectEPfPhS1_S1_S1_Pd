@@ -1,0 +1,116 @@
+define void @_ZN3pov24extract_colors_nocorrectEPfPhS1_S1_S1_Pd(float* nocapture readonly %Colour, i8* nocapture %Red, i8* nocapture %Green, i8* nocapture %Blue, i8* nocapture %Alpha, double* nocapture %grey) #0 {
+  tail call void @llvm.dbg.value(metadata float* %Colour, i64 0, metadata !124, metadata !614), !dbg !713
+  tail call void @llvm.dbg.value(metadata i8* %Red, i64 0, metadata !125, metadata !614), !dbg !714
+  tail call void @llvm.dbg.value(metadata i8* %Green, i64 0, metadata !126, metadata !614), !dbg !715
+  tail call void @llvm.dbg.value(metadata i8* %Blue, i64 0, metadata !127, metadata !614), !dbg !716
+  tail call void @llvm.dbg.value(metadata i8* %Alpha, i64 0, metadata !128, metadata !614), !dbg !717
+  tail call void @llvm.dbg.value(metadata double* %grey, i64 0, metadata !129, metadata !614), !dbg !718
+  %1 = load i8* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 2), align 1, !dbg !719, !tbaa !675
+  %2 = icmp eq i8 %1, 71, !dbg !721
+  %3 = load float* %Colour, align 4, !dbg !722, !tbaa !636
+  %4 = fpext float %3 to double, !dbg !722
+  %5 = getelementptr inbounds float* %Colour, i64 1
+  %6 = load float* %5, align 4
+  %7 = getelementptr inbounds float* %Colour, i64 2
+  %8 = load float* %7, align 4
+  br i1 %2, label %9, label %21, !dbg !724
+
+; <label>:9                                       ; preds = %0
+  %10 = fmul double %4, 2.970000e-01, !dbg !725
+  %11 = fpext float %6 to double, !dbg !725
+  %12 = fmul double %11, 5.890000e-01, !dbg !725
+  %13 = fadd double %10, %12, !dbg !725
+  %14 = fpext float %8 to double, !dbg !725
+  %15 = fmul double %14, 1.140000e-01, !dbg !725
+  %16 = fadd double %13, %15, !dbg !725
+  %17 = fmul double %4, %16, !dbg !726
+  store double %17, double* %grey, align 8, !dbg !727, !tbaa !683
+  %18 = load double* @_ZN3pov6maxclrE, align 8, !dbg !728, !tbaa !683
+  %19 = fmul double %18, %17, !dbg !729
+  %20 = fptosi double %19 to i32, !dbg !730
+  tail call void @llvm.dbg.value(metadata i32 %20, i64 0, metadata !132, metadata !614), !dbg !731
+  tail call void @llvm.dbg.value(metadata i32 %20, i64 0, metadata !131, metadata !614), !dbg !732
+  tail call void @llvm.dbg.value(metadata i32 %20, i64 0, metadata !130, metadata !614), !dbg !733
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !133, metadata !614), !dbg !734
+  br label %36, !dbg !735
+
+; <label>:21                                      ; preds = %0
+  %22 = load double* @_ZN3pov6maxclrE, align 8, !dbg !736, !tbaa !683
+  %23 = fmul double %4, %22, !dbg !738
+  %24 = fptosi double %23 to i32, !dbg !739
+  tail call void @llvm.dbg.value(metadata i32 %24, i64 0, metadata !130, metadata !614), !dbg !733
+  %25 = fpext float %6 to double, !dbg !740
+  %26 = fmul double %22, %25, !dbg !741
+  %27 = fptosi double %26 to i32, !dbg !742
+  tail call void @llvm.dbg.value(metadata i32 %27, i64 0, metadata !131, metadata !614), !dbg !732
+  %28 = fpext float %8 to double, !dbg !743
+  %29 = fmul double %22, %28, !dbg !744
+  %30 = fptosi double %29 to i32, !dbg !745
+  tail call void @llvm.dbg.value(metadata i32 %30, i64 0, metadata !132, metadata !614), !dbg !731
+  %31 = getelementptr inbounds float* %Colour, i64 4, !dbg !746
+  %32 = load float* %31, align 4, !dbg !746, !tbaa !636
+  %33 = fpext float %32 to double, !dbg !746
+  %34 = fmul double %22, %33, !dbg !747
+  %35 = fptosi double %34 to i32, !dbg !748
+  tail call void @llvm.dbg.value(metadata i32 %35, i64 0, metadata !133, metadata !614), !dbg !734
+  br label %36
+
+; <label>:36                                      ; preds = %21, %9
+  %RedU.0 = phi i32 [ %20, %9 ], [ %24, %21 ]
+  %GreenU.0 = phi i32 [ %20, %9 ], [ %27, %21 ]
+  %BlueU.0 = phi i32 [ %20, %9 ], [ %30, %21 ]
+  %AlphaU.0 = phi i32 [ 0, %9 ], [ %35, %21 ]
+  %37 = icmp sgt i32 %RedU.0, 255, !dbg !749
+  br i1 %37, label %41, label %38, !dbg !751
+
+; <label>:38                                      ; preds = %36
+  %39 = icmp slt i32 %RedU.0, 0, !dbg !752
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !130, metadata !614), !dbg !733
+  %40 = trunc i32 %RedU.0 to i8, !dbg !754
+  %phitmp = select i1 %39, i8 0, i8 %40, !dbg !754
+  br label %41, !dbg !754
+
+; <label>:41                                      ; preds = %38, %36
+  %RedU.1 = phi i8 [ -1, %36 ], [ %phitmp, %38 ]
+  %42 = icmp sgt i32 %GreenU.0, 255, !dbg !755
+  br i1 %42, label %46, label %43, !dbg !757
+
+; <label>:43                                      ; preds = %41
+  %44 = icmp slt i32 %GreenU.0, 0, !dbg !758
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !131, metadata !614), !dbg !732
+  %45 = trunc i32 %GreenU.0 to i8, !dbg !760
+  %phitmp1 = select i1 %44, i8 0, i8 %45, !dbg !760
+  br label %46, !dbg !760
+
+; <label>:46                                      ; preds = %43, %41
+  %GreenU.1 = phi i8 [ -1, %41 ], [ %phitmp1, %43 ]
+  %47 = icmp sgt i32 %BlueU.0, 255, !dbg !761
+  br i1 %47, label %51, label %48, !dbg !763
+
+; <label>:48                                      ; preds = %46
+  %49 = icmp slt i32 %BlueU.0, 0, !dbg !764
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !132, metadata !614), !dbg !731
+  %50 = trunc i32 %BlueU.0 to i8, !dbg !766
+  %phitmp2 = select i1 %49, i8 0, i8 %50, !dbg !766
+  br label %51, !dbg !766
+
+; <label>:51                                      ; preds = %48, %46
+  %BlueU.1 = phi i8 [ -1, %46 ], [ %phitmp2, %48 ]
+  %52 = icmp sgt i32 %AlphaU.0, 255, !dbg !767
+  br i1 %52, label %56, label %53, !dbg !769
+
+; <label>:53                                      ; preds = %51
+  %54 = icmp slt i32 %AlphaU.0, 0, !dbg !770
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !133, metadata !614), !dbg !734
+  %55 = trunc i32 %AlphaU.0 to i8, !dbg !772
+  %phitmp3 = select i1 %54, i8 0, i8 %55, !dbg !772
+  br label %56, !dbg !772
+
+; <label>:56                                      ; preds = %53, %51
+  %AlphaU.1 = phi i8 [ -1, %51 ], [ %phitmp3, %53 ]
+  store i8 %RedU.1, i8* %Red, align 1, !dbg !773, !tbaa !688
+  store i8 %GreenU.1, i8* %Green, align 1, !dbg !774, !tbaa !688
+  store i8 %BlueU.1, i8* %Blue, align 1, !dbg !775, !tbaa !688
+  store i8 %AlphaU.1, i8* %Alpha, align 1, !dbg !776, !tbaa !688
+  ret void, !dbg !777
+}

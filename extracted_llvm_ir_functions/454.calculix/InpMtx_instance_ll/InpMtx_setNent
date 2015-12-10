@@ -1,51 +1,52 @@
 define void @InpMtx_setNent(%struct._InpMtx* %inpmtx, i32 %newnent) #0 {
-entry:
-  %cmp = icmp eq %struct._InpMtx* %inpmtx, null
-  %cmp1 = icmp slt i32 %newnent, 0
-  %or.cond = or i1 %cmp, %cmp1
-  br i1 %or.cond, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata %struct._InpMtx* %inpmtx, i64 0, metadata !135, metadata !159), !dbg !513
+  tail call void @llvm.dbg.value(metadata i32 %newnent, i64 0, metadata !136, metadata !159), !dbg !514
+  %1 = icmp eq %struct._InpMtx* %inpmtx, null, !dbg !515
+  %2 = icmp slt i32 %newnent, 0, !dbg !517
+  %or.cond = or i1 %1, %2, !dbg !518
+  br i1 %or.cond, label %3, label %6, !dbg !518
 
-if.then:                                          ; preds = %entry
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([51 x i8]* @.str23, i64 0, i64 0), %struct._InpMtx* %inpmtx, i32 %newnent) #4
-  tail call void @exit(i32 -1) #5
-  unreachable
+; <label>:3                                       ; preds = %0
+  %4 = load %struct.__sFILE** @__stderrp, align 8, !dbg !519, !tbaa !166
+  %5 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %4, i8* getelementptr inbounds ([51 x i8]* @.str23, i64 0, i64 0), %struct._InpMtx* %inpmtx, i32 %newnent) #5, !dbg !521
+  tail call void @exit(i32 -1) #6, !dbg !522
+  unreachable, !dbg !522
 
-if.end:                                           ; preds = %entry
-  %maxnent = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 3
-  %1 = load i32* %maxnent, align 4, !tbaa !3
-  %cmp2 = icmp slt i32 %1, %newnent
-  br i1 %cmp2, label %if.then3, label %if.end4
+; <label>:6                                       ; preds = %0
+  %7 = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 3, !dbg !523
+  %8 = load i32* %7, align 4, !dbg !523, !tbaa !211
+  %9 = icmp slt i32 %8, %newnent, !dbg !525
+  br i1 %9, label %10, label %11, !dbg !526
 
-if.then3:                                         ; preds = %if.end
-  tail call void @InpMtx_setMaxnent(%struct._InpMtx* %inpmtx, i32 %newnent) #6
-  br label %if.end4
+; <label>:10                                      ; preds = %6
+  tail call void @InpMtx_setMaxnent(%struct._InpMtx* %inpmtx, i32 %newnent) #7, !dbg !527
+  br label %11, !dbg !529
 
-if.end4:                                          ; preds = %if.then3, %if.end
-  %nent = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 4
-  store i32 %newnent, i32* %nent, align 4, !tbaa !3
-  %ivec1IV = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 6
-  tail call void @IV_setSize(%struct._IV* %ivec1IV, i32 %newnent) #4
-  %ivec2IV = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 7
-  tail call void @IV_setSize(%struct._IV* %ivec2IV, i32 %newnent) #4
-  %inputMode = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 2
-  %2 = load i32* %inputMode, align 4, !tbaa !3
-  switch i32 %2, label %if.end12 [
-    i32 1, label %if.then6
-    i32 2, label %if.then9
-  ]
+; <label>:11                                      ; preds = %10, %6
+  %12 = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 4, !dbg !530
+  store i32 %newnent, i32* %12, align 4, !dbg !531, !tbaa !222
+  %13 = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 6, !dbg !532
+  tail call void @IV_setSize(%struct._IV* %13, i32 %newnent) #5, !dbg !533
+  %14 = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 7, !dbg !534
+  tail call void @IV_setSize(%struct._IV* %14, i32 %newnent) #5, !dbg !535
+  %15 = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 2, !dbg !536
+  %16 = load i32* %15, align 4, !dbg !536, !tbaa !200
+  switch i32 %16, label %22 [
+    i32 1, label %17
+    i32 2, label %19
+  ], !dbg !538
 
-if.then6:                                         ; preds = %if.end4
-  %dvecDV = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 8
-  tail call void @DV_setSize(%struct._DV* %dvecDV, i32 %newnent) #4
-  br label %if.end12
+; <label>:17                                      ; preds = %11
+  %18 = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 8, !dbg !539
+  tail call void @DV_setSize(%struct._DV* %18, i32 %newnent) #5, !dbg !541
+  br label %22, !dbg !542
 
-if.then9:                                         ; preds = %if.end4
-  %dvecDV10 = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 8
-  %mul = shl nsw i32 %newnent, 1
-  tail call void @DV_setSize(%struct._DV* %dvecDV10, i32 %mul) #4
-  br label %if.end12
+; <label>:19                                      ; preds = %11
+  %20 = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 8, !dbg !543
+  %21 = shl nsw i32 %newnent, 1, !dbg !546
+  tail call void @DV_setSize(%struct._DV* %20, i32 %21) #5, !dbg !547
+  br label %22, !dbg !548
 
-if.end12:                                         ; preds = %if.end4, %if.then9, %if.then6
-  ret void
+; <label>:22                                      ; preds = %11, %19, %17
+  ret void, !dbg !549
 }

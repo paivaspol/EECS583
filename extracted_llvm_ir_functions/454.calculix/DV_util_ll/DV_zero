@@ -1,26 +1,26 @@
 define void @DV_zero(%struct._DV* %dv) #0 {
-entry:
-  %cmp = icmp eq %struct._DV* %dv, null
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata %struct._DV* %dv, i64 0, metadata !87, metadata !102), !dbg !370
+  %1 = icmp eq %struct._DV* %dv, null, !dbg !371
+  br i1 %1, label %2, label %5, !dbg !373
 
-if.then:                                          ; preds = %entry
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([41 x i8]* @.str14, i64 0, i64 0), %struct._DV* null) #4
-  tail call void @exit(i32 -1) #5
-  unreachable
+; <label>:2                                       ; preds = %0
+  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !374, !tbaa !110
+  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([41 x i8]* @.str14, i64 0, i64 0), %struct._DV* null) #5, !dbg !376
+  tail call void @exit(i32 -1) #6, !dbg !377
+  unreachable, !dbg !377
 
-if.end:                                           ; preds = %entry
-  %size = getelementptr inbounds %struct._DV* %dv, i64 0, i32 0
-  %1 = load i32* %size, align 4, !tbaa !3
-  %cmp1 = icmp sgt i32 %1, 0
-  br i1 %cmp1, label %if.then2, label %if.end4
+; <label>:5                                       ; preds = %0
+  %6 = getelementptr inbounds %struct._DV* %dv, i64 0, i32 0, !dbg !378
+  %7 = load i32* %6, align 4, !dbg !378, !tbaa !126
+  %8 = icmp sgt i32 %7, 0, !dbg !380
+  br i1 %8, label %9, label %12, !dbg !381
 
-if.then2:                                         ; preds = %if.end
-  %vec = getelementptr inbounds %struct._DV* %dv, i64 0, i32 3
-  %2 = load double** %vec, align 8, !tbaa !0
-  tail call void @DVzero(i32 %1, double* %2) #4
-  br label %if.end4
+; <label>:9                                       ; preds = %5
+  %10 = getelementptr inbounds %struct._DV* %dv, i64 0, i32 3, !dbg !382
+  %11 = load double** %10, align 8, !dbg !382, !tbaa !118
+  tail call void @DVzero(i32 %7, double* %11) #5, !dbg !384
+  br label %12, !dbg !385
 
-if.end4:                                          ; preds = %if.then2, %if.end
-  ret void
+; <label>:12                                      ; preds = %9, %5
+  ret void, !dbg !386
 }

@@ -1,63 +1,67 @@
 define void @done_symtab(%struct.t_symtab* nocapture %symtab) #1 {
-  %1 = getelementptr inbounds %struct.t_symtab* %symtab, i64 0, i32 1
-  %2 = load %struct.symbuf** %1, align 8, !tbaa !11
-  %3 = icmp eq %struct.symbuf* %2, null
-  br i1 %3, label %._crit_edge, label %.preheader.lr.ph
+  tail call void @llvm.dbg.value(metadata %struct.t_symtab* %symtab, i64 0, metadata !63, metadata !172), !dbg !331
+  %1 = getelementptr inbounds %struct.t_symtab* %symtab, i64 0, i32 1, !dbg !332
+  %2 = load %struct.symbuf** %1, align 8, !dbg !332, !tbaa !270
+  tail call void @llvm.dbg.value(metadata %struct.symbuf* %2, i64 0, metadata !65, metadata !172), !dbg !333
+  %3 = icmp eq %struct.symbuf* %2, null, !dbg !334
+  br i1 %3, label %._crit_edge, label %.preheader.lr.ph, !dbg !335
 
 .preheader.lr.ph:                                 ; preds = %0
-  %4 = getelementptr inbounds %struct.t_symtab* %symtab, i64 0, i32 0
-  br label %.preheader
+  %4 = getelementptr inbounds %struct.t_symtab* %symtab, i64 0, i32 0, !dbg !336
+  br label %.preheader, !dbg !335
 
 .preheader:                                       ; preds = %.preheader.lr.ph, %.critedge
   %symbuf.04 = phi %struct.symbuf* [ %2, %.preheader.lr.ph ], [ %26, %.critedge ]
-  %5 = getelementptr inbounds %struct.symbuf* %symbuf.04, i64 0, i32 0
-  %6 = load i32* %5, align 4, !tbaa !8
-  %7 = icmp sgt i32 %6, 0
-  %8 = getelementptr inbounds %struct.symbuf* %symbuf.04, i64 0, i32 1
-  br i1 %7, label %.lr.ph, label %.critedge
+  %5 = getelementptr inbounds %struct.symbuf* %symbuf.04, i64 0, i32 0, !dbg !340
+  %6 = load i32* %5, align 4, !dbg !340, !tbaa !199
+  %7 = icmp sgt i32 %6, 0, !dbg !341
+  %8 = getelementptr inbounds %struct.symbuf* %symbuf.04, i64 0, i32 1, !dbg !342
+  br i1 %7, label %.lr.ph, label %.critedge, !dbg !343
 
 .lr.ph:                                           ; preds = %.preheader, %12
   %indvars.iv = phi i64 [ %indvars.iv.next, %12 ], [ 0, %.preheader ]
-  %9 = load i32* %4, align 4, !tbaa !13
-  %10 = sext i32 %9 to i64
-  %11 = icmp slt i64 %indvars.iv, %10
-  br i1 %11, label %12, label %..critedge_crit_edge2
+  %9 = load i32* %4, align 4, !dbg !336, !tbaa !294
+  %10 = sext i32 %9 to i64, !dbg !344
+  %11 = icmp slt i64 %indvars.iv, %10, !dbg !344
+  br i1 %11, label %12, label %..critedge_crit_edge2, !dbg !345
 
 ; <label>:12                                      ; preds = %.lr.ph
-  %13 = load i8*** %8, align 8, !tbaa !2
-  %14 = getelementptr inbounds i8** %13, i64 %indvars.iv
-  %15 = load i8** %14, align 8, !tbaa !9
-  tail call void @save_free(i8* getelementptr inbounds ([15 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str3, i64 0, i64 0), i32 175, i8* %15) #6
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %16 = load i32* %5, align 4, !tbaa !8
-  %17 = sext i32 %16 to i64
-  %18 = icmp slt i64 %indvars.iv.next, %17
-  br i1 %18, label %.lr.ph, label %..critedge_crit_edge
+  %13 = load i8*** %8, align 8, !dbg !342, !tbaa !189
+  %14 = getelementptr inbounds i8** %13, i64 %indvars.iv, !dbg !342
+  %15 = load i8** %14, align 8, !dbg !342, !tbaa !208
+  tail call void @save_free(i8* getelementptr inbounds ([15 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str3, i64 0, i64 0), i32 175, i8* %15) #7, !dbg !342
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !343
+  %16 = load i32* %5, align 4, !dbg !340, !tbaa !199
+  %17 = sext i32 %16 to i64, !dbg !341
+  %18 = icmp slt i64 %indvars.iv.next, %17, !dbg !341
+  br i1 %18, label %.lr.ph, label %..critedge_crit_edge, !dbg !343
 
 ..critedge_crit_edge:                             ; preds = %12
-  %19 = trunc i64 %indvars.iv.next to i32
-  br label %.critedge
+  %19 = trunc i64 %indvars.iv.next to i32, !dbg !343
+  br label %.critedge, !dbg !343
 
 ..critedge_crit_edge2:                            ; preds = %.lr.ph
-  %20 = trunc i64 %indvars.iv to i32
-  br label %.critedge
+  %20 = trunc i64 %indvars.iv to i32, !dbg !345
+  br label %.critedge, !dbg !345
 
 .critedge:                                        ; preds = %.preheader, %..critedge_crit_edge2, %..critedge_crit_edge
   %i.0.lcssa = phi i32 [ %20, %..critedge_crit_edge2 ], [ %19, %..critedge_crit_edge ], [ 0, %.preheader ]
-  %21 = load i32* %4, align 4, !tbaa !13
-  %22 = sub nsw i32 %21, %i.0.lcssa
-  store i32 %22, i32* %4, align 4, !tbaa !13
-  %23 = bitcast i8*** %8 to i8**
-  %24 = load i8** %23, align 8, !tbaa !2
-  tail call void @save_free(i8* getelementptr inbounds ([12 x i8]* @.str4, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str3, i64 0, i64 0), i32 177, i8* %24) #6
-  %25 = getelementptr inbounds %struct.symbuf* %symbuf.04, i64 0, i32 2
-  %26 = load %struct.symbuf** %25, align 8, !tbaa !14
-  %27 = bitcast %struct.symbuf* %symbuf.04 to i8*
-  tail call void @save_free(i8* getelementptr inbounds ([8 x i8]* @.str5, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str3, i64 0, i64 0), i32 180, i8* %27) #6
-  %28 = icmp eq %struct.symbuf* %26, null
-  br i1 %28, label %._crit_edge, label %.preheader
+  %21 = load i32* %4, align 4, !dbg !346, !tbaa !294
+  %22 = sub nsw i32 %21, %i.0.lcssa, !dbg !346
+  store i32 %22, i32* %4, align 4, !dbg !346, !tbaa !294
+  %23 = bitcast i8*** %8 to i8**, !dbg !347
+  %24 = load i8** %23, align 8, !dbg !347, !tbaa !189
+  tail call void @save_free(i8* getelementptr inbounds ([12 x i8]* @.str4, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str3, i64 0, i64 0), i32 177, i8* %24) #7, !dbg !347
+  tail call void @llvm.dbg.value(metadata %struct.symbuf* %26, i64 0, metadata !66, metadata !172), !dbg !348
+  %25 = getelementptr inbounds %struct.symbuf* %symbuf.04, i64 0, i32 2, !dbg !349
+  %26 = load %struct.symbuf** %25, align 8, !dbg !349, !tbaa !308
+  tail call void @llvm.dbg.value(metadata %struct.symbuf* %26, i64 0, metadata !65, metadata !172), !dbg !333
+  %27 = bitcast %struct.symbuf* %symbuf.04 to i8*, !dbg !350
+  tail call void @save_free(i8* getelementptr inbounds ([8 x i8]* @.str5, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str3, i64 0, i64 0), i32 180, i8* %27) #7, !dbg !350
+  %28 = icmp eq %struct.symbuf* %26, null, !dbg !334
+  br i1 %28, label %._crit_edge, label %.preheader, !dbg !335
 
 ._crit_edge:                                      ; preds = %.critedge, %0
-  store %struct.symbuf* null, %struct.symbuf** %1, align 8, !tbaa !11
-  ret void
+  store %struct.symbuf* null, %struct.symbuf** %1, align 8, !dbg !351, !tbaa !270
+  ret void, !dbg !352
 }

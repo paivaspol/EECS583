@@ -1,18 +1,26 @@
 define i32 @BndRobinGI(%struct.cGH* %GH, i32* readonly %stencil, double %finf, i32 %npow, i32 %gi) #1 {
-  %1 = tail call i32 @CCTK_FirstVarIndexI(i32 %gi) #6
-  %2 = icmp sgt i32 %1, -1
-  br i1 %2, label %3, label %6
+  tail call void @llvm.dbg.value(metadata %struct.cGH* %GH, i64 0, metadata !75, metadata !557), !dbg !558
+  tail call void @llvm.dbg.value(metadata i32* %stencil, i64 0, metadata !76, metadata !557), !dbg !559
+  tail call void @llvm.dbg.value(metadata double %finf, i64 0, metadata !77, metadata !557), !dbg !560
+  tail call void @llvm.dbg.value(metadata i32 %npow, i64 0, metadata !78, metadata !557), !dbg !561
+  tail call void @llvm.dbg.value(metadata i32 %gi, i64 0, metadata !79, metadata !557), !dbg !562
+  %1 = tail call i32 @CCTK_FirstVarIndexI(i32 %gi) #7, !dbg !563
+  tail call void @llvm.dbg.value(metadata i32 %1, i64 0, metadata !80, metadata !557), !dbg !564
+  %2 = icmp sgt i32 %1, -1, !dbg !565
+  br i1 %2, label %3, label %6, !dbg !567
 
 ; <label>:3                                       ; preds = %0
-  %4 = tail call i32 @CCTK_NumVarsInGroupI(i32 %gi) #6
-  %5 = tail call fastcc i32 @ApplyBndRobin(%struct.cGH* %GH, i32* %stencil, double %finf, i32 %npow, i32 %1, i32 %4) #7
-  br label %8
+  %4 = tail call i32 @CCTK_NumVarsInGroupI(i32 %gi) #7, !dbg !568
+  %5 = tail call fastcc i32 @ApplyBndRobin(%struct.cGH* %GH, i32* %stencil, double %finf, i32 %npow, i32 %1, i32 %4) #8, !dbg !570
+  tail call void @llvm.dbg.value(metadata i32 %5, i64 0, metadata !81, metadata !557), !dbg !571
+  br label %8, !dbg !572
 
 ; <label>:6                                       ; preds = %0
-  %7 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 2, i32 139, i8* getelementptr inbounds ([84 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([36 x i8]* @.str2, i64 0, i64 0), i32 %gi) #6
+  %7 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 2, i32 139, i8* getelementptr inbounds ([84 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([36 x i8]* @.str2, i64 0, i64 0), i32 %gi) #7, !dbg !573
+  tail call void @llvm.dbg.value(metadata i32 -1, i64 0, metadata !81, metadata !557), !dbg !571
   br label %8
 
 ; <label>:8                                       ; preds = %6, %3
   %retval.0 = phi i32 [ %5, %3 ], [ -1, %6 ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !575
 }

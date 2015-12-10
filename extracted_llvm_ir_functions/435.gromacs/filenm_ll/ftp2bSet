@@ -1,39 +1,43 @@
-define i32 @ftp2bSet(i32 %ftp, i32 %nfile, %struct.t_filenm* nocapture readonly %fnm) #3 {
-  %1 = icmp sgt i32 %nfile, 0
-  br i1 %1, label %.lr.ph, label %._crit_edge
+define i32 @ftp2bSet(i32 %ftp, i32 %nfile, %struct.t_filenm* nocapture readonly %fnm) #4 {
+  tail call void @llvm.dbg.value(metadata i32 %ftp, i64 0, metadata !249, metadata !382), !dbg !1027
+  tail call void @llvm.dbg.value(metadata i32 %nfile, i64 0, metadata !250, metadata !382), !dbg !1028
+  tail call void @llvm.dbg.value(metadata %struct.t_filenm* %fnm, i64 0, metadata !251, metadata !382), !dbg !1029
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !252, metadata !382), !dbg !1030
+  %1 = icmp sgt i32 %nfile, 0, !dbg !1031
+  br i1 %1, label %.lr.ph, label %._crit_edge, !dbg !1034
 
 .lr.ph:                                           ; preds = %0
-  %2 = sext i32 %nfile to i64
-  br label %5
+  %2 = sext i32 %nfile to i64, !dbg !1034
+  br label %5, !dbg !1034
 
 ; <label>:3                                       ; preds = %5
-  %4 = icmp slt i64 %indvars.iv.next, %2
-  br i1 %4, label %5, label %._crit_edge
+  %4 = icmp slt i64 %indvars.iv.next, %2, !dbg !1031
+  br i1 %4, label %5, label %._crit_edge, !dbg !1034
 
 ; <label>:5                                       ; preds = %.lr.ph, %3
   %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %3 ]
-  %6 = getelementptr inbounds %struct.t_filenm* %fnm, i64 %indvars.iv, i32 0
-  %7 = load i32* %6, align 4, !tbaa !29
-  %8 = icmp eq i32 %7, %ftp
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  br i1 %8, label %9, label %3
+  %6 = getelementptr inbounds %struct.t_filenm* %fnm, i64 %indvars.iv, i32 0, !dbg !1035
+  %7 = load i32* %6, align 4, !dbg !1035, !tbaa !539
+  %8 = icmp eq i32 %7, %ftp, !dbg !1037
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !1034
+  br i1 %8, label %9, label %3, !dbg !1038
 
 ; <label>:9                                       ; preds = %5
-  %10 = getelementptr inbounds %struct.t_filenm* %fnm, i64 %indvars.iv, i32 3
-  %11 = load i64* %10, align 8, !tbaa !28
-  %.tr = trunc i64 %11 to i32
-  %12 = and i32 %.tr, 1
-  br label %18
+  %10 = getelementptr inbounds %struct.t_filenm* %fnm, i64 %indvars.iv, i32 3, !dbg !1039
+  %11 = load i64* %10, align 8, !dbg !1039, !tbaa !538
+  %.tr = trunc i64 %11 to i32, !dbg !1039
+  %12 = and i32 %.tr, 1, !dbg !1039
+  br label %18, !dbg !1040
 
 ._crit_edge:                                      ; preds = %3, %0
-  %13 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !14
-  %14 = sext i32 %ftp to i64
-  %15 = getelementptr inbounds [46 x %struct.t_deffile]* @deffile, i64 0, i64 %14, i32 1
-  %16 = load i8** %15, align 8, !tbaa !17
-  %17 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %13, i8* getelementptr inbounds ([26 x i8]* @.str47, i64 0, i64 0), i8* %16) #9
-  br label %18
+  %13 = load %struct.__sFILE** @__stderrp, align 8, !dbg !1041, !tbaa !424
+  %14 = sext i32 %ftp to i64, !dbg !1042
+  %15 = getelementptr inbounds [46 x %struct.t_deffile]* @deffile, i64 0, i64 %14, i32 1, !dbg !1043
+  %16 = load i8** %15, align 8, !dbg !1043, !tbaa !440
+  %17 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %13, i8* getelementptr inbounds ([26 x i8]* @.str47, i64 0, i64 0), i8* %16) #9, !dbg !1044
+  br label %18, !dbg !1045
 
 ; <label>:18                                      ; preds = %._crit_edge, %9
   %.0 = phi i32 [ %12, %9 ], [ 0, %._crit_edge ]
-  ret i32 %.0
+  ret i32 %.0, !dbg !1046
 }

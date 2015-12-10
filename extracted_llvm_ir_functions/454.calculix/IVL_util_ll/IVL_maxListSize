@@ -1,33 +1,43 @@
 define i32 @IVL_maxListSize(%struct._IVL* %ivl) #0 {
-entry:
   %size = alloca i32, align 4
   %ent = alloca i32*, align 8
-  %cmp = icmp eq %struct._IVL* %ivl, null
-  br i1 %cmp, label %if.then, label %lor.lhs.false
+  tail call void @llvm.dbg.value(metadata %struct._IVL* %ivl, i64 0, metadata !65, metadata !199), !dbg !323
+  %1 = icmp eq %struct._IVL* %ivl, null, !dbg !324
+  br i1 %1, label %7, label %2, !dbg !326
 
-lor.lhs.false:                                    ; preds = %entry
-  %nlist1 = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 2
-  %0 = load i32* %nlist1, align 4, !tbaa !3
-  %cmp2 = icmp slt i32 %0, 1
-  br i1 %cmp2, label %if.then, label %for.body
+; <label>:2                                       ; preds = %0
+  %3 = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 2, !dbg !327
+  %4 = load i32* %3, align 4, !dbg !327, !tbaa !214
+  tail call void @llvm.dbg.value(metadata i32 %4, i64 0, metadata !68, metadata !199), !dbg !328
+  %5 = icmp slt i32 %4, 1, !dbg !329
+  br i1 %5, label %7, label %.lr.ph, !dbg !330
 
-if.then:                                          ; preds = %lor.lhs.false, %entry
-  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([48 x i8]* @.str3, i64 0, i64 0), %struct._IVL* %ivl) #4
-  call void @exit(i32 -1) #5
-  unreachable
+.lr.ph:                                           ; preds = %2
+  %6 = add i32 %4, -1, !dbg !331
+  br label %10, !dbg !331
 
-for.body:                                         ; preds = %lor.lhs.false, %for.body
-  %ilist.015 = phi i32 [ %inc, %for.body ], [ 0, %lor.lhs.false ]
-  %maxsize.014 = phi i32 [ %.maxsize.0, %for.body ], [ 0, %lor.lhs.false ]
-  call void @IVL_listAndSize(%struct._IVL* %ivl, i32 %ilist.015, i32* %size, i32** %ent) #4
-  %2 = load i32* %size, align 4, !tbaa !3
-  %cmp4 = icmp slt i32 %maxsize.014, %2
-  %.maxsize.0 = select i1 %cmp4, i32 %2, i32 %maxsize.014
-  %inc = add nsw i32 %ilist.015, 1
-  %exitcond = icmp eq i32 %inc, %0
-  br i1 %exitcond, label %for.end, label %for.body
+; <label>:7                                       ; preds = %2, %0
+  %8 = load %struct.__sFILE** @__stderrp, align 8, !dbg !333, !tbaa !206
+  %9 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %8, i8* getelementptr inbounds ([48 x i8]* @.str3, i64 0, i64 0), %struct._IVL* %ivl) #5, !dbg !335
+  tail call void @exit(i32 -1) #6, !dbg !336
+  unreachable, !dbg !336
 
-for.end:                                          ; preds = %for.body
-  ret i32 %.maxsize.0
+; <label>:10                                      ; preds = %10, %.lr.ph
+  %ilist.02 = phi i32 [ 0, %.lr.ph ], [ %13, %10 ]
+  %maxsize.01 = phi i32 [ 0, %.lr.ph ], [ %.maxsize.0, %10 ]
+  call void @llvm.dbg.value(metadata i32* %size, i64 0, metadata !69, metadata !199), !dbg !337
+  call void @llvm.dbg.value(metadata i32** %ent, i64 0, metadata !70, metadata !199), !dbg !338
+  call void @IVL_listAndSize(%struct._IVL* %ivl, i32 %ilist.02, i32* %size, i32** %ent) #5, !dbg !339
+  call void @llvm.dbg.value(metadata i32* %size, i64 0, metadata !69, metadata !199), !dbg !337
+  %11 = load i32* %size, align 4, !dbg !342, !tbaa !267
+  %12 = icmp slt i32 %maxsize.01, %11, !dbg !344
+  call void @llvm.dbg.value(metadata i32 %11, i64 0, metadata !67, metadata !199), !dbg !345
+  %.maxsize.0 = select i1 %12, i32 %11, i32 %maxsize.01, !dbg !346
+  %13 = add nuw nsw i32 %ilist.02, 1, !dbg !347
+  call void @llvm.dbg.value(metadata i32 %13, i64 0, metadata !66, metadata !199), !dbg !348
+  %exitcond = icmp eq i32 %ilist.02, %6, !dbg !331
+  br i1 %exitcond, label %._crit_edge, label %10, !dbg !331
+
+._crit_edge:                                      ; preds = %10
+  ret i32 %.maxsize.0, !dbg !349
 }

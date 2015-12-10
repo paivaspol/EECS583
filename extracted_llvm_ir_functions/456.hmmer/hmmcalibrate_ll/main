@@ -1,0 +1,700 @@
+define i32 @main(i32 %argc, i8** %argv) #0 {
+  %randomseq.i = alloca [20 x float], align 16
+  %p1.i = alloca float, align 4
+  %hmm = alloca %struct.plan7_s*, align 8
+  %blocksigs = alloca i32, align 4
+  %stopwatch = alloca %struct.stopwatch_s, align 8
+  %extrawatch = alloca %struct.stopwatch_s, align 8
+  %optname = alloca i8*, align 8
+  %optarg = alloca i8*, align 8
+  %optind = alloca i32, align 4
+  tail call void @llvm.dbg.value(metadata i32 %argc, i64 0, metadata !20, metadata !362), !dbg !363
+  tail call void @llvm.dbg.value(metadata i8** %argv, i64 0, metadata !21, metadata !362), !dbg !364
+  %1 = bitcast %struct.stopwatch_s* %stopwatch to i8*, !dbg !365
+  call void @llvm.lifetime.start(i64 64, i8* %1) #2, !dbg !365
+  %2 = bitcast %struct.stopwatch_s* %extrawatch to i8*, !dbg !366
+  call void @llvm.lifetime.start(i64 64, i8* %2) #2, !dbg !366
+  tail call void @llvm.dbg.value(metadata %struct.stopwatch_s* %stopwatch, i64 0, metadata !239, metadata !362), !dbg !367
+  call void @StopwatchStart(%struct.stopwatch_s* %stopwatch) #7, !dbg !368
+  call void @llvm.dbg.value(metadata %struct.stopwatch_s* %extrawatch, i64 0, metadata !261, metadata !362), !dbg !369
+  call void @StopwatchZero(%struct.stopwatch_s* %extrawatch) #7, !dbg !370
+  call void @llvm.dbg.value(metadata i32 5000, i64 0, metadata !265, metadata !362), !dbg !371
+  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !267, metadata !362), !dbg !372
+  call void @llvm.dbg.value(metadata float 3.250000e+02, i64 0, metadata !268, metadata !362), !dbg !373
+  call void @llvm.dbg.value(metadata float 2.000000e+02, i64 0, metadata !269, metadata !362), !dbg !374
+  %3 = call i64 @time(i64* null) #7, !dbg !375
+  %4 = trunc i64 %3 to i32, !dbg !376
+  call void @llvm.dbg.value(metadata i32 %4, i64 0, metadata !266, metadata !362), !dbg !377
+  call void @llvm.dbg.value(metadata i8* null, i64 0, metadata !237, metadata !362), !dbg !378
+  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !270, metadata !362), !dbg !379
+  call void @llvm.dbg.value(metadata i32 20, i64 0, metadata !271, metadata !362), !dbg !380
+  call void @llvm.dbg.value(metadata i32 100, i64 0, metadata !264, metadata !362), !dbg !381
+  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !276, metadata !362), !dbg !382
+  call void @llvm.dbg.declare(metadata [20 x float]* %randomseq.i, metadata !313, metadata !362), !dbg !383
+  call void @llvm.dbg.value(metadata i8** %optname, i64 0, metadata !273, metadata !362), !dbg !387
+  call void @llvm.dbg.value(metadata i8** %optarg, i64 0, metadata !274, metadata !362), !dbg !388
+  call void @llvm.dbg.value(metadata i32* %optind, i64 0, metadata !275, metadata !362), !dbg !389
+  %5 = call i32 @Getopt(i32 %argc, i8** %argv, %struct.opt_s* getelementptr inbounds ([9 x %struct.opt_s]* @OPTIONS, i64 0, i64 0), i32 9, i8* getelementptr inbounds ([130 x i8]* @usage, i64 0, i64 0), i32* %optind, i8** %optname, i8** %optarg) #7, !dbg !390
+  %6 = icmp eq i32 %5, 0, !dbg !391
+  br i1 %6, label %._crit_edge31, label %.lr.ph30, !dbg !391
+
+.lr.ph30:                                         ; preds = %0, %.backedge
+  %num_threads.028 = phi i32 [ %num_threads.0.be, %.backedge ], [ 0, %0 ]
+  %do_pvm.027 = phi i32 [ %do_pvm.0.be, %.backedge ], [ 0, %0 ]
+  %lensd.026 = phi float [ %lensd.0.be, %.backedge ], [ 2.000000e+02, %0 ]
+  %lenmean.025 = phi float [ %lenmean.0.be, %.backedge ], [ 3.250000e+02, %0 ]
+  %fixedlen.024 = phi i32 [ %fixedlen.0.be, %.backedge ], [ 0, %0 ]
+  %seed.023 = phi i32 [ %seed.0.be, %.backedge ], [ %4, %0 ]
+  %nsample.022 = phi i32 [ %nsample.0.be, %.backedge ], [ 5000, %0 ]
+  %histfile.021 = phi i8* [ %histfile.0.be, %.backedge ], [ null, %0 ]
+  call void @llvm.dbg.value(metadata i8** %optname, i64 0, metadata !273, metadata !362), !dbg !387
+  %7 = load i8** %optname, align 8, !dbg !392, !tbaa !395
+  %8 = call i32 @strcmp(i8* %7, i8* getelementptr inbounds ([6 x i8]* @.str, i64 0, i64 0)) #7, !dbg !399
+  %9 = icmp eq i32 %8, 0, !dbg !400
+  br i1 %9, label %10, label %13, !dbg !401
+
+; <label>:10                                      ; preds = %.lr.ph30
+  call void @llvm.dbg.value(metadata i8** %optarg, i64 0, metadata !274, metadata !362), !dbg !388
+  %11 = load i8** %optarg, align 8, !dbg !402, !tbaa !395
+  %12 = call i32 @atoi(i8* %11) #7, !dbg !403
+  call void @llvm.dbg.value(metadata i32 %12, i64 0, metadata !276, metadata !362), !dbg !382
+  br label %.backedge, !dbg !404
+
+; <label>:13                                      ; preds = %.lr.ph30
+  call void @llvm.dbg.value(metadata i8** %optname, i64 0, metadata !273, metadata !362), !dbg !387
+  %14 = call i32 @strcmp(i8* %7, i8* getelementptr inbounds ([8 x i8]* @.str1, i64 0, i64 0)) #7, !dbg !405
+  %15 = icmp eq i32 %14, 0, !dbg !407
+  br i1 %15, label %16, label %21, !dbg !408
+
+; <label>:16                                      ; preds = %13
+  call void @llvm.dbg.value(metadata i8** %optarg, i64 0, metadata !274, metadata !362), !dbg !388
+  %17 = load i8** %optarg, align 8, !dbg !409, !tbaa !395
+  %18 = call i32 @atoi(i8* %17) #7, !dbg !410
+  call void @llvm.dbg.value(metadata i32 %18, i64 0, metadata !267, metadata !362), !dbg !372
+  br label %.backedge, !dbg !411
+
+.backedge:                                        ; preds = %16, %29, %52, %55, %45, %36, %24, %10, %39
+  %histfile.0.be = phi i8* [ %histfile.021, %10 ], [ %histfile.021, %16 ], [ %25, %24 ], [ %histfile.021, %29 ], [ %histfile.021, %36 ], [ %histfile.021, %45 ], [ %histfile.021, %52 ], [ %histfile.021, %55 ], [ %histfile.021, %39 ]
+  %nsample.0.be = phi i32 [ %nsample.022, %10 ], [ %nsample.022, %16 ], [ %nsample.022, %24 ], [ %nsample.022, %29 ], [ %38, %36 ], [ %nsample.022, %45 ], [ %nsample.022, %52 ], [ %nsample.022, %55 ], [ %nsample.022, %39 ]
+  %seed.0.be = phi i32 [ %seed.023, %10 ], [ %seed.023, %16 ], [ %seed.023, %24 ], [ %seed.023, %29 ], [ %seed.023, %36 ], [ %seed.023, %45 ], [ %54, %52 ], [ %seed.023, %55 ], [ %seed.023, %39 ]
+  %fixedlen.0.be = phi i32 [ %fixedlen.024, %10 ], [ %18, %16 ], [ %fixedlen.024, %24 ], [ %fixedlen.024, %29 ], [ %fixedlen.024, %36 ], [ %fixedlen.024, %45 ], [ %fixedlen.024, %52 ], [ %fixedlen.024, %55 ], [ %fixedlen.024, %39 ]
+  %lenmean.0.be = phi float [ %lenmean.025, %10 ], [ %lenmean.025, %16 ], [ %lenmean.025, %24 ], [ %32, %29 ], [ %lenmean.025, %36 ], [ %lenmean.025, %45 ], [ %lenmean.025, %52 ], [ %lenmean.025, %55 ], [ %lenmean.025, %39 ]
+  %lensd.0.be = phi float [ %lensd.026, %10 ], [ %lensd.026, %16 ], [ %lensd.026, %24 ], [ %lensd.026, %29 ], [ %lensd.026, %36 ], [ %48, %45 ], [ %lensd.026, %52 ], [ %lensd.026, %55 ], [ %lensd.026, %39 ]
+  %do_pvm.0.be = phi i32 [ %do_pvm.027, %10 ], [ %do_pvm.027, %16 ], [ %do_pvm.027, %24 ], [ %do_pvm.027, %29 ], [ %do_pvm.027, %36 ], [ %do_pvm.027, %45 ], [ %do_pvm.027, %52 ], [ %do_pvm.027, %55 ], [ 1, %39 ]
+  %num_threads.0.be = phi i32 [ %12, %10 ], [ %num_threads.028, %16 ], [ %num_threads.028, %24 ], [ %num_threads.028, %29 ], [ %num_threads.028, %36 ], [ %num_threads.028, %45 ], [ %num_threads.028, %52 ], [ %num_threads.028, %55 ], [ %num_threads.028, %39 ]
+  call void @llvm.dbg.value(metadata i8** %optname, i64 0, metadata !273, metadata !362), !dbg !387
+  call void @llvm.dbg.value(metadata i8** %optarg, i64 0, metadata !274, metadata !362), !dbg !388
+  call void @llvm.dbg.value(metadata i32* %optind, i64 0, metadata !275, metadata !362), !dbg !389
+  %19 = call i32 @Getopt(i32 %argc, i8** %argv, %struct.opt_s* getelementptr inbounds ([9 x %struct.opt_s]* @OPTIONS, i64 0, i64 0), i32 9, i8* getelementptr inbounds ([130 x i8]* @usage, i64 0, i64 0), i32* %optind, i8** %optname, i8** %optarg) #7, !dbg !390
+  %20 = icmp eq i32 %19, 0, !dbg !391
+  br i1 %20, label %._crit_edge31, label %.lr.ph30, !dbg !391
+
+; <label>:21                                      ; preds = %13
+  call void @llvm.dbg.value(metadata i8** %optname, i64 0, metadata !273, metadata !362), !dbg !387
+  %22 = call i32 @strcmp(i8* %7, i8* getelementptr inbounds ([11 x i8]* @.str2, i64 0, i64 0)) #7, !dbg !412
+  %23 = icmp eq i32 %22, 0, !dbg !414
+  br i1 %23, label %24, label %26, !dbg !415
+
+; <label>:24                                      ; preds = %21
+  call void @llvm.dbg.value(metadata i8** %optarg, i64 0, metadata !274, metadata !362), !dbg !388
+  %25 = load i8** %optarg, align 8, !dbg !416, !tbaa !395
+  call void @llvm.dbg.value(metadata i8* %25, i64 0, metadata !237, metadata !362), !dbg !378
+  br label %.backedge, !dbg !417
+
+; <label>:26                                      ; preds = %21
+  call void @llvm.dbg.value(metadata i8** %optname, i64 0, metadata !273, metadata !362), !dbg !387
+  %27 = call i32 @strcmp(i8* %7, i8* getelementptr inbounds ([7 x i8]* @.str3, i64 0, i64 0)) #7, !dbg !418
+  %28 = icmp eq i32 %27, 0, !dbg !420
+  br i1 %28, label %29, label %33, !dbg !421
+
+; <label>:29                                      ; preds = %26
+  call void @llvm.dbg.value(metadata i8** %optarg, i64 0, metadata !274, metadata !362), !dbg !388
+  %30 = load i8** %optarg, align 8, !dbg !422, !tbaa !395
+  %31 = call double @atof(i8* %30) #7, !dbg !423
+  %32 = fptrunc double %31 to float, !dbg !423
+  call void @llvm.dbg.value(metadata float %32, i64 0, metadata !268, metadata !362), !dbg !373
+  br label %.backedge, !dbg !424
+
+; <label>:33                                      ; preds = %26
+  call void @llvm.dbg.value(metadata i8** %optname, i64 0, metadata !273, metadata !362), !dbg !387
+  %34 = call i32 @strcmp(i8* %7, i8* getelementptr inbounds ([6 x i8]* @.str4, i64 0, i64 0)) #7, !dbg !425
+  %35 = icmp eq i32 %34, 0, !dbg !427
+  br i1 %35, label %36, label %39, !dbg !428
+
+; <label>:36                                      ; preds = %33
+  call void @llvm.dbg.value(metadata i8** %optarg, i64 0, metadata !274, metadata !362), !dbg !388
+  %37 = load i8** %optarg, align 8, !dbg !429, !tbaa !395
+  %38 = call i32 @atoi(i8* %37) #7, !dbg !430
+  call void @llvm.dbg.value(metadata i32 %38, i64 0, metadata !265, metadata !362), !dbg !371
+  br label %.backedge, !dbg !431
+
+; <label>:39                                      ; preds = %33
+  call void @llvm.dbg.value(metadata i8** %optname, i64 0, metadata !273, metadata !362), !dbg !387
+  %40 = call i32 @strcmp(i8* %7, i8* getelementptr inbounds ([6 x i8]* @.str5, i64 0, i64 0)) #7, !dbg !432
+  %41 = icmp eq i32 %40, 0, !dbg !434
+  br i1 %41, label %.backedge, label %42, !dbg !435
+
+; <label>:42                                      ; preds = %39
+  call void @llvm.dbg.value(metadata i8** %optname, i64 0, metadata !273, metadata !362), !dbg !387
+  %43 = call i32 @strcmp(i8* %7, i8* getelementptr inbounds ([5 x i8]* @.str6, i64 0, i64 0)) #7, !dbg !436
+  %44 = icmp eq i32 %43, 0, !dbg !438
+  br i1 %44, label %45, label %49, !dbg !439
+
+; <label>:45                                      ; preds = %42
+  call void @llvm.dbg.value(metadata i8** %optarg, i64 0, metadata !274, metadata !362), !dbg !388
+  %46 = load i8** %optarg, align 8, !dbg !440, !tbaa !395
+  %47 = call double @atof(i8* %46) #7, !dbg !441
+  %48 = fptrunc double %47 to float, !dbg !441
+  call void @llvm.dbg.value(metadata float %48, i64 0, metadata !269, metadata !362), !dbg !374
+  br label %.backedge, !dbg !442
+
+; <label>:49                                      ; preds = %42
+  call void @llvm.dbg.value(metadata i8** %optname, i64 0, metadata !273, metadata !362), !dbg !387
+  %50 = call i32 @strcmp(i8* %7, i8* getelementptr inbounds ([7 x i8]* @.str7, i64 0, i64 0)) #7, !dbg !443
+  %51 = icmp eq i32 %50, 0, !dbg !445
+  br i1 %51, label %52, label %55, !dbg !446
+
+; <label>:52                                      ; preds = %49
+  call void @llvm.dbg.value(metadata i8** %optarg, i64 0, metadata !274, metadata !362), !dbg !388
+  %53 = load i8** %optarg, align 8, !dbg !447, !tbaa !395
+  %54 = call i32 @atoi(i8* %53) #7, !dbg !448
+  call void @llvm.dbg.value(metadata i32 %54, i64 0, metadata !266, metadata !362), !dbg !377
+  br label %.backedge, !dbg !449
+
+; <label>:55                                      ; preds = %49
+  call void @llvm.dbg.value(metadata i8** %optname, i64 0, metadata !273, metadata !362), !dbg !387
+  %56 = call i32 @strcmp(i8* %7, i8* getelementptr inbounds ([3 x i8]* @.str8, i64 0, i64 0)) #7, !dbg !450
+  %57 = icmp eq i32 %56, 0, !dbg !452
+  br i1 %57, label %58, label %.backedge, !dbg !453
+
+; <label>:58                                      ; preds = %55
+  %59 = load %struct.__sFILE** @__stdoutp, align 8, !dbg !454, !tbaa !395
+  call void @HMMERBanner(%struct.__sFILE* %59, i8* getelementptr inbounds ([48 x i8]* @banner, i64 0, i64 0)) #7, !dbg !456
+  %60 = call i32 @puts(i8* getelementptr inbounds ([130 x i8]* @usage, i64 0, i64 0)) #7, !dbg !457
+  %61 = call i32 @puts(i8* getelementptr inbounds ([456 x i8]* @experts, i64 0, i64 0)) #7, !dbg !458
+  call void @exit(i32 0) #8, !dbg !459
+  unreachable, !dbg !459
+
+._crit_edge31:                                    ; preds = %.backedge, %0
+  %num_threads.0.lcssa = phi i32 [ 0, %0 ], [ %num_threads.0.be, %.backedge ]
+  %do_pvm.0.lcssa = phi i32 [ 0, %0 ], [ %do_pvm.0.be, %.backedge ]
+  %lensd.0.lcssa = phi float [ 2.000000e+02, %0 ], [ %lensd.0.be, %.backedge ]
+  %lenmean.0.lcssa = phi float [ 3.250000e+02, %0 ], [ %lenmean.0.be, %.backedge ]
+  %fixedlen.0.lcssa = phi i32 [ 0, %0 ], [ %fixedlen.0.be, %.backedge ]
+  %seed.0.lcssa = phi i32 [ %4, %0 ], [ %seed.0.be, %.backedge ]
+  %nsample.0.lcssa = phi i32 [ 5000, %0 ], [ %nsample.0.be, %.backedge ]
+  %histfile.0.lcssa = phi i8* [ null, %0 ], [ %histfile.0.be, %.backedge ]
+  call void @llvm.dbg.value(metadata i32* %optind, i64 0, metadata !275, metadata !362), !dbg !389
+  %62 = load i32* %optind, align 4, !dbg !460, !tbaa !462
+  %63 = sub nsw i32 %argc, %62, !dbg !464
+  %64 = icmp eq i32 %63, 1, !dbg !465
+  br i1 %64, label %66, label %65, !dbg !466
+
+; <label>:65                                      ; preds = %._crit_edge31
+  call void (i8*, ...)* @Die(i8* getelementptr inbounds ([35 x i8]* @.str9, i64 0, i64 0), i8* getelementptr inbounds ([130 x i8]* @usage, i64 0, i64 0)) #7, !dbg !467
+  %.pre = load i32* %optind, align 4, !dbg !468, !tbaa !462
+  br label %66, !dbg !467
+
+; <label>:66                                      ; preds = %._crit_edge31, %65
+  %67 = phi i32 [ %62, %._crit_edge31 ], [ %.pre, %65 ]
+  call void @llvm.dbg.value(metadata i32* %optind, i64 0, metadata !275, metadata !362), !dbg !389
+  %68 = add nsw i32 %67, 1, !dbg !468
+  call void @llvm.dbg.value(metadata i32 %68, i64 0, metadata !275, metadata !362), !dbg !389
+  store i32 %68, i32* %optind, align 4, !dbg !468, !tbaa !462
+  %69 = sext i32 %67 to i64, !dbg !469
+  %70 = getelementptr inbounds i8** %argv, i64 %69, !dbg !469
+  %71 = load i8** %70, align 8, !dbg !469, !tbaa !395
+  call void @llvm.dbg.value(metadata i8* %71, i64 0, metadata !22, metadata !362), !dbg !470
+  %72 = icmp ne i32 %do_pvm.0.lcssa, 0, !dbg !471
+  br i1 %72, label %73, label %74, !dbg !473
+
+; <label>:73                                      ; preds = %66
+  call void (i8*, ...)* @Die(i8* getelementptr inbounds ([60 x i8]* @.str10, i64 0, i64 0)) #7, !dbg !474
+  br label %74, !dbg !474
+
+; <label>:74                                      ; preds = %73, %66
+  %75 = icmp eq i32 %num_threads.0.lcssa, 0, !dbg !475
+  br i1 %75, label %77, label %76, !dbg !477
+
+; <label>:76                                      ; preds = %74
+  call void (i8*, ...)* @Die(i8* getelementptr inbounds ([80 x i8]* @.str11, i64 0, i64 0)) #7, !dbg !478
+  br label %77, !dbg !478
+
+; <label>:77                                      ; preds = %74, %76
+  %78 = call %struct.hmmfile_s* @HMMFileOpen(i8* %71, i8* null) #7, !dbg !479
+  call void @llvm.dbg.value(metadata %struct.hmmfile_s* %78, i64 0, metadata !24, metadata !362), !dbg !481
+  %79 = icmp eq %struct.hmmfile_s* %78, null, !dbg !482
+  br i1 %79, label %80, label %81, !dbg !483
+
+; <label>:80                                      ; preds = %77
+  call void (i8*, ...)* @Die(i8* getelementptr inbounds ([40 x i8]* @.str12, i64 0, i64 0), i8* %71) #7, !dbg !484
+  br label %81, !dbg !484
+
+; <label>:81                                      ; preds = %80, %77
+  call void @llvm.dbg.value(metadata %struct.__sFILE* null, i64 0, metadata !238, metadata !362), !dbg !485
+  %82 = icmp ne i8* %histfile.0.lcssa, null, !dbg !486
+  br i1 %82, label %83, label %87, !dbg !488
+
+; <label>:83                                      ; preds = %81
+  %84 = call %struct.__sFILE* @"\01_fopen"(i8* %histfile.0.lcssa, i8* getelementptr inbounds ([2 x i8]* @.str13, i64 0, i64 0)) #7, !dbg !489
+  call void @llvm.dbg.value(metadata %struct.__sFILE* %84, i64 0, metadata !238, metadata !362), !dbg !485
+  %85 = icmp eq %struct.__sFILE* %84, null, !dbg !492
+  br i1 %85, label %86, label %87, !dbg !493
+
+; <label>:86                                      ; preds = %83
+  call void (i8*, ...)* @Die(i8* getelementptr inbounds ([51 x i8]* @.str14, i64 0, i64 0), i8* %histfile.0.lcssa) #7, !dbg !494
+  br label %87, !dbg !494
+
+; <label>:87                                      ; preds = %83, %86, %81
+  %hfp.0 = phi %struct.__sFILE* [ null, %86 ], [ %84, %83 ], [ null, %81 ]
+  %88 = call i64 @strlen(i8* %71) #7, !dbg !495
+  %89 = add i64 %88, 5, !dbg !495
+  %90 = call i8* @sre_malloc(i8* getelementptr inbounds ([70 x i8]* @.str15, i64 0, i64 0), i32 265, i64 %89) #7, !dbg !495
+  call void @llvm.dbg.value(metadata i8* %90, i64 0, metadata !23, metadata !362), !dbg !496
+  %91 = call i64 @llvm.objectsize.i64.p0i8(i8* %90, i1 false), !dbg !497
+  %92 = call i8* @__strcpy_chk(i8* %90, i8* %71, i64 %91) #7, !dbg !497
+  %93 = call i8* @__strcat_chk(i8* %90, i8* getelementptr inbounds ([5 x i8]* @.str16, i64 0, i64 0), i64 %91) #7, !dbg !498
+  %94 = call i32 @FileExists(i8* %90) #7, !dbg !499
+  %95 = icmp eq i32 %94, 0, !dbg !499
+  br i1 %95, label %97, label %96, !dbg !501
+
+; <label>:96                                      ; preds = %87
+  call void (i8*, ...)* @Die(i8* getelementptr inbounds ([57 x i8]* @.str17, i64 0, i64 0), i8* %90) #7, !dbg !502
+  br label %97, !dbg !502
+
+; <label>:97                                      ; preds = %87, %96
+  %98 = getelementptr inbounds %struct.hmmfile_s* %78, i64 0, i32 3, !dbg !503
+  %99 = load i32* %98, align 4, !dbg !503, !tbaa !505
+  %100 = icmp eq i32 %99, 0, !dbg !508
+  %. = select i1 %100, i8* getelementptr inbounds ([2 x i8]* @.str13, i64 0, i64 0), i8* getelementptr inbounds ([3 x i8]* @.str18, i64 0, i64 0)
+  %101 = load %struct.__sFILE** @__stdoutp, align 8, !dbg !509, !tbaa !395
+  call void @HMMERBanner(%struct.__sFILE* %101, i8* getelementptr inbounds ([48 x i8]* @banner, i64 0, i64 0)) #7, !dbg !510
+  %102 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([30 x i8]* @.str19, i64 0, i64 0), i8* %71) #7, !dbg !511
+  %103 = icmp eq i32 %fixedlen.0.lcssa, 0, !dbg !512
+  br i1 %103, label %106, label %104, !dbg !514
+
+; <label>:104                                     ; preds = %97
+  %105 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([30 x i8]* @.str20, i64 0, i64 0), i32 %fixedlen.0.lcssa) #7, !dbg !515
+  br label %111, !dbg !515
+
+; <label>:106                                     ; preds = %97
+  %107 = fpext float %lenmean.0.lcssa to double, !dbg !516
+  %108 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([32 x i8]* @.str21, i64 0, i64 0), double %107) #7, !dbg !518
+  %109 = fpext float %lensd.0.lcssa to double, !dbg !519
+  %110 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([32 x i8]* @.str22, i64 0, i64 0), double %109) #7, !dbg !520
+  br label %111
+
+; <label>:111                                     ; preds = %106, %104
+  %112 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([30 x i8]* @.str23, i64 0, i64 0), i32 %nsample.0.lcssa) #7, !dbg !521
+  %113 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([30 x i8]* @.str24, i64 0, i64 0), i32 %seed.0.lcssa) #7, !dbg !522
+  %114 = select i1 %82, i8* %histfile.0.lcssa, i8* getelementptr inbounds ([12 x i8]* @.str26, i64 0, i64 0), !dbg !523
+  %115 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([30 x i8]* @.str25, i64 0, i64 0), i8* %114) #7, !dbg !524
+  br i1 %72, label %116, label %117, !dbg !525
+
+; <label>:116                                     ; preds = %111
+  %puts3 = call i32 @puts(i8* getelementptr inbounds ([33 x i8]* @str44, i64 0, i64 0)) #2, !dbg !526
+  br label %121, !dbg !526
+
+; <label>:117                                     ; preds = %111
+  %118 = icmp sgt i32 %num_threads.0.lcssa, 0, !dbg !528
+  br i1 %118, label %119, label %121, !dbg !530
+
+; <label>:119                                     ; preds = %117
+  %120 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([30 x i8]* @.str28, i64 0, i64 0), i32 %num_threads.0.lcssa) #7, !dbg !531
+  br label %121, !dbg !531
+
+; <label>:121                                     ; preds = %117, %119, %116
+  %puts = call i32 @puts(i8* getelementptr inbounds ([65 x i8]* @str, i64 0, i64 0)) #2, !dbg !532
+  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !218, metadata !362), !dbg !533
+  %122 = call i8* @sre_malloc(i8* getelementptr inbounds ([70 x i8]* @.str15, i64 0, i64 0), i32 308, i64 400) #7, !dbg !534
+  %123 = bitcast i8* %122 to float*, !dbg !534
+  call void @llvm.dbg.value(metadata float* %123, i64 0, metadata !262, metadata !362), !dbg !535
+  %124 = call i8* @sre_malloc(i8* getelementptr inbounds ([70 x i8]* @.str15, i64 0, i64 0), i32 309, i64 400) #7, !dbg !536
+  %125 = bitcast i8* %124 to float*, !dbg !536
+  call void @llvm.dbg.value(metadata float* %125, i64 0, metadata !263, metadata !362), !dbg !537
+  call void @llvm.dbg.value(metadata %struct.plan7_s** %hmm, i64 0, metadata !211, metadata !362), !dbg !538
+  %126 = call i32 @HMMFileRead(%struct.hmmfile_s* %78, %struct.plan7_s** %hmm) #7, !dbg !539
+  %127 = icmp eq i32 %126, 0, !dbg !540
+  br i1 %127, label %._crit_edge18, label %.lr.ph17, !dbg !540
+
+.lr.ph17:                                         ; preds = %121
+  %128 = or i32 %num_threads.0.lcssa, %do_pvm.0.lcssa, !dbg !541
+  %129 = icmp eq i32 %128, 0, !dbg !541
+  %130 = bitcast float* %p1.i to i8*, !dbg !542
+  %131 = bitcast [20 x float]* %randomseq.i to i8*, !dbg !543
+  %132 = getelementptr inbounds [20 x float]* %randomseq.i, i64 0, i64 0, !dbg !544
+  %133 = icmp sgt i32 %nsample.0.lcssa, 0, !dbg !545
+  %134 = fpext float %lenmean.0.lcssa to double, !dbg !548
+  %135 = fpext float %lensd.0.lcssa to double, !dbg !551
+  %136 = add i32 %nsample.0.lcssa, -1, !dbg !552
+  %137 = icmp eq %struct.__sFILE* %hfp.0, null, !dbg !553
+  br label %138, !dbg !540
+
+; <label>:138                                     ; preds = %.lr.ph17, %216
+  %indvars.iv41 = phi i64 [ 0, %.lr.ph17 ], [ %indvars.iv.next42, %216 ]
+  %lambda.015 = phi float* [ %125, %.lr.ph17 ], [ %lambda.1, %216 ]
+  %mu.014 = phi float* [ %123, %.lr.ph17 ], [ %mu.1, %216 ]
+  %139 = phi float [ undef, %.lr.ph17 ], [ %170, %216 ]
+  %140 = phi %struct.histogram_s* [ undef, %.lr.ph17 ], [ %169, %216 ]
+  call void @llvm.dbg.value(metadata %struct.plan7_s** %hmm, i64 0, metadata !211, metadata !362), !dbg !538
+  %141 = load %struct.plan7_s** %hmm, align 8, !dbg !555, !tbaa !395
+  %142 = icmp eq %struct.plan7_s* %141, null, !dbg !557
+  br i1 %142, label %143, label %144, !dbg !558
+
+; <label>:143                                     ; preds = %138
+  call void (i8*, ...)* @Die(i8* getelementptr inbounds ([61 x i8]* @.str30, i64 0, i64 0)) #7, !dbg !559
+  br label %144, !dbg !559
+
+; <label>:144                                     ; preds = %143, %138
+  br i1 %129, label %145, label %167, !dbg !541
+
+; <label>:145                                     ; preds = %144
+  call void @llvm.dbg.value(metadata %struct.plan7_s** %hmm, i64 0, metadata !211, metadata !362), !dbg !538
+  %146 = load %struct.plan7_s** %hmm, align 8, !dbg !560, !tbaa !395
+  call void @llvm.lifetime.start(i64 4, i8* %130), !dbg !542
+  call void @llvm.dbg.value(metadata %struct.plan7_s* %146, i64 0, metadata !288, metadata !362) #2, !dbg !542
+  call void @llvm.dbg.value(metadata i32 %seed.0.be, i64 0, metadata !289, metadata !362) #2, !dbg !561
+  call void @llvm.dbg.value(metadata i32 %nsample.0.be, i64 0, metadata !290, metadata !362) #2, !dbg !562
+  call void @llvm.dbg.value(metadata float %lenmean.0.be, i64 0, metadata !291, metadata !362) #2, !dbg !563
+  call void @llvm.dbg.value(metadata float %lensd.0.be, i64 0, metadata !292, metadata !362) #2, !dbg !564
+  call void @llvm.dbg.value(metadata i32 %fixedlen.0.be, i64 0, metadata !293, metadata !362) #2, !dbg !565
+  call void @llvm.lifetime.start(i64 80, i8* %131) #2, !dbg !543
+  call void @sre_srandom(i32 %seed.0.lcssa) #7, !dbg !566
+  call void @P7Logoddsify(%struct.plan7_s* %146, i32 1) #7, !dbg !567
+  call void @llvm.dbg.value(metadata float* %p1.i, i64 0, metadata !314, metadata !362) #2, !dbg !568
+  call void @P7DefaultNullModel(float* %132, float* %p1.i) #7, !dbg !569
+  %147 = call %struct.histogram_s* @AllocHistogram(i32 -200, i32 200, i32 100) #7, !dbg !570
+  call void @llvm.dbg.value(metadata %struct.histogram_s* %147, i64 0, metadata !296, metadata !362) #2, !dbg !571
+  %148 = getelementptr inbounds %struct.plan7_s* %146, i64 0, i32 20, !dbg !572
+  %149 = load i32* %148, align 4, !dbg !572, !tbaa !573
+  %150 = call %struct.dpmatrix_s* @CreatePlan7Matrix(i32 1, i32 %149, i32 25, i32 0) #7, !dbg !576
+  call void @llvm.dbg.value(metadata %struct.dpmatrix_s* %150, i64 0, metadata !297, metadata !362) #2, !dbg !577
+  call void @llvm.dbg.value(metadata float 0xC7EFFFFFE0000000, i64 0, metadata !315, metadata !362) #2, !dbg !578
+  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !320, metadata !362) #2, !dbg !579
+  br i1 %133, label %.lr.ph.i, label %main_loop_serial.exit, !dbg !552
+
+.lr.ph.i:                                         ; preds = %145, %164
+  %max.02.i = phi float [ %max.1.i, %164 ], [ 0xC7EFFFFFE0000000, %145 ], !dbg !580
+  %idx.01.i = phi i32 [ %166, %164 ], [ 0, %145 ], !dbg !580
+  br i1 %103, label %.preheader.i, label %.loopexit.i, !dbg !581
+
+.preheader.i:                                     ; preds = %.lr.ph.i, %.preheader.i
+  %151 = call double @Gaussrandom(double %134, double %135) #7, !dbg !582
+  %152 = fptosi double %151 to i32, !dbg !583
+  call void @llvm.dbg.value(metadata i32 %152, i64 0, metadata !319, metadata !362) #2, !dbg !584
+  %153 = icmp slt i32 %152, 1, !dbg !585
+  br i1 %153, label %.preheader.i, label %.loopexit.i, !dbg !586
+
+.loopexit.i:                                      ; preds = %.preheader.i, %.lr.ph.i
+  %sqlen.0.i = phi i32 [ %fixedlen.0.lcssa, %.lr.ph.i ], [ %152, %.preheader.i ], !dbg !580
+  %154 = load i32* @Alphabet_size, align 4, !dbg !587, !tbaa !462
+  %155 = call i8* @RandomSequence(i8* getelementptr inbounds ([25 x i8]* @Alphabet, i64 0, i64 0), float* %132, i32 %154, i32 %sqlen.0.i) #7, !dbg !588
+  call void @llvm.dbg.value(metadata i8* %155, i64 0, metadata !316, metadata !362) #2, !dbg !589
+  %156 = call i8* @DigitizeSequence(i8* %155, i32 %sqlen.0.i) #7, !dbg !590
+  call void @llvm.dbg.value(metadata i8* %156, i64 0, metadata !317, metadata !362) #2, !dbg !591
+  %157 = load i32* %148, align 4, !dbg !592, !tbaa !573
+  %158 = call i32 @P7ViterbiSize(i32 %sqlen.0.i, i32 %157) #7, !dbg !594
+  %159 = icmp slt i32 %158, 1001, !dbg !595
+  br i1 %159, label %160, label %162, !dbg !596
+
+; <label>:160                                     ; preds = %.loopexit.i
+  %161 = call float @P7Viterbi(i8* %156, i32 %sqlen.0.i, %struct.plan7_s* %146, %struct.dpmatrix_s* %150, %struct.p7trace_s** null) #7, !dbg !597
+  call void @llvm.dbg.value(metadata float %161, i64 0, metadata !318, metadata !362) #2, !dbg !598
+  br label %164, !dbg !599
+
+; <label>:162                                     ; preds = %.loopexit.i
+  %163 = call float @P7SmallViterbi(i8* %156, i32 %sqlen.0.i, %struct.plan7_s* %146, %struct.dpmatrix_s* %150, %struct.p7trace_s** null) #7, !dbg !600
+  call void @llvm.dbg.value(metadata float %163, i64 0, metadata !318, metadata !362) #2, !dbg !598
+  br label %164, !dbg !580
+
+; <label>:164                                     ; preds = %162, %160
+  %score.0.i = phi float [ %161, %160 ], [ %163, %162 ], !dbg !580
+  call void @AddToHistogram(%struct.histogram_s* %147, float %score.0.i) #7, !dbg !601
+  %165 = fcmp ogt float %score.0.i, %max.02.i, !dbg !602
+  call void @llvm.dbg.value(metadata float %score.0.i, i64 0, metadata !315, metadata !362) #2, !dbg !578
+  %max.1.i = select i1 %165, float %score.0.i, float %max.02.i, !dbg !604
+  call void @free(i8* %156) #7, !dbg !605
+  call void @free(i8* %155) #7, !dbg !606
+  %166 = add nuw nsw i32 %idx.01.i, 1, !dbg !607
+  call void @llvm.dbg.value(metadata i32 %166, i64 0, metadata !320, metadata !362) #2, !dbg !579
+  %exitcond.i = icmp eq i32 %idx.01.i, %136, !dbg !552
+  br i1 %exitcond.i, label %main_loop_serial.exit, label %.lr.ph.i, !dbg !552
+
+main_loop_serial.exit:                            ; preds = %164, %145
+  %max.0.lcssa.i = phi float [ 0xC7EFFFFFE0000000, %145 ], [ %max.1.i, %164 ], !dbg !580
+  call void @FreePlan7Matrix(%struct.dpmatrix_s* %150) #7, !dbg !608
+  call void @llvm.dbg.value(metadata %struct.histogram_s* %147, i64 0, metadata !294, metadata !362), !dbg !609
+  call void @llvm.dbg.value(metadata %struct.histogram_s* %147, i64 0, metadata !219, metadata !362), !dbg !610
+  call void @llvm.dbg.value(metadata %struct.histogram_s* %147, i64 0, metadata !219, metadata !362), !dbg !610
+  call void @llvm.dbg.value(metadata %struct.histogram_s* %147, i64 0, metadata !219, metadata !362), !dbg !610
+  call void @llvm.dbg.value(metadata %struct.histogram_s* %147, i64 0, metadata !219, metadata !362), !dbg !610
+  call void @llvm.dbg.value(metadata %struct.histogram_s* %147, i64 0, metadata !219, metadata !362), !dbg !610
+  call void @llvm.dbg.value(metadata %struct.histogram_s* %147, i64 0, metadata !219, metadata !362), !dbg !610
+  call void @llvm.dbg.value(metadata %struct.histogram_s* %147, i64 0, metadata !219, metadata !362), !dbg !610
+  call void @llvm.dbg.value(metadata %struct.histogram_s* %147, i64 0, metadata !219, metadata !362), !dbg !610
+  call void @llvm.dbg.value(metadata float %max.0.lcssa.i, i64 0, metadata !295, metadata !362), !dbg !611
+  call void @llvm.dbg.value(metadata float %max.0.lcssa.i, i64 0, metadata !236, metadata !362), !dbg !612
+  call void @llvm.dbg.value(metadata float %max.0.lcssa.i, i64 0, metadata !236, metadata !362), !dbg !612
+  call void @llvm.lifetime.end(i64 80, i8* %131) #2, !dbg !613
+  call void @llvm.lifetime.end(i64 4, i8* %130), !dbg !613
+  br label %168, !dbg !580
+
+; <label>:167                                     ; preds = %144
+  call void (i8*, ...)* @Die(i8* getelementptr inbounds ([47 x i8]* @.str31, i64 0, i64 0)) #7, !dbg !614
+  br label %168
+
+; <label>:168                                     ; preds = %167, %main_loop_serial.exit
+  %169 = phi %struct.histogram_s* [ %140, %167 ], [ %147, %main_loop_serial.exit ]
+  %170 = phi float [ %139, %167 ], [ %max.0.lcssa.i, %main_loop_serial.exit ]
+  %171 = call i32 @ExtremeValueFitHistogram(%struct.histogram_s* %169, i32 1, float 9.999000e+03) #7, !dbg !615
+  %172 = icmp eq i32 %171, 0, !dbg !615
+  br i1 %172, label %173, label %174, !dbg !617
+
+; <label>:173                                     ; preds = %168
+  call void (i8*, ...)* @Die(i8* getelementptr inbounds ([41 x i8]* @.str32, i64 0, i64 0)) #7, !dbg !618
+  br label %174, !dbg !618
+
+; <label>:174                                     ; preds = %168, %173
+  %175 = getelementptr inbounds %struct.histogram_s* %169, i64 0, i32 9, i64 0, !dbg !619
+  %176 = bitcast float* %175 to i32*, !dbg !619
+  %177 = load i32* %176, align 4, !dbg !619, !tbaa !620
+  %178 = getelementptr inbounds float* %mu.014, i64 %indvars.iv41, !dbg !621
+  %179 = bitcast float* %178 to i32*, !dbg !622
+  store i32 %177, i32* %179, align 4, !dbg !622, !tbaa !620
+  %180 = getelementptr inbounds %struct.histogram_s* %169, i64 0, i32 9, i64 1, !dbg !623
+  %181 = bitcast float* %180 to i32*, !dbg !623
+  %182 = load i32* %181, align 4, !dbg !623, !tbaa !620
+  %183 = getelementptr inbounds float* %lambda.015, i64 %indvars.iv41, !dbg !624
+  %184 = bitcast float* %183 to i32*, !dbg !625
+  store i32 %182, i32* %184, align 4, !dbg !625, !tbaa !620
+  %indvars.iv.next42 = add nuw i64 %indvars.iv41, 1, !dbg !540
+  %185 = trunc i64 %indvars.iv.next42 to i32, !dbg !626
+  %186 = srem i32 %185, 100, !dbg !626
+  %187 = icmp eq i32 %186, 0, !dbg !628
+  br i1 %187, label %188, label %197, !dbg !629
+
+; <label>:188                                     ; preds = %174
+  %189 = bitcast float* %mu.014 to i8*, !dbg !630
+  %190 = shl i64 %indvars.iv41, 2, !dbg !630
+  %191 = add i64 %190, 404, !dbg !630
+  %192 = call i8* @sre_realloc(i8* getelementptr inbounds ([70 x i8]* @.str15, i64 0, i64 0), i32 348, i8* %189, i64 %191) #7, !dbg !630
+  %193 = bitcast i8* %192 to float*, !dbg !630
+  call void @llvm.dbg.value(metadata float* %193, i64 0, metadata !262, metadata !362), !dbg !535
+  %194 = bitcast float* %lambda.015 to i8*, !dbg !632
+  %195 = call i8* @sre_realloc(i8* getelementptr inbounds ([70 x i8]* @.str15, i64 0, i64 0), i32 349, i8* %194, i64 %191) #7, !dbg !632
+  %196 = bitcast i8* %195 to float*, !dbg !632
+  call void @llvm.dbg.value(metadata float* %196, i64 0, metadata !263, metadata !362), !dbg !537
+  br label %197, !dbg !633
+
+; <label>:197                                     ; preds = %188, %174
+  %mu.1 = phi float* [ %193, %188 ], [ %mu.014, %174 ]
+  %lambda.1 = phi float* [ %196, %188 ], [ %lambda.015, %174 ]
+  call void @llvm.dbg.value(metadata %struct.plan7_s** %hmm, i64 0, metadata !211, metadata !362), !dbg !538
+  %198 = load %struct.plan7_s** %hmm, align 8, !dbg !634, !tbaa !395
+  %199 = getelementptr inbounds %struct.plan7_s* %198, i64 0, i32 0, !dbg !635
+  %200 = load i8** %199, align 8, !dbg !635, !tbaa !636
+  %201 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([13 x i8]* @.str33, i64 0, i64 0), i8* %200) #7, !dbg !637
+  %202 = load float* %175, align 4, !dbg !638, !tbaa !620
+  %203 = fpext float %202 to double, !dbg !638
+  %204 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([15 x i8]* @.str34, i64 0, i64 0), double %203) #7, !dbg !639
+  %205 = load float* %180, align 4, !dbg !640, !tbaa !620
+  %206 = fpext float %205 to double, !dbg !640
+  %207 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([15 x i8]* @.str35, i64 0, i64 0), double %206) #7, !dbg !641
+  %208 = fpext float %170 to double, !dbg !642
+  %209 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([15 x i8]* @.str36, i64 0, i64 0), double %208) #7, !dbg !643
+  %puts2 = call i32 @puts(i8* getelementptr inbounds ([3 x i8]* @str43, i64 0, i64 0)) #2, !dbg !644
+  br i1 %137, label %216, label %210, !dbg !645
+
+; <label>:210                                     ; preds = %197
+  call void @llvm.dbg.value(metadata %struct.plan7_s** %hmm, i64 0, metadata !211, metadata !362), !dbg !538
+  %211 = load %struct.plan7_s** %hmm, align 8, !dbg !646, !tbaa !395
+  %212 = getelementptr inbounds %struct.plan7_s* %211, i64 0, i32 0, !dbg !648
+  %213 = load i8** %212, align 8, !dbg !648, !tbaa !636
+  %214 = call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %hfp.0, i8* getelementptr inbounds ([9 x i8]* @.str38, i64 0, i64 0), i8* %213) #7, !dbg !649
+  call void @PrintASCIIHistogram(%struct.__sFILE* %hfp.0, %struct.histogram_s* %169) #7, !dbg !650
+  %215 = call i64 @fwrite(i8* getelementptr inbounds ([4 x i8]* @.str37, i64 0, i64 0), i64 3, i64 1, %struct.__sFILE* %hfp.0), !dbg !651
+  br label %216, !dbg !652
+
+; <label>:216                                     ; preds = %197, %210
+  call void @FreeHistogram(%struct.histogram_s* %169) #7, !dbg !653
+  call void @llvm.dbg.value(metadata %struct.plan7_s** %hmm, i64 0, metadata !211, metadata !362), !dbg !538
+  %217 = load %struct.plan7_s** %hmm, align 8, !dbg !654, !tbaa !395
+  call void @FreePlan7(%struct.plan7_s* %217) #7, !dbg !655
+  call void @llvm.dbg.value(metadata %struct.plan7_s** %hmm, i64 0, metadata !211, metadata !362), !dbg !538
+  %218 = call i32 @HMMFileRead(%struct.hmmfile_s* %78, %struct.plan7_s** %hmm) #7, !dbg !539
+  %219 = icmp eq i32 %218, 0, !dbg !540
+  br i1 %219, label %._crit_edge18, label %138, !dbg !540
+
+._crit_edge18:                                    ; preds = %216, %121
+  %lambda.0.lcssa = phi float* [ %125, %121 ], [ %lambda.1, %216 ]
+  %mu.0.lcssa = phi float* [ %123, %121 ], [ %mu.1, %216 ]
+  %nhmm.0.lcssa = phi i32 [ 0, %121 ], [ %185, %216 ]
+  call void @HMMFileRewind(%struct.hmmfile_s* %78) #7, !dbg !656
+  %220 = call i32 @FileExists(i8* %90) #7, !dbg !657
+  %221 = icmp eq i32 %220, 0, !dbg !657
+  br i1 %221, label %223, label %222, !dbg !659
+
+; <label>:222                                     ; preds = %._crit_edge18
+  call void (i8*, ...)* @Die(i8* getelementptr inbounds ([49 x i8]* @.str39, i64 0, i64 0), i8* %90) #7, !dbg !660
+  br label %223, !dbg !660
+
+; <label>:223                                     ; preds = %._crit_edge18, %222
+  %224 = call %struct.__sFILE* @"\01_fopen"(i8* %90, i8* %.) #7, !dbg !661
+  call void @llvm.dbg.value(metadata %struct.__sFILE* %224, i64 0, metadata !209, metadata !362), !dbg !663
+  %225 = icmp eq %struct.__sFILE* %224, null, !dbg !664
+  br i1 %225, label %226, label %.preheader, !dbg !665
+
+; <label>:226                                     ; preds = %223
+  call void (i8*, ...)* @Die(i8* getelementptr inbounds ([56 x i8]* @.str40, i64 0, i64 0), i8* %90) #7, !dbg !666
+  br label %.preheader, !dbg !666
+
+.preheader:                                       ; preds = %226, %223
+  %227 = icmp sgt i32 %nhmm.0.lcssa, 0, !dbg !667
+  br i1 %227, label %.lr.ph, label %._crit_edge, !dbg !670
+
+.lr.ph:                                           ; preds = %.preheader
+  %228 = add i32 %nhmm.0.lcssa, -1, !dbg !670
+  br label %229, !dbg !670
+
+; <label>:229                                     ; preds = %257, %.lr.ph
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %257 ]
+  call void @llvm.dbg.value(metadata %struct.plan7_s** %hmm, i64 0, metadata !211, metadata !362), !dbg !538
+  %230 = call i32 @HMMFileRead(%struct.hmmfile_s* %78, %struct.plan7_s** %hmm) #7, !dbg !671
+  %231 = icmp eq i32 %230, 0, !dbg !671
+  br i1 %231, label %232, label %233, !dbg !674
+
+; <label>:232                                     ; preds = %229
+  call void (i8*, ...)* @Die(i8* getelementptr inbounds ([36 x i8]* @.str41, i64 0, i64 0)) #7, !dbg !675
+  br label %233, !dbg !675
+
+; <label>:233                                     ; preds = %229, %232
+  call void @llvm.dbg.value(metadata %struct.plan7_s** %hmm, i64 0, metadata !211, metadata !362), !dbg !538
+  %234 = load %struct.plan7_s** %hmm, align 8, !dbg !676, !tbaa !395
+  %235 = icmp eq %struct.plan7_s* %234, null, !dbg !678
+  br i1 %235, label %236, label %237, !dbg !679
+
+; <label>:236                                     ; preds = %233
+  call void (i8*, ...)* @Die(i8* getelementptr inbounds ([50 x i8]* @.str42, i64 0, i64 0), i8* %71) #7, !dbg !680
+  %.pre43 = load %struct.plan7_s** %hmm, align 8, !dbg !681, !tbaa !395
+  br label %237, !dbg !680
+
+; <label>:237                                     ; preds = %236, %233
+  %238 = phi %struct.plan7_s* [ %.pre43, %236 ], [ %234, %233 ]
+  %239 = getelementptr inbounds float* %mu.0.lcssa, i64 %indvars.iv, !dbg !682
+  %240 = bitcast float* %239 to i32*, !dbg !682
+  %241 = load i32* %240, align 4, !dbg !682, !tbaa !620
+  call void @llvm.dbg.value(metadata %struct.plan7_s** %hmm, i64 0, metadata !211, metadata !362), !dbg !538
+  %242 = getelementptr inbounds %struct.plan7_s* %238, i64 0, i32 45, !dbg !683
+  %243 = bitcast float* %242 to i32*, !dbg !684
+  store i32 %241, i32* %243, align 4, !dbg !684, !tbaa !685
+  %244 = getelementptr inbounds float* %lambda.0.lcssa, i64 %indvars.iv, !dbg !686
+  %245 = bitcast float* %244 to i32*, !dbg !686
+  %246 = load i32* %245, align 4, !dbg !686, !tbaa !620
+  call void @llvm.dbg.value(metadata %struct.plan7_s** %hmm, i64 0, metadata !211, metadata !362), !dbg !538
+  %247 = getelementptr inbounds %struct.plan7_s* %238, i64 0, i32 46, !dbg !687
+  %248 = bitcast float* %247 to i32*, !dbg !688
+  store i32 %246, i32* %248, align 4, !dbg !688, !tbaa !689
+  call void @llvm.dbg.value(metadata %struct.plan7_s** %hmm, i64 0, metadata !211, metadata !362), !dbg !538
+  %249 = getelementptr inbounds %struct.plan7_s* %238, i64 0, i32 47, !dbg !690
+  %250 = load i32* %249, align 4, !dbg !691, !tbaa !692
+  %251 = or i32 %250, 128, !dbg !691
+  store i32 %251, i32* %249, align 4, !dbg !691, !tbaa !692
+  call void @llvm.dbg.value(metadata %struct.plan7_s** %hmm, i64 0, metadata !211, metadata !362), !dbg !538
+  call void @Plan7ComlogAppend(%struct.plan7_s* %238, i32 %argc, i8** %argv) #7, !dbg !693
+  %252 = load i32* %98, align 4, !dbg !694, !tbaa !505
+  %253 = icmp eq i32 %252, 0, !dbg !696
+  call void @llvm.dbg.value(metadata %struct.plan7_s** %hmm, i64 0, metadata !211, metadata !362), !dbg !538
+  %254 = load %struct.plan7_s** %hmm, align 8, !dbg !697, !tbaa !395
+  br i1 %253, label %256, label %255, !dbg !698
+
+; <label>:255                                     ; preds = %237
+  call void @WriteBinHMM(%struct.__sFILE* %224, %struct.plan7_s* %254) #7, !dbg !699
+  br label %257, !dbg !699
+
+; <label>:256                                     ; preds = %237
+  call void @WriteAscHMM(%struct.__sFILE* %224, %struct.plan7_s* %254) #7, !dbg !700
+  br label %257
+
+; <label>:257                                     ; preds = %256, %255
+  call void @llvm.dbg.value(metadata %struct.plan7_s** %hmm, i64 0, metadata !211, metadata !362), !dbg !538
+  %258 = load %struct.plan7_s** %hmm, align 8, !dbg !701, !tbaa !395
+  call void @FreePlan7(%struct.plan7_s* %258) #7, !dbg !702
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !670
+  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !670
+  %exitcond = icmp eq i32 %lftr.wideiv, %228, !dbg !670
+  br i1 %exitcond, label %._crit_edge, label %229, !dbg !670
+
+._crit_edge:                                      ; preds = %257, %.preheader
+  call void @HMMFileClose(%struct.hmmfile_s* %78) #7, !dbg !703
+  %259 = call i32 @fclose(%struct.__sFILE* %224) #7, !dbg !704
+  %260 = icmp eq i32 %259, 0, !dbg !706
+  br i1 %260, label %262, label %261, !dbg !707
+
+; <label>:261                                     ; preds = %._crit_edge
+  call void @Panic(i8* getelementptr inbounds ([70 x i8]* @.str15, i64 0, i64 0), i32 415) #7, !dbg !708
+  br label %262, !dbg !708
+
+; <label>:262                                     ; preds = %._crit_edge, %261
+  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !213, metadata !362), !dbg !709
+  tail call void @llvm.dbg.value(metadata i32 2, i64 0, metadata !282, metadata !362), !dbg !710
+  call void @llvm.dbg.value(metadata i32* %blocksigs, i64 0, metadata !213, metadata !362), !dbg !709
+  call void @llvm.dbg.value(metadata i32 2, i64 0, metadata !213, metadata !362), !dbg !709
+  store i32 2, i32* %blocksigs, align 4, !dbg !713, !tbaa !462
+  call void @llvm.dbg.value(metadata i32* %blocksigs, i64 0, metadata !213, metadata !362), !dbg !709
+  %263 = call i32 @sigprocmask(i32 1, i32* %blocksigs, i32* null) #7, !dbg !714
+  %264 = icmp eq i32 %263, 0, !dbg !716
+  br i1 %264, label %266, label %265, !dbg !717
+
+; <label>:265                                     ; preds = %262
+  call void @Panic(i8* getelementptr inbounds ([70 x i8]* @.str15, i64 0, i64 0), i32 420) #7, !dbg !718
+  br label %266, !dbg !718
+
+; <label>:266                                     ; preds = %262, %265
+  %267 = call i32 @remove(i8* %71) #7, !dbg !719
+  %268 = icmp eq i32 %267, 0, !dbg !721
+  br i1 %268, label %270, label %269, !dbg !722
+
+; <label>:269                                     ; preds = %266
+  call void @Panic(i8* getelementptr inbounds ([70 x i8]* @.str15, i64 0, i64 0), i32 421) #7, !dbg !723
+  br label %270, !dbg !723
+
+; <label>:270                                     ; preds = %266, %269
+  %271 = call i32 @rename(i8* %90, i8* %71) #7, !dbg !724
+  %272 = icmp eq i32 %271, 0, !dbg !726
+  br i1 %272, label %274, label %273, !dbg !727
+
+; <label>:273                                     ; preds = %270
+  call void @Panic(i8* getelementptr inbounds ([70 x i8]* @.str15, i64 0, i64 0), i32 422) #7, !dbg !728
+  br label %274, !dbg !728
+
+; <label>:274                                     ; preds = %270, %273
+  call void @llvm.dbg.value(metadata i32* %blocksigs, i64 0, metadata !213, metadata !362), !dbg !709
+  %275 = call i32 @sigprocmask(i32 2, i32* %blocksigs, i32* null) #7, !dbg !729
+  %276 = icmp eq i32 %275, 0, !dbg !731
+  br i1 %276, label %278, label %277, !dbg !732
+
+; <label>:277                                     ; preds = %274
+  call void @Panic(i8* getelementptr inbounds ([70 x i8]* @.str15, i64 0, i64 0), i32 423) #7, !dbg !733
+  br label %278, !dbg !733
+
+; <label>:278                                     ; preds = %274, %277
+  call void @free(i8* %90) #9, !dbg !734
+  call void @llvm.dbg.value(metadata %struct.stopwatch_s* %stopwatch, i64 0, metadata !239, metadata !362), !dbg !367
+  call void @StopwatchStop(%struct.stopwatch_s* %stopwatch) #7, !dbg !735
+  %279 = bitcast float* %mu.0.lcssa to i8*, !dbg !736
+  call void @free(i8* %279) #9, !dbg !737
+  %280 = bitcast float* %lambda.0.lcssa to i8*, !dbg !738
+  call void @free(i8* %280) #9, !dbg !739
+  %281 = icmp eq %struct.__sFILE* %hfp.0, null, !dbg !740
+  br i1 %281, label %284, label %282, !dbg !742
+
+; <label>:282                                     ; preds = %278
+  %283 = call i32 @fclose(%struct.__sFILE* %hfp.0) #7, !dbg !743
+  br label %284, !dbg !743
+
+; <label>:284                                     ; preds = %278, %282
+  call void @SqdClean() #7, !dbg !744
+  call void @llvm.lifetime.end(i64 64, i8* %2) #2, !dbg !745
+  call void @llvm.lifetime.end(i64 64, i8* %1) #2, !dbg !745
+  ret i32 0, !dbg !745
+}

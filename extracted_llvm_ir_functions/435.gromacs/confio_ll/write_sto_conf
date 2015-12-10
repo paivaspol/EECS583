@@ -1,8 +1,15 @@
-define void @write_sto_conf(i8* %outfile, i8* %title, %struct.t_atoms* %atoms, [3 x float]* %x, [3 x float]* %v, [3 x float]* %box) #3 {
+define void @write_sto_conf(i8* %outfile, i8* %title, %struct.t_atoms* %atoms, [3 x float]* %x, [3 x float]* %v, [3 x float]* %box) #4 {
   %fr = alloca %struct.t_trxframe, align 8
-  %1 = bitcast %struct.t_trxframe* %fr to i8*
-  call void @llvm.lifetime.start(i64 176, i8* %1) #6
-  %2 = tail call i32 @fn2ftp(i8* %outfile) #8
+  tail call void @llvm.dbg.value(metadata i8* %outfile, i64 0, metadata !335, metadata !692), !dbg !1917
+  tail call void @llvm.dbg.value(metadata i8* %title, i64 0, metadata !336, metadata !692), !dbg !1918
+  tail call void @llvm.dbg.value(metadata %struct.t_atoms* %atoms, i64 0, metadata !337, metadata !692), !dbg !1919
+  tail call void @llvm.dbg.value(metadata [3 x float]* %x, i64 0, metadata !338, metadata !692), !dbg !1920
+  tail call void @llvm.dbg.value(metadata [3 x float]* %v, i64 0, metadata !339, metadata !692), !dbg !1921
+  tail call void @llvm.dbg.value(metadata [3 x float]* %box, i64 0, metadata !340, metadata !692), !dbg !1922
+  %1 = bitcast %struct.t_trxframe* %fr to i8*, !dbg !1923
+  call void @llvm.lifetime.start(i64 176, i8* %1) #7, !dbg !1923
+  %2 = tail call i32 @fn2ftp(i8* %outfile) #8, !dbg !1924
+  tail call void @llvm.dbg.value(metadata i32 %2, i64 0, metadata !342, metadata !692), !dbg !1925
   switch i32 %2, label %39 [
     i32 13, label %3
     i32 14, label %5
@@ -12,82 +19,102 @@ define void @write_sto_conf(i8* %outfile, i8* %title, %struct.t_atoms* %atoms, [
     i32 26, label %38
     i32 28, label %38
     i32 27, label %38
-  ]
+  ], !dbg !1926
 
 ; <label>:3                                       ; preds = %0
-  %4 = tail call %struct.__sFILE* @ffopen(i8* %outfile, i8* getelementptr inbounds ([2 x i8]* @.str44, i64 0, i64 0)) #8
-  tail call void @write_hconf_p(%struct.__sFILE* %4, i8* %title, %struct.t_atoms* %atoms, i32 3, [3 x float]* %x, [3 x float]* %v, [3 x float]* %box) #8
-  tail call void @ffclose(%struct.__sFILE* %4) #8
-  br label %40
+  tail call void @llvm.dbg.value(metadata i8* %outfile, i64 0, metadata !661, metadata !692) #7, !dbg !1927
+  tail call void @llvm.dbg.value(metadata i8* %title, i64 0, metadata !662, metadata !692) #7, !dbg !1930
+  tail call void @llvm.dbg.value(metadata %struct.t_atoms* %atoms, i64 0, metadata !663, metadata !692) #7, !dbg !1931
+  tail call void @llvm.dbg.value(metadata [3 x float]* %x, i64 0, metadata !664, metadata !692) #7, !dbg !1932
+  tail call void @llvm.dbg.value(metadata [3 x float]* %v, i64 0, metadata !665, metadata !692) #7, !dbg !1933
+  tail call void @llvm.dbg.value(metadata [3 x float]* %box, i64 0, metadata !666, metadata !692) #7, !dbg !1934
+  tail call void @llvm.dbg.value(metadata i8* %outfile, i64 0, metadata !308, metadata !692) #7, !dbg !1935
+  tail call void @llvm.dbg.value(metadata i8* %title, i64 0, metadata !309, metadata !692) #7, !dbg !1937
+  tail call void @llvm.dbg.value(metadata %struct.t_atoms* %atoms, i64 0, metadata !310, metadata !692) #7, !dbg !1938
+  tail call void @llvm.dbg.value(metadata i32 3, i64 0, metadata !311, metadata !692) #7, !dbg !1939
+  tail call void @llvm.dbg.value(metadata [3 x float]* %x, i64 0, metadata !312, metadata !692) #7, !dbg !1940
+  tail call void @llvm.dbg.value(metadata [3 x float]* %v, i64 0, metadata !313, metadata !692) #7, !dbg !1941
+  tail call void @llvm.dbg.value(metadata [3 x float]* %box, i64 0, metadata !314, metadata !692) #7, !dbg !1942
+  %4 = tail call %struct.__sFILE* @ffopen(i8* %outfile, i8* getelementptr inbounds ([2 x i8]* @.str44, i64 0, i64 0)) #8, !dbg !1943
+  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %4, i64 0, metadata !315, metadata !692) #7, !dbg !1944
+  tail call void @write_hconf_p(%struct.__sFILE* %4, i8* %title, %struct.t_atoms* %atoms, i32 3, [3 x float]* %x, [3 x float]* %v, [3 x float]* %box) #8, !dbg !1945
+  tail call void @ffclose(%struct.__sFILE* %4) #8, !dbg !1946
+  br label %40, !dbg !1947
 
 ; <label>:5                                       ; preds = %0
-  call void @clear_trxframe(%struct.t_trxframe* %fr, i32 1) #8
-  %6 = getelementptr inbounds %struct.t_trxframe* %fr, i64 0, i32 6
-  store i32 1, i32* %6, align 8, !tbaa !15
-  %7 = getelementptr inbounds %struct.t_trxframe* %fr, i64 0, i32 7
-  store i8* %title, i8** %7, align 8, !tbaa !18
-  %8 = getelementptr inbounds %struct.t_atoms* %atoms, i64 0, i32 0
-  %9 = load i32* %8, align 4, !tbaa !32
-  %10 = getelementptr inbounds %struct.t_trxframe* %fr, i64 0, i32 2
-  store i32 %9, i32* %10, align 8, !tbaa !26
-  %11 = getelementptr inbounds %struct.t_trxframe* %fr, i64 0, i32 14
-  store i32 1, i32* %11, align 8, !tbaa !25
-  %12 = getelementptr inbounds %struct.t_trxframe* %fr, i64 0, i32 15
-  store %struct.t_atoms* %atoms, %struct.t_atoms** %12, align 8, !tbaa !27
-  %13 = getelementptr inbounds %struct.t_trxframe* %fr, i64 0, i32 18
-  store i32 1, i32* %13, align 8, !tbaa !20
-  %14 = getelementptr inbounds %struct.t_trxframe* %fr, i64 0, i32 19
-  store [3 x float]* %x, [3 x float]** %14, align 8, !tbaa !38
-  %15 = icmp eq [3 x float]* %v, null
-  br i1 %15, label %19, label %16
+  tail call void @llvm.dbg.value(metadata %struct.t_trxframe* %fr, i64 0, metadata !343, metadata !692), !dbg !1948
+  call void @clear_trxframe(%struct.t_trxframe* %fr, i32 1) #8, !dbg !1949
+  %6 = getelementptr inbounds %struct.t_trxframe* %fr, i64 0, i32 6, !dbg !1950
+  store i32 1, i32* %6, align 8, !dbg !1951, !tbaa !758
+  %7 = getelementptr inbounds %struct.t_trxframe* %fr, i64 0, i32 7, !dbg !1952
+  store i8* %title, i8** %7, align 8, !dbg !1953, !tbaa !770
+  %8 = getelementptr inbounds %struct.t_atoms* %atoms, i64 0, i32 0, !dbg !1954
+  %9 = load i32* %8, align 4, !dbg !1954, !tbaa !933
+  %10 = getelementptr inbounds %struct.t_trxframe* %fr, i64 0, i32 2, !dbg !1955
+  store i32 %9, i32* %10, align 8, !dbg !1956, !tbaa !863
+  %11 = getelementptr inbounds %struct.t_trxframe* %fr, i64 0, i32 14, !dbg !1957
+  store i32 1, i32* %11, align 8, !dbg !1958, !tbaa !860
+  %12 = getelementptr inbounds %struct.t_trxframe* %fr, i64 0, i32 15, !dbg !1959
+  store %struct.t_atoms* %atoms, %struct.t_atoms** %12, align 8, !dbg !1960, !tbaa !865
+  %13 = getelementptr inbounds %struct.t_trxframe* %fr, i64 0, i32 18, !dbg !1961
+  store i32 1, i32* %13, align 8, !dbg !1962, !tbaa !835
+  %14 = getelementptr inbounds %struct.t_trxframe* %fr, i64 0, i32 19, !dbg !1963
+  store [3 x float]* %x, [3 x float]** %14, align 8, !dbg !1964, !tbaa !955
+  %15 = icmp eq [3 x float]* %v, null, !dbg !1965
+  br i1 %15, label %19, label %16, !dbg !1967
 
 ; <label>:16                                      ; preds = %5
-  %17 = getelementptr inbounds %struct.t_trxframe* %fr, i64 0, i32 20
-  store i32 1, i32* %17, align 8, !tbaa !41
-  %18 = getelementptr inbounds %struct.t_trxframe* %fr, i64 0, i32 21
-  store [3 x float]* %v, [3 x float]** %18, align 8, !tbaa !40
-  br label %19
+  %17 = getelementptr inbounds %struct.t_trxframe* %fr, i64 0, i32 20, !dbg !1968
+  store i32 1, i32* %17, align 8, !dbg !1970, !tbaa !983
+  %18 = getelementptr inbounds %struct.t_trxframe* %fr, i64 0, i32 21, !dbg !1971
+  store [3 x float]* %v, [3 x float]** %18, align 8, !dbg !1972, !tbaa !979
+  br label %19, !dbg !1973
 
 ; <label>:19                                      ; preds = %5, %16
-  %20 = getelementptr inbounds %struct.t_trxframe* %fr, i64 0, i32 24
-  store i32 1, i32* %20, align 8, !tbaa !42
-  %21 = getelementptr inbounds %struct.t_trxframe* %fr, i64 0, i32 25, i64 0
-  %22 = bitcast [3 x float]* %box to <4 x i32>*
-  %23 = load <4 x i32>* %22, align 4, !tbaa !39
-  %24 = bitcast [3 x float]* %21 to <4 x i32>*
-  store <4 x i32> %23, <4 x i32>* %24, align 4, !tbaa !39
-  %25 = getelementptr inbounds [3 x float]* %box, i64 1, i64 1
-  %26 = getelementptr inbounds %struct.t_trxframe* %fr, i64 0, i32 25, i64 1, i64 1
-  %27 = bitcast float* %25 to <4 x i32>*
-  %28 = load <4 x i32>* %27, align 4, !tbaa !39
-  %29 = bitcast float* %26 to <4 x i32>*
-  store <4 x i32> %28, <4 x i32>* %29, align 4, !tbaa !39
-  %30 = getelementptr inbounds [3 x float]* %box, i64 2, i64 2
-  %31 = bitcast float* %30 to i32*
-  %32 = load i32* %31, align 4, !tbaa !39
-  %33 = getelementptr inbounds %struct.t_trxframe* %fr, i64 0, i32 25, i64 2, i64 2
-  %34 = bitcast float* %33 to i32*
-  store i32 %32, i32* %34, align 4, !tbaa !39
-  %35 = call %struct.__sFILE* @ffopen(i8* %outfile, i8* getelementptr inbounds ([2 x i8]* @.str44, i64 0, i64 0)) #8
-  call void @write_g96_conf(%struct.__sFILE* %35, %struct.t_trxframe* %fr, i32 -1, i32* null) #10
-  call void @ffclose(%struct.__sFILE* %35) #8
-  br label %40
+  %20 = getelementptr inbounds %struct.t_trxframe* %fr, i64 0, i32 24, !dbg !1974
+  store i32 1, i32* %20, align 8, !dbg !1975, !tbaa !1050
+  %21 = getelementptr inbounds %struct.t_trxframe* %fr, i64 0, i32 25, i64 0, !dbg !1976
+  tail call void @llvm.dbg.value(metadata [3 x float]* %box, i64 0, metadata !649, metadata !692), !dbg !1977
+  tail call void @llvm.dbg.value(metadata [3 x float]* %21, i64 0, metadata !650, metadata !692), !dbg !1979
+  %22 = bitcast [3 x float]* %box to <4 x i32>*, !dbg !1980
+  %23 = load <4 x i32>* %22, align 4, !dbg !1980, !tbaa !962
+  %24 = bitcast [3 x float]* %21 to <4 x i32>*, !dbg !1982
+  store <4 x i32> %23, <4 x i32>* %24, align 4, !dbg !1982, !tbaa !962
+  %25 = getelementptr inbounds [3 x float]* %box, i64 1, i64 1, !dbg !1983
+  %26 = getelementptr inbounds %struct.t_trxframe* %fr, i64 0, i32 25, i64 1, i64 1, !dbg !1985
+  %27 = bitcast float* %25 to <4 x i32>*, !dbg !1983
+  %28 = load <4 x i32>* %27, align 4, !dbg !1983, !tbaa !962
+  %29 = bitcast float* %26 to <4 x i32>*, !dbg !1986
+  store <4 x i32> %28, <4 x i32>* %29, align 4, !dbg !1986, !tbaa !962
+  %30 = getelementptr inbounds [3 x float]* %box, i64 2, i64 2, !dbg !1987
+  %31 = bitcast float* %30 to i32*, !dbg !1987
+  %32 = load i32* %31, align 4, !dbg !1987, !tbaa !962
+  %33 = getelementptr inbounds %struct.t_trxframe* %fr, i64 0, i32 25, i64 2, i64 2, !dbg !1989
+  %34 = bitcast float* %33 to i32*, !dbg !1990
+  store i32 %32, i32* %34, align 4, !dbg !1990, !tbaa !962
+  %35 = call %struct.__sFILE* @ffopen(i8* %outfile, i8* getelementptr inbounds ([2 x i8]* @.str44, i64 0, i64 0)) #8, !dbg !1991
+  call void @llvm.dbg.value(metadata %struct.__sFILE* %35, i64 0, metadata !341, metadata !692), !dbg !1992
+  call void @llvm.dbg.value(metadata %struct.t_trxframe* %fr, i64 0, metadata !343, metadata !692), !dbg !1948
+  call void @write_g96_conf(%struct.__sFILE* %35, %struct.t_trxframe* %fr, i32 -1, i32* null) #10, !dbg !1993
+  call void @ffclose(%struct.__sFILE* %35) #8, !dbg !1994
+  br label %40, !dbg !1995
 
 ; <label>:36                                      ; preds = %0, %0, %0
-  %37 = tail call %struct.__sFILE* @ffopen(i8* %outfile, i8* getelementptr inbounds ([2 x i8]* @.str44, i64 0, i64 0)) #8
-  tail call void @write_pdbfile(%struct.__sFILE* %37, i8* %title, %struct.t_atoms* %atoms, [3 x float]* %x, [3 x float]* %box, i8 signext 0, i32 0) #8
-  tail call void @ffclose(%struct.__sFILE* %37) #8
-  br label %40
+  %37 = tail call %struct.__sFILE* @ffopen(i8* %outfile, i8* getelementptr inbounds ([2 x i8]* @.str44, i64 0, i64 0)) #8, !dbg !1996
+  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %37, i64 0, metadata !341, metadata !692), !dbg !1992
+  tail call void @write_pdbfile(%struct.__sFILE* %37, i8* %title, %struct.t_atoms* %atoms, [3 x float]* %x, [3 x float]* %box, i8 signext 0, i32 0) #8, !dbg !1997
+  tail call void @ffclose(%struct.__sFILE* %37) #8, !dbg !1998
+  br label %40, !dbg !1999
 
 ; <label>:38                                      ; preds = %0, %0, %0
-  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([38 x i8]* @.str45, i64 0, i64 0), i8* %outfile) #8
-  br label %40
+  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([38 x i8]* @.str45, i64 0, i64 0), i8* %outfile) #8, !dbg !2000
+  br label %40, !dbg !2001
 
 ; <label>:39                                      ; preds = %0
-  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([36 x i8]* @.str47, i64 0, i64 0), i8* %outfile) #8
-  br label %40
+  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([36 x i8]* @.str47, i64 0, i64 0), i8* %outfile) #8, !dbg !2002
+  br label %40, !dbg !2003
 
 ; <label>:40                                      ; preds = %39, %38, %36, %19, %3
-  call void @llvm.lifetime.end(i64 176, i8* %1) #6
-  ret void
+  call void @llvm.lifetime.end(i64 176, i8* %1) #7, !dbg !2004
+  ret void, !dbg !2004
 }

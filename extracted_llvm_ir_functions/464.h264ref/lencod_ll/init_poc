@@ -1,87 +1,75 @@
 define void @init_poc() #0 {
-entry:
-  %0 = load %struct.InputParameters** @input, align 8, !tbaa !3
-  %pic_order_cnt_type = getelementptr inbounds %struct.InputParameters* %0, i64 0, i32 120
-  %1 = load i32* %pic_order_cnt_type, align 4, !tbaa !0
-  %2 = load %struct.ImageParameters** @img, align 8, !tbaa !3
-  %pic_order_cnt_type1 = getelementptr inbounds %struct.ImageParameters* %2, i64 0, i32 91
-  store i32 %1, i32* %pic_order_cnt_type1, align 4, !tbaa !0
-  %delta_pic_order_always_zero_flag = getelementptr inbounds %struct.ImageParameters* %2, i64 0, i32 92
-  store i32 0, i32* %delta_pic_order_always_zero_flag, align 4, !tbaa !0
-  %num_ref_frames_in_pic_order_cnt_cycle = getelementptr inbounds %struct.ImageParameters* %2, i64 0, i32 95
-  store i32 1, i32* %num_ref_frames_in_pic_order_cnt_cycle, align 4, !tbaa !0
-  %BRefPictures = getelementptr inbounds %struct.InputParameters* %0, i64 0, i32 54
-  %3 = load i32* %BRefPictures, align 4, !tbaa !0
-  %tobool = icmp eq i32 %3, 0
-  br i1 %tobool, label %if.else, label %if.then
+  %1 = load %struct.InputParameters** @input, align 8, !dbg !1913, !tbaa !1439
+  %2 = getelementptr inbounds %struct.InputParameters* %1, i64 0, i32 120, !dbg !1914
+  %3 = load i32* %2, align 4, !dbg !1914, !tbaa !1915
+  %4 = load %struct.ImageParameters** @img, align 8, !dbg !1916, !tbaa !1439
+  %5 = getelementptr inbounds %struct.ImageParameters* %4, i64 0, i32 91, !dbg !1917
+  store i32 %3, i32* %5, align 4, !dbg !1918, !tbaa !1919
+  %6 = getelementptr inbounds %struct.ImageParameters* %4, i64 0, i32 92, !dbg !1920
+  store i32 0, i32* %6, align 4, !dbg !1921, !tbaa !1922
+  %7 = getelementptr inbounds %struct.ImageParameters* %4, i64 0, i32 95, !dbg !1923
+  store i32 1, i32* %7, align 4, !dbg !1924, !tbaa !1925
+  %8 = getelementptr inbounds %struct.InputParameters* %1, i64 0, i32 54, !dbg !1926
+  %9 = load i32* %8, align 4, !dbg !1926, !tbaa !1608
+  %10 = icmp eq i32 %9, 0, !dbg !1928
+  br i1 %10, label %14, label %11, !dbg !1929
 
-if.then:                                          ; preds = %entry
-  %offset_for_non_ref_pic = getelementptr inbounds %struct.ImageParameters* %2, i64 0, i32 93
-  store i32 0, i32* %offset_for_non_ref_pic, align 4, !tbaa !0
-  %arrayidx = getelementptr inbounds %struct.ImageParameters* %2, i64 0, i32 96, i64 0
-  store i32 2, i32* %arrayidx, align 4, !tbaa !0
-  br label %if.end
+; <label>:11                                      ; preds = %0
+  %12 = getelementptr inbounds %struct.ImageParameters* %4, i64 0, i32 93, !dbg !1930
+  store i32 0, i32* %12, align 4, !dbg !1932, !tbaa !1933
+  %13 = getelementptr inbounds %struct.ImageParameters* %4, i64 0, i32 96, i64 0, !dbg !1934
+  store i32 2, i32* %13, align 4, !dbg !1935, !tbaa !1433
+  br label %22, !dbg !1936
 
-if.else:                                          ; preds = %entry
-  %successive_Bframe = getelementptr inbounds %struct.InputParameters* %0, i64 0, i32 34
-  %4 = load i32* %successive_Bframe, align 4, !tbaa !0
-  %mul = mul nsw i32 %4, -2
-  %offset_for_non_ref_pic2 = getelementptr inbounds %struct.ImageParameters* %2, i64 0, i32 93
-  store i32 %mul, i32* %offset_for_non_ref_pic2, align 4, !tbaa !0
-  %5 = load i32* %successive_Bframe, align 4, !tbaa !0
-  %add = shl i32 %5, 1
-  %mul4 = add i32 %add, 2
-  %arrayidx6 = getelementptr inbounds %struct.ImageParameters* %2, i64 0, i32 96, i64 0
-  store i32 %mul4, i32* %arrayidx6, align 4, !tbaa !0
-  br label %if.end
+; <label>:14                                      ; preds = %0
+  %15 = getelementptr inbounds %struct.InputParameters* %1, i64 0, i32 34, !dbg !1937
+  %16 = load i32* %15, align 4, !dbg !1937, !tbaa !1540
+  %17 = mul nsw i32 %16, -2, !dbg !1939
+  %18 = getelementptr inbounds %struct.ImageParameters* %4, i64 0, i32 93, !dbg !1940
+  store i32 %17, i32* %18, align 4, !dbg !1941, !tbaa !1933
+  %19 = shl i32 %16, 1, !dbg !1942
+  %20 = add i32 %19, 2, !dbg !1942
+  %21 = getelementptr inbounds %struct.ImageParameters* %4, i64 0, i32 96, i64 0, !dbg !1943
+  store i32 %20, i32* %21, align 4, !dbg !1944, !tbaa !1433
+  br label %22
 
-if.end:                                           ; preds = %if.else, %if.then
-  %PicInterlace = getelementptr inbounds %struct.InputParameters* %0, i64 0, i32 91
-  %6 = load i32* %PicInterlace, align 4, !tbaa !0
-  %cmp = icmp eq i32 %6, 0
-  br i1 %cmp, label %land.lhs.true, label %if.else9
+; <label>:22                                      ; preds = %14, %11
+  %23 = getelementptr inbounds %struct.InputParameters* %1, i64 0, i32 91, !dbg !1945
+  %24 = load i32* %23, align 4, !dbg !1945, !tbaa !1469
+  %25 = icmp eq i32 %24, 0, !dbg !1947
+  br i1 %25, label %26, label %33, !dbg !1948
 
-land.lhs.true:                                    ; preds = %if.end
-  %MbInterlace = getelementptr inbounds %struct.InputParameters* %0, i64 0, i32 92
-  %7 = load i32* %MbInterlace, align 4, !tbaa !0
-  %cmp7 = icmp eq i32 %7, 0
-  br i1 %cmp7, label %if.then8, label %if.else9
+; <label>:26                                      ; preds = %22
+  %27 = getelementptr inbounds %struct.InputParameters* %1, i64 0, i32 92, !dbg !1949
+  %28 = load i32* %27, align 4, !dbg !1949, !tbaa !1592
+  %29 = getelementptr inbounds %struct.ImageParameters* %4, i64 0, i32 94, !dbg !1950
+  %not. = icmp ne i32 %28, 0, !dbg !1951
+  %. = zext i1 %not. to i32, !dbg !1951
+  store i32 %., i32* %29, align 4, !dbg !1953, !tbaa !1954
+  %30 = getelementptr inbounds %struct.InputParameters* %1, i64 0, i32 92, !dbg !1955
+  %31 = load i32* %30, align 4, !dbg !1955, !tbaa !1592
+  %32 = icmp eq i32 %31, 0, !dbg !1956
+  br i1 %32, label %35, label %38, !dbg !1957
 
-if.then8:                                         ; preds = %land.lhs.true
-  %offset_for_top_to_bottom_field = getelementptr inbounds %struct.ImageParameters* %2, i64 0, i32 94
-  store i32 0, i32* %offset_for_top_to_bottom_field, align 4, !tbaa !0
-  br label %if.end11
+; <label>:33                                      ; preds = %22
+  %34 = getelementptr inbounds %struct.ImageParameters* %4, i64 0, i32 94, !dbg !1958
+  store i32 1, i32* %34, align 4, !dbg !1959, !tbaa !1954
+  br label %38
 
-if.else9:                                         ; preds = %land.lhs.true, %if.end
-  %offset_for_top_to_bottom_field10 = getelementptr inbounds %struct.ImageParameters* %2, i64 0, i32 94
-  store i32 1, i32* %offset_for_top_to_bottom_field10, align 4, !tbaa !0
-  br label %if.end11
+; <label>:35                                      ; preds = %26
+  %36 = getelementptr inbounds %struct.ImageParameters* %4, i64 0, i32 112, !dbg !1960
+  store i32 0, i32* %36, align 4, !dbg !1962, !tbaa !1963
+  %37 = getelementptr inbounds %struct.ImageParameters* %4, i64 0, i32 98, !dbg !1964
+  store i32 0, i32* %37, align 4, !dbg !1965, !tbaa !1966
+  br label %41, !dbg !1967
 
-if.end11:                                         ; preds = %if.else9, %if.then8
-  %8 = load i32* %PicInterlace, align 4, !tbaa !0
-  %cmp13 = icmp eq i32 %8, 0
-  br i1 %cmp13, label %land.lhs.true14, label %if.else18
+; <label>:38                                      ; preds = %33, %26
+  %39 = getelementptr inbounds %struct.ImageParameters* %4, i64 0, i32 112, !dbg !1968
+  store i32 1, i32* %39, align 4, !dbg !1970, !tbaa !1963
+  %40 = getelementptr inbounds %struct.ImageParameters* %4, i64 0, i32 98, !dbg !1971
+  store i32 1, i32* %40, align 4, !dbg !1972, !tbaa !1966
+  br label %41
 
-land.lhs.true14:                                  ; preds = %if.end11
-  %MbInterlace15 = getelementptr inbounds %struct.InputParameters* %0, i64 0, i32 92
-  %9 = load i32* %MbInterlace15, align 4, !tbaa !0
-  %cmp16 = icmp eq i32 %9, 0
-  br i1 %cmp16, label %if.then17, label %if.else18
-
-if.then17:                                        ; preds = %land.lhs.true14
-  %pic_order_present_flag = getelementptr inbounds %struct.ImageParameters* %2, i64 0, i32 112
-  store i32 0, i32* %pic_order_present_flag, align 4, !tbaa !0
-  %delta_pic_order_cnt_bottom = getelementptr inbounds %struct.ImageParameters* %2, i64 0, i32 98
-  store i32 0, i32* %delta_pic_order_cnt_bottom, align 4, !tbaa !0
-  br label %if.end21
-
-if.else18:                                        ; preds = %land.lhs.true14, %if.end11
-  %pic_order_present_flag19 = getelementptr inbounds %struct.ImageParameters* %2, i64 0, i32 112
-  store i32 1, i32* %pic_order_present_flag19, align 4, !tbaa !0
-  %delta_pic_order_cnt_bottom20 = getelementptr inbounds %struct.ImageParameters* %2, i64 0, i32 98
-  store i32 1, i32* %delta_pic_order_cnt_bottom20, align 4, !tbaa !0
-  br label %if.end21
-
-if.end21:                                         ; preds = %if.else18, %if.then17
-  ret void
+; <label>:41                                      ; preds = %38, %35
+  ret void, !dbg !1973
 }

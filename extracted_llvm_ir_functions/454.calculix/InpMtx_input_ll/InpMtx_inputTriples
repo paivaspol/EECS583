@@ -1,33 +1,36 @@
 define void @InpMtx_inputTriples(%struct._InpMtx* %inpmtx, i32 %ntriples, i32* %rowids, i32* %colids) #0 {
-entry:
-  %cmp = icmp eq %struct._InpMtx* %inpmtx, null
-  %cmp1 = icmp slt i32 %ntriples, 0
-  %or.cond = or i1 %cmp, %cmp1
-  %cmp3 = icmp eq i32* %rowids, null
-  %or.cond23 = or i1 %or.cond, %cmp3
-  %cmp5 = icmp eq i32* %colids, null
-  %or.cond24 = or i1 %or.cond23, %cmp5
-  br i1 %or.cond24, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata %struct._InpMtx* %inpmtx, i64 0, metadata !170, metadata !320), !dbg !1153
+  tail call void @llvm.dbg.value(metadata i32 %ntriples, i64 0, metadata !171, metadata !320), !dbg !1154
+  tail call void @llvm.dbg.value(metadata i32* %rowids, i64 0, metadata !172, metadata !320), !dbg !1155
+  tail call void @llvm.dbg.value(metadata i32* %colids, i64 0, metadata !173, metadata !320), !dbg !1156
+  %1 = icmp eq %struct._InpMtx* %inpmtx, null, !dbg !1157
+  %2 = icmp slt i32 %ntriples, 0, !dbg !1159
+  %or.cond = or i1 %1, %2, !dbg !1160
+  %3 = icmp eq i32* %rowids, null, !dbg !1161
+  %or.cond3 = or i1 %or.cond, %3, !dbg !1160
+  %4 = icmp eq i32* %colids, null, !dbg !1162
+  %or.cond5 = or i1 %or.cond3, %4, !dbg !1160
+  br i1 %or.cond5, label %5, label %8, !dbg !1160
 
-if.then:                                          ; preds = %entry
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([69 x i8]* @.str33, i64 0, i64 0), %struct._InpMtx* %inpmtx, i32 %ntriples, i32* %rowids, i32* %colids) #4
-  tail call void @exit(i32 -1) #5
-  unreachable
+; <label>:5                                       ; preds = %0
+  %6 = load %struct.__sFILE** @__stderrp, align 8, !dbg !1163, !tbaa !329
+  %7 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %6, i8* getelementptr inbounds ([69 x i8]* @.str33, i64 0, i64 0), %struct._InpMtx* %inpmtx, i32 %ntriples, i32* %rowids, i32* %colids) #5, !dbg !1165
+  tail call void @exit(i32 -1) #6, !dbg !1166
+  unreachable, !dbg !1166
 
-if.end:                                           ; preds = %entry
-  %inputMode = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 2
-  %1 = load i32* %inputMode, align 4, !tbaa !3
-  %cmp6 = icmp eq i32 %1, 0
-  br i1 %cmp6, label %if.end9, label %if.then7
+; <label>:8                                       ; preds = %0
+  %9 = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 2, !dbg !1167
+  %10 = load i32* %9, align 4, !dbg !1167, !tbaa !350
+  %11 = icmp eq i32 %10, 0, !dbg !1167
+  br i1 %11, label %15, label %12, !dbg !1169
 
-if.then7:                                         ; preds = %if.end
-  %2 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call8 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([88 x i8]* @.str34, i64 0, i64 0), %struct._InpMtx* %inpmtx, i32 %ntriples, i32* %rowids, i32* %colids) #4
-  tail call void @exit(i32 -1) #5
-  unreachable
+; <label>:12                                      ; preds = %8
+  %13 = load %struct.__sFILE** @__stderrp, align 8, !dbg !1170, !tbaa !329
+  %14 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %13, i8* getelementptr inbounds ([88 x i8]* @.str34, i64 0, i64 0), %struct._InpMtx* %inpmtx, i32 %ntriples, i32* %rowids, i32* %colids) #5, !dbg !1172
+  tail call void @exit(i32 -1) #6, !dbg !1173
+  unreachable, !dbg !1173
 
-if.end9:                                          ; preds = %if.end
-  tail call fastcc void @inputTriples(%struct._InpMtx* %inpmtx, i32 %ntriples, i32* %rowids, i32* %colids, double* null) #6
-  ret void
+; <label>:15                                      ; preds = %8
+  tail call fastcc void @inputTriples(%struct._InpMtx* %inpmtx, i32 %ntriples, i32* %rowids, i32* %colids, double* null) #7, !dbg !1174
+  ret void, !dbg !1175
 }

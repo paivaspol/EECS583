@@ -1,37 +1,79 @@
-define internal fastcc double @Dcentervalue(i32 %n, double* nocapture %a) #0 {
-entry:
-  %div = sdiv i32 %n, 2
-  %cmp = icmp sgt i32 %n, 7
-  br i1 %cmp, label %if.then, label %if.end14
+define internal fastcc double @Dcentervalue(i32 %n, double* nocapture readonly %a) #0 {
+  tail call void @llvm.dbg.value(metadata i32 %n, i64 0, metadata !494, metadata !512), !dbg !2145
+  tail call void @llvm.dbg.value(metadata double* %a, i64 0, metadata !495, metadata !512), !dbg !2146
+  %1 = sdiv i32 %n, 2, !dbg !2147
+  tail call void @llvm.dbg.value(metadata i32 %1, i64 0, metadata !497, metadata !512), !dbg !2148
+  %2 = icmp sgt i32 %n, 7, !dbg !2149
+  br i1 %2, label %3, label %33, !dbg !2151
 
-if.then:                                          ; preds = %entry
-  %sub = add nsw i32 %n, -1
-  %cmp1 = icmp sgt i32 %n, 39
-  br i1 %cmp1, label %if.then2, label %if.end
+; <label>:3                                       ; preds = %0
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !496, metadata !512), !dbg !2152
+  %4 = add nsw i32 %n, -1, !dbg !2153
+  tail call void @llvm.dbg.value(metadata i32 %4, i64 0, metadata !498, metadata !512), !dbg !2155
+  %5 = icmp sgt i32 %n, 39, !dbg !2156
+  br i1 %5, label %6, label %31, !dbg !2158
 
-if.then2:                                         ; preds = %if.then
-  %div3 = sdiv i32 %n, 8
-  %add5 = shl nsw i32 %div3, 1
-  %call = tail call fastcc i32 @Dmedian3(i32 0, i32 %div3, i32 %add5, double* %a) #2
-  %sub6 = sub nsw i32 %div, %div3
-  %add7 = add nsw i32 %div3, %div
-  %call8 = tail call fastcc i32 @Dmedian3(i32 %sub6, i32 %div, i32 %add7, double* %a) #2
-  %sub9 = sub nsw i32 %sub, %div3
-  %sub10 = sub nsw i32 %sub9, %div3
-  %call12 = tail call fastcc i32 @Dmedian3(i32 %sub10, i32 %sub9, i32 %sub, double* %a) #2
-  br label %if.end
+; <label>:6                                       ; preds = %3
+  %7 = sdiv i32 %n, 8, !dbg !2159
+  tail call void @llvm.dbg.value(metadata i32 %7, i64 0, metadata !499, metadata !512), !dbg !2161
+  %8 = shl nsw i32 %7, 1, !dbg !2162
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !504, metadata !512), !dbg !2163
+  tail call void @llvm.dbg.value(metadata i32 %7, i64 0, metadata !505, metadata !512), !dbg !2165
+  tail call void @llvm.dbg.value(metadata i32 %8, i64 0, metadata !506, metadata !512), !dbg !2166
+  tail call void @llvm.dbg.value(metadata double* %a, i64 0, metadata !507, metadata !512), !dbg !2167
+  %9 = load double* %a, align 8, !dbg !2168, !tbaa !565
+  %10 = sext i32 %7 to i64, !dbg !2170
+  %11 = getelementptr inbounds double* %a, i64 %10, !dbg !2170
+  %12 = load double* %11, align 8, !dbg !2170, !tbaa !565
+  %13 = fcmp olt double %9, %12, !dbg !2171
+  %14 = sext i32 %8 to i64, !dbg !2172
+  %15 = getelementptr inbounds double* %a, i64 %14, !dbg !2172
+  %16 = load double* %15, align 8, !dbg !2172, !tbaa !565
+  br i1 %13, label %17, label %21, !dbg !2175
 
-if.end:                                           ; preds = %if.then2, %if.then
-  %j.0 = phi i32 [ %call8, %if.then2 ], [ %div, %if.then ]
-  %k.0 = phi i32 [ %call12, %if.then2 ], [ %sub, %if.then ]
-  %i.0 = phi i32 [ %call, %if.then2 ], [ 0, %if.then ]
-  %call13 = tail call fastcc i32 @Dmedian3(i32 %i.0, i32 %j.0, i32 %k.0, double* %a) #2
-  br label %if.end14
+; <label>:17                                      ; preds = %6
+  %18 = fcmp olt double %12, %16, !dbg !2176
+  br i1 %18, label %Dmedian3.exit, label %19, !dbg !2177
 
-if.end14:                                         ; preds = %if.end, %entry
-  %j.1 = phi i32 [ %call13, %if.end ], [ %div, %entry ]
-  %idxprom = sext i32 %j.1 to i64
-  %arrayidx = getelementptr inbounds double* %a, i64 %idxprom
-  %0 = load double* %arrayidx, align 8, !tbaa !3
-  ret double %0
+; <label>:19                                      ; preds = %17
+  %20 = fcmp olt double %9, %16, !dbg !2178
+  %k.i.i = select i1 %20, i32 %8, i32 0, !dbg !2180
+  br label %Dmedian3.exit, !dbg !2180
+
+; <label>:21                                      ; preds = %6
+  %22 = fcmp olt double %9, %16, !dbg !2182
+  br i1 %22, label %Dmedian3.exit, label %23, !dbg !2185
+
+; <label>:23                                      ; preds = %21
+  %24 = fcmp olt double %12, %16, !dbg !2186
+  %k.j.i = select i1 %24, i32 %8, i32 %7, !dbg !2188
+  br label %Dmedian3.exit, !dbg !2188
+
+Dmedian3.exit:                                    ; preds = %17, %19, %21, %23
+  %.0.i = phi i32 [ %7, %17 ], [ %k.i.i, %19 ], [ 0, %21 ], [ %k.j.i, %23 ], !dbg !2190
+  tail call void @llvm.dbg.value(metadata i32 %.0.i, i64 0, metadata !496, metadata !512), !dbg !2152
+  %25 = sub nsw i32 %1, %7, !dbg !2191
+  %26 = add nsw i32 %7, %1, !dbg !2192
+  %27 = tail call fastcc i32 @Dmedian3(i32 %25, i32 %1, i32 %26, double* %a) #3, !dbg !2193
+  tail call void @llvm.dbg.value(metadata i32 %27, i64 0, metadata !497, metadata !512), !dbg !2148
+  %28 = sub nsw i32 %4, %7, !dbg !2194
+  %29 = sub nsw i32 %28, %7, !dbg !2195
+  %30 = tail call fastcc i32 @Dmedian3(i32 %29, i32 %28, i32 %4, double* %a) #3, !dbg !2196
+  tail call void @llvm.dbg.value(metadata i32 %30, i64 0, metadata !498, metadata !512), !dbg !2155
+  br label %31, !dbg !2197
+
+; <label>:31                                      ; preds = %Dmedian3.exit, %3
+  %j.0 = phi i32 [ %27, %Dmedian3.exit ], [ %1, %3 ]
+  %k.0 = phi i32 [ %30, %Dmedian3.exit ], [ %4, %3 ]
+  %i.0 = phi i32 [ %.0.i, %Dmedian3.exit ], [ 0, %3 ]
+  %32 = tail call fastcc i32 @Dmedian3(i32 %i.0, i32 %j.0, i32 %k.0, double* %a) #3, !dbg !2198
+  tail call void @llvm.dbg.value(metadata i32 %32, i64 0, metadata !497, metadata !512), !dbg !2148
+  br label %33, !dbg !2199
+
+; <label>:33                                      ; preds = %31, %0
+  %j.1 = phi i32 [ %32, %31 ], [ %1, %0 ]
+  %34 = sext i32 %j.1 to i64, !dbg !2200
+  %35 = getelementptr inbounds double* %a, i64 %34, !dbg !2200
+  %36 = load double* %35, align 8, !dbg !2200, !tbaa !565
+  ret double %36, !dbg !2201
 }

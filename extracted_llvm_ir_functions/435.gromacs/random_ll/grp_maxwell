@@ -1,36 +1,45 @@
-define void @grp_maxwell(%struct.t_block* nocapture readonly %grp, float* nocapture readonly %tempi, i32* nocapture readonly %nrdf, i32 %seed, %struct.t_atoms* nocapture readonly %atoms, [3 x float]* nocapture %v) #3 {
-  %1 = getelementptr inbounds %struct.t_block* %grp, i64 0, i32 1
-  %2 = load i32* %1, align 4, !tbaa !23
-  %3 = icmp sgt i32 %2, 0
-  br i1 %3, label %.lr.ph, label %._crit_edge
+define void @grp_maxwell(%struct.t_block* nocapture readonly %grp, float* nocapture readonly %tempi, i32* nocapture readonly %nrdf, i32 %seed, %struct.t_atoms* nocapture readonly %atoms, [3 x float]* nocapture %v) #4 {
+  tail call void @llvm.dbg.value(metadata %struct.t_block* %grp, i64 0, metadata !198, metadata !280), !dbg !442
+  tail call void @llvm.dbg.value(metadata float* %tempi, i64 0, metadata !199, metadata !280), !dbg !443
+  tail call void @llvm.dbg.value(metadata i32* %nrdf, i64 0, metadata !200, metadata !280), !dbg !444
+  tail call void @llvm.dbg.value(metadata i32 %seed, i64 0, metadata !201, metadata !280), !dbg !445
+  tail call void @llvm.dbg.value(metadata %struct.t_atoms* %atoms, i64 0, metadata !202, metadata !280), !dbg !446
+  tail call void @llvm.dbg.value(metadata [3 x float]* %v, i64 0, metadata !203, metadata !280), !dbg !447
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !204, metadata !280), !dbg !448
+  %1 = getelementptr inbounds %struct.t_block* %grp, i64 0, i32 1, !dbg !449
+  %2 = load i32* %1, align 4, !dbg !449, !tbaa !452
+  %3 = icmp sgt i32 %2, 0, !dbg !453
+  br i1 %3, label %.lr.ph, label %._crit_edge, !dbg !454
 
 .lr.ph:                                           ; preds = %0
-  %4 = getelementptr inbounds %struct.t_block* %grp, i64 0, i32 2
-  %5 = getelementptr inbounds %struct.t_block* %grp, i64 0, i32 4
-  br label %6
+  %4 = getelementptr inbounds %struct.t_block* %grp, i64 0, i32 2, !dbg !455
+  %5 = getelementptr inbounds %struct.t_block* %grp, i64 0, i32 4, !dbg !457
+  br label %6, !dbg !454
 
 ; <label>:6                                       ; preds = %.lr.ph, %6
   %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %6 ]
-  %7 = load i32** %4, align 8, !tbaa !24
-  %8 = getelementptr inbounds i32* %7, i64 %indvars.iv
-  %9 = load i32* %8, align 4, !tbaa !14
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %10 = getelementptr inbounds i32* %7, i64 %indvars.iv.next
-  %11 = load i32* %10, align 4, !tbaa !14
-  %12 = sub nsw i32 %11, %9
-  %13 = getelementptr inbounds float* %tempi, i64 %indvars.iv
-  %14 = load float* %13, align 4, !tbaa !21
-  %15 = getelementptr inbounds i32* %nrdf, i64 %indvars.iv
-  %16 = load i32* %15, align 4, !tbaa !14
-  %17 = sext i32 %9 to i64
-  %18 = load i32** %5, align 8, !tbaa !25
-  %19 = getelementptr inbounds i32* %18, i64 %17
-  tail call void @low_mspeed(float %14, i32 %16, i32 %seed, i32 %12, i32* %19, %struct.t_atoms* %atoms, [3 x float]* %v) #8
-  %20 = load i32* %1, align 4, !tbaa !23
-  %21 = sext i32 %20 to i64
-  %22 = icmp slt i64 %indvars.iv.next, %21
-  br i1 %22, label %6, label %._crit_edge
+  %7 = load i32** %4, align 8, !dbg !455, !tbaa !458
+  %8 = getelementptr inbounds i32* %7, i64 %indvars.iv, !dbg !459
+  %9 = load i32* %8, align 4, !dbg !459, !tbaa !348
+  tail call void @llvm.dbg.value(metadata i32 %9, i64 0, metadata !205, metadata !280), !dbg !460
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !454
+  %10 = getelementptr inbounds i32* %7, i64 %indvars.iv.next, !dbg !461
+  %11 = load i32* %10, align 4, !dbg !461, !tbaa !348
+  %12 = sub nsw i32 %11, %9, !dbg !462
+  tail call void @llvm.dbg.value(metadata i32 %12, i64 0, metadata !206, metadata !280), !dbg !463
+  %13 = getelementptr inbounds float* %tempi, i64 %indvars.iv, !dbg !464
+  %14 = load float* %13, align 4, !dbg !464, !tbaa !403
+  %15 = getelementptr inbounds i32* %nrdf, i64 %indvars.iv, !dbg !465
+  %16 = load i32* %15, align 4, !dbg !465, !tbaa !348
+  %17 = sext i32 %9 to i64, !dbg !466
+  %18 = load i32** %5, align 8, !dbg !457, !tbaa !467
+  %19 = getelementptr inbounds i32* %18, i64 %17, !dbg !466
+  tail call void @low_mspeed(float %14, i32 %16, i32 %seed, i32 %12, i32* %19, %struct.t_atoms* %atoms, [3 x float]* %v) #9, !dbg !468
+  %20 = load i32* %1, align 4, !dbg !449, !tbaa !452
+  %21 = sext i32 %20 to i64, !dbg !453
+  %22 = icmp slt i64 %indvars.iv.next, %21, !dbg !453
+  br i1 %22, label %6, label %._crit_edge, !dbg !454
 
 ._crit_edge:                                      ; preds = %6, %0
-  ret void
+  ret void, !dbg !469
 }

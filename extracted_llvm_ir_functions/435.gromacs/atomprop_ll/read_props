@@ -1,58 +1,71 @@
-define internal fastcc i32 @read_props(i8* %propdata, %struct.t_prop** nocapture %props, i32* nocapture %maxprop) #3 {
+define internal fastcc i32 @read_props(i8* %propdata, %struct.t_prop** nocapture %props, i32* nocapture %maxprop) #4 {
   %line = alloca [4096 x i8], align 16
   %resname = alloca [10 x i8], align 1
   %atomname = alloca [10 x i8], align 1
   %pp = alloca double, align 8
   %i = alloca i32, align 4
-  %1 = getelementptr inbounds [4096 x i8]* %line, i64 0, i64 0
-  call void @llvm.lifetime.start(i64 4096, i8* %1) #5
-  %2 = tail call %struct.__sFILE* @libopen(i8* %propdata) #9
-  store %struct.t_prop* null, %struct.t_prop** %props, align 8, !tbaa !14
-  store i32 0, i32* %maxprop, align 4, !tbaa !15
-  store i32 0, i32* %i, align 4, !tbaa !15
-  %3 = call i32 @get_a_line(%struct.__sFILE* %2, i8* %1, i32 4096) #9
-  %4 = icmp eq i32 %3, 0
-  br i1 %4, label %22, label %.lr.ph
+  tail call void @llvm.dbg.value(metadata i8* %propdata, i64 0, metadata !122, metadata !203), !dbg !275
+  tail call void @llvm.dbg.value(metadata %struct.t_prop** %props, i64 0, metadata !123, metadata !203), !dbg !276
+  tail call void @llvm.dbg.value(metadata i32* %maxprop, i64 0, metadata !124, metadata !203), !dbg !277
+  %1 = getelementptr inbounds [4096 x i8]* %line, i64 0, i64 0, !dbg !278
+  call void @llvm.lifetime.start(i64 4096, i8* %1) #6, !dbg !278
+  tail call void @llvm.dbg.declare(metadata [4096 x i8]* %line, metadata !126, metadata !203), !dbg !279
+  tail call void @llvm.dbg.declare(metadata [10 x i8]* %resname, metadata !130, metadata !203), !dbg !280
+  tail call void @llvm.dbg.declare(metadata [10 x i8]* %atomname, metadata !131, metadata !203), !dbg !281
+  %2 = tail call %struct.__sFILE* @libopen(i8* %propdata) #9, !dbg !282
+  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %2, i64 0, metadata !125, metadata !203), !dbg !283
+  store %struct.t_prop* null, %struct.t_prop** %props, align 8, !dbg !284, !tbaa !246
+  store i32 0, i32* %maxprop, align 4, !dbg !285, !tbaa !253
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !134, metadata !203), !dbg !286
+  store i32 0, i32* %i, align 4, !dbg !287, !tbaa !253
+  %3 = call i32 @get_a_line(%struct.__sFILE* %2, i8* %1, i32 4096) #9, !dbg !288
+  %4 = icmp eq i32 %3, 0, !dbg !289
+  br i1 %4, label %22, label %.lr.ph, !dbg !289
 
 .lr.ph:                                           ; preds = %0
-  %5 = getelementptr inbounds [10 x i8]* %resname, i64 0, i64 0
-  %6 = getelementptr inbounds [10 x i8]* %atomname, i64 0, i64 0
-  br label %7
+  %5 = getelementptr inbounds [10 x i8]* %resname, i64 0, i64 0, !dbg !290
+  %6 = getelementptr inbounds [10 x i8]* %atomname, i64 0, i64 0, !dbg !293
+  br label %7, !dbg !289
 
 ; <label>:7                                       ; preds = %.lr.ph, %.backedge
-  %8 = call i32 (i8*, i8*, ...)* @sscanf(i8* %1, i8* getelementptr inbounds ([10 x i8]* @.str9, i64 0, i64 0), i8* %5, i8* %6, double* %pp) #9
-  %9 = icmp eq i32 %8, 3
-  br i1 %9, label %10, label %13
+  call void @llvm.dbg.value(metadata double* %pp, i64 0, metadata !132, metadata !203), !dbg !294
+  %8 = call i32 (i8*, i8*, ...)* @sscanf(i8* %1, i8* getelementptr inbounds ([10 x i8]* @.str9, i64 0, i64 0), i8* %5, i8* %6, double* %pp) #9, !dbg !295
+  %9 = icmp eq i32 %8, 3, !dbg !296
+  br i1 %9, label %10, label %13, !dbg !297
 
 ; <label>:10                                      ; preds = %7
-  %11 = load double* %pp, align 8, !tbaa !18
-  %12 = fptrunc double %11 to float
-  call fastcc void @add_prop(float %12, i8* %5, i8* %6, i32* %i, %struct.t_prop** %props, i32* %maxprop) #10
-  br label %.backedge
+  call void @llvm.dbg.value(metadata double* %pp, i64 0, metadata !132, metadata !203), !dbg !294
+  %11 = load double* %pp, align 8, !dbg !298, !tbaa !299
+  %12 = fptrunc double %11 to float, !dbg !298
+  call void @llvm.dbg.value(metadata i32* %i, i64 0, metadata !134, metadata !203), !dbg !286
+  call fastcc void @add_prop(float %12, i8* %5, i8* %6, i32* %i, %struct.t_prop** %props, i32* %maxprop) #10, !dbg !301
+  br label %.backedge, !dbg !301
 
 ; <label>:13                                      ; preds = %7
-  %14 = load %struct.__sFILE** @debug, align 8, !tbaa !14
-  %15 = icmp eq %struct.__sFILE* %14, null
-  br i1 %15, label %.backedge, label %16
+  %14 = load %struct.__sFILE** @debug, align 8, !dbg !302, !tbaa !246
+  %15 = icmp eq %struct.__sFILE* %14, null, !dbg !302
+  br i1 %15, label %.backedge, label %16, !dbg !304
 
 ; <label>:16                                      ; preds = %13
-  %17 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !14
-  %18 = load i32* %i, align 4, !tbaa !15
-  %19 = call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %17, i8* getelementptr inbounds ([29 x i8]* @.str10, i64 0, i64 0), i8* %propdata, i32 %18) #9
-  br label %.backedge
+  %17 = load %struct.__sFILE** @__stderrp, align 8, !dbg !305, !tbaa !246
+  call void @llvm.dbg.value(metadata i32* %i, i64 0, metadata !134, metadata !203), !dbg !286
+  %18 = load i32* %i, align 4, !dbg !306, !tbaa !253
+  %19 = call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %17, i8* getelementptr inbounds ([29 x i8]* @.str10, i64 0, i64 0), i8* %propdata, i32 %18) #9, !dbg !307
+  br label %.backedge, !dbg !307
 
 .backedge:                                        ; preds = %16, %10, %13
-  %20 = call i32 @get_a_line(%struct.__sFILE* %2, i8* %1, i32 4096) #9
-  %21 = icmp eq i32 %20, 0
-  br i1 %21, label %._crit_edge, label %7
+  %20 = call i32 @get_a_line(%struct.__sFILE* %2, i8* %1, i32 4096) #9, !dbg !288
+  %21 = icmp eq i32 %20, 0, !dbg !289
+  br i1 %21, label %._crit_edge, label %7, !dbg !289
 
 ._crit_edge:                                      ; preds = %.backedge
-  %.pre = load i32* %i, align 4, !tbaa !15
-  br label %22
+  %.pre = load i32* %i, align 4, !dbg !308, !tbaa !253
+  br label %22, !dbg !289
 
 ; <label>:22                                      ; preds = %._crit_edge, %0
   %23 = phi i32 [ %.pre, %._crit_edge ], [ 0, %0 ]
-  call void @ffclose(%struct.__sFILE* %2) #9
-  call void @llvm.lifetime.end(i64 4096, i8* %1) #5
-  ret i32 %23
+  call void @ffclose(%struct.__sFILE* %2) #9, !dbg !309
+  call void @llvm.dbg.value(metadata i32* %i, i64 0, metadata !134, metadata !203), !dbg !286
+  call void @llvm.lifetime.end(i64 4096, i8* %1) #6, !dbg !310
+  ret i32 %23, !dbg !310
 }

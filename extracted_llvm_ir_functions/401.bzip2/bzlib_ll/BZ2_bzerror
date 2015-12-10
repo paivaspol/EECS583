@@ -1,14 +1,17 @@
-define i8* @BZ2_bzerror(i8* nocapture %b, i32* nocapture %errnum) #4 {
-entry:
-  %lastErr = getelementptr inbounds i8* %b, i64 5096
-  %0 = bitcast i8* %lastErr to i32*
-  %1 = load i32* %0, align 4, !tbaa !3
-  %cmp = icmp sgt i32 %1, 0
-  %. = select i1 %cmp, i32 0, i32 %1
-  store i32 %., i32* %errnum, align 4, !tbaa !3
-  %mul = sub i32 0, %.
-  %idxprom = sext i32 %mul to i64
-  %arrayidx = getelementptr inbounds [16 x i8*]* @bzerrorstrings, i64 0, i64 %idxprom
-  %2 = load i8** %arrayidx, align 8, !tbaa !0
-  ret i8* %2
+define i8* @BZ2_bzerror(i8* nocapture readonly %b, i32* nocapture %errnum) #5 {
+  tail call void @llvm.dbg.value(metadata i8* %b, i64 0, metadata !481, metadata !626), !dbg !2897
+  tail call void @llvm.dbg.value(metadata i32* %errnum, i64 0, metadata !482, metadata !626), !dbg !2898
+  %1 = getelementptr inbounds i8* %b, i64 5096, !dbg !2899
+  %2 = bitcast i8* %1 to i32*, !dbg !2899
+  %3 = load i32* %2, align 4, !dbg !2899, !tbaa !2008
+  tail call void @llvm.dbg.value(metadata i32 %3, i64 0, metadata !483, metadata !626), !dbg !2900
+  %4 = icmp sgt i32 %3, 0, !dbg !2901
+  %. = select i1 %4, i32 0, i32 %3, !dbg !2903
+  tail call void @llvm.dbg.value(metadata i32 %., i64 0, metadata !483, metadata !626), !dbg !2900
+  store i32 %., i32* %errnum, align 4, !dbg !2904, !tbaa !1029
+  %5 = sub nsw i32 0, %., !dbg !2905
+  %6 = sext i32 %5 to i64, !dbg !2906
+  %7 = getelementptr inbounds [16 x i8*]* @bzerrorstrings, i64 0, i64 %6, !dbg !2906
+  %8 = load i8** %7, align 8, !dbg !2906, !tbaa !629
+  ret i8* %8, !dbg !2907
 }

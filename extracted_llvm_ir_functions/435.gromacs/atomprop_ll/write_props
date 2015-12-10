@@ -1,26 +1,29 @@
-define internal fastcc void @write_props(%struct.__sFILE* %fp, i32 %nprop, %struct.t_prop* %props) #3 {
-  %1 = icmp ne %struct.__sFILE* %fp, null
-  %2 = icmp sgt i32 %nprop, 0
-  %or.cond = and i1 %1, %2
-  br i1 %or.cond, label %.lr.ph, label %.loopexit
+define internal fastcc void @write_props(%struct.__sFILE* %fp, i32 %nprop, %struct.t_prop* %props) #4 {
+  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %fp, i64 0, metadata !139, metadata !203), !dbg !311
+  tail call void @llvm.dbg.value(metadata i32 %nprop, i64 0, metadata !140, metadata !203), !dbg !312
+  tail call void @llvm.dbg.value(metadata %struct.t_prop* %props, i64 0, metadata !141, metadata !203), !dbg !313
+  %1 = icmp ne %struct.__sFILE* %fp, null, !dbg !314
+  %2 = icmp sgt i32 %nprop, 0, !dbg !316
+  %or.cond = and i1 %1, %2, !dbg !319
+  br i1 %or.cond, label %.lr.ph, label %.loopexit, !dbg !319
 
 .lr.ph:                                           ; preds = %0
-  %3 = add i32 %nprop, -1
-  br label %4
+  %3 = add i32 %nprop, -1, !dbg !320
+  br label %4, !dbg !320
 
 ; <label>:4                                       ; preds = %4, %.lr.ph
   %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %4 ]
-  %5 = getelementptr inbounds %struct.t_prop* %props, i64 %indvars.iv, i32 1, i64 0
-  %6 = getelementptr inbounds %struct.t_prop* %props, i64 %indvars.iv, i32 0, i64 0
-  %7 = getelementptr inbounds %struct.t_prop* %props, i64 %indvars.iv, i32 2
-  %8 = load float* %7, align 4, !tbaa !20
-  %9 = fpext float %8 to double
-  %10 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %fp, i8* getelementptr inbounds ([18 x i8]* @.str11, i64 0, i64 0), i8* %5, i8* %6, double %9) #9
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %3
-  br i1 %exitcond, label %.loopexit, label %4
+  %5 = getelementptr inbounds %struct.t_prop* %props, i64 %indvars.iv, i32 1, i64 0, !dbg !321
+  %6 = getelementptr inbounds %struct.t_prop* %props, i64 %indvars.iv, i32 0, i64 0, !dbg !322
+  %7 = getelementptr inbounds %struct.t_prop* %props, i64 %indvars.iv, i32 2, !dbg !323
+  %8 = load float* %7, align 4, !dbg !323, !tbaa !324
+  %9 = fpext float %8 to double, !dbg !326
+  %10 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %fp, i8* getelementptr inbounds ([18 x i8]* @.str11, i64 0, i64 0), i8* %5, i8* %6, double %9) #9, !dbg !327
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !320
+  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !320
+  %exitcond = icmp eq i32 %lftr.wideiv, %3, !dbg !320
+  br i1 %exitcond, label %.loopexit, label %4, !dbg !320
 
 .loopexit:                                        ; preds = %4, %0
-  ret void
+  ret void, !dbg !328
 }

@@ -1,18 +1,19 @@
 define void @IVL_setincr(%struct._IVL* %ivl, i32 %incr) #0 {
-entry:
-  %cmp = icmp eq %struct._IVL* %ivl, null
-  %cmp1 = icmp slt i32 %incr, 0
-  %or.cond = or i1 %cmp, %cmp1
-  br i1 %or.cond, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata %struct._IVL* %ivl, i64 0, metadata !51, metadata !57), !dbg !119
+  tail call void @llvm.dbg.value(metadata i32 %incr, i64 0, metadata !52, metadata !57), !dbg !120
+  %1 = icmp eq %struct._IVL* %ivl, null, !dbg !121
+  %2 = icmp slt i32 %incr, 0, !dbg !123
+  %or.cond = or i1 %1, %2, !dbg !124
+  br i1 %or.cond, label %3, label %6, !dbg !124
 
-if.then:                                          ; preds = %entry
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([48 x i8]* @.str5, i64 0, i64 0), %struct._IVL* %ivl, i32 %incr) #3
-  tail call void @exit(i32 -1) #4
-  unreachable
+; <label>:3                                       ; preds = %0
+  %4 = load %struct.__sFILE** @__stderrp, align 8, !dbg !125, !tbaa !64
+  %5 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %4, i8* getelementptr inbounds ([48 x i8]* @.str5, i64 0, i64 0), %struct._IVL* %ivl, i32 %incr) #4, !dbg !127
+  tail call void @exit(i32 -1) #5, !dbg !128
+  unreachable, !dbg !128
 
-if.end:                                           ; preds = %entry
-  %incr2 = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 6
-  store i32 %incr, i32* %incr2, align 4, !tbaa !3
-  ret void
+; <label>:6                                       ; preds = %0
+  %7 = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 6, !dbg !129
+  store i32 %incr, i32* %7, align 4, !dbg !130, !tbaa !117
+  ret void, !dbg !131
 }

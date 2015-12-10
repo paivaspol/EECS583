@@ -1,46 +1,54 @@
 define void @read_edx(%struct.__sFILE* %file, i32 %number, i32* %anrs, [3 x float]* nocapture %x) #4 {
   %line = alloca [4097 x i8], align 16
   %d = alloca [3 x double], align 16
-  %1 = getelementptr inbounds [4097 x i8]* %line, i64 0, i64 0
-  call void @llvm.lifetime.start(i64 4097, i8* %1) #6
-  %2 = icmp sgt i32 %number, 0
-  br i1 %2, label %.lr.ph, label %._crit_edge
+  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %file, i64 0, metadata !648, metadata !1112), !dbg !2221
+  tail call void @llvm.dbg.value(metadata i32 %number, i64 0, metadata !649, metadata !1112), !dbg !2222
+  tail call void @llvm.dbg.value(metadata i32* %anrs, i64 0, metadata !650, metadata !1112), !dbg !2223
+  tail call void @llvm.dbg.value(metadata [3 x float]* %x, i64 0, metadata !651, metadata !1112), !dbg !2224
+  %1 = getelementptr inbounds [4097 x i8]* %line, i64 0, i64 0, !dbg !2225
+  call void @llvm.lifetime.start(i64 4097, i8* %1) #6, !dbg !2225
+  tail call void @llvm.dbg.declare(metadata [4097 x i8]* %line, metadata !654, metadata !1112), !dbg !2226
+  tail call void @llvm.dbg.declare(metadata [3 x double]* %d, metadata !655, metadata !1112), !dbg !2227
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !652, metadata !1112), !dbg !2228
+  %2 = icmp sgt i32 %number, 0, !dbg !2229
+  br i1 %2, label %.lr.ph, label %._crit_edge, !dbg !2232
 
 .lr.ph:                                           ; preds = %0
-  %3 = getelementptr inbounds [3 x double]* %d, i64 0, i64 0
-  %4 = getelementptr inbounds [3 x double]* %d, i64 0, i64 1
-  %5 = getelementptr inbounds [3 x double]* %d, i64 0, i64 2
-  %6 = add i32 %number, -1
-  br label %7
+  %3 = getelementptr inbounds [3 x double]* %d, i64 0, i64 0, !dbg !2233
+  %4 = getelementptr inbounds [3 x double]* %d, i64 0, i64 1, !dbg !2235
+  %5 = getelementptr inbounds [3 x double]* %d, i64 0, i64 2, !dbg !2236
+  %6 = add i32 %number, -1, !dbg !2232
+  br label %7, !dbg !2232
 
 ; <label>:7                                       ; preds = %18, %.lr.ph
   %indvars.iv3 = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next4, %18 ]
-  %8 = call i8* @fgets2(i8* %1, i32 4096, %struct.__sFILE* %file) #11
-  %9 = getelementptr inbounds i32* %anrs, i64 %indvars.iv3
-  %10 = call i32 (i8*, i8*, ...)* @sscanf(i8* %1, i8* getelementptr inbounds ([12 x i8]* @.str32, i64 0, i64 0), i32* %9, double* %3, double* %4, double* %5) #11
-  %11 = load i32* %9, align 4, !tbaa !34
-  %12 = add nsw i32 %11, -1
-  store i32 %12, i32* %9, align 4, !tbaa !34
-  br label %13
+  %8 = call i8* @fgets2(i8* %1, i32 4096, %struct.__sFILE* %file) #11, !dbg !2237
+  %9 = getelementptr inbounds i32* %anrs, i64 %indvars.iv3, !dbg !2238
+  %10 = call i32 (i8*, i8*, ...)* @sscanf(i8* %1, i8* getelementptr inbounds ([12 x i8]* @.str32, i64 0, i64 0), i32* %9, double* %3, double* %4, double* %5) #11, !dbg !2239
+  %11 = load i32* %9, align 4, !dbg !2240, !tbaa !1327
+  %12 = add nsw i32 %11, -1, !dbg !2240
+  store i32 %12, i32* %9, align 4, !dbg !2240, !tbaa !1327
+  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !653, metadata !1112), !dbg !2241
+  br label %13, !dbg !2242
 
 ; <label>:13                                      ; preds = %13, %7
   %indvars.iv = phi i64 [ 0, %7 ], [ %indvars.iv.next, %13 ]
-  %14 = getelementptr inbounds [3 x double]* %d, i64 0, i64 %indvars.iv
-  %15 = load double* %14, align 8, !tbaa !6
-  %16 = fptrunc double %15 to float
-  %17 = getelementptr inbounds [3 x float]* %x, i64 %indvars.iv3, i64 %indvars.iv
-  store float %16, float* %17, align 4, !tbaa !2
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %exitcond = icmp eq i64 %indvars.iv.next, 3
-  br i1 %exitcond, label %18, label %13
+  %14 = getelementptr inbounds [3 x double]* %d, i64 0, i64 %indvars.iv, !dbg !2244
+  %15 = load double* %14, align 8, !dbg !2244, !tbaa !1223
+  %16 = fptrunc double %15 to float, !dbg !2244
+  %17 = getelementptr inbounds [3 x float]* %x, i64 %indvars.iv3, i64 %indvars.iv, !dbg !2246
+  store float %16, float* %17, align 4, !dbg !2247, !tbaa !1208
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !2242
+  %exitcond = icmp eq i64 %indvars.iv.next, 3, !dbg !2242
+  br i1 %exitcond, label %18, label %13, !dbg !2242
 
 ; <label>:18                                      ; preds = %13
-  %indvars.iv.next4 = add nuw nsw i64 %indvars.iv3, 1
-  %lftr.wideiv = trunc i64 %indvars.iv3 to i32
-  %exitcond5 = icmp eq i32 %lftr.wideiv, %6
-  br i1 %exitcond5, label %._crit_edge, label %7
+  %indvars.iv.next4 = add nuw nsw i64 %indvars.iv3, 1, !dbg !2232
+  %lftr.wideiv = trunc i64 %indvars.iv3 to i32, !dbg !2232
+  %exitcond5 = icmp eq i32 %lftr.wideiv, %6, !dbg !2232
+  br i1 %exitcond5, label %._crit_edge, label %7, !dbg !2232
 
 ._crit_edge:                                      ; preds = %18, %0
-  call void @llvm.lifetime.end(i64 4097, i8* %1) #6
-  ret void
+  call void @llvm.lifetime.end(i64 4097, i8* %1) #6, !dbg !2248
+  ret void, !dbg !2248
 }

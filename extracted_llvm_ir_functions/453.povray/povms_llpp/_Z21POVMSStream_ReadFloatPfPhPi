@@ -1,0 +1,49 @@
+define i32 @_Z21POVMSStream_ReadFloatPfPhPi(float* %data, i8* nocapture readonly %stream, i32* nocapture %maxstreamsize) #0 {
+  %ieee_data = alloca float, align 4
+  tail call void @llvm.dbg.value(metadata float* %data, i64 0, metadata !357, metadata !1201), !dbg !2893
+  tail call void @llvm.dbg.value(metadata i8* %stream, i64 0, metadata !358, metadata !1201), !dbg !2894
+  tail call void @llvm.dbg.value(metadata i32* %maxstreamsize, i64 0, metadata !359, metadata !1201), !dbg !2895
+  %1 = icmp eq float* %data, null, !dbg !2896
+  br i1 %1, label %18, label %2, !dbg !2898
+
+; <label>:2                                       ; preds = %0
+  %3 = load i32* %maxstreamsize, align 4, !dbg !2899, !tbaa !1260
+  %4 = icmp slt i32 %3, 4, !dbg !2901
+  br i1 %4, label %18, label %5, !dbg !2902
+
+; <label>:5                                       ; preds = %2
+  %6 = bitcast float* %ieee_data to i8*, !dbg !2903
+  tail call void @llvm.dbg.value(metadata i8* %stream, i64 0, metadata !318, metadata !1201), !dbg !2904
+  tail call void @llvm.dbg.value(metadata i8* %6, i64 0, metadata !319, metadata !1201), !dbg !2906
+  tail call void @llvm.dbg.value(metadata i32* getelementptr inbounds (%struct.POVMSStreamOrderTables* @POVMSStreamOrderTables, i64 0, i32 5, i64 0), i64 0, metadata !320, metadata !1201), !dbg !2907
+  tail call void @llvm.dbg.value(metadata i32 4, i64 0, metadata !321, metadata !1201), !dbg !2908
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !322, metadata !1201), !dbg !2909
+  br label %7, !dbg !2910
+
+; <label>:7                                       ; preds = %7, %5
+  %indvars.iv.i = phi i64 [ 0, %5 ], [ %indvars.iv.next.i, %7 ], !dbg !2911
+  %8 = getelementptr inbounds i8* %stream, i64 %indvars.iv.i, !dbg !2912
+  %9 = load i8* %8, align 1, !dbg !2912, !tbaa !1562
+  %10 = getelementptr inbounds %struct.POVMSStreamOrderTables* @POVMSStreamOrderTables, i64 0, i32 5, i64 %indvars.iv.i, !dbg !2913
+  %11 = load i32* %10, align 4, !dbg !2913, !tbaa !1260
+  %12 = sext i32 %11 to i64, !dbg !2914
+  %13 = getelementptr inbounds i8* %6, i64 %12, !dbg !2914
+  store i8 %9, i8* %13, align 1, !dbg !2915, !tbaa !1562
+  %indvars.iv.next.i = add nuw nsw i64 %indvars.iv.i, 1, !dbg !2910
+  %exitcond = icmp eq i64 %indvars.iv.next.i, 4, !dbg !2910
+  br i1 %exitcond, label %_Z27POVMSStream_ReadDataOrderedPhS_Pii.exit, label %7, !dbg !2910
+
+_Z27POVMSStream_ReadDataOrderedPhS_Pii.exit:      ; preds = %7
+  tail call void @llvm.dbg.value(metadata float* %ieee_data, i64 0, metadata !360, metadata !1201), !dbg !2916
+  %14 = bitcast float* %ieee_data to i32*, !dbg !2917
+  %15 = load i32* %14, align 4, !dbg !2917, !tbaa !2645
+  %16 = bitcast float* %data to i32*, !dbg !2917
+  store i32 %15, i32* %16, align 4, !dbg !2917, !tbaa !2645
+  %17 = add nsw i32 %3, -4, !dbg !2918
+  store i32 %17, i32* %maxstreamsize, align 4, !dbg !2918, !tbaa !1260
+  br label %18, !dbg !2919
+
+; <label>:18                                      ; preds = %2, %0, %_Z27POVMSStream_ReadDataOrderedPhS_Pii.exit
+  %.0 = phi i32 [ 4, %_Z27POVMSStream_ReadDataOrderedPhS_Pii.exit ], [ 0, %0 ], [ 0, %2 ]
+  ret i32 %.0, !dbg !2920
+}

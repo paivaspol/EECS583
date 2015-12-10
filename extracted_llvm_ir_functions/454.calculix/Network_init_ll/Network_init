@@ -1,145 +1,144 @@
 define void @Network_init(%struct._Network* %network, i32 %nnode, i32 %narc) #0 {
-entry:
-  %cmp = icmp eq %struct._Network* %network, null
-  %cmp1 = icmp slt i32 %nnode, 3
-  %or.cond = or i1 %cmp, %cmp1
-  %cmp3 = icmp slt i32 %narc, 0
-  %or.cond130 = or i1 %or.cond, %cmp3
-  br i1 %or.cond130, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata %struct._Network* %network, i64 0, metadata !109, metadata !127), !dbg !128
+  tail call void @llvm.dbg.value(metadata i32 %nnode, i64 0, metadata !110, metadata !127), !dbg !129
+  tail call void @llvm.dbg.value(metadata i32 %narc, i64 0, metadata !111, metadata !127), !dbg !130
+  %1 = icmp eq %struct._Network* %network, null, !dbg !131
+  %2 = icmp slt i32 %nnode, 3, !dbg !133
+  %or.cond = or i1 %1, %2, !dbg !134
+  %3 = icmp slt i32 %narc, 0, !dbg !135
+  %or.cond3 = or i1 %or.cond, %3, !dbg !134
+  br i1 %or.cond3, label %4, label %7, !dbg !134
 
-if.then:                                          ; preds = %entry
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([52 x i8]* @.str, i64 0, i64 0), %struct._Network* %network, i32 %nnode, i32 %narc) #5
-  tail call void @exit(i32 -1) #6
-  unreachable
+; <label>:4                                       ; preds = %0
+  %5 = load %struct.__sFILE** @__stderrp, align 8, !dbg !136, !tbaa !138
+  %6 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %5, i8* getelementptr inbounds ([52 x i8]* @.str, i64 0, i64 0), %struct._Network* %network, i32 %nnode, i32 %narc) #6, !dbg !142
+  tail call void @exit(i32 -1) #7, !dbg !143
+  unreachable, !dbg !143
 
-if.end:                                           ; preds = %entry
-  tail call void @Network_clearData(%struct._Network* %network) #5
-  %nnode4 = getelementptr inbounds %struct._Network* %network, i64 0, i32 0
-  store i32 %nnode, i32* %nnode4, align 4, !tbaa !3
-  %cmp5 = icmp sgt i32 %nnode, 0
-  br i1 %cmp5, label %if.then6, label %if.else15
+; <label>:7                                       ; preds = %0
+  tail call void @Network_clearData(%struct._Network* %network) #6, !dbg !144
+  %8 = getelementptr inbounds %struct._Network* %network, i64 0, i32 0, !dbg !145
+  store i32 %nnode, i32* %8, align 4, !dbg !146, !tbaa !147
+  %9 = icmp sgt i32 %nnode, 0, !dbg !150
+  br i1 %9, label %10, label %20, !dbg !152
 
-if.then6:                                         ; preds = %if.end
-  %conv = sext i32 %nnode to i64
-  %mul = shl nsw i64 %conv, 3
-  %call7 = tail call noalias i8* @malloc(i64 %mul) #5
-  %1 = bitcast i8* %call7 to %struct._Arc**
-  %inheads = getelementptr inbounds %struct._Network* %network, i64 0, i32 3
-  store %struct._Arc** %1, %struct._Arc*** %inheads, align 8, !tbaa !0
-  %cmp8 = icmp eq i8* %call7, null
-  br i1 %cmp8, label %if.then10, label %if.then28
+; <label>:10                                      ; preds = %7
+  %11 = sext i32 %nnode to i64, !dbg !153
+  %12 = shl nsw i64 %11, 3, !dbg !153
+  %13 = tail call i8* @malloc(i64 %12) #6, !dbg !153
+  %14 = getelementptr inbounds %struct._Network* %network, i64 0, i32 3, !dbg !153
+  %15 = bitcast %struct._Arc*** %14 to i8**, !dbg !153
+  store i8* %13, i8** %15, align 8, !dbg !153, !tbaa !156
+  %16 = icmp eq i8* %13, null, !dbg !153
+  br i1 %16, label %17, label %27, !dbg !157
 
-if.then10:                                        ; preds = %if.then6
-  %2 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call13 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([49 x i8]* @.str1, i64 0, i64 0), i64 %mul, i32 48, i8* getelementptr inbounds ([81 x i8]* @.str2, i64 0, i64 0)) #5
-  tail call void @exit(i32 -1) #6
-  unreachable
+; <label>:17                                      ; preds = %10
+  %18 = load %struct.__sFILE** @__stderrp, align 8, !dbg !158, !tbaa !138
+  %19 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %18, i8* getelementptr inbounds ([49 x i8]* @.str1, i64 0, i64 0), i64 %12, i32 48, i8* getelementptr inbounds ([93 x i8]* @.str2, i64 0, i64 0)) #6, !dbg !158
+  tail call void @exit(i32 -1) #7, !dbg !158
+  unreachable, !dbg !158
 
-if.else15:                                        ; preds = %if.end
-  %cmp16 = icmp eq i32 %nnode, 0
-  br i1 %cmp16, label %if.then43, label %if.else20
+; <label>:20                                      ; preds = %7
+  %21 = icmp eq i32 %nnode, 0, !dbg !160
+  br i1 %21, label %.preheader, label %22, !dbg !150
 
-if.else20:                                        ; preds = %if.else15
-  %3 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %conv21 = sext i32 %nnode to i64
-  %mul22 = shl nsw i64 %conv21, 3
-  %call23 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([47 x i8]* @.str3, i64 0, i64 0), i64 %mul22, i32 48, i8* getelementptr inbounds ([81 x i8]* @.str2, i64 0, i64 0)) #5
-  tail call void @exit(i32 -1) #6
-  unreachable
+; <label>:22                                      ; preds = %20
+  %23 = load %struct.__sFILE** @__stderrp, align 8, !dbg !162, !tbaa !138
+  %24 = sext i32 %nnode to i64, !dbg !162
+  %25 = shl nsw i64 %24, 3, !dbg !162
+  %26 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %23, i8* getelementptr inbounds ([47 x i8]* @.str3, i64 0, i64 0), i64 %25, i32 48, i8* getelementptr inbounds ([93 x i8]* @.str2, i64 0, i64 0)) #6, !dbg !162
+  tail call void @exit(i32 -1) #7, !dbg !162
+  unreachable, !dbg !162
 
-if.then28:                                        ; preds = %if.then6
-  %call31 = tail call noalias i8* @malloc(i64 %mul) #5
-  %4 = bitcast i8* %call31 to %struct._Arc**
-  %outheads = getelementptr inbounds %struct._Network* %network, i64 0, i32 4
-  store %struct._Arc** %4, %struct._Arc*** %outheads, align 8, !tbaa !0
-  %cmp32 = icmp eq i8* %call31, null
-  br i1 %cmp32, label %if.then34, label %for.cond.preheader
+; <label>:27                                      ; preds = %10
+  %28 = tail call i8* @malloc(i64 %12) #6, !dbg !164
+  %29 = getelementptr inbounds %struct._Network* %network, i64 0, i32 4, !dbg !164
+  %30 = bitcast %struct._Arc*** %29 to i8**, !dbg !164
+  store i8* %28, i8** %30, align 8, !dbg !164, !tbaa !168
+  %31 = icmp eq i8* %28, null, !dbg !164
+  br i1 %31, label %32, label %.lr.ph, !dbg !169
 
-if.then34:                                        ; preds = %if.then28
-  %5 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call37 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %5, i8* getelementptr inbounds ([49 x i8]* @.str1, i64 0, i64 0), i64 %mul, i32 49, i8* getelementptr inbounds ([81 x i8]* @.str2, i64 0, i64 0)) #5
-  tail call void @exit(i32 -1) #6
-  unreachable
+; <label>:32                                      ; preds = %27
+  %33 = load %struct.__sFILE** @__stderrp, align 8, !dbg !170, !tbaa !138
+  %34 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %33, i8* getelementptr inbounds ([49 x i8]* @.str1, i64 0, i64 0), i64 %12, i32 49, i8* getelementptr inbounds ([93 x i8]* @.str2, i64 0, i64 0)) #6, !dbg !170
+  tail call void @exit(i32 -1) #7, !dbg !170
+  unreachable, !dbg !170
 
-if.then43:                                        ; preds = %if.else15
-  %inheads19 = getelementptr inbounds %struct._Network* %network, i64 0, i32 3
-  %6 = bitcast %struct._Arc*** %inheads19 to i8*
-  call void @llvm.memset.p0i8.i64(i8* %6, i8 0, i64 16, i32 8, i1 false)
-  br label %for.cond.preheader
+.preheader:                                       ; preds = %20
+  %35 = getelementptr inbounds %struct._Network* %network, i64 0, i32 3, !dbg !172
+  %36 = bitcast %struct._Arc*** %35 to i8*
+  call void @llvm.memset.p0i8.i64(i8* %36, i8 0, i64 16, i32 8, i1 false), !dbg !174
+  br label %._crit_edge
 
-for.cond.preheader:                               ; preds = %if.then28, %if.then43
-  %7 = phi %struct._Arc** [ %4, %if.then28 ], [ null, %if.then43 ]
-  br i1 %cmp5, label %for.body.lr.ph, label %for.end
+.lr.ph:                                           ; preds = %27
+  %37 = bitcast i8* %28 to %struct._Arc**
+  %38 = getelementptr inbounds %struct._Network* %network, i64 0, i32 4, !dbg !177
+  %39 = getelementptr inbounds %struct._Network* %network, i64 0, i32 3, !dbg !181
+  %40 = add i32 %nnode, -1, !dbg !182
+  store %struct._Arc* null, %struct._Arc** %37, align 8, !dbg !183, !tbaa !138
+  %41 = load %struct._Arc*** %39, align 8, !dbg !181, !tbaa !156
+  store %struct._Arc* null, %struct._Arc** %41, align 8, !dbg !184, !tbaa !138
+  %exitcond6 = icmp eq i32 %40, 0, !dbg !182
+  br i1 %exitcond6, label %._crit_edge, label %._crit_edge5, !dbg !182
 
-for.body.lr.ph:                                   ; preds = %for.cond.preheader
-  %outheads53 = getelementptr inbounds %struct._Network* %network, i64 0, i32 4
-  %inheads55 = getelementptr inbounds %struct._Network* %network, i64 0, i32 3
-  br label %for.body
+._crit_edge5:                                     ; preds = %.lr.ph, %._crit_edge5
+  %indvars.iv7 = phi i64 [ %indvars.iv.next, %._crit_edge5 ], [ 0, %.lr.ph ]
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv7, 1, !dbg !182
+  %.pre = load %struct._Arc*** %38, align 8, !dbg !177, !tbaa !168
+  %42 = getelementptr inbounds %struct._Arc** %.pre, i64 %indvars.iv.next, !dbg !185
+  store %struct._Arc* null, %struct._Arc** %42, align 8, !dbg !183, !tbaa !138
+  %43 = load %struct._Arc*** %39, align 8, !dbg !181, !tbaa !156
+  %44 = getelementptr inbounds %struct._Arc** %43, i64 %indvars.iv.next, !dbg !186
+  store %struct._Arc* null, %struct._Arc** %44, align 8, !dbg !184, !tbaa !138
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !182
+  %exitcond = icmp eq i32 %lftr.wideiv, %40, !dbg !182
+  br i1 %exitcond, label %._crit_edge, label %._crit_edge5, !dbg !182
 
-for.body:                                         ; preds = %for.body.for.body_crit_edge, %for.body.lr.ph
-  %8 = phi %struct._Arc** [ %7, %for.body.lr.ph ], [ %.pre, %for.body.for.body_crit_edge ]
-  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.body.for.body_crit_edge ]
-  %arrayidx = getelementptr inbounds %struct._Arc** %8, i64 %indvars.iv
-  store %struct._Arc* null, %struct._Arc** %arrayidx, align 8, !tbaa !0
-  %9 = load %struct._Arc*** %inheads55, align 8, !tbaa !0
-  %arrayidx56 = getelementptr inbounds %struct._Arc** %9, i64 %indvars.iv
-  store %struct._Arc* null, %struct._Arc** %arrayidx56, align 8, !tbaa !0
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %nnode
-  br i1 %exitcond, label %for.end, label %for.body.for.body_crit_edge
+._crit_edge:                                      ; preds = %.lr.ph, %._crit_edge5, %.preheader
+  %45 = icmp sgt i32 %narc, 0, !dbg !187
+  br i1 %45, label %46, label %70, !dbg !188
 
-for.body.for.body_crit_edge:                      ; preds = %for.body
-  %.pre = load %struct._Arc*** %outheads53, align 8, !tbaa !0
-  br label %for.body
+; <label>:46                                      ; preds = %._crit_edge
+  %47 = tail call i8* @malloc(i64 24) #6, !dbg !189
+  %48 = icmp eq i8* %47, null, !dbg !189
+  br i1 %48, label %49, label %52, !dbg !193
 
-for.end:                                          ; preds = %for.body, %for.cond.preheader
-  %cmp57 = icmp sgt i32 %narc, 0
-  br i1 %cmp57, label %if.then59, label %if.end93
+; <label>:49                                      ; preds = %46
+  %50 = load %struct.__sFILE** @__stderrp, align 8, !dbg !194, !tbaa !138
+  %51 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %50, i8* getelementptr inbounds ([49 x i8]* @.str1, i64 0, i64 0), i64 24, i32 60, i8* getelementptr inbounds ([93 x i8]* @.str2, i64 0, i64 0)) #6, !dbg !194
+  tail call void @exit(i32 -1) #7, !dbg !194
+  unreachable, !dbg !194
 
-if.then59:                                        ; preds = %for.end
-  %call60 = tail call noalias i8* @malloc(i64 24) #5
-  %10 = bitcast i8* %call60 to %struct._ArcChunk*
-  %cmp61 = icmp eq i8* %call60, null
-  br i1 %cmp61, label %if.then63, label %if.then69
+; <label>:52                                      ; preds = %46
+  %53 = sext i32 %narc to i64, !dbg !196
+  %54 = shl nsw i64 %53, 5, !dbg !196
+  %55 = tail call i8* @malloc(i64 %54) #6, !dbg !196
+  %56 = getelementptr inbounds i8* %47, i64 8, !dbg !196
+  %57 = bitcast i8* %56 to i8**, !dbg !196
+  store i8* %55, i8** %57, align 8, !dbg !196, !tbaa !200
+  %58 = icmp eq i8* %55, null, !dbg !196
+  br i1 %58, label %59, label %62, !dbg !202
 
-if.then63:                                        ; preds = %if.then59
-  %11 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call64 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %11, i8* getelementptr inbounds ([49 x i8]* @.str1, i64 0, i64 0), i64 24, i32 60, i8* getelementptr inbounds ([81 x i8]* @.str2, i64 0, i64 0)) #5
-  tail call void @exit(i32 -1) #6
-  unreachable
+; <label>:59                                      ; preds = %52
+  %60 = load %struct.__sFILE** @__stderrp, align 8, !dbg !203, !tbaa !138
+  %61 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %60, i8* getelementptr inbounds ([49 x i8]* @.str1, i64 0, i64 0), i64 %54, i32 61, i8* getelementptr inbounds ([93 x i8]* @.str2, i64 0, i64 0)) #6, !dbg !203
+  tail call void @exit(i32 -1) #7, !dbg !203
+  unreachable, !dbg !203
 
-if.then69:                                        ; preds = %if.then59
-  %conv70 = sext i32 %narc to i64
-  %mul71 = shl nsw i64 %conv70, 5
-  %call72 = tail call noalias i8* @malloc(i64 %mul71) #5
-  %12 = bitcast i8* %call72 to %struct._Arc*
-  %base = getelementptr inbounds i8* %call60, i64 8
-  %13 = bitcast i8* %base to %struct._Arc**
-  store %struct._Arc* %12, %struct._Arc** %13, align 8, !tbaa !0
-  %cmp73 = icmp eq i8* %call72, null
-  br i1 %cmp73, label %if.then75, label %if.end91
+; <label>:62                                      ; preds = %52
+  %63 = bitcast i8* %47 to i32*, !dbg !205
+  store i32 %narc, i32* %63, align 4, !dbg !206, !tbaa !207
+  %64 = getelementptr inbounds i8* %47, i64 4, !dbg !208
+  %65 = bitcast i8* %64 to i32*, !dbg !208
+  store i32 0, i32* %65, align 4, !dbg !209, !tbaa !210
+  %66 = getelementptr inbounds i8* %47, i64 16, !dbg !211
+  %67 = bitcast i8* %66 to %struct._ArcChunk**, !dbg !211
+  store %struct._ArcChunk* null, %struct._ArcChunk** %67, align 8, !dbg !212, !tbaa !213
+  %68 = getelementptr inbounds %struct._Network* %network, i64 0, i32 5, !dbg !214
+  %69 = bitcast %struct._ArcChunk** %68 to i8**, !dbg !215
+  store i8* %47, i8** %69, align 8, !dbg !215, !tbaa !216
+  br label %70, !dbg !217
 
-if.then75:                                        ; preds = %if.then69
-  %14 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call78 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %14, i8* getelementptr inbounds ([49 x i8]* @.str1, i64 0, i64 0), i64 %mul71, i32 61, i8* getelementptr inbounds ([81 x i8]* @.str2, i64 0, i64 0)) #5
-  tail call void @exit(i32 -1) #6
-  unreachable
-
-if.end91:                                         ; preds = %if.then69
-  %size = bitcast i8* %call60 to i32*
-  store i32 %narc, i32* %size, align 4, !tbaa !3
-  %inuse = getelementptr inbounds i8* %call60, i64 4
-  %15 = bitcast i8* %inuse to i32*
-  store i32 0, i32* %15, align 4, !tbaa !3
-  %next = getelementptr inbounds i8* %call60, i64 16
-  %16 = bitcast i8* %next to %struct._ArcChunk**
-  store %struct._ArcChunk* null, %struct._ArcChunk** %16, align 8, !tbaa !0
-  %chunk92 = getelementptr inbounds %struct._Network* %network, i64 0, i32 5
-  store %struct._ArcChunk* %10, %struct._ArcChunk** %chunk92, align 8, !tbaa !0
-  br label %if.end93
-
-if.end93:                                         ; preds = %if.end91, %for.end
-  ret void
+; <label>:70                                      ; preds = %62, %._crit_edge
+  ret void, !dbg !218
 }

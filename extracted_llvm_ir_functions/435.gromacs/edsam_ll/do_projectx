@@ -1,42 +1,48 @@
 define float @do_projectx(%struct.t_edpar* nocapture readonly %edi, [3 x float]* nocapture readonly %x, [3 x float]* nocapture readonly %vec) #9 {
-  %1 = getelementptr inbounds %struct.t_edpar* %edi, i64 0, i32 8, i32 0
-  %2 = load i32* %1, align 4, !tbaa !38
-  %3 = icmp sgt i32 %2, 0
-  br i1 %3, label %.preheader.lr.ph, label %._crit_edge
+  tail call void @llvm.dbg.value(metadata %struct.t_edpar* %edi, i64 0, metadata !778, metadata !1112), !dbg !2595
+  tail call void @llvm.dbg.value(metadata [3 x float]* %x, i64 0, metadata !779, metadata !1112), !dbg !2596
+  tail call void @llvm.dbg.value(metadata [3 x float]* %vec, i64 0, metadata !780, metadata !1112), !dbg !2597
+  tail call void @llvm.dbg.value(metadata float 0.000000e+00, i64 0, metadata !783, metadata !1112), !dbg !2598
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !781, metadata !1112), !dbg !2599
+  %1 = getelementptr inbounds %struct.t_edpar* %edi, i64 0, i32 8, i32 0, !dbg !2600
+  %2 = load i32* %1, align 4, !dbg !2600, !tbaa !1342
+  %3 = icmp sgt i32 %2, 0, !dbg !2603
+  br i1 %3, label %.preheader.lr.ph, label %._crit_edge, !dbg !2604
 
 .preheader.lr.ph:                                 ; preds = %0
-  %4 = getelementptr inbounds %struct.t_edpar* %edi, i64 0, i32 8, i32 1
-  %5 = load i32** %4, align 8, !tbaa !39
-  %6 = sext i32 %2 to i64
-  br label %.preheader
+  %4 = getelementptr inbounds %struct.t_edpar* %edi, i64 0, i32 8, i32 1, !dbg !2605
+  %5 = load i32** %4, align 8, !dbg !2605, !tbaa !1356
+  %6 = sext i32 %2 to i64, !dbg !2604
+  br label %.preheader, !dbg !2604
 
 .preheader:                                       ; preds = %.preheader.lr.ph, %17
   %indvars.iv5 = phi i64 [ 0, %.preheader.lr.ph ], [ %indvars.iv.next6, %17 ]
   %proj.04 = phi float [ 0.000000e+00, %.preheader.lr.ph ], [ %16, %17 ]
-  %7 = getelementptr inbounds i32* %5, i64 %indvars.iv5
-  %8 = load i32* %7, align 4, !tbaa !34
-  %9 = sext i32 %8 to i64
-  br label %10
+  %7 = getelementptr inbounds i32* %5, i64 %indvars.iv5, !dbg !2608
+  %8 = load i32* %7, align 4, !dbg !2608, !tbaa !1327
+  %9 = sext i32 %8 to i64, !dbg !2609
+  br label %10, !dbg !2610
 
 ; <label>:10                                      ; preds = %10, %.preheader
   %indvars.iv = phi i64 [ 0, %.preheader ], [ %indvars.iv.next, %10 ]
   %proj.12 = phi float [ %proj.04, %.preheader ], [ %16, %10 ]
-  %11 = getelementptr inbounds [3 x float]* %vec, i64 %indvars.iv5, i64 %indvars.iv
-  %12 = load float* %11, align 4, !tbaa !2
-  %13 = getelementptr inbounds [3 x float]* %x, i64 %9, i64 %indvars.iv
-  %14 = load float* %13, align 4, !tbaa !2
-  %15 = fmul float %12, %14
-  %16 = fadd float %proj.12, %15
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %exitcond = icmp eq i64 %indvars.iv.next, 3
-  br i1 %exitcond, label %17, label %10
+  %11 = getelementptr inbounds [3 x float]* %vec, i64 %indvars.iv5, i64 %indvars.iv, !dbg !2611
+  %12 = load float* %11, align 4, !dbg !2611, !tbaa !1208
+  %13 = getelementptr inbounds [3 x float]* %x, i64 %9, i64 %indvars.iv, !dbg !2609
+  %14 = load float* %13, align 4, !dbg !2609, !tbaa !1208
+  %15 = fmul float %12, %14, !dbg !2612
+  %16 = fadd float %proj.12, %15, !dbg !2613
+  tail call void @llvm.dbg.value(metadata float %16, i64 0, metadata !783, metadata !1112), !dbg !2598
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !2610
+  %exitcond = icmp eq i64 %indvars.iv.next, 3, !dbg !2610
+  br i1 %exitcond, label %17, label %10, !dbg !2610
 
 ; <label>:17                                      ; preds = %10
-  %indvars.iv.next6 = add nuw nsw i64 %indvars.iv5, 1
-  %18 = icmp slt i64 %indvars.iv.next6, %6
-  br i1 %18, label %.preheader, label %._crit_edge
+  %indvars.iv.next6 = add nuw nsw i64 %indvars.iv5, 1, !dbg !2604
+  %18 = icmp slt i64 %indvars.iv.next6, %6, !dbg !2603
+  br i1 %18, label %.preheader, label %._crit_edge, !dbg !2604
 
 ._crit_edge:                                      ; preds = %17, %0
   %proj.0.lcssa = phi float [ 0.000000e+00, %0 ], [ %16, %17 ]
-  ret float %proj.0.lcssa
+  ret float %proj.0.lcssa, !dbg !2614
 }

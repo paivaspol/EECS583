@@ -1,10 +1,16 @@
-define void @DisplayPlan7Posteriors(i32 %L, %struct.plan7_s* %hmm, %struct.dpmatrix_s* nocapture %forward, %struct.dpmatrix_s* nocapture %backward, %struct.p7trace_s* %viterbi, %struct.p7trace_s* %optacc) #0 {
-entry:
+define void @DisplayPlan7Posteriors(i32 %L, %struct.plan7_s* %hmm, %struct.dpmatrix_s* nocapture readonly %forward, %struct.dpmatrix_s* nocapture readonly %backward, %struct.p7trace_s* %viterbi, %struct.p7trace_s* %optacc) #0 {
   %alignment = alloca [2 x %struct.p7trace_s*], align 16
-  %arrayidx = getelementptr inbounds [2 x %struct.p7trace_s*]* %alignment, i64 0, i64 0
-  store %struct.p7trace_s* %viterbi, %struct.p7trace_s** %arrayidx, align 16, !tbaa !0
-  %arrayidx1 = getelementptr inbounds [2 x %struct.p7trace_s*]* %alignment, i64 0, i64 1
-  store %struct.p7trace_s* %optacc, %struct.p7trace_s** %arrayidx1, align 8, !tbaa !0
-  call void @DisplayPlan7PostAlign(i32 %L, %struct.plan7_s* %hmm, %struct.dpmatrix_s* %forward, %struct.dpmatrix_s* %backward, %struct.p7trace_s** %arrayidx, i32 2) #4
-  ret void
+  tail call void @llvm.dbg.value(metadata i32 %L, i64 0, metadata !101, metadata !179), !dbg !180
+  tail call void @llvm.dbg.value(metadata %struct.plan7_s* %hmm, i64 0, metadata !102, metadata !179), !dbg !181
+  tail call void @llvm.dbg.value(metadata %struct.dpmatrix_s* %forward, i64 0, metadata !103, metadata !179), !dbg !182
+  tail call void @llvm.dbg.value(metadata %struct.dpmatrix_s* %backward, i64 0, metadata !104, metadata !179), !dbg !183
+  tail call void @llvm.dbg.value(metadata %struct.p7trace_s* %viterbi, i64 0, metadata !105, metadata !179), !dbg !184
+  tail call void @llvm.dbg.value(metadata %struct.p7trace_s* %optacc, i64 0, metadata !106, metadata !179), !dbg !185
+  tail call void @llvm.dbg.declare(metadata [2 x %struct.p7trace_s*]* %alignment, metadata !107, metadata !179), !dbg !186
+  %1 = getelementptr inbounds [2 x %struct.p7trace_s*]* %alignment, i64 0, i64 0, !dbg !187
+  store %struct.p7trace_s* %viterbi, %struct.p7trace_s** %1, align 16, !dbg !188, !tbaa !189
+  %2 = getelementptr inbounds [2 x %struct.p7trace_s*]* %alignment, i64 0, i64 1, !dbg !193
+  store %struct.p7trace_s* %optacc, %struct.p7trace_s** %2, align 8, !dbg !194, !tbaa !189
+  call void @DisplayPlan7PostAlign(i32 %L, %struct.plan7_s* %hmm, %struct.dpmatrix_s* %forward, %struct.dpmatrix_s* %backward, %struct.p7trace_s** %1, i32 2) #5, !dbg !195
+  ret void, !dbg !196
 }

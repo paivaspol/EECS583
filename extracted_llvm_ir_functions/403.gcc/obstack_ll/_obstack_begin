@@ -1,0 +1,62 @@
+define i32 @_obstack_begin(%struct.obstack* nocapture %h, i32 %size, i32 %alignment, i8* (i64)* %chunkfun, void (i8*)* %freefun) #1 {
+  tail call void @llvm.dbg.value(metadata %struct.obstack* %h, i64 0, metadata !63, metadata !155), !dbg !156
+  tail call void @llvm.dbg.value(metadata i32 %size, i64 0, metadata !64, metadata !155), !dbg !157
+  tail call void @llvm.dbg.value(metadata i32 %alignment, i64 0, metadata !65, metadata !155), !dbg !158
+  tail call void @llvm.dbg.value(metadata i8* (i64)* %chunkfun, i64 0, metadata !66, metadata !155), !dbg !159
+  tail call void @llvm.dbg.value(metadata void (i8*)* %freefun, i64 0, metadata !67, metadata !155), !dbg !160
+  %1 = icmp eq i32 %alignment, 0, !dbg !161
+  tail call void @llvm.dbg.value(metadata i32 ptrtoint (double* getelementptr inbounds (%struct.fooalign* null, i32 0, i32 1) to i32), i64 0, metadata !65, metadata !155), !dbg !158
+  %2 = icmp eq i32 %size, 0, !dbg !163
+  tail call void @llvm.dbg.value(metadata i32 24, i64 0, metadata !69, metadata !155), !dbg !164
+  tail call void @llvm.dbg.value(metadata i32 4072, i64 0, metadata !64, metadata !155), !dbg !157
+  %3 = getelementptr inbounds %struct.obstack* %h, i64 0, i32 7, !dbg !165
+  %4 = bitcast %struct._obstack_chunk* (i8*, i64)** %3 to i8* (i64)**, !dbg !166
+  store i8* (i64)* %chunkfun, i8* (i64)** %4, align 8, !dbg !166, !tbaa !167
+  %5 = getelementptr inbounds %struct.obstack* %h, i64 0, i32 8, !dbg !170
+  %6 = bitcast void (i8*, %struct._obstack_chunk*)** %5 to void (i8*)**, !dbg !171
+  store void (i8*)* %freefun, void (i8*)** %6, align 8, !dbg !171, !tbaa !172
+  %7 = sext i32 %size to i64, !dbg !173
+  %8 = select i1 %2, i64 4072, i64 %7, !dbg !173
+  %9 = getelementptr inbounds %struct.obstack* %h, i64 0, i32 0, !dbg !174
+  store i64 %8, i64* %9, align 8, !dbg !175, !tbaa !176
+  %alignment.op = add i32 %alignment, -1, !dbg !177
+  %10 = select i1 %1, i32 7, i32 %alignment.op, !dbg !177
+  %11 = getelementptr inbounds %struct.obstack* %h, i64 0, i32 6, !dbg !178
+  store i32 %10, i32* %11, align 4, !dbg !179, !tbaa !180
+  %12 = getelementptr inbounds %struct.obstack* %h, i64 0, i32 10, !dbg !181
+  %13 = load i8* %12, align 8, !dbg !182
+  %14 = and i8 %13, -2, !dbg !182
+  store i8 %14, i8* %12, align 8, !dbg !182
+  %15 = bitcast i8* (i64)* %chunkfun to %struct._obstack_chunk* (i64)*
+  %16 = tail call %struct._obstack_chunk* %15(i64 %8) #6, !dbg !183
+  %17 = getelementptr inbounds %struct.obstack* %h, i64 0, i32 1, !dbg !184
+  store %struct._obstack_chunk* %16, %struct._obstack_chunk** %17, align 8, !dbg !185, !tbaa !186
+  tail call void @llvm.dbg.value(metadata %struct._obstack_chunk* %16, i64 0, metadata !68, metadata !155), !dbg !187
+  %18 = icmp eq %struct._obstack_chunk* %16, null, !dbg !188
+  br i1 %18, label %19, label %21, !dbg !190
+
+; <label>:19                                      ; preds = %0
+  %20 = load void ()** @obstack_alloc_failed_handler, align 8, !dbg !191, !tbaa !146
+  tail call void %20() #6, !dbg !192
+  br label %21, !dbg !192
+
+; <label>:21                                      ; preds = %0, %19
+  %22 = getelementptr inbounds %struct._obstack_chunk* %16, i64 0, i32 2, i64 0, !dbg !193
+  %23 = getelementptr inbounds %struct.obstack* %h, i64 0, i32 2, !dbg !194
+  store i8* %22, i8** %23, align 8, !dbg !195, !tbaa !196
+  %24 = getelementptr inbounds %struct.obstack* %h, i64 0, i32 3, !dbg !197
+  store i8* %22, i8** %24, align 8, !dbg !198, !tbaa !199
+  %25 = bitcast %struct._obstack_chunk* %16 to i8*, !dbg !200
+  %26 = load i64* %9, align 8, !dbg !201, !tbaa !176
+  %27 = getelementptr inbounds i8* %25, i64 %26, !dbg !202
+  %28 = getelementptr inbounds %struct._obstack_chunk* %16, i64 0, i32 0, !dbg !203
+  store i8* %27, i8** %28, align 8, !dbg !204, !tbaa !205
+  %29 = getelementptr inbounds %struct.obstack* %h, i64 0, i32 4, !dbg !207
+  store i8* %27, i8** %29, align 8, !dbg !208, !tbaa !209
+  %30 = getelementptr inbounds %struct._obstack_chunk* %16, i64 0, i32 1, !dbg !210
+  store %struct._obstack_chunk* null, %struct._obstack_chunk** %30, align 8, !dbg !211, !tbaa !212
+  %31 = load i8* %12, align 8, !dbg !213
+  %32 = and i8 %31, -7, !dbg !214
+  store i8 %32, i8* %12, align 8, !dbg !214
+  ret i32 1, !dbg !215
+}

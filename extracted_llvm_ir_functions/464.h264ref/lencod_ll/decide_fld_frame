@@ -1,14 +1,20 @@
-define i32 @decide_fld_frame(float %snr_frame_Y, float %snr_field_Y, i32 %bit_field, i32 %bit_frame, double %lambda_picture) #5 {
-entry:
-  %conv = sitofp i32 %bit_frame to double
-  %mul = fmul double %conv, %lambda_picture
-  %conv1 = fpext float %snr_frame_Y to double
-  %add = fadd double %conv1, %mul
-  %conv2 = sitofp i32 %bit_field to double
-  %mul3 = fmul double %conv2, %lambda_picture
-  %conv4 = fpext float %snr_field_Y to double
-  %add5 = fadd double %conv4, %mul3
-  %not.cmp = fcmp ule double %add5, %add
-  %. = zext i1 %not.cmp to i32
-  ret i32 %.
+define i32 @decide_fld_frame(float %snr_frame_Y, float %snr_field_Y, i32 %bit_field, i32 %bit_frame, double %lambda_picture) #6 {
+  tail call void @llvm.dbg.value(metadata float %snr_frame_Y, i64 0, metadata !541, metadata !1429), !dbg !4979
+  tail call void @llvm.dbg.value(metadata float %snr_field_Y, i64 0, metadata !542, metadata !1429), !dbg !4980
+  tail call void @llvm.dbg.value(metadata i32 %bit_field, i64 0, metadata !543, metadata !1429), !dbg !4981
+  tail call void @llvm.dbg.value(metadata i32 %bit_frame, i64 0, metadata !544, metadata !1429), !dbg !4982
+  tail call void @llvm.dbg.value(metadata double %lambda_picture, i64 0, metadata !545, metadata !1429), !dbg !4983
+  %1 = sitofp i32 %bit_frame to double, !dbg !4984
+  %2 = fmul double %1, %lambda_picture, !dbg !4985
+  %3 = fpext float %snr_frame_Y to double, !dbg !4986
+  %4 = fadd double %3, %2, !dbg !4987
+  tail call void @llvm.dbg.value(metadata double %4, i64 0, metadata !546, metadata !1429), !dbg !4988
+  %5 = sitofp i32 %bit_field to double, !dbg !4989
+  %6 = fmul double %5, %lambda_picture, !dbg !4990
+  %7 = fpext float %snr_field_Y to double, !dbg !4991
+  %8 = fadd double %7, %6, !dbg !4992
+  tail call void @llvm.dbg.value(metadata double %8, i64 0, metadata !547, metadata !1429), !dbg !4993
+  %not. = fcmp ule double %8, %4, !dbg !4994
+  %. = zext i1 %not. to i32, !dbg !4994
+  ret i32 %., !dbg !4996
 }

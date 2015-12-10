@@ -1,0 +1,55 @@
+define void @_ZN3pov21Destroy_Light_BuffersEv() #0 {
+  %1 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 0), align 8, !dbg !2916, !tbaa !1597
+  %2 = and i32 %1, 4096, !dbg !2918
+  %3 = icmp eq i32 %2, 0, !dbg !2918
+  br i1 %3, label %.loopexit3, label %4, !dbg !2919
+
+; <label>:4                                       ; preds = %0
+  %.b1 = load i1* @_ZN3povL11BuffersInitE, align 1
+  br i1 %.b1, label %.preheader2, label %.loopexit3, !dbg !2920
+
+.preheader2:                                      ; preds = %4
+  %Light.05 = load %"struct.pov::Light_Source_Struct"** getelementptr inbounds (%"struct.pov::Frame_Struct"* @_ZN3pov5FrameE, i64 0, i32 4), align 8, !dbg !2921
+  %5 = icmp eq %"struct.pov::Light_Source_Struct"* %Light.05, null, !dbg !2924
+  br i1 %5, label %.loopexit3, label %.lr.ph, !dbg !2926
+
+.lr.ph:                                           ; preds = %.preheader2, %.loopexit
+  %Light.06 = phi %"struct.pov::Light_Source_Struct"* [ %Light.0, %.loopexit ], [ %Light.05, %.preheader2 ]
+  %6 = getelementptr inbounds %"struct.pov::Light_Source_Struct"* %Light.06, i64 0, i32 28, !dbg !2927
+  %7 = load i8* %6, align 1, !dbg !2927, !tbaa !1621
+  %8 = icmp eq i8 %7, 0, !dbg !2930
+  br i1 %8, label %9, label %.loopexit, !dbg !2931
+
+; <label>:9                                       ; preds = %.lr.ph
+  %10 = getelementptr inbounds %"struct.pov::Light_Source_Struct"* %Light.06, i64 0, i32 27, !dbg !2932
+  %11 = load i8* %10, align 1, !dbg !2932, !tbaa !1627
+  %12 = icmp eq i8 %11, 3, !dbg !2933
+  br i1 %12, label %.loopexit, label %.preheader, !dbg !2934
+
+.preheader:                                       ; preds = %9, %17
+  %indvars.iv = phi i64 [ %indvars.iv.next, %17 ], [ 0, %9 ]
+  %13 = getelementptr inbounds %"struct.pov::Light_Source_Struct"* %Light.06, i64 0, i32 44, i64 %indvars.iv, !dbg !2935
+  %14 = load %"struct.pov::Project_Tree_Node_Struct"** %13, align 8, !dbg !2935, !tbaa !1647
+  %15 = icmp eq %"struct.pov::Project_Tree_Node_Struct"* %14, null, !dbg !2941
+  br i1 %15, label %17, label %16, !dbg !2942
+
+; <label>:16                                      ; preds = %.preheader
+  tail call void @_ZN3pov20Destroy_Project_TreeEPNS_24Project_Tree_Node_StructE(%"struct.pov::Project_Tree_Node_Struct"* %14) #5, !dbg !2943
+  br label %17, !dbg !2945
+
+; <label>:17                                      ; preds = %.preheader, %16
+  store %"struct.pov::Project_Tree_Node_Struct"* null, %"struct.pov::Project_Tree_Node_Struct"** %13, align 8, !dbg !2946, !tbaa !1647
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !2947
+  %exitcond = icmp eq i64 %indvars.iv.next, 6, !dbg !2947
+  br i1 %exitcond, label %.loopexit, label %.preheader, !dbg !2947
+
+.loopexit:                                        ; preds = %17, %9, %.lr.ph
+  %18 = getelementptr inbounds %"struct.pov::Light_Source_Struct"* %Light.06, i64 0, i32 26, !dbg !2948
+  %Light.0 = load %"struct.pov::Light_Source_Struct"** %18, align 8, !dbg !2921
+  %19 = icmp eq %"struct.pov::Light_Source_Struct"* %Light.0, null, !dbg !2924
+  br i1 %19, label %.loopexit3, label %.lr.ph, !dbg !2926
+
+.loopexit3:                                       ; preds = %.loopexit, %.preheader2, %0, %4
+  store i1 false, i1* @_ZN3povL11BuffersInitE, align 1
+  ret void, !dbg !2949
+}

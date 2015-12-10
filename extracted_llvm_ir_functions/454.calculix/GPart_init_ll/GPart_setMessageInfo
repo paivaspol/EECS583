@@ -1,31 +1,34 @@
-define void @GPart_setMessageInfo(%struct._GPart* %gpart, i32 %msglvl, %struct._IO_FILE* %msgFile) #0 {
-entry:
-  %cmp = icmp eq %struct._GPart* %gpart, null
-  br i1 %cmp, label %if.then, label %if.end
+define void @GPart_setMessageInfo(%struct._GPart* %gpart, i32 %msglvl, %struct.__sFILE* %msgFile) #0 {
+  tail call void @llvm.dbg.value(metadata %struct._GPart* %gpart, i64 0, metadata !142, metadata !149), !dbg !192
+  tail call void @llvm.dbg.value(metadata i32 %msglvl, i64 0, metadata !143, metadata !149), !dbg !193
+  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %msgFile, i64 0, metadata !144, metadata !149), !dbg !194
+  %1 = icmp eq %struct._GPart* %gpart, null, !dbg !195
+  br i1 %1, label %2, label %5, !dbg !197
 
-if.then:                                          ; preds = %entry
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([60 x i8]* @.str1, i64 0, i64 0), %struct._GPart* null, i32 %msglvl, %struct._IO_FILE* %msgFile) #4
-  tail call void @exit(i32 -1) #5
-  unreachable
+; <label>:2                                       ; preds = %0
+  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !198, !tbaa !167
+  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([60 x i8]* @.str1, i64 0, i64 0), %struct._GPart* null, i32 %msglvl, %struct.__sFILE* %msgFile) #5, !dbg !200
+  tail call void @exit(i32 -1) #6, !dbg !201
+  unreachable, !dbg !201
 
-if.end:                                           ; preds = %entry
-  %msglvl1 = getelementptr inbounds %struct._GPart* %gpart, i64 0, i32 11
-  store i32 %msglvl, i32* %msglvl1, align 4, !tbaa !0
-  %cmp2 = icmp eq %struct._IO_FILE* %msgFile, null
-  br i1 %cmp2, label %if.else, label %if.then3
+; <label>:5                                       ; preds = %0
+  %6 = getelementptr inbounds %struct._GPart* %gpart, i64 0, i32 11, !dbg !202
+  store i32 %msglvl, i32* %6, align 4, !dbg !203, !tbaa !204
+  %7 = icmp eq %struct.__sFILE* %msgFile, null, !dbg !205
+  br i1 %7, label %10, label %8, !dbg !207
 
-if.then3:                                         ; preds = %if.end
-  %msgFile4 = getelementptr inbounds %struct._GPart* %gpart, i64 0, i32 12
-  store %struct._IO_FILE* %msgFile, %struct._IO_FILE** %msgFile4, align 8, !tbaa !3
-  br label %if.end6
+; <label>:8                                       ; preds = %5
+  %9 = getelementptr inbounds %struct._GPart* %gpart, i64 0, i32 12, !dbg !208
+  store %struct.__sFILE* %msgFile, %struct.__sFILE** %9, align 8, !dbg !210, !tbaa !211
+  br label %14, !dbg !212
 
-if.else:                                          ; preds = %if.end
-  %1 = load %struct._IO_FILE** @stdout, align 8, !tbaa !3
-  %msgFile5 = getelementptr inbounds %struct._GPart* %gpart, i64 0, i32 12
-  store %struct._IO_FILE* %1, %struct._IO_FILE** %msgFile5, align 8, !tbaa !3
-  br label %if.end6
+; <label>:10                                      ; preds = %5
+  %11 = load i64* bitcast (%struct.__sFILE** @__stdoutp to i64*), align 8, !dbg !213, !tbaa !167
+  %12 = getelementptr inbounds %struct._GPart* %gpart, i64 0, i32 12, !dbg !215
+  %13 = bitcast %struct.__sFILE** %12 to i64*, !dbg !216
+  store i64 %11, i64* %13, align 8, !dbg !216, !tbaa !211
+  br label %14
 
-if.end6:                                          ; preds = %if.else, %if.then3
-  ret void
+; <label>:14                                      ; preds = %10, %8
+  ret void, !dbg !217
 }

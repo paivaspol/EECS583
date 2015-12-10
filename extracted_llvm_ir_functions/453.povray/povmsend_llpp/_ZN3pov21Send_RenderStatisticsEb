@@ -1,0 +1,50 @@
+define i32 @_ZN3pov21Send_RenderStatisticsEb(i1 zeroext %total) #0 {
+  %msg = alloca %struct.POVMSData, align 8
+  tail call void @llvm.dbg.value(metadata i1 %total, i64 0, metadata !694, metadata !1268), !dbg !2636
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !696, metadata !1268), !dbg !2637
+  tail call void @llvm.dbg.value(metadata %struct.POVMSData* %msg, i64 0, metadata !695, metadata !1268), !dbg !2638
+  %1 = call i32 @_Z15POVMSObject_NewP9POVMSDataj(%struct.POVMSData* %msg, i32 1381200993) #6, !dbg !2639
+  call void @llvm.dbg.value(metadata i32 %1, i64 0, metadata !696, metadata !1268), !dbg !2637
+  %2 = icmp eq i32 %1, 0, !dbg !2641
+  br i1 %2, label %3, label %.thread2, !dbg !2643
+
+; <label>:3                                       ; preds = %0
+  call void @llvm.dbg.value(metadata %struct.POVMSData* %msg, i64 0, metadata !695, metadata !1268), !dbg !2638
+  br i1 %total, label %4, label %6, !dbg !2644
+
+; <label>:4                                       ; preds = %3
+  %5 = call i32 @_ZN3pov21BuildRenderStatisticsEP9POVMSDataPl(%struct.POVMSData* %msg, i64* getelementptr inbounds ([126 x i64]* @_ZN3pov10totalstatsE, i64 0, i64 0)) #6, !dbg !2646
+  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !696, metadata !1268), !dbg !2637
+  br label %8, !dbg !2648
+
+; <label>:6                                       ; preds = %3
+  %7 = call i32 @_ZN3pov21BuildRenderStatisticsEP9POVMSDataPl(%struct.POVMSData* %msg, i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 0)) #6, !dbg !2649
+  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !696, metadata !1268), !dbg !2637
+  br label %8
+
+; <label>:8                                       ; preds = %6, %4
+  call void @llvm.dbg.value(metadata %struct.POVMSData* %msg, i64 0, metadata !695, metadata !1268), !dbg !2638
+  %9 = call i32 @_Z21POVMSMsg_SetupMessageP9POVMSDatajj(%struct.POVMSData* %msg, i32 1333097584, i32 1381200993) #6, !dbg !2650
+  call void @llvm.dbg.value(metadata i32 %9, i64 0, metadata !696, metadata !1268), !dbg !2637
+  %10 = icmp eq i32 %9, 0, !dbg !2652
+  br i1 %10, label %11, label %.thread2, !dbg !2654
+
+; <label>:11                                      ; preds = %8
+  %12 = call i8* @_Z23povray_getoutputcontextv() #6, !dbg !2655
+  call void @llvm.dbg.value(metadata %struct.POVMSData* %msg, i64 0, metadata !695, metadata !1268), !dbg !2638
+  %13 = call i32 @_Z30POVMSMsg_SetDestinationAddressP9POVMSDataPv(%struct.POVMSData* %msg, i8* %12) #6, !dbg !2656
+  call void @llvm.dbg.value(metadata i32 %13, i64 0, metadata !696, metadata !1268), !dbg !2637
+  %14 = icmp eq i32 %13, 0, !dbg !2657
+  br i1 %14, label %15, label %.thread2, !dbg !2659
+
+; <label>:15                                      ; preds = %11
+  %16 = load i8** @POVMS_Render_Context, align 8, !dbg !2660, !tbaa !1718
+  call void @llvm.dbg.value(metadata %struct.POVMSData* %msg, i64 0, metadata !695, metadata !1268), !dbg !2638
+  %17 = call i32 @_Z10POVMS_SendPvP9POVMSDataS1_i(i8* %16, %struct.POVMSData* %msg, %struct.POVMSData* null, i32 1) #6, !dbg !2661
+  call void @llvm.dbg.value(metadata i32 %17, i64 0, metadata !696, metadata !1268), !dbg !2637
+  br label %.thread2, !dbg !2662
+
+.thread2:                                         ; preds = %0, %8, %15, %11
+  %err.4 = phi i32 [ %17, %15 ], [ %13, %11 ], [ %9, %8 ], [ %1, %0 ]
+  ret i32 %err.4, !dbg !2663
+}

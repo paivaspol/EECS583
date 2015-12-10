@@ -1,12 +1,16 @@
-define zeroext i16 @FastPelY_14(i16** nocapture %Pic, i32 %y, i32 %x, i32 %height, i32 %width) #2 {
-entry:
-  %add = add nsw i32 %x, 16
-  %idxprom = sext i32 %add to i64
-  %add1 = add nsw i32 %y, 16
-  %idxprom2 = sext i32 %add1 to i64
-  %arrayidx = getelementptr inbounds i16** %Pic, i64 %idxprom2
-  %0 = load i16** %arrayidx, align 8, !tbaa !0
-  %arrayidx3 = getelementptr inbounds i16* %0, i64 %idxprom
-  %1 = load i16* %arrayidx3, align 2, !tbaa !3
-  ret i16 %1
+define zeroext i16 @FastPelY_14(i16** nocapture readonly %Pic, i32 %y, i32 %x, i32 %height, i32 %width) #2 {
+  tail call void @llvm.dbg.value(metadata i16** %Pic, i64 0, metadata !84, metadata !635), !dbg !872
+  tail call void @llvm.dbg.value(metadata i32 %y, i64 0, metadata !85, metadata !635), !dbg !873
+  tail call void @llvm.dbg.value(metadata i32 %x, i64 0, metadata !86, metadata !635), !dbg !874
+  tail call void @llvm.dbg.value(metadata i32 %height, i64 0, metadata !87, metadata !635), !dbg !875
+  tail call void @llvm.dbg.value(metadata i32 %width, i64 0, metadata !88, metadata !635), !dbg !876
+  %1 = add nsw i32 %x, 16, !dbg !877
+  %2 = sext i32 %1 to i64, !dbg !878
+  %3 = add nsw i32 %y, 16, !dbg !879
+  %4 = sext i32 %3 to i64, !dbg !878
+  %5 = getelementptr inbounds i16** %Pic, i64 %4, !dbg !878
+  %6 = load i16** %5, align 8, !dbg !878, !tbaa !643
+  %7 = getelementptr inbounds i16* %6, i64 %2, !dbg !878
+  %8 = load i16* %7, align 2, !dbg !878, !tbaa !648
+  ret i16 %8, !dbg !880
 }

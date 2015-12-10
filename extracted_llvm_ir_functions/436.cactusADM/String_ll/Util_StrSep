@@ -1,58 +1,66 @@
 define i8* @Util_StrSep(i8** nocapture %stringp, i8* nocapture readonly %delim) #1 {
-  %1 = load i8** %stringp, align 8, !tbaa !2
-  %2 = tail call i8* @strstr(i8* %1, i8* %delim) #7
-  %3 = icmp eq i8* %2, null
-  br i1 %3, label %25, label %4
+  tail call void @llvm.dbg.value(metadata i8** %stringp, i64 0, metadata !23, metadata !107), !dbg !108
+  tail call void @llvm.dbg.value(metadata i8* %delim, i64 0, metadata !24, metadata !107), !dbg !109
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !25, metadata !107), !dbg !110
+  %1 = load i8** %stringp, align 8, !dbg !111, !tbaa !112
+  tail call void @llvm.dbg.value(metadata i8* %1, i64 0, metadata !27, metadata !107), !dbg !116
+  %2 = tail call i8* @strstr(i8* %1, i8* %delim) #7, !dbg !117
+  tail call void @llvm.dbg.value(metadata i8* %2, i64 0, metadata !28, metadata !107), !dbg !118
+  %3 = icmp eq i8* %2, null, !dbg !119
+  br i1 %3, label %25, label %4, !dbg !121
 
 ; <label>:4                                       ; preds = %0
-  %5 = ptrtoint i8* %2 to i64
-  %6 = ptrtoint i8* %1 to i64
-  %7 = sub i64 %5, %6
-  %8 = icmp sgt i64 %7, -1
-  br i1 %8, label %9, label %15
+  %5 = ptrtoint i8* %2 to i64, !dbg !122
+  %6 = ptrtoint i8* %1 to i64, !dbg !122
+  %7 = sub i64 %5, %6, !dbg !122
+  %8 = icmp sgt i64 %7, -1, !dbg !125
+  br i1 %8, label %9, label %15, !dbg !126
 
 ; <label>:9                                       ; preds = %4
-  %10 = add nsw i64 %7, 1
-  %11 = load i8** @Util_StrSep.retval, align 8, !tbaa !2
-  %12 = tail call i8* @realloc(i8* %11, i64 %10) #7
-  %13 = icmp eq i8* %12, null
-  br i1 %13, label %.thread, label %.thread1
+  %10 = add nsw i64 %7, 1, !dbg !127
+  %11 = load i8** @Util_StrSep.retval, align 8, !dbg !128, !tbaa !112
+  %12 = tail call i8* @realloc(i8* %11, i64 %10) #7, !dbg !130
+  tail call void @llvm.dbg.value(metadata i8* %12, i64 0, metadata !26, metadata !107), !dbg !131
+  %13 = icmp eq i8* %12, null, !dbg !132
+  br i1 %13, label %.thread, label %.thread1, !dbg !134
 
 .thread1:                                         ; preds = %9
-  store i8* %12, i8** @Util_StrSep.retval, align 8, !tbaa !2
-  br label %17
+  store i8* %12, i8** @Util_StrSep.retval, align 8, !dbg !135, !tbaa !112
+  br label %17, !dbg !137
 
 .thread:                                          ; preds = %9
-  %14 = load i8** @Util_StrSep.retval, align 8, !tbaa !2
-  tail call void @free(i8* %14) #8
-  store i8* null, i8** @Util_StrSep.retval, align 8, !tbaa !2
-  br label %27
+  %14 = load i8** @Util_StrSep.retval, align 8, !dbg !138, !tbaa !112
+  tail call void @free(i8* %14) #8, !dbg !140
+  store i8* null, i8** @Util_StrSep.retval, align 8, !dbg !141, !tbaa !112
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !25, metadata !107), !dbg !110
+  br label %27, !dbg !137
 
 ; <label>:15                                      ; preds = %4
-  %.pr = load i8** @Util_StrSep.retval, align 8, !tbaa !2
-  %16 = icmp eq i8* %.pr, null
-  br i1 %16, label %27, label %17
+  %.pr = load i8** @Util_StrSep.retval, align 8, !dbg !142, !tbaa !112
+  %16 = icmp eq i8* %.pr, null, !dbg !142
+  br i1 %16, label %27, label %17, !dbg !137
 
 ; <label>:17                                      ; preds = %.thread1, %15
   %18 = phi i8* [ %12, %.thread1 ], [ %.pr, %15 ]
-  %19 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %18, i1 false)
-  %20 = tail call i8* @__strncpy_chk(i8* %18, i8* %1, i64 %7, i64 %19) #7
-  %21 = load i8** @Util_StrSep.retval, align 8, !tbaa !2
-  %22 = getelementptr inbounds i8* %21, i64 %7
-  store i8 0, i8* %22, align 1, !tbaa !6
-  %23 = tail call i64 @strlen(i8* %delim) #7
-  %24 = getelementptr inbounds i8* %2, i64 %23
-  store i8* %24, i8** %stringp, align 8, !tbaa !2
-  %.pre = load i8** @Util_StrSep.retval, align 8, !tbaa !2
-  br label %27
+  %19 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %18, i1 false), !dbg !144
+  %20 = tail call i8* @__strncpy_chk(i8* %18, i8* %1, i64 %7, i64 %19) #7, !dbg !144
+  %21 = load i8** @Util_StrSep.retval, align 8, !dbg !146, !tbaa !112
+  %22 = getelementptr inbounds i8* %21, i64 %7, !dbg !146
+  store i8 0, i8* %22, align 1, !dbg !147, !tbaa !148
+  %23 = tail call i64 @strlen(i8* %delim) #7, !dbg !149
+  %24 = getelementptr inbounds i8* %2, i64 %23, !dbg !150
+  store i8* %24, i8** %stringp, align 8, !dbg !151, !tbaa !112
+  %.pre = load i8** @Util_StrSep.retval, align 8, !dbg !152, !tbaa !112
+  br label %27, !dbg !153
 
 ; <label>:25                                      ; preds = %0
-  %26 = load i8** @Util_StrSep.retval, align 8, !tbaa !2
-  tail call void @free(i8* %26) #8
-  store i8* null, i8** @Util_StrSep.retval, align 8, !tbaa !2
+  %26 = load i8** @Util_StrSep.retval, align 8, !dbg !154, !tbaa !112
+  tail call void @free(i8* %26) #8, !dbg !156
+  store i8* null, i8** @Util_StrSep.retval, align 8, !dbg !157, !tbaa !112
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !25, metadata !107), !dbg !110
   br label %27
 
 ; <label>:27                                      ; preds = %.thread, %15, %17, %25
   %28 = phi i8* [ null, %.thread ], [ null, %15 ], [ %.pre, %17 ], [ null, %25 ]
-  ret i8* %28
+  ret i8* %28, !dbg !158
 }

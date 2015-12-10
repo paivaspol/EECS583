@@ -1,74 +1,82 @@
 define internal fastcc %struct.PARAM* @ParameterFind(i8* %name, i8* %thorn, i32 %scope) #1 {
-  %1 = load %struct.T_SKTREE** @paramtree, align 8, !tbaa !19
-  %2 = tail call %struct.T_SKTREE* @SKTreeFindNode(%struct.T_SKTREE* %1, i8* %name) #8
-  %3 = icmp eq %struct.T_SKTREE* %2, null
-  br i1 %3, label %.thread, label %ParameterPTreeNodeFind.exit
+  tail call void @llvm.dbg.value(metadata i8* %name, i64 0, metadata !235, metadata !369), !dbg !567
+  tail call void @llvm.dbg.value(metadata i8* %thorn, i64 0, metadata !236, metadata !369), !dbg !568
+  tail call void @llvm.dbg.value(metadata i32 %scope, i64 0, metadata !237, metadata !369), !dbg !569
+  tail call void @llvm.dbg.value(metadata %struct.PARAMLIST* null, i64 0, metadata !239, metadata !369), !dbg !570
+  %1 = load %struct.T_SKTREE** @paramtree, align 8, !dbg !571, !tbaa !480
+  tail call void @llvm.dbg.value(metadata %struct.T_SKTREE* %1, i64 0, metadata !244, metadata !369) #3, !dbg !572
+  tail call void @llvm.dbg.value(metadata i8* %name, i64 0, metadata !245, metadata !369) #3, !dbg !574
+  %2 = tail call %struct.T_SKTREE* @SKTreeFindNode(%struct.T_SKTREE* %1, i8* %name) #8, !dbg !575
+  tail call void @llvm.dbg.value(metadata %struct.T_SKTREE* %2, i64 0, metadata !246, metadata !369) #3, !dbg !576
+  %3 = icmp eq %struct.T_SKTREE* %2, null, !dbg !577
+  br i1 %3, label %.thread, label %ParameterPTreeNodeFind.exit, !dbg !577
 
 ParameterPTreeNodeFind.exit:                      ; preds = %0
-  %4 = getelementptr inbounds %struct.T_SKTREE* %2, i64 0, i32 5
-  %5 = bitcast i8** %4 to %struct.PARAMTREENODE**
-  %6 = load %struct.PARAMTREENODE** %5, align 8, !tbaa !20
-  %7 = icmp eq %struct.PARAMTREENODE* %6, null
-  br i1 %7, label %.thread, label %8
+  %4 = getelementptr inbounds %struct.T_SKTREE* %2, i64 0, i32 5, !dbg !578
+  %5 = bitcast i8** %4 to %struct.PARAMTREENODE**, !dbg !578
+  %6 = load %struct.PARAMTREENODE** %5, align 8, !dbg !578, !tbaa !493
+  tail call void @llvm.dbg.value(metadata %struct.PARAMTREENODE* %6, i64 0, metadata !238, metadata !369), !dbg !579
+  %7 = icmp eq %struct.PARAMTREENODE* %6, null, !dbg !580
+  br i1 %7, label %.thread, label %8, !dbg !582
 
 ; <label>:8                                       ; preds = %ParameterPTreeNodeFind.exit
-  %9 = getelementptr inbounds %struct.PARAMTREENODE* %6, i64 0, i32 0
-  %list.05 = load %struct.PARAMLIST** %9, align 8
-  %10 = icmp eq %struct.PARAMLIST* %list.05, null
-  br i1 %10, label %.thread, label %.lr.ph
+  %9 = getelementptr inbounds %struct.PARAMTREENODE* %6, i64 0, i32 0, !dbg !583
+  %list.05 = load %struct.PARAMLIST** %9, align 8, !dbg !583
+  %10 = icmp eq %struct.PARAMLIST* %list.05, null, !dbg !586
+  br i1 %10, label %.thread, label %.lr.ph, !dbg !586
 
 .lr.ph:                                           ; preds = %8
-  %11 = icmp eq i8* %thorn, null
-  %12 = icmp eq i32 %scope, 5
-  br label %13
+  %11 = icmp eq i8* %thorn, null, !dbg !587
+  %12 = icmp eq i32 %scope, 5, !dbg !591
+  br label %13, !dbg !586
 
 ; <label>:13                                      ; preds = %.lr.ph, %36
   %list.06 = phi %struct.PARAMLIST* [ %list.05, %.lr.ph ], [ %list.0, %36 ]
-  %14 = getelementptr inbounds %struct.PARAMLIST* %list.06, i64 0, i32 0
-  %15 = load %struct.PARAM** %14, align 8, !tbaa !22
-  %16 = getelementptr inbounds %struct.PARAM* %15, i64 0, i32 0
-  %17 = load %struct.PARAM_PROPS** %16, align 8, !tbaa !2
-  br i1 %11, label %18, label %22
+  %14 = getelementptr inbounds %struct.PARAMLIST* %list.06, i64 0, i32 0, !dbg !593
+  %15 = load %struct.PARAM** %14, align 8, !dbg !593, !tbaa !503
+  %16 = getelementptr inbounds %struct.PARAM* %15, i64 0, i32 0, !dbg !596
+  %17 = load %struct.PARAM_PROPS** %16, align 8, !dbg !596, !tbaa !406
+  br i1 %11, label %18, label %22, !dbg !597
 
 ; <label>:18                                      ; preds = %13
-  %19 = getelementptr inbounds %struct.PARAM_PROPS* %17, i64 0, i32 2
-  %20 = load i32* %19, align 4, !tbaa !13
-  %21 = icmp eq i32 %20, 1
-  br i1 %21, label %.thread, label %36
+  %19 = getelementptr inbounds %struct.PARAM_PROPS* %17, i64 0, i32 2, !dbg !598
+  %20 = load i32* %19, align 4, !dbg !598, !tbaa !436
+  %21 = icmp eq i32 %20, 1, !dbg !599
+  br i1 %21, label %.thread, label %36, !dbg !600
 
 ; <label>:22                                      ; preds = %13
-  %23 = getelementptr inbounds %struct.PARAM_PROPS* %17, i64 0, i32 1
-  %24 = load i8** %23, align 8, !tbaa !7
-  %25 = tail call i32 @STR_cmpi(i8* %thorn, i8* %24) #8
-  %26 = icmp eq i32 %25, 0
-  br i1 %12, label %27, label %28
+  %23 = getelementptr inbounds %struct.PARAM_PROPS* %17, i64 0, i32 1, !dbg !601
+  %24 = load i8** %23, align 8, !dbg !601, !tbaa !418
+  %25 = tail call i32 @STR_cmpi(i8* %thorn, i8* %24) #8, !dbg !601
+  %26 = icmp eq i32 %25, 0, !dbg !601
+  br i1 %12, label %27, label %28, !dbg !604
 
 ; <label>:27                                      ; preds = %22
-  br i1 %26, label %._crit_edge, label %36
+  br i1 %26, label %._crit_edge, label %36, !dbg !605
 
 ._crit_edge:                                      ; preds = %27
-  %.pre = load %struct.PARAM** %14, align 8, !tbaa !22
-  br label %.thread
+  %.pre = load %struct.PARAM** %14, align 8, !dbg !606, !tbaa !503
+  br label %.thread, !dbg !605
 
 ; <label>:28                                      ; preds = %22
-  br i1 %26, label %29, label %36
+  br i1 %26, label %29, label %36, !dbg !607
 
 ; <label>:29                                      ; preds = %28
-  %30 = load %struct.PARAM** %14, align 8, !tbaa !22
-  %31 = getelementptr inbounds %struct.PARAM* %30, i64 0, i32 0
-  %32 = load %struct.PARAM_PROPS** %31, align 8, !tbaa !2
-  %33 = getelementptr inbounds %struct.PARAM_PROPS* %32, i64 0, i32 2
-  %34 = load i32* %33, align 4, !tbaa !13
-  %35 = icmp eq i32 %34, %scope
-  br i1 %35, label %.thread, label %36
+  %30 = load %struct.PARAM** %14, align 8, !dbg !609, !tbaa !503
+  %31 = getelementptr inbounds %struct.PARAM* %30, i64 0, i32 0, !dbg !610
+  %32 = load %struct.PARAM_PROPS** %31, align 8, !dbg !610, !tbaa !406
+  %33 = getelementptr inbounds %struct.PARAM_PROPS* %32, i64 0, i32 2, !dbg !611
+  %34 = load i32* %33, align 4, !dbg !611, !tbaa !436
+  %35 = icmp eq i32 %34, %scope, !dbg !612
+  br i1 %35, label %.thread, label %36, !dbg !613
 
 ; <label>:36                                      ; preds = %27, %28, %18, %29
-  %37 = getelementptr inbounds %struct.PARAMLIST* %list.06, i64 0, i32 2
-  %list.0 = load %struct.PARAMLIST** %37, align 8
-  %38 = icmp eq %struct.PARAMLIST* %list.0, null
-  br i1 %38, label %.thread, label %13
+  %37 = getelementptr inbounds %struct.PARAMLIST* %list.06, i64 0, i32 2, !dbg !614
+  %list.0 = load %struct.PARAMLIST** %37, align 8, !dbg !583
+  %38 = icmp eq %struct.PARAMLIST* %list.0, null, !dbg !586
+  br i1 %38, label %.thread, label %13, !dbg !586
 
 .thread:                                          ; preds = %36, %18, %29, %8, %._crit_edge, %0, %ParameterPTreeNodeFind.exit
-  %39 = phi %struct.PARAM* [ null, %ParameterPTreeNodeFind.exit ], [ null, %0 ], [ %.pre, %._crit_edge ], [ null, %8 ], [ null, %36 ], [ %15, %18 ], [ %30, %29 ]
-  ret %struct.PARAM* %39
+  %39 = phi %struct.PARAM* [ null, %ParameterPTreeNodeFind.exit ], [ null, %0 ], [ %.pre, %._crit_edge ], [ null, %8 ], [ null, %36 ], [ %15, %18 ], [ %30, %29 ], !dbg !615
+  ret %struct.PARAM* %39, !dbg !616
 }

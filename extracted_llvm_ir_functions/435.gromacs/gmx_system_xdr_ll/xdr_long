@@ -1,39 +1,41 @@
 define i32 @xdr_long(%struct.XDR* %xdrs, i64* %lp) #0 {
-  %1 = getelementptr inbounds %struct.XDR* %xdrs, i64 0, i32 0
-  %2 = load i32* %1, align 4, !tbaa !2
+  tail call void @llvm.dbg.value(metadata %struct.XDR* %xdrs, i64 0, metadata !161, metadata !360), !dbg !422
+  tail call void @llvm.dbg.value(metadata i64* %lp, i64 0, metadata !162, metadata !360), !dbg !423
+  %1 = getelementptr inbounds %struct.XDR* %xdrs, i64 0, i32 0, !dbg !424
+  %2 = load i32* %1, align 4, !dbg !424, !tbaa !366
   switch i32 %2, label %thread-pre-split.thread [
     i32 0, label %3
     i32 1, label %13
     i32 2, label %19
-  ]
+  ], !dbg !426
 
 ; <label>:3                                       ; preds = %0
-  %4 = load i64* %lp, align 8, !tbaa !9
-  %sext = shl i64 %4, 32
-  %5 = ashr exact i64 %sext, 32
-  %6 = icmp eq i64 %5, %4
-  br i1 %6, label %7, label %thread-pre-split.thread
+  %4 = load i64* %lp, align 8, !dbg !427, !tbaa !386
+  %sext = shl i64 %4, 32, !dbg !428
+  %5 = ashr exact i64 %sext, 32, !dbg !428
+  %6 = icmp eq i64 %5, %4, !dbg !429
+  br i1 %6, label %7, label %thread-pre-split.thread, !dbg !430
 
 ; <label>:7                                       ; preds = %3
-  %8 = getelementptr inbounds %struct.XDR* %xdrs, i64 0, i32 1
-  %9 = load %struct.xdr_ops** %8, align 8, !tbaa !11
-  %10 = getelementptr inbounds %struct.xdr_ops* %9, i64 0, i32 1
-  %11 = load i32 (%struct.XDR*, i64*)** %10, align 8, !tbaa !12
-  %12 = tail call i32 %11(%struct.XDR* %xdrs, i64* %lp) #6
-  br label %19
+  %8 = getelementptr inbounds %struct.XDR* %xdrs, i64 0, i32 1, !dbg !431
+  %9 = load %struct.xdr_ops** %8, align 8, !dbg !431, !tbaa !389
+  %10 = getelementptr inbounds %struct.xdr_ops* %9, i64 0, i32 1, !dbg !431
+  %11 = load i32 (%struct.XDR*, i64*)** %10, align 8, !dbg !431, !tbaa !390
+  %12 = tail call i32 %11(%struct.XDR* %xdrs, i64* %lp) #7, !dbg !431
+  br label %19, !dbg !432
 
 ; <label>:13                                      ; preds = %0
-  %14 = getelementptr inbounds %struct.XDR* %xdrs, i64 0, i32 1
-  %15 = load %struct.xdr_ops** %14, align 8, !tbaa !11
-  %16 = getelementptr inbounds %struct.xdr_ops* %15, i64 0, i32 0
-  %17 = load i32 (%struct.XDR*, i64*)** %16, align 8, !tbaa !14
-  %18 = tail call i32 %17(%struct.XDR* %xdrs, i64* %lp) #6
-  br label %19
+  %14 = getelementptr inbounds %struct.XDR* %xdrs, i64 0, i32 1, !dbg !433
+  %15 = load %struct.xdr_ops** %14, align 8, !dbg !433, !tbaa !389
+  %16 = getelementptr inbounds %struct.xdr_ops* %15, i64 0, i32 0, !dbg !433
+  %17 = load i32 (%struct.XDR*, i64*)** %16, align 8, !dbg !433, !tbaa !395
+  %18 = tail call i32 %17(%struct.XDR* %xdrs, i64* %lp) #7, !dbg !433
+  br label %19, !dbg !435
 
 thread-pre-split.thread:                          ; preds = %0, %3
-  br label %19
+  br label %19, !dbg !436
 
 ; <label>:19                                      ; preds = %0, %thread-pre-split.thread, %13, %7
   %.0 = phi i32 [ %12, %7 ], [ %18, %13 ], [ 0, %thread-pre-split.thread ], [ 1, %0 ]
-  ret i32 %.0
+  ret i32 %.0, !dbg !437
 }

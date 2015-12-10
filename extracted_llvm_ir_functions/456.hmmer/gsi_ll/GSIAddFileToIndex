@@ -1,53 +1,54 @@
 define void @GSIAddFileToIndex(%struct.gsiindex_s* nocapture %g, i8* %filename, i32 %fmt) #0 {
-entry:
-  %call = tail call i64 @strlen(i8* %filename) #7
-  %conv = trunc i64 %call to i32
-  %cmp = icmp sgt i32 %conv, 31
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata %struct.gsiindex_s* %g, i64 0, metadata !160, metadata !226), !dbg !460
+  tail call void @llvm.dbg.value(metadata i8* %filename, i64 0, metadata !161, metadata !226), !dbg !461
+  tail call void @llvm.dbg.value(metadata i32 %fmt, i64 0, metadata !162, metadata !226), !dbg !462
+  %1 = tail call i64 @strlen(i8* %filename) #7, !dbg !463
+  %2 = trunc i64 %1 to i32, !dbg !463
+  tail call void @llvm.dbg.value(metadata i32 %2, i64 0, metadata !163, metadata !226), !dbg !464
+  %3 = icmp sgt i32 %2, 31, !dbg !465
+  br i1 %3, label %4, label %5, !dbg !467
 
-if.then:                                          ; preds = %entry
-  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([34 x i8]* @.str3, i64 0, i64 0)) #6
-  br label %if.end
+; <label>:4                                       ; preds = %0
+  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([34 x i8]* @.str3, i64 0, i64 0)) #7, !dbg !468
+  br label %5, !dbg !468
 
-if.end:                                           ; preds = %if.then, %entry
-  %call2 = tail call i8* @sre_strdup(i8* %filename, i32 %conv) #6
-  %nfiles = getelementptr inbounds %struct.gsiindex_s* %g, i64 0, i32 2
-  %0 = load i16* %nfiles, align 2, !tbaa !4
-  %idxprom = zext i16 %0 to i64
-  %filenames = getelementptr inbounds %struct.gsiindex_s* %g, i64 0, i32 0
-  %1 = load i8*** %filenames, align 8, !tbaa !0
-  %arrayidx = getelementptr inbounds i8** %1, i64 %idxprom
-  store i8* %call2, i8** %arrayidx, align 8, !tbaa !0
-  %fmt5 = getelementptr inbounds %struct.gsiindex_s* %g, i64 0, i32 1
-  %2 = load i32** %fmt5, align 8, !tbaa !0
-  %arrayidx6 = getelementptr inbounds i32* %2, i64 %idxprom
-  store i32 %fmt, i32* %arrayidx6, align 4, !tbaa !3
-  %inc = add i16 %0, 1
-  store i16 %inc, i16* %nfiles, align 2, !tbaa !4
-  %3 = urem i16 %inc, 10
-  %cmp10 = icmp eq i16 %3, 0
-  br i1 %cmp10, label %if.then12, label %if.end27
+; <label>:5                                       ; preds = %4, %0
+  %6 = tail call i8* @sre_strdup(i8* %filename, i32 %2) #7, !dbg !469
+  %7 = getelementptr inbounds %struct.gsiindex_s* %g, i64 0, i32 2, !dbg !470
+  %8 = load i16* %7, align 2, !dbg !470, !tbaa !435
+  %9 = zext i16 %8 to i64, !dbg !471
+  %10 = getelementptr inbounds %struct.gsiindex_s* %g, i64 0, i32 0, !dbg !472
+  %11 = load i8*** %10, align 8, !dbg !472, !tbaa !423
+  %12 = getelementptr inbounds i8** %11, i64 %9, !dbg !471
+  store i8* %6, i8** %12, align 8, !dbg !473, !tbaa !449
+  %13 = getelementptr inbounds %struct.gsiindex_s* %g, i64 0, i32 1, !dbg !474
+  %14 = load i32** %13, align 8, !dbg !474, !tbaa !428
+  %15 = getelementptr inbounds i32* %14, i64 %9, !dbg !475
+  store i32 %fmt, i32* %15, align 4, !dbg !476, !tbaa !248
+  %16 = add i16 %8, 1, !dbg !477
+  store i16 %16, i16* %7, align 2, !dbg !477, !tbaa !435
+  %17 = urem i16 %16, 10, !dbg !478
+  %18 = icmp eq i16 %17, 0, !dbg !480
+  br i1 %18, label %19, label %33, !dbg !481
 
-if.then12:                                        ; preds = %if.end
-  %conv9 = zext i16 %inc to i64
-  %4 = load i8*** %filenames, align 8, !tbaa !0
-  %5 = bitcast i8** %4 to i8*
-  %add = shl nuw nsw i64 %conv9, 3
-  %mul = add i64 %add, 80
-  %call17 = tail call i8* @sre_realloc(i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i32 229, i8* %5, i64 %mul) #6
-  %6 = bitcast i8* %call17 to i8**
-  store i8** %6, i8*** %filenames, align 8, !tbaa !0
-  %7 = load i32** %fmt5, align 8, !tbaa !0
-  %8 = bitcast i32* %7 to i8*
-  %9 = load i16* %nfiles, align 2, !tbaa !4
-  %conv21 = zext i16 %9 to i64
-  %add22 = shl nuw nsw i64 %conv21, 2
-  %mul24 = add i64 %add22, 40
-  %call25 = tail call i8* @sre_realloc(i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i32 230, i8* %8, i64 %mul24) #6
-  %10 = bitcast i8* %call25 to i32*
-  store i32* %10, i32** %fmt5, align 8, !tbaa !0
-  br label %if.end27
+; <label>:19                                      ; preds = %5
+  %20 = zext i16 %16 to i64, !dbg !482
+  %21 = bitcast %struct.gsiindex_s* %g to i8**, !dbg !483
+  %22 = load i8** %21, align 8, !dbg !483, !tbaa !423
+  %23 = shl nuw nsw i64 %20, 3, !dbg !483
+  %24 = add nuw nsw i64 %23, 80, !dbg !483
+  %25 = tail call i8* @sre_realloc(i8* getelementptr inbounds ([61 x i8]* @.str, i64 0, i64 0), i32 229, i8* %22, i64 %24) #7, !dbg !483
+  store i8* %25, i8** %21, align 8, !dbg !485, !tbaa !423
+  %26 = bitcast i32** %13 to i8**, !dbg !486
+  %27 = load i8** %26, align 8, !dbg !486, !tbaa !428
+  %28 = load i16* %7, align 2, !dbg !486, !tbaa !435
+  %29 = zext i16 %28 to i64, !dbg !486
+  %30 = shl nuw nsw i64 %29, 2, !dbg !486
+  %31 = add nuw nsw i64 %30, 40, !dbg !486
+  %32 = tail call i8* @sre_realloc(i8* getelementptr inbounds ([61 x i8]* @.str, i64 0, i64 0), i32 230, i8* %27, i64 %31) #7, !dbg !486
+  store i8* %32, i8** %26, align 8, !dbg !487, !tbaa !428
+  br label %33, !dbg !488
 
-if.end27:                                         ; preds = %if.then12, %if.end
-  ret void
+; <label>:33                                      ; preds = %19, %5
+  ret void, !dbg !489
 }

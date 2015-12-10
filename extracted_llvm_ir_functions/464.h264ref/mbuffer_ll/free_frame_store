@@ -1,45 +1,45 @@
 define void @free_frame_store(%struct.frame_store* %f) #1 {
-entry:
-  %tobool = icmp eq %struct.frame_store* %f, null
-  br i1 %tobool, label %if.end15, label %if.then
+  tail call void @llvm.dbg.value(metadata %struct.frame_store* %f, i64 0, metadata !162, metadata !1408), !dbg !1594
+  %1 = icmp eq %struct.frame_store* %f, null, !dbg !1595
+  br i1 %1, label %19, label %2, !dbg !1597
 
-if.then:                                          ; preds = %entry
-  %frame = getelementptr inbounds %struct.frame_store* %f, i64 0, i32 10
-  %0 = load %struct.storable_picture** %frame, align 8, !tbaa !0
-  %tobool1 = icmp eq %struct.storable_picture* %0, null
-  br i1 %tobool1, label %if.end, label %if.then2
+; <label>:2                                       ; preds = %0
+  %3 = getelementptr inbounds %struct.frame_store* %f, i64 0, i32 10, !dbg !1598
+  %4 = load %struct.storable_picture** %3, align 8, !dbg !1598, !tbaa !1601
+  %5 = icmp eq %struct.storable_picture* %4, null, !dbg !1603
+  br i1 %5, label %7, label %6, !dbg !1604
 
-if.then2:                                         ; preds = %if.then
-  tail call void @free_storable_picture(%struct.storable_picture* %0) #7
-  store %struct.storable_picture* null, %struct.storable_picture** %frame, align 8, !tbaa !0
-  br label %if.end
+; <label>:6                                       ; preds = %2
+  tail call void @free_storable_picture(%struct.storable_picture* %4) #9, !dbg !1605
+  store %struct.storable_picture* null, %struct.storable_picture** %3, align 8, !dbg !1607, !tbaa !1601
+  br label %7, !dbg !1608
 
-if.end:                                           ; preds = %if.then, %if.then2
-  %top_field = getelementptr inbounds %struct.frame_store* %f, i64 0, i32 11
-  %1 = load %struct.storable_picture** %top_field, align 8, !tbaa !0
-  %tobool5 = icmp eq %struct.storable_picture* %1, null
-  br i1 %tobool5, label %if.end9, label %if.then6
+; <label>:7                                       ; preds = %2, %6
+  %8 = getelementptr inbounds %struct.frame_store* %f, i64 0, i32 11, !dbg !1609
+  %9 = load %struct.storable_picture** %8, align 8, !dbg !1609, !tbaa !1611
+  %10 = icmp eq %struct.storable_picture* %9, null, !dbg !1612
+  br i1 %10, label %12, label %11, !dbg !1613
 
-if.then6:                                         ; preds = %if.end
-  tail call void @free_storable_picture(%struct.storable_picture* %1) #7
-  store %struct.storable_picture* null, %struct.storable_picture** %top_field, align 8, !tbaa !0
-  br label %if.end9
+; <label>:11                                      ; preds = %7
+  tail call void @free_storable_picture(%struct.storable_picture* %9) #9, !dbg !1614
+  store %struct.storable_picture* null, %struct.storable_picture** %8, align 8, !dbg !1616, !tbaa !1611
+  br label %12, !dbg !1617
 
-if.end9:                                          ; preds = %if.end, %if.then6
-  %bottom_field = getelementptr inbounds %struct.frame_store* %f, i64 0, i32 12
-  %2 = load %struct.storable_picture** %bottom_field, align 8, !tbaa !0
-  %tobool10 = icmp eq %struct.storable_picture* %2, null
-  br i1 %tobool10, label %if.end14, label %if.then11
+; <label>:12                                      ; preds = %7, %11
+  %13 = getelementptr inbounds %struct.frame_store* %f, i64 0, i32 12, !dbg !1618
+  %14 = load %struct.storable_picture** %13, align 8, !dbg !1618, !tbaa !1620
+  %15 = icmp eq %struct.storable_picture* %14, null, !dbg !1621
+  br i1 %15, label %17, label %16, !dbg !1622
 
-if.then11:                                        ; preds = %if.end9
-  tail call void @free_storable_picture(%struct.storable_picture* %2) #7
-  br label %if.end14
+; <label>:16                                      ; preds = %12
+  tail call void @free_storable_picture(%struct.storable_picture* %14) #9, !dbg !1623
+  br label %17, !dbg !1625
 
-if.end14:                                         ; preds = %if.end9, %if.then11
-  %3 = bitcast %struct.frame_store* %f to i8*
-  tail call void @free(i8* %3) #6
-  br label %if.end15
+; <label>:17                                      ; preds = %12, %16
+  %18 = bitcast %struct.frame_store* %f to i8*, !dbg !1626
+  tail call void @free(i8* %18) #9, !dbg !1627
+  br label %19, !dbg !1628
 
-if.end15:                                         ; preds = %entry, %if.end14
-  ret void
+; <label>:19                                      ; preds = %0, %17
+  ret void, !dbg !1629
 }

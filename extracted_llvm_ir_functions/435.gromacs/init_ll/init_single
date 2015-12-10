@@ -3,60 +3,73 @@ define void @init_single(%struct.__sFILE* %log, %struct.t_parm* %parm, i8* %tpxf
   %natoms = alloca i32, align 4
   %t = alloca float, align 4
   %lambda = alloca float, align 4
-  %1 = tail call i8* @save_calloc(i8* getelementptr inbounds ([4 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([64 x i8]* @.str2, i64 0, i64 0), i32 110, i32 1, i32 40) #8
-  %2 = bitcast i8* %1 to %struct.t_tpxheader*
-  tail call void @read_tpxheader(i8* %tpxfile, %struct.t_tpxheader* %2) #8
-  %3 = getelementptr inbounds i8* %1, i64 24
-  %4 = bitcast i8* %3 to i32*
-  %5 = load i32* %4, align 4, !tbaa !10
-  %6 = tail call i8* @save_calloc(i8* getelementptr inbounds ([3 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([64 x i8]* @.str2, i64 0, i64 0), i32 113, i32 %5, i32 12) #8
-  %7 = bitcast [3 x float]** %x to i8**
-  store i8* %6, i8** %7, align 8, !tbaa !12
-  %8 = load i32* %4, align 4, !tbaa !10
-  %9 = tail call i8* @save_calloc(i8* getelementptr inbounds ([3 x i8]* @.str4, i64 0, i64 0), i8* getelementptr inbounds ([64 x i8]* @.str2, i64 0, i64 0), i32 114, i32 %8, i32 12) #8
-  %10 = bitcast [3 x float]** %v to i8**
-  store i8* %9, i8** %10, align 8, !tbaa !12
-  tail call void @save_free(i8* getelementptr inbounds ([4 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([64 x i8]* @.str2, i64 0, i64 0), i32 116, i8* %1) #8
-  %11 = getelementptr inbounds %struct.t_parm* %parm, i64 0, i32 0
-  %12 = getelementptr inbounds %struct.t_parm* %parm, i64 0, i32 1, i64 0
-  %13 = load [3 x float]** %x, align 8, !tbaa !12
-  %14 = load [3 x float]** %v, align 8, !tbaa !12
-  call void @read_tpx(i8* %tpxfile, i32* %step, float* %t, float* %lambda, %struct.t_inputrec* %11, [3 x float]* %12, i32* %natoms, [3 x float]* %13, [3 x float]* %14, [3 x float]* null, %struct.t_topology* %top) #8
-  call void @check_nnodes_top(i8* %tpxfile, %struct.t_topology* %top, i32 1) #9
-  %15 = getelementptr inbounds %struct.t_topology* %top, i64 0, i32 2
-  %16 = getelementptr inbounds %struct.t_parm* %parm, i64 0, i32 0, i32 80, i32 8
-  %17 = load [3 x i32]** %16, align 8, !tbaa !14
-  %18 = getelementptr inbounds %struct.t_parm* %parm, i64 0, i32 0, i32 0
-  %19 = load i32* %18, align 4, !tbaa !18
-  %20 = icmp eq i32 %19, 3
-  %21 = zext i1 %20 to i32
-  %22 = getelementptr inbounds %struct.t_parm* %parm, i64 0, i32 0, i32 15
-  %23 = load float* %22, align 4, !tbaa !19
-  %24 = getelementptr inbounds %struct.t_parm* %parm, i64 0, i32 0, i32 69
-  %25 = load float* %24, align 4, !tbaa !20
-  %26 = getelementptr inbounds %struct.t_parm* %parm, i64 0, i32 0, i32 80, i32 6
-  %27 = load float** %26, align 8, !tbaa !21
-  %28 = getelementptr inbounds %struct.t_parm* %parm, i64 0, i32 0, i32 46
-  %29 = load i32* %28, align 4, !tbaa !22
-  %30 = icmp ne i32 %29, 0
-  %31 = zext i1 %30 to i32
-  %32 = call %struct.t_mdatoms* @atoms2md(%struct.__sFILE* %log, %struct.t_atoms* %15, [3 x i32]* %17, i32 %21, float %23, float %25, float* %27, i32 %31, i32 0) #8
-  store %struct.t_mdatoms* %32, %struct.t_mdatoms** %mdatoms, align 8, !tbaa !12
-  %33 = icmp eq %struct.__sFILE* %log, null
-  br i1 %33, label %.critedge, label %34
+  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %log, i64 0, metadata !643, metadata !752), !dbg !907
+  tail call void @llvm.dbg.value(metadata %struct.t_parm* %parm, i64 0, metadata !644, metadata !752), !dbg !908
+  tail call void @llvm.dbg.value(metadata i8* %tpxfile, i64 0, metadata !645, metadata !752), !dbg !909
+  tail call void @llvm.dbg.value(metadata %struct.t_topology* %top, i64 0, metadata !646, metadata !752), !dbg !910
+  tail call void @llvm.dbg.value(metadata [3 x float]** %x, i64 0, metadata !647, metadata !752), !dbg !911
+  tail call void @llvm.dbg.value(metadata [3 x float]** %v, i64 0, metadata !648, metadata !752), !dbg !912
+  tail call void @llvm.dbg.value(metadata %struct.t_mdatoms** %mdatoms, i64 0, metadata !649, metadata !752), !dbg !913
+  tail call void @llvm.dbg.value(metadata %struct.t_nsborder* %nsb, i64 0, metadata !650, metadata !752), !dbg !914
+  %1 = tail call i8* @save_calloc(i8* getelementptr inbounds ([4 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([64 x i8]* @.str2, i64 0, i64 0), i32 110, i32 1, i32 40) #8, !dbg !915
+  %2 = bitcast i8* %1 to %struct.t_tpxheader*, !dbg !915
+  tail call void @llvm.dbg.value(metadata %struct.t_tpxheader* %2, i64 0, metadata !655, metadata !752), !dbg !916
+  tail call void @read_tpxheader(i8* %tpxfile, %struct.t_tpxheader* %2) #8, !dbg !917
+  %3 = getelementptr inbounds i8* %1, i64 24, !dbg !918
+  %4 = bitcast i8* %3 to i32*, !dbg !918
+  %5 = load i32* %4, align 4, !dbg !918, !tbaa !919
+  %6 = tail call i8* @save_calloc(i8* getelementptr inbounds ([3 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([64 x i8]* @.str2, i64 0, i64 0), i32 113, i32 %5, i32 12) #8, !dbg !918
+  %7 = bitcast [3 x float]** %x to i8**, !dbg !918
+  store i8* %6, i8** %7, align 8, !dbg !918, !tbaa !921
+  %8 = load i32* %4, align 4, !dbg !923, !tbaa !919
+  %9 = tail call i8* @save_calloc(i8* getelementptr inbounds ([3 x i8]* @.str4, i64 0, i64 0), i8* getelementptr inbounds ([64 x i8]* @.str2, i64 0, i64 0), i32 114, i32 %8, i32 12) #8, !dbg !923
+  %10 = bitcast [3 x float]** %v to i8**, !dbg !923
+  store i8* %9, i8** %10, align 8, !dbg !923, !tbaa !921
+  tail call void @save_free(i8* getelementptr inbounds ([4 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([64 x i8]* @.str2, i64 0, i64 0), i32 116, i8* %1) #8, !dbg !924
+  %11 = getelementptr inbounds %struct.t_parm* %parm, i64 0, i32 0, !dbg !925
+  %12 = getelementptr inbounds %struct.t_parm* %parm, i64 0, i32 1, i64 0, !dbg !926
+  %13 = load [3 x float]** %x, align 8, !dbg !927, !tbaa !921
+  %14 = load [3 x float]** %v, align 8, !dbg !928, !tbaa !921
+  tail call void @llvm.dbg.value(metadata i32* %step, i64 0, metadata !651, metadata !752), !dbg !929
+  tail call void @llvm.dbg.value(metadata i32* %natoms, i64 0, metadata !652, metadata !752), !dbg !930
+  tail call void @llvm.dbg.value(metadata float* %t, i64 0, metadata !653, metadata !752), !dbg !931
+  tail call void @llvm.dbg.value(metadata float* %lambda, i64 0, metadata !654, metadata !752), !dbg !932
+  call void @read_tpx(i8* %tpxfile, i32* %step, float* %t, float* %lambda, %struct.t_inputrec* %11, [3 x float]* %12, i32* %natoms, [3 x float]* %13, [3 x float]* %14, [3 x float]* null, %struct.t_topology* %top) #8, !dbg !933
+  call void @check_nnodes_top(i8* %tpxfile, %struct.t_topology* %top, i32 1) #9, !dbg !934
+  %15 = getelementptr inbounds %struct.t_topology* %top, i64 0, i32 2, !dbg !935
+  %16 = getelementptr inbounds %struct.t_parm* %parm, i64 0, i32 0, i32 80, i32 8, !dbg !936
+  %17 = load [3 x i32]** %16, align 8, !dbg !936, !tbaa !937
+  %18 = getelementptr inbounds %struct.t_parm* %parm, i64 0, i32 0, i32 0, !dbg !941
+  %19 = load i32* %18, align 4, !dbg !941, !tbaa !942
+  %20 = icmp eq i32 %19, 3, !dbg !943
+  %21 = zext i1 %20 to i32, !dbg !943
+  %22 = getelementptr inbounds %struct.t_parm* %parm, i64 0, i32 0, i32 15, !dbg !944
+  %23 = load float* %22, align 4, !dbg !944, !tbaa !945
+  %24 = getelementptr inbounds %struct.t_parm* %parm, i64 0, i32 0, i32 69, !dbg !946
+  %25 = load float* %24, align 4, !dbg !946, !tbaa !947
+  %26 = getelementptr inbounds %struct.t_parm* %parm, i64 0, i32 0, i32 80, i32 6, !dbg !948
+  %27 = load float** %26, align 8, !dbg !948, !tbaa !949
+  %28 = getelementptr inbounds %struct.t_parm* %parm, i64 0, i32 0, i32 46, !dbg !950
+  %29 = load i32* %28, align 4, !dbg !950, !tbaa !951
+  %30 = icmp ne i32 %29, 0, !dbg !952
+  %31 = zext i1 %30 to i32, !dbg !952
+  %32 = call %struct.t_mdatoms* @atoms2md(%struct.__sFILE* %log, %struct.t_atoms* %15, [3 x i32]* %17, i32 %21, float %23, float %25, float* %27, i32 %31, i32 0) #8, !dbg !953
+  store %struct.t_mdatoms* %32, %struct.t_mdatoms** %mdatoms, align 8, !dbg !954, !tbaa !921
+  %33 = icmp eq %struct.__sFILE* %log, null, !dbg !955
+  br i1 %33, label %.critedge, label %34, !dbg !957
 
 ; <label>:34                                      ; preds = %0
-  call void @pr_inputrec(%struct.__sFILE* %log, i32 0, i8* getelementptr inbounds ([17 x i8]* @.str5, i64 0, i64 0), %struct.t_inputrec* %11) #8
-  %35 = getelementptr inbounds %struct.t_topology* %top, i64 0, i32 3, i64 0
-  call void @calc_nsb(%struct.__sFILE* %log, %struct.t_block* %35, i32 1, %struct.t_nsborder* %nsb, i32 0) #8
-  call void @print_nsb(%struct.__sFILE* %log, i8* getelementptr inbounds ([23 x i8]* @.str6, i64 0, i64 0), %struct.t_nsborder* %nsb) #8
-  br label %37
+  call void @pr_inputrec(%struct.__sFILE* %log, i32 0, i8* getelementptr inbounds ([17 x i8]* @.str5, i64 0, i64 0), %struct.t_inputrec* %11) #8, !dbg !958
+  %35 = getelementptr inbounds %struct.t_topology* %top, i64 0, i32 3, i64 0, !dbg !959
+  call void @calc_nsb(%struct.__sFILE* %log, %struct.t_block* %35, i32 1, %struct.t_nsborder* %nsb, i32 0) #8, !dbg !960
+  call void @print_nsb(%struct.__sFILE* %log, i8* getelementptr inbounds ([23 x i8]* @.str6, i64 0, i64 0), %struct.t_nsborder* %nsb) #8, !dbg !961
+  br label %37, !dbg !961
 
 .critedge:                                        ; preds = %0
-  %36 = getelementptr inbounds %struct.t_topology* %top, i64 0, i32 3, i64 0
-  call void @calc_nsb(%struct.__sFILE* null, %struct.t_block* %36, i32 1, %struct.t_nsborder* %nsb, i32 0) #8
+  %36 = getelementptr inbounds %struct.t_topology* %top, i64 0, i32 3, i64 0, !dbg !959
+  call void @calc_nsb(%struct.__sFILE* null, %struct.t_block* %36, i32 1, %struct.t_nsborder* %nsb, i32 0) #8, !dbg !960
   br label %37
 
 ; <label>:37                                      ; preds = %.critedge, %34
-  ret void
+  ret void, !dbg !963
 }

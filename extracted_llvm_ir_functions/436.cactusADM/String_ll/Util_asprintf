@@ -1,24 +1,28 @@
 define i32 @Util_asprintf(i8** nocapture %buffer, i8* %fmt, ...) #1 {
   %args = alloca [1 x %struct.__va_list_tag], align 16
-  %1 = getelementptr inbounds [1 x %struct.__va_list_tag]* %args, i64 0, i64 0
-  %2 = bitcast [1 x %struct.__va_list_tag]* %args to i8*
-  call void @llvm.va_start(i8* %2)
-  %3 = call i32 @Util_vsnprintf(i8* null, i64 0, i8* %fmt, %struct.__va_list_tag* %1) #7
-  %4 = add nsw i32 %3, 1
-  %5 = sext i32 %4 to i64
-  %6 = call i8* @malloc(i64 %5) #7
-  store i8* %6, i8** %buffer, align 8, !tbaa !2
-  %7 = icmp eq i8* %6, null
-  br i1 %7, label %11, label %8
+  tail call void @llvm.dbg.value(metadata i8** %buffer, i64 0, metadata !65, metadata !107), !dbg !273
+  tail call void @llvm.dbg.value(metadata i8* %fmt, i64 0, metadata !66, metadata !107), !dbg !274
+  tail call void @llvm.dbg.declare(metadata [1 x %struct.__va_list_tag]* %args, metadata !68, metadata !107), !dbg !275
+  %1 = getelementptr inbounds [1 x %struct.__va_list_tag]* %args, i64 0, i64 0, !dbg !276
+  %2 = bitcast [1 x %struct.__va_list_tag]* %args to i8*, !dbg !276
+  call void @llvm.va_start(i8* %2), !dbg !276
+  %3 = call i32 @Util_vsnprintf(i8* null, i64 0, i8* %fmt, %struct.__va_list_tag* %1) #7, !dbg !277
+  call void @llvm.dbg.value(metadata i32 %3, i64 0, metadata !67, metadata !107), !dbg !278
+  %4 = add nsw i32 %3, 1, !dbg !279
+  %5 = sext i32 %4 to i64, !dbg !280
+  %6 = call i8* @malloc(i64 %5) #7, !dbg !281
+  store i8* %6, i8** %buffer, align 8, !dbg !282, !tbaa !112
+  %7 = icmp eq i8* %6, null, !dbg !283
+  br i1 %7, label %11, label %8, !dbg !285
 
 ; <label>:8                                       ; preds = %0
-  call void @llvm.va_start(i8* %2)
-  %9 = load i8** %buffer, align 8, !tbaa !2
-  %10 = call i32 @Util_vsnprintf(i8* %9, i64 %5, i8* %fmt, %struct.__va_list_tag* %1) #7
-  call void @llvm.va_end(i8* %2)
-  br label %11
+  call void @llvm.va_start(i8* %2), !dbg !286
+  %9 = load i8** %buffer, align 8, !dbg !288, !tbaa !112
+  %10 = call i32 @Util_vsnprintf(i8* %9, i64 %5, i8* %fmt, %struct.__va_list_tag* %1) #7, !dbg !289
+  call void @llvm.va_end(i8* %2), !dbg !290
+  br label %11, !dbg !291
 
 ; <label>:11                                      ; preds = %0, %8
   %count.0 = phi i32 [ %3, %8 ], [ 0, %0 ]
-  ret i32 %count.0
+  ret i32 %count.0, !dbg !292
 }

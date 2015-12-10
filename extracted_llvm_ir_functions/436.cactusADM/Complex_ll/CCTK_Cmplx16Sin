@@ -1,20 +1,26 @@
 define { double, double } @CCTK_Cmplx16Sin(double %complex_number.coerce0, double %complex_number.coerce1) #0 {
-  %1 = fcmp oeq double %complex_number.coerce1, 0.000000e+00
-  %2 = tail call double @sin(double %complex_number.coerce0) #5
-  br i1 %1, label %9, label %3
+  tail call void @llvm.dbg.value(metadata double %complex_number.coerce0, i64 0, metadata !141, metadata !288), !dbg !298
+  tail call void @llvm.dbg.value(metadata double %complex_number.coerce1, i64 0, metadata !141, metadata !289), !dbg !298
+  tail call void @llvm.dbg.declare(metadata %struct.CCTK_COMPLEX16* undef, metadata !141, metadata !243), !dbg !298
+  tail call void @llvm.dbg.declare(metadata %struct.CCTK_COMPLEX16* undef, metadata !142, metadata !243), !dbg !298
+  %1 = fcmp oeq double %complex_number.coerce1, 0.000000e+00, !dbg !299
+  %2 = tail call double @sin(double %complex_number.coerce0) #6, !dbg !301
+  br i1 %1, label %9, label %3, !dbg !298
 
 ; <label>:3                                       ; preds = %0
-  %4 = tail call double @cosh(double %complex_number.coerce1) #5
-  %5 = fmul double %2, %4
-  %6 = tail call double @cos(double %complex_number.coerce0) #5
-  %7 = tail call double @sinh(double %complex_number.coerce1) #5
-  %8 = fmul double %6, %7
+  %4 = tail call double @cosh(double %complex_number.coerce1) #6, !dbg !303
+  %5 = fmul double %2, %4, !dbg !303
+  tail call void @llvm.dbg.value(metadata double %5, i64 0, metadata !142, metadata !288), !dbg !298
+  %6 = tail call double @cos(double %complex_number.coerce0) #6, !dbg !303
+  %7 = tail call double @sinh(double %complex_number.coerce1) #6, !dbg !303
+  %8 = fmul double %6, %7, !dbg !303
+  tail call void @llvm.dbg.value(metadata double %8, i64 0, metadata !142, metadata !289), !dbg !298
   br label %9
 
 ; <label>:9                                       ; preds = %0, %3
   %result.sroa.3.0 = phi double [ %8, %3 ], [ 0.000000e+00, %0 ]
   %result.sroa.0.0 = phi double [ %5, %3 ], [ %2, %0 ]
-  %10 = insertvalue { double, double } undef, double %result.sroa.0.0, 0
-  %11 = insertvalue { double, double } %10, double %result.sroa.3.0, 1
-  ret { double, double } %11
+  %10 = insertvalue { double, double } undef, double %result.sroa.0.0, 0, !dbg !298
+  %11 = insertvalue { double, double } %10, double %result.sroa.3.0, 1, !dbg !298
+  ret { double, double } %11, !dbg !298
 }

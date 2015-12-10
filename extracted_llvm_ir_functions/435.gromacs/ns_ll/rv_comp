@@ -1,29 +1,34 @@
-define internal i32 @rv_comp(i8* nocapture readonly %a, i8* nocapture readonly %b) #4 {
-  %1 = bitcast i8* %a to i32*
-  %2 = load i32* %1, align 4, !tbaa !17
-  %3 = bitcast i8* %b to i32*
-  %4 = load i32* %3, align 4, !tbaa !17
-  %5 = load i32* @sdim, align 4, !tbaa !17
-  %6 = sext i32 %5 to i64
-  %7 = sext i32 %2 to i64
-  %8 = load [3 x float]** @sptr, align 8, !tbaa !23
-  %9 = getelementptr inbounds [3 x float]* %8, i64 %7, i64 %6
-  %10 = load float* %9, align 4, !tbaa !21
-  %11 = sext i32 %4 to i64
-  %12 = getelementptr inbounds [3 x float]* %8, i64 %11, i64 %6
-  %13 = load float* %12, align 4, !tbaa !21
-  %14 = fsub float %10, %13
-  %15 = fcmp olt float %14, 0.000000e+00
-  br i1 %15, label %18, label %16
+define internal i32 @rv_comp(i8* nocapture readonly %a, i8* nocapture readonly %b) #5 {
+  tail call void @llvm.dbg.value(metadata i8* %a, i64 0, metadata !953, metadata !1411), !dbg !3130
+  tail call void @llvm.dbg.value(metadata i8* %b, i64 0, metadata !954, metadata !1411), !dbg !3131
+  %1 = bitcast i8* %a to i32*, !dbg !3132
+  %2 = load i32* %1, align 4, !dbg !3133, !tbaa !1473
+  tail call void @llvm.dbg.value(metadata i32 %2, i64 0, metadata !955, metadata !1411), !dbg !3134
+  %3 = bitcast i8* %b to i32*, !dbg !3135
+  %4 = load i32* %3, align 4, !dbg !3136, !tbaa !1473
+  tail call void @llvm.dbg.value(metadata i32 %4, i64 0, metadata !956, metadata !1411), !dbg !3137
+  %5 = load i32* @sdim, align 4, !dbg !3138, !tbaa !1473
+  %6 = sext i32 %5 to i64, !dbg !3139
+  %7 = sext i32 %2 to i64, !dbg !3139
+  %8 = load [3 x float]** @sptr, align 8, !dbg !3139, !tbaa !1551
+  %9 = getelementptr inbounds [3 x float]* %8, i64 %7, i64 %6, !dbg !3139
+  %10 = load float* %9, align 4, !dbg !3139, !tbaa !1522
+  %11 = sext i32 %4 to i64, !dbg !3140
+  %12 = getelementptr inbounds [3 x float]* %8, i64 %11, i64 %6, !dbg !3140
+  %13 = load float* %12, align 4, !dbg !3140, !tbaa !1522
+  %14 = fsub float %10, %13, !dbg !3141
+  tail call void @llvm.dbg.value(metadata float %14, i64 0, metadata !957, metadata !1411), !dbg !3142
+  %15 = fcmp olt float %14, 0.000000e+00, !dbg !3143
+  br i1 %15, label %18, label %16, !dbg !3145
 
 ; <label>:16                                      ; preds = %0
-  %fabsf = tail call float @fabsf(float %14) #10
-  %17 = fpext float %fabsf to double
-  %not. = fcmp uge double %17, 1.200000e-38
-  %. = zext i1 %not. to i32
-  br label %18
+  %fabsf = tail call float @fabsf(float %14) #11, !dbg !3146
+  %17 = fpext float %fabsf to double, !dbg !3146
+  %not. = fcmp uge double %17, 1.200000e-38, !dbg !3148
+  %. = zext i1 %not. to i32, !dbg !3148
+  br label %18, !dbg !3148
 
 ; <label>:18                                      ; preds = %16, %0
   %.0 = phi i32 [ -1, %0 ], [ %., %16 ]
-  ret i32 %.0
+  ret i32 %.0, !dbg !3149
 }

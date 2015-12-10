@@ -1,24 +1,27 @@
-define void @translate_view(%struct.t_3dview* nocapture %view, i32 %axis, i32 %bPositive) #3 {
-  %1 = icmp eq i32 %bPositive, 0
-  %2 = sext i32 %axis to i64
-  %3 = getelementptr inbounds %struct.t_3dview* %view, i64 0, i32 0, i64 %2, i64 %2
-  %4 = load float* %3, align 4, !tbaa !14
-  %5 = fmul float %4, 1.250000e-01
-  %6 = getelementptr inbounds %struct.t_3dview* %view, i64 0, i32 2, i64 %2
-  %7 = load float* %6, align 4, !tbaa !14
-  br i1 %1, label %10, label %8
+define void @translate_view(%struct.t_3dview* nocapture %view, i32 %axis, i32 %bPositive) #4 {
+  tail call void @llvm.dbg.value(metadata %struct.t_3dview* %view, i64 0, metadata !215, metadata !259), !dbg !770
+  tail call void @llvm.dbg.value(metadata i32 %axis, i64 0, metadata !216, metadata !259), !dbg !771
+  tail call void @llvm.dbg.value(metadata i32 %bPositive, i64 0, metadata !217, metadata !259), !dbg !772
+  %1 = icmp eq i32 %bPositive, 0, !dbg !773
+  %2 = sext i32 %axis to i64, !dbg !775
+  %3 = getelementptr inbounds %struct.t_3dview* %view, i64 0, i32 0, i64 %2, i64 %2, !dbg !775
+  %4 = load float* %3, align 4, !dbg !775, !tbaa !308
+  %5 = fmul float %4, 1.250000e-01, !dbg !776
+  %6 = getelementptr inbounds %struct.t_3dview* %view, i64 0, i32 2, i64 %2, !dbg !777
+  %7 = load float* %6, align 4, !dbg !778, !tbaa !308
+  br i1 %1, label %10, label %8, !dbg !779
 
 ; <label>:8                                       ; preds = %0
-  %9 = fadd float %7, %5
-  br label %12
+  %9 = fadd float %7, %5, !dbg !778
+  br label %12, !dbg !777
 
 ; <label>:10                                      ; preds = %0
-  %11 = fsub float %7, %5
+  %11 = fsub float %7, %5, !dbg !780
   br label %12
 
 ; <label>:12                                      ; preds = %10, %8
   %storemerge = phi float [ %11, %10 ], [ %9, %8 ]
-  store float %storemerge, float* %6, align 4, !tbaa !14
-  tail call void @calculate_view(%struct.t_3dview* %view) #9
-  ret void
+  store float %storemerge, float* %6, align 4, !dbg !778, !tbaa !308
+  tail call void @calculate_view(%struct.t_3dview* %view) #10, !dbg !781
+  ret void, !dbg !782
 }

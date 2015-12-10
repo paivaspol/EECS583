@@ -1,46 +1,58 @@
 define %struct.t_coupl_rec* @init_coupling(%struct.__sFILE* %log, i32 %nfile, %struct.t_filenm* %fnm, %struct.t_commrec* %cr, %struct.t_forcerec* %fr, %struct.t_mdatoms* %md, %struct.t_idef* %idef) #4 {
   %tcr = alloca %struct.t_coupl_rec*, align 8
-  %1 = tail call i8* @save_calloc(i8* getelementptr inbounds ([4 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i32 61, i32 1, i32 288) #9
-  %2 = bitcast %struct.t_coupl_rec** %tcr to i8**
-  store i8* %1, i8** %2, align 8, !tbaa !18
-  %3 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 0
-  %4 = load i32* %3, align 4, !tbaa !19
-  %5 = icmp eq i32 %4, 0
+  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %log, i64 0, metadata !678, metadata !1073), !dbg !1236
+  tail call void @llvm.dbg.value(metadata i32 %nfile, i64 0, metadata !679, metadata !1073), !dbg !1237
+  tail call void @llvm.dbg.value(metadata %struct.t_filenm* %fnm, i64 0, metadata !680, metadata !1073), !dbg !1238
+  tail call void @llvm.dbg.value(metadata %struct.t_commrec* %cr, i64 0, metadata !681, metadata !1073), !dbg !1239
+  tail call void @llvm.dbg.value(metadata %struct.t_forcerec* %fr, i64 0, metadata !682, metadata !1073), !dbg !1240
+  tail call void @llvm.dbg.value(metadata %struct.t_mdatoms* %md, i64 0, metadata !683, metadata !1073), !dbg !1241
+  tail call void @llvm.dbg.value(metadata %struct.t_idef* %idef, i64 0, metadata !684, metadata !1073), !dbg !1242
+  %1 = tail call i8* @save_calloc(i8* getelementptr inbounds ([4 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i32 61, i32 1, i32 288) #9, !dbg !1243
+  %2 = bitcast %struct.t_coupl_rec** %tcr to i8**, !dbg !1243
+  store i8* %1, i8** %2, align 8, !dbg !1243, !tbaa !1244
+  %3 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 0, !dbg !1245
+  %4 = load i32* %3, align 4, !dbg !1245, !tbaa !1247
+  %5 = icmp eq i32 %4, 0, !dbg !1245
   %6 = bitcast i8* %1 to %struct.t_coupl_rec*
-  br i1 %5, label %7, label %14
+  br i1 %5, label %7, label %14, !dbg !1245
 
 ; <label>:7                                       ; preds = %0
-  %8 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 4
-  %9 = load i32* %8, align 4, !tbaa !21
-  %10 = icmp eq i32 %9, 0
-  br i1 %10, label %11, label %14
+  %8 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 4, !dbg !1245
+  %9 = load i32* %8, align 4, !dbg !1245, !tbaa !1249
+  %10 = icmp eq i32 %9, 0, !dbg !1245
+  br i1 %10, label %11, label %14, !dbg !1250
 
 ; <label>:11                                      ; preds = %7
-  %12 = tail call i8* @opt2fn(i8* getelementptr inbounds ([3 x i8]* @.str2, i64 0, i64 0), i32 %nfile, %struct.t_filenm* %fnm) #9
-  tail call void @read_gct(i8* %12, %struct.t_coupl_rec* %6) #9
-  %13 = tail call i8* @opt2fn(i8* getelementptr inbounds ([4 x i8]* @.str3, i64 0, i64 0), i32 %nfile, %struct.t_filenm* %fnm) #9
-  tail call void @write_gct(i8* %13, %struct.t_coupl_rec* %6, %struct.t_idef* %idef) #9
-  br label %14
+  %12 = tail call i8* @opt2fn(i8* getelementptr inbounds ([3 x i8]* @.str2, i64 0, i64 0), i32 %nfile, %struct.t_filenm* %fnm) #9, !dbg !1251
+  tail call void @llvm.dbg.value(metadata %struct.t_coupl_rec** %tcr, i64 0, metadata !691, metadata !1073), !dbg !1253
+  tail call void @read_gct(i8* %12, %struct.t_coupl_rec* %6) #9, !dbg !1254
+  %13 = tail call i8* @opt2fn(i8* getelementptr inbounds ([4 x i8]* @.str3, i64 0, i64 0), i32 %nfile, %struct.t_filenm* %fnm) #9, !dbg !1255
+  tail call void @llvm.dbg.value(metadata %struct.t_coupl_rec** %tcr, i64 0, metadata !691, metadata !1073), !dbg !1253
+  tail call void @write_gct(i8* %13, %struct.t_coupl_rec* %6, %struct.t_idef* %idef) #9, !dbg !1256
+  br label %14, !dbg !1257
 
 ; <label>:14                                      ; preds = %11, %7, %0
-  tail call void @copy_ff(%struct.t_coupl_rec* %6, %struct.t_forcerec* %fr, %struct.t_mdatoms* %md, %struct.t_idef* %idef) #9
-  %15 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 1
-  %16 = load i32* %15, align 4, !tbaa !22
-  %17 = icmp sgt i32 %16, 1
-  br i1 %17, label %22, label %18
+  tail call void @llvm.dbg.value(metadata %struct.t_coupl_rec** %tcr, i64 0, metadata !691, metadata !1073), !dbg !1253
+  tail call void @copy_ff(%struct.t_coupl_rec* %6, %struct.t_forcerec* %fr, %struct.t_mdatoms* %md, %struct.t_idef* %idef) #9, !dbg !1258
+  %15 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 1, !dbg !1259
+  %16 = load i32* %15, align 4, !dbg !1259, !tbaa !1261
+  %17 = icmp sgt i32 %16, 1, !dbg !1259
+  br i1 %17, label %22, label %18, !dbg !1259
 
 ; <label>:18                                      ; preds = %14
-  %19 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 5
-  %20 = load i32* %19, align 4, !tbaa !23
-  %21 = icmp sgt i32 %20, 1
-  br i1 %21, label %22, label %23
+  %19 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 5, !dbg !1259
+  %20 = load i32* %19, align 4, !dbg !1259, !tbaa !1262
+  %21 = icmp sgt i32 %20, 1, !dbg !1259
+  br i1 %21, label %22, label %23, !dbg !1263
 
 ; <label>:22                                      ; preds = %18, %14
-  call void @comm_tcr(%struct.__sFILE* %log, %struct.t_commrec* %cr, %struct.t_coupl_rec** %tcr) #9
-  %.pre = load %struct.t_coupl_rec** %tcr, align 8, !tbaa !18
-  br label %23
+  tail call void @llvm.dbg.value(metadata %struct.t_coupl_rec** %tcr, i64 0, metadata !691, metadata !1073), !dbg !1253
+  call void @comm_tcr(%struct.__sFILE* %log, %struct.t_commrec* %cr, %struct.t_coupl_rec** %tcr) #9, !dbg !1264
+  %.pre = load %struct.t_coupl_rec** %tcr, align 8, !dbg !1265, !tbaa !1244
+  br label %23, !dbg !1264
 
 ; <label>:23                                      ; preds = %22, %18
   %24 = phi %struct.t_coupl_rec* [ %.pre, %22 ], [ %6, %18 ]
-  ret %struct.t_coupl_rec* %24
+  call void @llvm.dbg.value(metadata %struct.t_coupl_rec** %tcr, i64 0, metadata !691, metadata !1073), !dbg !1253
+  ret %struct.t_coupl_rec* %24, !dbg !1266
 }

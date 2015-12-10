@@ -1,38 +1,39 @@
-define void @FreeSequence(i8* %seq, %struct.seqinfo_s* nocapture %sqinfo) #0 {
-entry:
-  %cmp = icmp eq i8* %seq, null
-  br i1 %cmp, label %if.end, label %if.then
+define void @FreeSequence(i8* %seq, %struct.seqinfo_s* nocapture readonly %sqinfo) #0 {
+  tail call void @llvm.dbg.value(metadata i8* %seq, i64 0, metadata !297, metadata !624), !dbg !949
+  tail call void @llvm.dbg.value(metadata %struct.seqinfo_s* %sqinfo, i64 0, metadata !298, metadata !624), !dbg !950
+  %1 = icmp eq i8* %seq, null, !dbg !951
+  br i1 %1, label %3, label %2, !dbg !953
 
-if.then:                                          ; preds = %entry
-  tail call void @free(i8* %seq) #8
-  br label %if.end
+; <label>:2                                       ; preds = %0
+  tail call void @free(i8* %seq) #7, !dbg !954
+  br label %3, !dbg !954
 
-if.end:                                           ; preds = %entry, %if.then
-  %flags = getelementptr inbounds %struct.seqinfo_s* %sqinfo, i64 0, i32 0
-  %0 = load i32* %flags, align 4, !tbaa !0
-  %and = and i32 %0, 512
-  %tobool = icmp eq i32 %and, 0
-  br i1 %tobool, label %if.end2, label %if.then1
+; <label>:3                                       ; preds = %0, %2
+  %4 = getelementptr inbounds %struct.seqinfo_s* %sqinfo, i64 0, i32 0, !dbg !955
+  %5 = load i32* %4, align 4, !dbg !955, !tbaa !957
+  %6 = and i32 %5, 512, !dbg !959
+  %7 = icmp eq i32 %6, 0, !dbg !959
+  br i1 %7, label %11, label %8, !dbg !960
 
-if.then1:                                         ; preds = %if.end
-  %ss = getelementptr inbounds %struct.seqinfo_s* %sqinfo, i64 0, i32 10
-  %1 = load i8** %ss, align 8, !tbaa !3
-  tail call void @free(i8* %1) #8
-  %.pre = load i32* %flags, align 4, !tbaa !0
-  br label %if.end2
+; <label>:8                                       ; preds = %3
+  %9 = getelementptr inbounds %struct.seqinfo_s* %sqinfo, i64 0, i32 10, !dbg !961
+  %10 = load i8** %9, align 8, !dbg !961, !tbaa !962
+  tail call void @free(i8* %10) #7, !dbg !963
+  %.pre = load i32* %4, align 4, !dbg !964, !tbaa !957
+  br label %11, !dbg !963
 
-if.end2:                                          ; preds = %if.end, %if.then1
-  %2 = phi i32 [ %0, %if.end ], [ %.pre, %if.then1 ]
-  %and4 = and i32 %2, 1024
-  %tobool5 = icmp eq i32 %and4, 0
-  br i1 %tobool5, label %if.end7, label %if.then6
+; <label>:11                                      ; preds = %3, %8
+  %12 = phi i32 [ %5, %3 ], [ %.pre, %8 ]
+  %13 = and i32 %12, 1024, !dbg !966
+  %14 = icmp eq i32 %13, 0, !dbg !966
+  br i1 %14, label %18, label %15, !dbg !967
 
-if.then6:                                         ; preds = %if.end2
-  %sa = getelementptr inbounds %struct.seqinfo_s* %sqinfo, i64 0, i32 11
-  %3 = load i8** %sa, align 8, !tbaa !3
-  tail call void @free(i8* %3) #8
-  br label %if.end7
+; <label>:15                                      ; preds = %11
+  %16 = getelementptr inbounds %struct.seqinfo_s* %sqinfo, i64 0, i32 11, !dbg !968
+  %17 = load i8** %16, align 8, !dbg !968, !tbaa !969
+  tail call void @free(i8* %17) #7, !dbg !970
+  br label %18, !dbg !970
 
-if.end7:                                          ; preds = %if.end2, %if.then6
-  ret void
+; <label>:18                                      ; preds = %11, %15
+  ret void, !dbg !971
 }

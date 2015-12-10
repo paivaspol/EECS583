@@ -1,21 +1,27 @@
 define i32 @rd_pic_decision(double %snrY_version1, double %snrY_version2, i32 %bits_version1, i32 %bits_version2, double %lambda_picture) #0 {
-entry:
-  %conv = sitofp i32 %bits_version1 to double
-  %mul = fmul double %conv, %lambda_picture
-  %add = fadd double %mul, %snrY_version1
-  %conv1 = sitofp i32 %bits_version2 to double
-  %mul2 = fmul double %conv1, %lambda_picture
-  %add3 = fadd double %mul2, %snrY_version2
-  %cmp = fcmp ogt double %add3, %add
-  br i1 %cmp, label %return, label %lor.lhs.false
+  tail call void @llvm.dbg.value(metadata double %snrY_version1, i64 0, metadata !24, metadata !591), !dbg !592
+  tail call void @llvm.dbg.value(metadata double %snrY_version2, i64 0, metadata !25, metadata !591), !dbg !593
+  tail call void @llvm.dbg.value(metadata i32 %bits_version1, i64 0, metadata !26, metadata !591), !dbg !594
+  tail call void @llvm.dbg.value(metadata i32 %bits_version2, i64 0, metadata !27, metadata !591), !dbg !595
+  tail call void @llvm.dbg.value(metadata double %lambda_picture, i64 0, metadata !28, metadata !591), !dbg !596
+  %1 = sitofp i32 %bits_version1 to double, !dbg !597
+  %2 = fmul double %1, %lambda_picture, !dbg !598
+  %3 = fadd double %2, %snrY_version1, !dbg !599
+  tail call void @llvm.dbg.value(metadata double %3, i64 0, metadata !29, metadata !591), !dbg !600
+  %4 = sitofp i32 %bits_version2 to double, !dbg !601
+  %5 = fmul double %4, %lambda_picture, !dbg !602
+  %6 = fadd double %5, %snrY_version2, !dbg !603
+  tail call void @llvm.dbg.value(metadata double %6, i64 0, metadata !30, metadata !591), !dbg !604
+  %7 = fcmp ogt double %6, %3, !dbg !605
+  br i1 %7, label %11, label %8, !dbg !607
 
-lor.lhs.false:                                    ; preds = %entry
-  %cmp5 = fcmp une double %add3, %add
-  %cmp7 = fcmp ult double %snrY_version2, %snrY_version1
-  %or.cond = or i1 %cmp5, %cmp7
-  %. = zext i1 %or.cond to i32
-  ret i32 %.
+; <label>:8                                       ; preds = %0
+  %9 = fcmp une double %6, %3, !dbg !608
+  %10 = fcmp ult double %snrY_version2, %snrY_version1, !dbg !609
+  %or.cond = or i1 %10, %9, !dbg !610
+  %. = zext i1 %or.cond to i32, !dbg !610
+  ret i32 %., !dbg !610
 
-return:                                           ; preds = %entry
-  ret i32 0
+; <label>:11                                      ; preds = %0
+  ret i32 0, !dbg !611
 }

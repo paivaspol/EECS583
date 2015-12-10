@@ -1,28 +1,31 @@
 define void @A2_permuteRows(%struct._A2* %mtx, i32 %nrow, i32* %index) #0 {
-entry:
-  %cmp = icmp eq %struct._A2* %mtx, null
-  %cmp1 = icmp slt i32 %nrow, 0
-  %or.cond = or i1 %cmp, %cmp1
-  br i1 %or.cond, label %if.then, label %lor.lhs.false2
+  tail call void @llvm.dbg.value(metadata %struct._A2* %mtx, i64 0, metadata !26, metadata !74), !dbg !75
+  tail call void @llvm.dbg.value(metadata i32 %nrow, i64 0, metadata !27, metadata !74), !dbg !76
+  tail call void @llvm.dbg.value(metadata i32* %index, i64 0, metadata !28, metadata !74), !dbg !77
+  %1 = icmp eq %struct._A2* %mtx, null, !dbg !78
+  %2 = icmp slt i32 %nrow, 0, !dbg !80
+  %or.cond = or i1 %1, %2, !dbg !81
+  br i1 %or.cond, label %8, label %3, !dbg !81
 
-lor.lhs.false2:                                   ; preds = %entry
-  %n1 = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 1
-  %0 = load i32* %n1, align 4, !tbaa !0
-  %cmp3 = icmp slt i32 %0, %nrow
-  %cmp5 = icmp eq i32* %index, null
-  %or.cond20 = or i1 %cmp3, %cmp5
-  br i1 %or.cond20, label %if.then, label %if.end
+; <label>:3                                       ; preds = %0
+  %4 = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 1, !dbg !82
+  %5 = load i32* %4, align 4, !dbg !82, !tbaa !83
+  %6 = icmp slt i32 %5, %nrow, !dbg !89
+  %7 = icmp eq i32* %index, null, !dbg !90
+  %or.cond3 = or i1 %7, %6, !dbg !91
+  br i1 %or.cond3, label %8, label %11, !dbg !91
 
-if.then:                                          ; preds = %lor.lhs.false2, %entry
-  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([54 x i8]* @.str, i64 0, i64 0), %struct._A2* %mtx, i32 %nrow, i32* %index) #4
-  tail call void @exit(i32 -1) #5
-  unreachable
+; <label>:8                                       ; preds = %3, %0
+  %9 = load %struct.__sFILE** @__stderrp, align 8, !dbg !92, !tbaa !94
+  %10 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %9, i8* getelementptr inbounds ([54 x i8]* @.str, i64 0, i64 0), %struct._A2* %mtx, i32 %nrow, i32* %index) #5, !dbg !95
+  tail call void @exit(i32 -1) #6, !dbg !96
+  unreachable, !dbg !96
 
-if.end:                                           ; preds = %lor.lhs.false2
-  %call6 = tail call i32* @IVinit(i32 %nrow, i32 -1) #4
-  tail call void @IVcopy(i32 %nrow, i32* %call6, i32* %index) #4
-  %call7 = tail call i32 @A2_sortRowsUp(%struct._A2* %mtx, i32 %nrow, i32* %call6) #6
-  tail call void @IVfree(i32* %call6) #4
-  ret void
+; <label>:11                                      ; preds = %3
+  %12 = tail call i32* @IVinit(i32 %nrow, i32 -1) #5, !dbg !97
+  tail call void @llvm.dbg.value(metadata i32* %12, i64 0, metadata !29, metadata !74), !dbg !98
+  tail call void @IVcopy(i32 %nrow, i32* %12, i32* %index) #5, !dbg !99
+  %13 = tail call i32 @A2_sortRowsUp(%struct._A2* %mtx, i32 %nrow, i32* %12) #7, !dbg !100
+  tail call void @IVfree(i32* %12) #5, !dbg !101
+  ret void, !dbg !102
 }

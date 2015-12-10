@@ -1,17 +1,17 @@
-define i32 @clip1a(i32 %a) #2 {
-entry:
-  %0 = load %struct.ImageParameters** @img, align 8, !tbaa !0
-  %max_imgpel_value = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 155
-  %1 = load i32* %max_imgpel_value, align 4, !tbaa !3
-  %cmp = icmp slt i32 %1, %a
-  br i1 %cmp, label %cond.end5, label %cond.false
+define i32 @clip1a(i32 %a) #3 {
+  tail call void @llvm.dbg.value(metadata i32 %a, i64 0, metadata !84, metadata !1584), !dbg !1696
+  %1 = load %struct.ImageParameters** @img, align 8, !dbg !1697, !tbaa !1587
+  %2 = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 155, !dbg !1698
+  %3 = load i32* %2, align 4, !dbg !1698, !tbaa !1699
+  %4 = icmp slt i32 %3, %a, !dbg !1700
+  br i1 %4, label %8, label %5, !dbg !1701
 
-cond.false:                                       ; preds = %entry
-  %cmp2 = icmp slt i32 %a, 0
-  %cond = select i1 %cmp2, i32 0, i32 %a
-  br label %cond.end5
+; <label>:5                                       ; preds = %0
+  %6 = icmp slt i32 %a, 0, !dbg !1702
+  %7 = select i1 %6, i32 0, i32 %a, !dbg !1703
+  br label %8, !dbg !1703
 
-cond.end5:                                        ; preds = %entry, %cond.false
-  %cond6 = phi i32 [ %cond, %cond.false ], [ %1, %entry ]
-  ret i32 %cond6
+; <label>:8                                       ; preds = %0, %5
+  %9 = phi i32 [ %7, %5 ], [ %3, %0 ], !dbg !1701
+  ret i32 %9, !dbg !1704
 }

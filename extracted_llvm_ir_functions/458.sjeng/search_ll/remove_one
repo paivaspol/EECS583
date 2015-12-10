@@ -1,43 +1,51 @@
 define i32 @remove_one(i32* nocapture %marker, i32* nocapture %move_ordering, i32 %num_moves) #0 {
-entry:
-  store i32 -1000000, i32* %marker, align 4, !tbaa !2
-  %cmp17 = icmp sgt i32 %num_moves, 0
-  br i1 %cmp17, label %for.body, label %return
+  tail call void @llvm.dbg.value(metadata i32* %marker, i64 0, metadata !82, metadata !296), !dbg !886
+  tail call void @llvm.dbg.value(metadata i32* %move_ordering, i64 0, metadata !83, metadata !296), !dbg !887
+  tail call void @llvm.dbg.value(metadata i32 %num_moves, i64 0, metadata !84, metadata !296), !dbg !888
+  tail call void @llvm.dbg.value(metadata i32 -1000000, i64 0, metadata !86, metadata !296), !dbg !889
+  store i32 -1000000, i32* %marker, align 4, !dbg !890, !tbaa !351
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !85, metadata !296), !dbg !891
+  %1 = icmp sgt i32 %num_moves, 0, !dbg !892
+  br i1 %1, label %.lr.ph, label %._crit_edge.thread, !dbg !895
 
-for.body:                                         ; preds = %entry, %for.inc
-  %0 = phi i32 [ %4, %for.inc ], [ -1000000, %entry ]
-  %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc ], [ 0, %entry ]
-  %best.019 = phi i32 [ %best.1, %for.inc ], [ -1000000, %entry ]
-  %arrayidx = getelementptr inbounds i32* %move_ordering, i64 %indvars.iv
-  %1 = load i32* %arrayidx, align 4, !tbaa !2
-  %cmp1 = icmp sgt i32 %1, %best.019
-  br i1 %cmp1, label %if.then, label %for.inc
+.lr.ph:                                           ; preds = %0
+  %2 = add i32 %num_moves, -1, !dbg !895
+  br label %3, !dbg !895
 
-if.then:                                          ; preds = %for.body
-  %2 = trunc i64 %indvars.iv to i32
-  store i32 %2, i32* %marker, align 4, !tbaa !2
-  %3 = load i32* %arrayidx, align 4, !tbaa !2
-  br label %for.inc
+; <label>:3                                       ; preds = %._crit_edge3, %.lr.ph
+  %4 = phi i32 [ -1000000, %.lr.ph ], [ %11, %._crit_edge3 ]
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %._crit_edge3 ]
+  %best.02 = phi i32 [ -1000000, %.lr.ph ], [ %best.1, %._crit_edge3 ]
+  %5 = getelementptr inbounds i32* %move_ordering, i64 %indvars.iv, !dbg !896
+  %6 = load i32* %5, align 4, !dbg !896, !tbaa !351
+  %7 = icmp sgt i32 %6, %best.02, !dbg !899
+  %8 = trunc i64 %indvars.iv to i32, !dbg !900
+  br i1 %7, label %9, label %._crit_edge3, !dbg !902
 
-for.inc:                                          ; preds = %for.body, %if.then
-  %4 = phi i32 [ %2, %if.then ], [ %0, %for.body ]
-  %best.1 = phi i32 [ %3, %if.then ], [ %best.019, %for.body ]
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %num_moves
-  br i1 %exitcond, label %for.end, label %for.body
+; <label>:9                                       ; preds = %3
+  store i32 %8, i32* %marker, align 4, !dbg !900, !tbaa !351
+  %10 = load i32* %5, align 4, !dbg !903, !tbaa !351
+  tail call void @llvm.dbg.value(metadata i32 %10, i64 0, metadata !86, metadata !296), !dbg !889
+  br label %._crit_edge3, !dbg !904
 
-for.end:                                          ; preds = %for.inc
-  %cmp4 = icmp sgt i32 %4, -1000000
-  br i1 %cmp4, label %if.then5, label %return
+._crit_edge3:                                     ; preds = %3, %9
+  %11 = phi i32 [ %8, %9 ], [ %4, %3 ]
+  %best.1 = phi i32 [ %10, %9 ], [ %best.02, %3 ]
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !895
+  %exitcond = icmp eq i32 %8, %2, !dbg !895
+  br i1 %exitcond, label %._crit_edge, label %3, !dbg !895
 
-if.then5:                                         ; preds = %for.end
-  %idxprom6 = sext i32 %4 to i64
-  %arrayidx7 = getelementptr inbounds i32* %move_ordering, i64 %idxprom6
-  store i32 -1000000, i32* %arrayidx7, align 4, !tbaa !2
-  br label %return
+._crit_edge:                                      ; preds = %._crit_edge3
+  %12 = icmp sgt i32 %11, -1000000, !dbg !905
+  br i1 %12, label %13, label %._crit_edge.thread, !dbg !907
 
-return:                                           ; preds = %entry, %for.end, %if.then5
-  %retval.0 = phi i32 [ 1, %if.then5 ], [ 0, %for.end ], [ 0, %entry ]
-  ret i32 %retval.0
+; <label>:13                                      ; preds = %._crit_edge
+  %14 = sext i32 %11 to i64, !dbg !908
+  %15 = getelementptr inbounds i32* %move_ordering, i64 %14, !dbg !908
+  store i32 -1000000, i32* %15, align 4, !dbg !910, !tbaa !351
+  br label %._crit_edge.thread, !dbg !911
+
+._crit_edge.thread:                               ; preds = %0, %._crit_edge, %13
+  %.0 = phi i32 [ 1, %13 ], [ 0, %._crit_edge ], [ 0, %0 ]
+  ret i32 %.0, !dbg !912
 }

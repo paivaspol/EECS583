@@ -1,31 +1,35 @@
 define i8* @CCTK_FullName(i32 %var) #2 {
-  %1 = tail call i8* @CCTK_VarName(i32 %var) #9
-  %2 = icmp eq i8* %1, null
-  br i1 %2, label %21, label %3
+  tail call void @llvm.dbg.value(metadata i32 %var, i64 0, metadata !143, metadata !483), !dbg !730
+  %1 = tail call i8* @CCTK_VarName(i32 %var) #9, !dbg !731
+  tail call void @llvm.dbg.value(metadata i8* %1, i64 0, metadata !145, metadata !483), !dbg !732
+  %2 = icmp eq i8* %1, null, !dbg !733
+  br i1 %2, label %21, label %3, !dbg !735
 
 ; <label>:3                                       ; preds = %0
-  %4 = sext i32 %var to i64
-  %5 = load i32** @group_of_variable, align 8, !tbaa !2
-  %6 = getelementptr inbounds i32* %5, i64 %4
-  %7 = load i32* %6, align 4, !tbaa !6
-  %8 = sext i32 %7 to i64
-  %9 = load %struct.cGroupDefinition** @groups, align 8, !tbaa !2
-  %10 = getelementptr inbounds %struct.cGroupDefinition* %9, i64 %8, i32 1
-  %11 = load i8** %10, align 8, !tbaa !8
-  %12 = tail call i64 @strlen(i8* %1) #10
-  %13 = tail call i64 @strlen(i8* %11) #10
-  %14 = add i64 %12, 3
-  %15 = add i64 %14, %13
-  %16 = tail call i8* @malloc(i64 %15) #10
-  %17 = icmp eq i8* %16, null
-  br i1 %17, label %21, label %18
+  %4 = sext i32 %var to i64, !dbg !736
+  %5 = load i32** @group_of_variable, align 8, !dbg !736, !tbaa !487
+  %6 = getelementptr inbounds i32* %5, i64 %4, !dbg !736
+  %7 = load i32* %6, align 4, !dbg !736, !tbaa !502
+  %8 = sext i32 %7 to i64, !dbg !738
+  %9 = load %struct.cGroupDefinition** @groups, align 8, !dbg !738, !tbaa !487
+  %10 = getelementptr inbounds %struct.cGroupDefinition* %9, i64 %8, i32 1, !dbg !739
+  %11 = load i8** %10, align 8, !dbg !739, !tbaa !511
+  tail call void @llvm.dbg.value(metadata i8* %11, i64 0, metadata !144, metadata !483), !dbg !740
+  %12 = tail call i64 @strlen(i8* %1) #10, !dbg !741
+  %13 = tail call i64 @strlen(i8* %11) #10, !dbg !742
+  %14 = add i64 %12, 3, !dbg !743
+  %15 = add i64 %14, %13, !dbg !744
+  %16 = tail call i8* @malloc(i64 %15) #10, !dbg !745
+  tail call void @llvm.dbg.value(metadata i8* %16, i64 0, metadata !146, metadata !483), !dbg !746
+  %17 = icmp eq i8* %16, null, !dbg !747
+  br i1 %17, label %21, label %18, !dbg !749
 
 ; <label>:18                                      ; preds = %3
-  %19 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %16, i1 false)
-  %20 = tail call i32 (i8*, i32, i64, i8*, ...)* @__sprintf_chk(i8* %16, i32 0, i64 %19, i8* getelementptr inbounds ([7 x i8]* @.str4, i64 0, i64 0), i8* %11, i8* %1) #10
-  br label %21
+  %19 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %16, i1 false), !dbg !750
+  %20 = tail call i32 (i8*, i32, i64, i8*, ...)* @__sprintf_chk(i8* %16, i32 0, i64 %19, i8* getelementptr inbounds ([7 x i8]* @.str4, i64 0, i64 0), i8* %11, i8* %1) #10, !dbg !750
+  br label %21, !dbg !752
 
 ; <label>:21                                      ; preds = %0, %3, %18
   %fullname.0 = phi i8* [ %16, %18 ], [ null, %3 ], [ null, %0 ]
-  ret i8* %fullname.0
+  ret i8* %fullname.0, !dbg !753
 }

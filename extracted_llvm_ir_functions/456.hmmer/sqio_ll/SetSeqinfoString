@@ -1,228 +1,250 @@
 define i32 @SetSeqinfoString(%struct.seqinfo_s* %sqinfo, i8* %sptr, i32 %flag) #0 {
-entry:
-  %cmp = icmp eq i8* %sptr, null
-  br i1 %cmp, label %return, label %while.cond
+  tail call void @llvm.dbg.value(metadata %struct.seqinfo_s* %sqinfo, i64 0, metadata !303, metadata !624), !dbg !972
+  tail call void @llvm.dbg.value(metadata i8* %sptr, i64 0, metadata !304, metadata !624), !dbg !973
+  tail call void @llvm.dbg.value(metadata i32 %flag, i64 0, metadata !305, metadata !624), !dbg !974
+  %1 = icmp eq i8* %sptr, null, !dbg !975
+  br i1 %1, label %125, label %.preheader, !dbg !977
 
-while.cond:                                       ; preds = %entry, %while.cond
-  %sptr.addr.0 = phi i8* [ %incdec.ptr, %while.cond ], [ %sptr, %entry ]
-  %0 = load i8* %sptr.addr.0, align 1, !tbaa !1
-  %cmp1 = icmp eq i8 %0, 32
-  %incdec.ptr = getelementptr inbounds i8* %sptr.addr.0, i64 1
-  br i1 %cmp1, label %while.cond, label %while.end
+.preheader:                                       ; preds = %0, %.preheader
+  %.01 = phi i8* [ %4, %.preheader ], [ %sptr, %0 ]
+  %2 = load i8* %.01, align 1, !dbg !978, !tbaa !861
+  %3 = icmp eq i8 %2, 32, !dbg !979
+  %4 = getelementptr inbounds i8* %.01, i64 1, !dbg !980
+  tail call void @llvm.dbg.value(metadata i8* %4, i64 0, metadata !304, metadata !624), !dbg !973
+  br i1 %3, label %.preheader, label %5, !dbg !981
 
-while.end:                                        ; preds = %while.cond
-  %call = tail call i64 @strlen(i8* %sptr.addr.0) #9
-  %sub = add i64 %call, 4294967295
-  %conv3 = trunc i64 %sub to i32
-  %cmp4171 = icmp sgt i32 %conv3, -1
-  br i1 %cmp4171, label %for.body.lr.ph, label %for.end
+; <label>:5                                       ; preds = %.preheader
+  %6 = tail call i64 @strlen(i8* %.01) #8, !dbg !982
+  %7 = add i64 %6, 4294967295, !dbg !984
+  %8 = trunc i64 %7 to i32, !dbg !982
+  tail call void @llvm.dbg.value(metadata i32 %8, i64 0, metadata !307, metadata !624), !dbg !985
+  %9 = icmp sgt i32 %8, -1, !dbg !986
+  br i1 %9, label %.lr.ph, label %isspace.exit._crit_edge, !dbg !988
 
-for.body.lr.ph:                                   ; preds = %while.end
-  %call8 = tail call i16** @__ctype_b_loc() #10
-  %1 = load i16** %call8, align 8, !tbaa !3
-  %sext175 = shl i64 %sub, 32
-  %2 = ashr exact i64 %sext175, 32
-  br label %for.body
+.lr.ph:                                           ; preds = %5
+  %sext8 = shl i64 %7, 32
+  %10 = ashr exact i64 %sext8, 32
+  br label %11, !dbg !988
 
-for.cond:                                         ; preds = %for.body
-  %indvars.iv.next = add i64 %indvars.iv, -1
-  %3 = trunc i64 %indvars.iv to i32
-  %cmp4 = icmp sgt i32 %3, 0
-  br i1 %cmp4, label %for.body, label %for.end
+; <label>:11                                      ; preds = %.lr.ph, %22
+  %indvars.iv = phi i64 [ %10, %.lr.ph ], [ %indvars.iv.next, %22 ]
+  %12 = getelementptr inbounds i8* %.01, i64 %indvars.iv, !dbg !989
+  %13 = load i8* %12, align 1, !dbg !989, !tbaa !861
+  tail call void @llvm.dbg.value(metadata i32 %20, i64 0, metadata !496, metadata !624) #5, !dbg !991
+  tail call void @llvm.dbg.value(metadata i32 %20, i64 0, metadata !502, metadata !624) #5, !dbg !993
+  tail call void @llvm.dbg.value(metadata i64 16384, i64 0, metadata !503, metadata !624) #5, !dbg !995
+  %isascii.i.i3 = icmp sgt i8 %13, -1, !dbg !996
+  br i1 %isascii.i.i3, label %14, label %19, !dbg !996
 
-for.body:                                         ; preds = %for.body.lr.ph, %for.cond
-  %indvars.iv = phi i64 [ %2, %for.body.lr.ph ], [ %indvars.iv.next, %for.cond ]
-  %pos.0172 = phi i32 [ %conv3, %for.body.lr.ph ], [ %dec, %for.cond ]
-  %arrayidx = getelementptr inbounds i8* %sptr.addr.0, i64 %indvars.iv
-  %4 = load i8* %arrayidx, align 1, !tbaa !1
-  %idxprom7 = sext i8 %4 to i64
-  %arrayidx9 = getelementptr inbounds i16* %1, i64 %idxprom7
-  %5 = load i16* %arrayidx9, align 2, !tbaa !4
-  %and = and i16 %5, 8192
-  %tobool = icmp eq i16 %and, 0
-  %dec = add nsw i32 %pos.0172, -1
-  br i1 %tobool, label %for.end, label %for.cond
+; <label>:14                                      ; preds = %11
+  %15 = sext i8 %13 to i64, !dbg !997
+  %16 = getelementptr inbounds %struct._RuneLocale* @_DefaultRuneLocale, i64 0, i32 5, i64 %15, !dbg !997
+  %17 = load i32* %16, align 4, !dbg !997, !tbaa !897
+  %18 = and i32 %17, 16384, !dbg !998
+  br label %isspace.exit, !dbg !996
 
-for.end:                                          ; preds = %for.cond, %for.body, %while.end
-  %pos.0.lcssa = phi i32 [ %conv3, %while.end ], [ %pos.0172, %for.body ], [ %dec, %for.cond ]
-  %add = add nsw i32 %pos.0.lcssa, 1
-  %idxprom13 = sext i32 %add to i64
-  %arrayidx14 = getelementptr inbounds i8* %sptr.addr.0, i64 %idxprom13
-  store i8 0, i8* %arrayidx14, align 1, !tbaa !1
-  switch i32 %flag, label %sw.default [
-    i32 1, label %sw.bb
-    i32 2, label %sw.bb23
-    i32 4, label %sw.bb35
-    i32 8, label %sw.bb47
-    i32 16, label %sw.bb82
-    i32 32, label %sw.bb95
-    i32 256, label %sw.bb108
-  ]
+; <label>:19                                      ; preds = %11
+  %20 = sext i8 %13 to i32, !dbg !999
+  %21 = tail call i32 @__maskrune(i32 %20, i64 16384) #8, !dbg !1000
+  br label %isspace.exit, !dbg !996
 
-sw.bb:                                            ; preds = %for.end
-  %6 = load i8* %sptr.addr.0, align 1, !tbaa !1
-  %cmp16 = icmp eq i8 %6, 45
-  br i1 %cmp16, label %return, label %if.then18
+isspace.exit:                                     ; preds = %14, %19
+  %.sink.i.in.i = phi i32 [ %18, %14 ], [ %21, %19 ], !dbg !1001
+  %.sink.i.i = icmp eq i32 %.sink.i.in.i, 0, !dbg !1002
+  br i1 %.sink.i.i, label %isspace.exit._crit_edge, label %22, !dbg !1003
 
-if.then18:                                        ; preds = %sw.bb
-  %arraydecay = getelementptr inbounds %struct.seqinfo_s* %sqinfo, i64 0, i32 1, i64 0
-  %call19 = tail call i8* @strncpy(i8* %arraydecay, i8* %sptr.addr.0, i64 63) #8
-  %arrayidx21 = getelementptr inbounds %struct.seqinfo_s* %sqinfo, i64 0, i32 1, i64 63
-  store i8 0, i8* %arrayidx21, align 1, !tbaa !1
-  %flags = getelementptr inbounds %struct.seqinfo_s* %sqinfo, i64 0, i32 0
-  %7 = load i32* %flags, align 4, !tbaa !0
-  %or = or i32 %7, 1
-  store i32 %or, i32* %flags, align 4, !tbaa !0
-  br label %return
+; <label>:22                                      ; preds = %isspace.exit
+  %indvars.iv.next = add nsw i64 %indvars.iv, -1, !dbg !988
+  %23 = icmp sgt i64 %indvars.iv, 0, !dbg !986
+  br i1 %23, label %11, label %isspace.exit._crit_edge, !dbg !988
 
-sw.bb23:                                          ; preds = %for.end
-  %8 = load i8* %sptr.addr.0, align 1, !tbaa !1
-  %cmp25 = icmp eq i8 %8, 45
-  br i1 %cmp25, label %return, label %if.then27
+isspace.exit._crit_edge:                          ; preds = %22, %isspace.exit, %5
+  %pos.0.lcssa = phi i64 [ %7, %5 ], [ %indvars.iv.next, %22 ], [ %indvars.iv, %isspace.exit ]
+  %24 = shl i64 %pos.0.lcssa, 32, !dbg !1004
+  %sext7 = add i64 %24, 4294967296, !dbg !1004
+  %25 = ashr exact i64 %sext7, 32, !dbg !1004
+  %26 = getelementptr inbounds i8* %.01, i64 %25, !dbg !1004
+  store i8 0, i8* %26, align 1, !dbg !1005, !tbaa !861
+  switch i32 %flag, label %124 [
+    i32 1, label %27
+    i32 2, label %38
+    i32 4, label %49
+    i32 8, label %60
+    i32 16, label %88
+    i32 32, label %100
+    i32 256, label %112
+  ], !dbg !1006
 
-if.then27:                                        ; preds = %sw.bb23
-  %arraydecay28 = getelementptr inbounds %struct.seqinfo_s* %sqinfo, i64 0, i32 2, i64 0
-  %call29 = tail call i8* @strncpy(i8* %arraydecay28, i8* %sptr.addr.0, i64 63) #8
-  %arrayidx31 = getelementptr inbounds %struct.seqinfo_s* %sqinfo, i64 0, i32 2, i64 63
-  store i8 0, i8* %arrayidx31, align 1, !tbaa !1
-  %flags32 = getelementptr inbounds %struct.seqinfo_s* %sqinfo, i64 0, i32 0
-  %9 = load i32* %flags32, align 4, !tbaa !0
-  %or33 = or i32 %9, 2
-  store i32 %or33, i32* %flags32, align 4, !tbaa !0
-  br label %return
+; <label>:27                                      ; preds = %isspace.exit._crit_edge
+  %28 = load i8* %.01, align 1, !dbg !1007, !tbaa !861
+  %29 = icmp eq i8 %28, 45, !dbg !1010
+  br i1 %29, label %125, label %30, !dbg !1011
 
-sw.bb35:                                          ; preds = %for.end
-  %10 = load i8* %sptr.addr.0, align 1, !tbaa !1
-  %cmp37 = icmp eq i8 %10, 45
-  br i1 %cmp37, label %return, label %if.then39
+; <label>:30                                      ; preds = %27
+  %31 = getelementptr inbounds %struct.seqinfo_s* %sqinfo, i64 0, i32 1, i64 0, !dbg !1012
+  %32 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %31, i1 false), !dbg !1012
+  %33 = tail call i8* @__strncpy_chk(i8* %31, i8* %.01, i64 63, i64 %32) #8, !dbg !1012
+  %34 = getelementptr inbounds %struct.seqinfo_s* %sqinfo, i64 0, i32 1, i64 63, !dbg !1014
+  store i8 0, i8* %34, align 1, !dbg !1015, !tbaa !861
+  %35 = getelementptr inbounds %struct.seqinfo_s* %sqinfo, i64 0, i32 0, !dbg !1016
+  %36 = load i32* %35, align 4, !dbg !1017, !tbaa !957
+  %37 = or i32 %36, 1, !dbg !1017
+  store i32 %37, i32* %35, align 4, !dbg !1017, !tbaa !957
+  br label %125, !dbg !1018
 
-if.then39:                                        ; preds = %sw.bb35
-  %arraydecay40 = getelementptr inbounds %struct.seqinfo_s* %sqinfo, i64 0, i32 3, i64 0
-  %call41 = tail call i8* @strncpy(i8* %arraydecay40, i8* %sptr.addr.0, i64 63) #8
-  %arrayidx43 = getelementptr inbounds %struct.seqinfo_s* %sqinfo, i64 0, i32 3, i64 63
-  store i8 0, i8* %arrayidx43, align 1, !tbaa !1
-  %flags44 = getelementptr inbounds %struct.seqinfo_s* %sqinfo, i64 0, i32 0
-  %11 = load i32* %flags44, align 4, !tbaa !0
-  %or45 = or i32 %11, 4
-  store i32 %or45, i32* %flags44, align 4, !tbaa !0
-  br label %return
+; <label>:38                                      ; preds = %isspace.exit._crit_edge
+  %39 = load i8* %.01, align 1, !dbg !1019, !tbaa !861
+  %40 = icmp eq i8 %39, 45, !dbg !1021
+  br i1 %40, label %125, label %41, !dbg !1022
 
-sw.bb47:                                          ; preds = %for.end
-  %12 = load i8* %sptr.addr.0, align 1, !tbaa !1
-  %cmp49 = icmp eq i8 %12, 45
-  br i1 %cmp49, label %return, label %if.then51
+; <label>:41                                      ; preds = %38
+  %42 = getelementptr inbounds %struct.seqinfo_s* %sqinfo, i64 0, i32 2, i64 0, !dbg !1023
+  %43 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %42, i1 false), !dbg !1023
+  %44 = tail call i8* @__strncpy_chk(i8* %42, i8* %.01, i64 63, i64 %43) #8, !dbg !1023
+  %45 = getelementptr inbounds %struct.seqinfo_s* %sqinfo, i64 0, i32 2, i64 63, !dbg !1025
+  store i8 0, i8* %45, align 1, !dbg !1026, !tbaa !861
+  %46 = getelementptr inbounds %struct.seqinfo_s* %sqinfo, i64 0, i32 0, !dbg !1027
+  %47 = load i32* %46, align 4, !dbg !1028, !tbaa !957
+  %48 = or i32 %47, 2, !dbg !1028
+  store i32 %48, i32* %46, align 4, !dbg !1028, !tbaa !957
+  br label %125, !dbg !1029
 
-if.then51:                                        ; preds = %sw.bb47
-  %flags52 = getelementptr inbounds %struct.seqinfo_s* %sqinfo, i64 0, i32 0
-  %13 = load i32* %flags52, align 4, !tbaa !0
-  %and53 = and i32 %13, 8
-  %tobool54 = icmp eq i32 %and53, 0
-  %arraydecay56 = getelementptr inbounds %struct.seqinfo_s* %sqinfo, i64 0, i32 4, i64 0
-  br i1 %tobool54, label %if.else, label %if.then55
+; <label>:49                                      ; preds = %isspace.exit._crit_edge
+  %50 = load i8* %.01, align 1, !dbg !1030, !tbaa !861
+  %51 = icmp eq i8 %50, 45, !dbg !1032
+  br i1 %51, label %125, label %52, !dbg !1033
 
-if.then55:                                        ; preds = %if.then51
-  %call57 = tail call i64 @strlen(i8* %arraydecay56) #9
-  %conv58 = trunc i64 %call57 to i32
-  %cmp59 = icmp slt i32 %conv58, 126
-  br i1 %cmp59, label %if.then61, label %if.end76
+; <label>:52                                      ; preds = %49
+  %53 = getelementptr inbounds %struct.seqinfo_s* %sqinfo, i64 0, i32 3, i64 0, !dbg !1034
+  %54 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %53, i1 false), !dbg !1034
+  %55 = tail call i8* @__strncpy_chk(i8* %53, i8* %.01, i64 63, i64 %54) #8, !dbg !1034
+  %56 = getelementptr inbounds %struct.seqinfo_s* %sqinfo, i64 0, i32 3, i64 63, !dbg !1036
+  store i8 0, i8* %56, align 1, !dbg !1037, !tbaa !861
+  %57 = getelementptr inbounds %struct.seqinfo_s* %sqinfo, i64 0, i32 0, !dbg !1038
+  %58 = load i32* %57, align 4, !dbg !1039, !tbaa !957
+  %59 = or i32 %58, 4, !dbg !1039
+  store i32 %59, i32* %57, align 4, !dbg !1039, !tbaa !957
+  br label %125, !dbg !1040
 
-if.then61:                                        ; preds = %if.then55
-  %sub64 = sub i64 127, %call57
-  %sext = shl i64 %sub64, 32
-  %conv65 = ashr exact i64 %sext, 32
-  %call66 = tail call i8* @strncat(i8* %arraydecay56, i8* getelementptr inbounds ([2 x i8]* @.str3, i64 0, i64 0), i64 %conv65) #8
-  %sub69 = sub i64 126, %call57
-  %sext170 = shl i64 %sub69, 32
-  %conv70 = ashr exact i64 %sext170, 32
-  %call71 = tail call i8* @strncat(i8* %arraydecay56, i8* %sptr.addr.0, i64 %conv70) #8
-  br label %if.end76
+; <label>:60                                      ; preds = %isspace.exit._crit_edge
+  %61 = load i8* %.01, align 1, !dbg !1041, !tbaa !861
+  %62 = icmp eq i8 %61, 45, !dbg !1043
+  br i1 %62, label %125, label %63, !dbg !1044
 
-if.else:                                          ; preds = %if.then51
-  %call75 = tail call i8* @strncpy(i8* %arraydecay56, i8* %sptr.addr.0, i64 127) #8
-  br label %if.end76
+; <label>:63                                      ; preds = %60
+  %64 = getelementptr inbounds %struct.seqinfo_s* %sqinfo, i64 0, i32 0, !dbg !1045
+  %65 = load i32* %64, align 4, !dbg !1045, !tbaa !957
+  %66 = and i32 %65, 8, !dbg !1048
+  %67 = icmp eq i32 %66, 0, !dbg !1048
+  %68 = getelementptr inbounds %struct.seqinfo_s* %sqinfo, i64 0, i32 4, i64 0, !dbg !1049
+  br i1 %67, label %81, label %69, !dbg !1051
 
-if.end76:                                         ; preds = %if.then55, %if.then61, %if.else
-  %arrayidx78 = getelementptr inbounds %struct.seqinfo_s* %sqinfo, i64 0, i32 4, i64 127
-  store i8 0, i8* %arrayidx78, align 1, !tbaa !1
-  %14 = load i32* %flags52, align 4, !tbaa !0
-  %or80 = or i32 %14, 8
-  store i32 %or80, i32* %flags52, align 4, !tbaa !0
-  br label %return
+; <label>:69                                      ; preds = %63
+  %70 = tail call i64 @strlen(i8* %68) #8, !dbg !1052
+  %71 = trunc i64 %70 to i32, !dbg !1052
+  tail call void @llvm.dbg.value(metadata i32 %71, i64 0, metadata !306, metadata !624), !dbg !1053
+  %72 = icmp slt i32 %71, 126, !dbg !1054
+  br i1 %72, label %73, label %84, !dbg !1056
 
-sw.bb82:                                          ; preds = %for.end
-  %call83 = tail call i32 @IsInt(i8* %sptr.addr.0) #8
-  %tobool84 = icmp eq i32 %call83, 0
-  br i1 %tobool84, label %if.then85, label %if.end86
+; <label>:73                                      ; preds = %69
+  %74 = sub i64 127, %70, !dbg !1057
+  %sext = shl i64 %74, 32, !dbg !1057
+  %75 = ashr exact i64 %sext, 32, !dbg !1057
+  %76 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %68, i1 false), !dbg !1057
+  %77 = tail call i8* @__strncat_chk(i8* %68, i8* getelementptr inbounds ([2 x i8]* @.str3, i64 0, i64 0), i64 %75, i64 %76) #8, !dbg !1057
+  %78 = sub i64 126, %70, !dbg !1059
+  %sext2 = shl i64 %78, 32, !dbg !1059
+  %79 = ashr exact i64 %sext2, 32, !dbg !1059
+  %80 = tail call i8* @__strncat_chk(i8* %68, i8* %.01, i64 %79, i64 %76) #8, !dbg !1059
+  br label %84, !dbg !1060
 
-if.then85:                                        ; preds = %sw.bb82
-  store i32 5, i32* @squid_errno, align 4, !tbaa !0
-  br label %return
+; <label>:81                                      ; preds = %63
+  %82 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %68, i1 false), !dbg !1061
+  %83 = tail call i8* @__strncpy_chk(i8* %68, i8* %.01, i64 127, i64 %82) #8, !dbg !1061
+  br label %84
 
-if.end86:                                         ; preds = %sw.bb82
-  %call87 = tail call i32 @atoi(i8* %sptr.addr.0) #9
-  %start = getelementptr inbounds %struct.seqinfo_s* %sqinfo, i64 0, i32 6
-  store i32 %call87, i32* %start, align 4, !tbaa !0
-  %cmp89 = icmp eq i32 %call87, 0
-  br i1 %cmp89, label %return, label %if.then91
+; <label>:84                                      ; preds = %69, %73, %81
+  %85 = getelementptr inbounds %struct.seqinfo_s* %sqinfo, i64 0, i32 4, i64 127, !dbg !1062
+  store i8 0, i8* %85, align 1, !dbg !1063, !tbaa !861
+  %86 = load i32* %64, align 4, !dbg !1064, !tbaa !957
+  %87 = or i32 %86, 8, !dbg !1064
+  store i32 %87, i32* %64, align 4, !dbg !1064, !tbaa !957
+  br label %125, !dbg !1065
 
-if.then91:                                        ; preds = %if.end86
-  %flags92 = getelementptr inbounds %struct.seqinfo_s* %sqinfo, i64 0, i32 0
-  %15 = load i32* %flags92, align 4, !tbaa !0
-  %or93 = or i32 %15, 16
-  store i32 %or93, i32* %flags92, align 4, !tbaa !0
-  br label %return
+; <label>:88                                      ; preds = %isspace.exit._crit_edge
+  %89 = tail call i32 @IsInt(i8* %.01) #8, !dbg !1066
+  %90 = icmp eq i32 %89, 0, !dbg !1066
+  br i1 %90, label %91, label %92, !dbg !1068
 
-sw.bb95:                                          ; preds = %for.end
-  %call96 = tail call i32 @IsInt(i8* %sptr.addr.0) #8
-  %tobool97 = icmp eq i32 %call96, 0
-  br i1 %tobool97, label %if.then98, label %if.end99
+; <label>:91                                      ; preds = %88
+  store i32 5, i32* @squid_errno, align 4, !dbg !1069, !tbaa !897
+  br label %125, !dbg !1071
 
-if.then98:                                        ; preds = %sw.bb95
-  store i32 5, i32* @squid_errno, align 4, !tbaa !0
-  br label %return
+; <label>:92                                      ; preds = %88
+  %93 = tail call i32 @atoi(i8* %.01) #8, !dbg !1072
+  %94 = getelementptr inbounds %struct.seqinfo_s* %sqinfo, i64 0, i32 6, !dbg !1073
+  store i32 %93, i32* %94, align 4, !dbg !1074, !tbaa !1075
+  %95 = icmp eq i32 %93, 0, !dbg !1076
+  br i1 %95, label %125, label %96, !dbg !1078
 
-if.end99:                                         ; preds = %sw.bb95
-  %call100 = tail call i32 @atoi(i8* %sptr.addr.0) #9
-  %stop = getelementptr inbounds %struct.seqinfo_s* %sqinfo, i64 0, i32 7
-  store i32 %call100, i32* %stop, align 4, !tbaa !0
-  %cmp102 = icmp eq i32 %call100, 0
-  br i1 %cmp102, label %return, label %if.then104
+; <label>:96                                      ; preds = %92
+  %97 = getelementptr inbounds %struct.seqinfo_s* %sqinfo, i64 0, i32 0, !dbg !1079
+  %98 = load i32* %97, align 4, !dbg !1080, !tbaa !957
+  %99 = or i32 %98, 16, !dbg !1080
+  store i32 %99, i32* %97, align 4, !dbg !1080, !tbaa !957
+  br label %125, !dbg !1081
 
-if.then104:                                       ; preds = %if.end99
-  %flags105 = getelementptr inbounds %struct.seqinfo_s* %sqinfo, i64 0, i32 0
-  %16 = load i32* %flags105, align 4, !tbaa !0
-  %or106 = or i32 %16, 32
-  store i32 %or106, i32* %flags105, align 4, !tbaa !0
-  br label %return
+; <label>:100                                     ; preds = %isspace.exit._crit_edge
+  %101 = tail call i32 @IsInt(i8* %.01) #8, !dbg !1082
+  %102 = icmp eq i32 %101, 0, !dbg !1082
+  br i1 %102, label %103, label %104, !dbg !1084
 
-sw.bb108:                                         ; preds = %for.end
-  %call109 = tail call i32 @IsInt(i8* %sptr.addr.0) #8
-  %tobool110 = icmp eq i32 %call109, 0
-  br i1 %tobool110, label %if.then111, label %if.end112
+; <label>:103                                     ; preds = %100
+  store i32 5, i32* @squid_errno, align 4, !dbg !1085, !tbaa !897
+  br label %125, !dbg !1087
 
-if.then111:                                       ; preds = %sw.bb108
-  store i32 5, i32* @squid_errno, align 4, !tbaa !0
-  br label %return
+; <label>:104                                     ; preds = %100
+  %105 = tail call i32 @atoi(i8* %.01) #8, !dbg !1088
+  %106 = getelementptr inbounds %struct.seqinfo_s* %sqinfo, i64 0, i32 7, !dbg !1089
+  store i32 %105, i32* %106, align 4, !dbg !1090, !tbaa !1091
+  %107 = icmp eq i32 %105, 0, !dbg !1092
+  br i1 %107, label %125, label %108, !dbg !1094
 
-if.end112:                                        ; preds = %sw.bb108
-  %call113 = tail call i32 @atoi(i8* %sptr.addr.0) #9
-  %olen = getelementptr inbounds %struct.seqinfo_s* %sqinfo, i64 0, i32 8
-  store i32 %call113, i32* %olen, align 4, !tbaa !0
-  %cmp115 = icmp eq i32 %call113, 0
-  br i1 %cmp115, label %return, label %if.then117
+; <label>:108                                     ; preds = %104
+  %109 = getelementptr inbounds %struct.seqinfo_s* %sqinfo, i64 0, i32 0, !dbg !1095
+  %110 = load i32* %109, align 4, !dbg !1096, !tbaa !957
+  %111 = or i32 %110, 32, !dbg !1096
+  store i32 %111, i32* %109, align 4, !dbg !1096, !tbaa !957
+  br label %125, !dbg !1097
 
-if.then117:                                       ; preds = %if.end112
-  %flags118 = getelementptr inbounds %struct.seqinfo_s* %sqinfo, i64 0, i32 0
-  %17 = load i32* %flags118, align 4, !tbaa !0
-  %or119 = or i32 %17, 256
-  store i32 %or119, i32* %flags118, align 4, !tbaa !0
-  br label %return
+; <label>:112                                     ; preds = %isspace.exit._crit_edge
+  %113 = tail call i32 @IsInt(i8* %.01) #8, !dbg !1098
+  %114 = icmp eq i32 %113, 0, !dbg !1098
+  br i1 %114, label %115, label %116, !dbg !1100
 
-sw.default:                                       ; preds = %for.end
-  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([38 x i8]* @.str4, i64 0, i64 0), i32 %flag) #8
-  br label %return
+; <label>:115                                     ; preds = %112
+  store i32 5, i32* @squid_errno, align 4, !dbg !1101, !tbaa !897
+  br label %125, !dbg !1103
 
-return:                                           ; preds = %sw.default, %if.then18, %if.then27, %if.then39, %if.end76, %if.then91, %if.then104, %if.then117, %if.end112, %if.end99, %if.end86, %sw.bb47, %sw.bb35, %sw.bb23, %sw.bb, %entry, %if.then111, %if.then98, %if.then85
-  %retval.0 = phi i32 [ 0, %if.then111 ], [ 0, %if.then98 ], [ 0, %if.then85 ], [ 1, %entry ], [ 1, %sw.bb ], [ 1, %sw.bb23 ], [ 1, %sw.bb35 ], [ 1, %sw.bb47 ], [ 1, %if.end86 ], [ 1, %if.end99 ], [ 1, %if.end112 ], [ 1, %if.then117 ], [ 1, %if.then104 ], [ 1, %if.then91 ], [ 1, %if.end76 ], [ 1, %if.then39 ], [ 1, %if.then27 ], [ 1, %if.then18 ], [ 1, %sw.default ]
-  ret i32 %retval.0
+; <label>:116                                     ; preds = %112
+  %117 = tail call i32 @atoi(i8* %.01) #8, !dbg !1104
+  %118 = getelementptr inbounds %struct.seqinfo_s* %sqinfo, i64 0, i32 8, !dbg !1105
+  store i32 %117, i32* %118, align 4, !dbg !1106, !tbaa !1107
+  %119 = icmp eq i32 %117, 0, !dbg !1108
+  br i1 %119, label %125, label %120, !dbg !1110
+
+; <label>:120                                     ; preds = %116
+  %121 = getelementptr inbounds %struct.seqinfo_s* %sqinfo, i64 0, i32 0, !dbg !1111
+  %122 = load i32* %121, align 4, !dbg !1112, !tbaa !957
+  %123 = or i32 %122, 256, !dbg !1112
+  store i32 %123, i32* %121, align 4, !dbg !1112, !tbaa !957
+  br label %125, !dbg !1113
+
+; <label>:124                                     ; preds = %isspace.exit._crit_edge
+  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([38 x i8]* @.str4, i64 0, i64 0), i32 %flag) #8, !dbg !1114
+  br label %125, !dbg !1115
+
+; <label>:125                                     ; preds = %124, %30, %41, %52, %84, %96, %108, %120, %116, %104, %92, %60, %49, %38, %27, %0, %115, %103, %91
+  %.0 = phi i32 [ 0, %115 ], [ 0, %103 ], [ 0, %91 ], [ 1, %0 ], [ 1, %27 ], [ 1, %38 ], [ 1, %49 ], [ 1, %60 ], [ 1, %92 ], [ 1, %104 ], [ 1, %116 ], [ 1, %120 ], [ 1, %108 ], [ 1, %96 ], [ 1, %84 ], [ 1, %52 ], [ 1, %41 ], [ 1, %30 ], [ 1, %124 ]
+  ret i32 %.0, !dbg !1116
 }

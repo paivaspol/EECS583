@@ -1,88 +1,90 @@
 define void @ZV_setMaxsize(%struct._ZV* %zv, i32 %newmaxsize) #0 {
-entry:
-  %cmp = icmp eq %struct._ZV* %zv, null
-  %cmp1 = icmp slt i32 %newmaxsize, 0
-  %or.cond = or i1 %cmp, %cmp1
-  br i1 %or.cond, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata %struct._ZV* %zv, i64 0, metadata !42, metadata !55), !dbg !157
+  tail call void @llvm.dbg.value(metadata i32 %newmaxsize, i64 0, metadata !43, metadata !55), !dbg !158
+  %1 = icmp eq %struct._ZV* %zv, null, !dbg !159
+  %2 = icmp slt i32 %newmaxsize, 0, !dbg !161
+  %or.cond = or i1 %1, %2, !dbg !162
+  br i1 %or.cond, label %3, label %6, !dbg !162
 
-if.then:                                          ; preds = %entry
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([50 x i8]* @.str5, i64 0, i64 0), %struct._ZV* %zv, i32 %newmaxsize) #4
-  tail call void @exit(i32 -1) #5
-  unreachable
+; <label>:3                                       ; preds = %0
+  %4 = load %struct.__sFILE** @__stderrp, align 8, !dbg !163, !tbaa !65
+  %5 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %4, i8* getelementptr inbounds ([50 x i8]* @.str5, i64 0, i64 0), %struct._ZV* %zv, i32 %newmaxsize) #5, !dbg !165
+  tail call void @exit(i32 -1) #6, !dbg !166
+  unreachable, !dbg !166
 
-if.end:                                           ; preds = %entry
-  %maxsize = getelementptr inbounds %struct._ZV* %zv, i64 0, i32 1
-  %1 = load i32* %maxsize, align 4, !tbaa !3
-  %cmp2 = icmp sgt i32 %1, 0
-  br i1 %cmp2, label %land.lhs.true, label %if.end8
+; <label>:6                                       ; preds = %0
+  %7 = getelementptr inbounds %struct._ZV* %zv, i64 0, i32 1, !dbg !167
+  %8 = load i32* %7, align 4, !dbg !167, !tbaa !79
+  %9 = icmp sgt i32 %8, 0, !dbg !169
+  br i1 %9, label %10, label %17, !dbg !170
 
-land.lhs.true:                                    ; preds = %if.end
-  %owned = getelementptr inbounds %struct._ZV* %zv, i64 0, i32 2
-  %2 = load i32* %owned, align 4, !tbaa !3
-  %cmp3 = icmp eq i32 %2, 0
-  br i1 %cmp3, label %if.then4, label %if.end8
+; <label>:10                                      ; preds = %6
+  %11 = getelementptr inbounds %struct._ZV* %zv, i64 0, i32 2, !dbg !171
+  %12 = load i32* %11, align 4, !dbg !171, !tbaa !86
+  %13 = icmp eq i32 %12, 0, !dbg !172
+  br i1 %13, label %14, label %17, !dbg !173
 
-if.then4:                                         ; preds = %land.lhs.true
-  %3 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call7 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([73 x i8]* @.str6, i64 0, i64 0), %struct._ZV* %zv, i32 %newmaxsize, i32 %1, i32 0) #4
-  tail call void @exit(i32 -1) #5
-  unreachable
+; <label>:14                                      ; preds = %10
+  %15 = load %struct.__sFILE** @__stderrp, align 8, !dbg !174, !tbaa !65
+  %16 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %15, i8* getelementptr inbounds ([73 x i8]* @.str6, i64 0, i64 0), %struct._ZV* %zv, i32 %newmaxsize, i32 %8, i32 0) #5, !dbg !176
+  tail call void @exit(i32 -1) #6, !dbg !177
+  unreachable, !dbg !177
 
-if.end8:                                          ; preds = %land.lhs.true, %if.end
-  %cmp10 = icmp eq i32 %1, %newmaxsize
-  br i1 %cmp10, label %if.end40, label %if.then11
+; <label>:17                                      ; preds = %10, %6
+  %18 = icmp eq i32 %8, %newmaxsize, !dbg !178
+  br i1 %18, label %42, label %19, !dbg !179
 
-if.then11:                                        ; preds = %if.end8
-  %mul = shl nsw i32 %newmaxsize, 1
-  %call12 = tail call double* @DVinit(i32 %mul, double 0.000000e+00) #4
-  %size = getelementptr inbounds %struct._ZV* %zv, i64 0, i32 0
-  %4 = load i32* %size, align 4, !tbaa !3
-  %cmp13 = icmp sgt i32 %4, 0
-  %vec15 = getelementptr inbounds %struct._ZV* %zv, i64 0, i32 3
-  br i1 %cmp13, label %if.then14, label %if.end31
+; <label>:19                                      ; preds = %17
+  %20 = shl nsw i32 %newmaxsize, 1, !dbg !180
+  %21 = tail call double* @DVinit(i32 %20, double 0.000000e+00) #5, !dbg !181
+  tail call void @llvm.dbg.value(metadata double* %21, i64 0, metadata !44, metadata !55), !dbg !182
+  %22 = getelementptr inbounds %struct._ZV* %zv, i64 0, i32 0, !dbg !183
+  %23 = load i32* %22, align 4, !dbg !183, !tbaa !74
+  %24 = icmp sgt i32 %23, 0, !dbg !185
+  %25 = getelementptr inbounds %struct._ZV* %zv, i64 0, i32 3, !dbg !186
+  br i1 %24, label %26, label %._crit_edge, !dbg !189
 
-if.then14:                                        ; preds = %if.then11
-  %5 = load double** %vec15, align 8, !tbaa !0
-  %cmp16 = icmp eq double* %5, null
-  br i1 %cmp16, label %if.then17, label %if.end20
+; <label>:26                                      ; preds = %19
+  %27 = load double** %25, align 8, !dbg !186, !tbaa !89
+  %28 = icmp eq double* %27, null, !dbg !190
+  br i1 %28, label %29, label %32, !dbg !191
 
-if.then17:                                        ; preds = %if.then14
-  %6 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call19 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %6, i8* getelementptr inbounds ([71 x i8]* @.str7, i64 0, i64 0), %struct._ZV* %zv, i32 %newmaxsize, i32 %4) #4
-  tail call void @exit(i32 -1) #5
-  unreachable
+; <label>:29                                      ; preds = %26
+  %30 = load %struct.__sFILE** @__stderrp, align 8, !dbg !192, !tbaa !65
+  %31 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %30, i8* getelementptr inbounds ([71 x i8]* @.str7, i64 0, i64 0), %struct._ZV* %zv, i32 %newmaxsize, i32 %23) #5, !dbg !194
+  tail call void @exit(i32 -1) #6, !dbg !195
+  unreachable, !dbg !195
 
-if.end20:                                         ; preds = %if.then14
-  %cmp22 = icmp sgt i32 %4, %newmaxsize
-  br i1 %cmp22, label %if.else, label %if.then23
+; <label>:32                                      ; preds = %26
+  %33 = icmp sgt i32 %23, %newmaxsize, !dbg !196
+  br i1 %33, label %36, label %34, !dbg !198
 
-if.then23:                                        ; preds = %if.end20
-  %mul25 = shl nsw i32 %4, 1
-  tail call void @DVcopy(i32 %mul25, double* %call12, double* %5) #4
-  br label %if.end31
+; <label>:34                                      ; preds = %32
+  %35 = shl nsw i32 %23, 1, !dbg !199
+  tail call void @DVcopy(i32 %35, double* %21, double* %27) #5, !dbg !201
+  br label %._crit_edge, !dbg !202
 
-if.else:                                          ; preds = %if.end20
-  tail call void @DVcopy(i32 %mul, double* %call12, double* %5) #4
-  store i32 %newmaxsize, i32* %size, align 4, !tbaa !3
-  br label %if.end31
+; <label>:36                                      ; preds = %32
+  tail call void @DVcopy(i32 %20, double* %21, double* %27) #5, !dbg !203
+  store i32 %newmaxsize, i32* %22, align 4, !dbg !205, !tbaa !74
+  br label %._crit_edge
 
-if.end31:                                         ; preds = %if.then11, %if.then23, %if.else
-  %7 = load double** %vec15, align 8, !tbaa !0
-  %cmp33 = icmp eq double* %7, null
-  br i1 %cmp33, label %if.end36, label %if.then34
+._crit_edge:                                      ; preds = %19, %34, %36
+  %37 = load double** %25, align 8, !dbg !206, !tbaa !89
+  %38 = icmp eq double* %37, null, !dbg !208
+  br i1 %38, label %40, label %39, !dbg !209
 
-if.then34:                                        ; preds = %if.end31
-  tail call void @DVfree(double* %7) #4
-  br label %if.end36
+; <label>:39                                      ; preds = %._crit_edge
+  tail call void @DVfree(double* %37) #5, !dbg !210
+  br label %40, !dbg !212
 
-if.end36:                                         ; preds = %if.end31, %if.then34
-  store i32 %newmaxsize, i32* %maxsize, align 4, !tbaa !3
-  %owned38 = getelementptr inbounds %struct._ZV* %zv, i64 0, i32 2
-  store i32 1, i32* %owned38, align 4, !tbaa !3
-  store double* %call12, double** %vec15, align 8, !tbaa !0
-  br label %if.end40
+; <label>:40                                      ; preds = %._crit_edge, %39
+  store i32 %newmaxsize, i32* %7, align 4, !dbg !213, !tbaa !79
+  %41 = getelementptr inbounds %struct._ZV* %zv, i64 0, i32 2, !dbg !214
+  store i32 1, i32* %41, align 4, !dbg !215, !tbaa !86
+  store double* %21, double** %25, align 8, !dbg !216, !tbaa !89
+  br label %42, !dbg !217
 
-if.end40:                                         ; preds = %if.end8, %if.end36
-  ret void
+; <label>:42                                      ; preds = %17, %40
+  ret void, !dbg !218
 }

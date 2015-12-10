@@ -1,34 +1,38 @@
 define i32 @CCTK_OutputVarAs(%struct.cGH* %GH, i8* %var, i8* %alias) #1 {
-  %1 = load i32* @num_methods, align 4, !tbaa !13
-  %2 = icmp sgt i32 %1, 0
-  br i1 %2, label %.lr.ph, label %.loopexit
+  tail call void @llvm.dbg.value(metadata %struct.cGH* %GH, i64 0, metadata !105, metadata !237), !dbg !346
+  tail call void @llvm.dbg.value(metadata i8* %var, i64 0, metadata !106, metadata !237), !dbg !347
+  tail call void @llvm.dbg.value(metadata i8* %alias, i64 0, metadata !107, metadata !237), !dbg !348
+  %1 = load i32* @num_methods, align 4, !dbg !349, !tbaa !278
+  %2 = icmp sgt i32 %1, 0, !dbg !351
+  br i1 %2, label %.lr.ph, label %.loopexit, !dbg !352
 
 .lr.ph:                                           ; preds = %0, %13
   %handle.02 = phi i32 [ %14, %13 ], [ 0, %0 ]
   %retval.01 = phi i32 [ %retval.1, %13 ], [ 0, %0 ]
-  %3 = load %struct.cHandledData** @IOMethods, align 8, !tbaa !2
-  %4 = tail call i8* @Util_GetHandledData(%struct.cHandledData* %3, i32 %handle.02) #5
-  %5 = icmp eq i8* %4, null
-  br i1 %5, label %13, label %6
+  %3 = load %struct.cHandledData** @IOMethods, align 8, !dbg !353, !tbaa !241
+  %4 = tail call i8* @Util_GetHandledData(%struct.cHandledData* %3, i32 %handle.02) #6, !dbg !358
+  %5 = icmp eq i8* %4, null, !dbg !359
+  br i1 %5, label %13, label %6, !dbg !361
 
 ; <label>:6                                       ; preds = %.lr.ph
-  %7 = getelementptr inbounds i8* %4, i64 24
-  %8 = bitcast i8* %7 to i32 (%struct.cGH*, i8*, i8*)**
-  %9 = load i32 (%struct.cGH*, i8*, i8*)** %8, align 8, !tbaa !10
-  %10 = tail call i32 %9(%struct.cGH* %GH, i8* %var, i8* %alias) #5
-  %11 = icmp eq i32 %10, 0
-  %12 = zext i1 %11 to i32
-  %.retval.0 = add nsw i32 %12, %retval.01
-  br label %13
+  %7 = getelementptr inbounds i8* %4, i64 24, !dbg !362
+  %8 = bitcast i8* %7 to i32 (%struct.cGH*, i8*, i8*)**, !dbg !362
+  %9 = load i32 (%struct.cGH*, i8*, i8*)** %8, align 8, !dbg !362, !tbaa !270
+  %10 = tail call i32 %9(%struct.cGH* %GH, i8* %var, i8* %alias) #6, !dbg !363
+  %11 = icmp eq i32 %10, 0, !dbg !364
+  %12 = zext i1 %11 to i32, !dbg !365
+  %.retval.0 = add nsw i32 %12, %retval.01, !dbg !365
+  br label %13, !dbg !365
 
 ; <label>:13                                      ; preds = %6, %.lr.ph
   %retval.1 = phi i32 [ %retval.01, %.lr.ph ], [ %.retval.0, %6 ]
-  %14 = add nuw nsw i32 %handle.02, 1
-  %15 = load i32* @num_methods, align 4, !tbaa !13
-  %16 = icmp slt i32 %14, %15
-  br i1 %16, label %.lr.ph, label %.loopexit
+  %14 = add nuw nsw i32 %handle.02, 1, !dbg !366
+  tail call void @llvm.dbg.value(metadata i32 %14, i64 0, metadata !108, metadata !237), !dbg !367
+  %15 = load i32* @num_methods, align 4, !dbg !368, !tbaa !278
+  %16 = icmp slt i32 %14, %15, !dbg !369
+  br i1 %16, label %.lr.ph, label %.loopexit, !dbg !370
 
 .loopexit:                                        ; preds = %13, %0
   %retval.2 = phi i32 [ -1, %0 ], [ %retval.1, %13 ]
-  ret i32 %retval.2
+  ret i32 %retval.2, !dbg !371
 }

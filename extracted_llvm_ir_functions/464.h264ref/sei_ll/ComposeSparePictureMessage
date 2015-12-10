@@ -1,19 +1,24 @@
-define void @ComposeSparePictureMessage(i32 %delta_spare_frame_num, i32 %ref_area_indicator, %struct.Bitstream* nocapture %tmpBitstream) #0 {
-entry:
+define void @ComposeSparePictureMessage(i32 %delta_spare_frame_num, i32 %ref_area_indicator, %struct.Bitstream* nocapture readonly %tmpBitstream) #0 {
   %sym = alloca %struct.syntaxelement, align 8
-  %0 = load %struct.Bitstream** getelementptr inbounds (%struct.spare_picture_struct* @seiSparePicturePayload, i64 0, i32 3), align 8, !tbaa !0
-  %1 = bitcast %struct.syntaxelement* %sym to i8*
-  call void @llvm.lifetime.start(i64 48, i8* %1) #4
-  %type = getelementptr inbounds %struct.syntaxelement* %sym, i64 0, i32 0
-  store i32 0, i32* %type, align 8, !tbaa !3
-  %mapping = getelementptr inbounds %struct.syntaxelement* %sym, i64 0, i32 8
-  store void (i32, i32, i32*, i32*)* @ue_linfo, void (i32, i32, i32*, i32*)** %mapping, align 8, !tbaa !0
-  %value1 = getelementptr inbounds %struct.syntaxelement* %sym, i64 0, i32 1
-  store i32 %delta_spare_frame_num, i32* %value1, align 4, !tbaa !3
-  %call = call i32 @writeSyntaxElement2Buf_UVLC(%struct.syntaxelement* %sym, %struct.Bitstream* %0) #6
-  store i32 %ref_area_indicator, i32* %value1, align 4, !tbaa !3
-  %call2 = call i32 @writeSyntaxElement2Buf_UVLC(%struct.syntaxelement* %sym, %struct.Bitstream* %0) #6
-  call void @AppendTmpbits2Buf(%struct.Bitstream* %0, %struct.Bitstream* %tmpBitstream) #7
-  call void @llvm.lifetime.end(i64 48, i8* %1) #4
-  ret void
+  tail call void @llvm.dbg.value(metadata i32 %delta_spare_frame_num, i64 0, metadata !135, metadata !931), !dbg !1241
+  tail call void @llvm.dbg.value(metadata i32 %ref_area_indicator, i64 0, metadata !136, metadata !931), !dbg !1242
+  tail call void @llvm.dbg.value(metadata %struct.Bitstream* %tmpBitstream, i64 0, metadata !137, metadata !931), !dbg !1243
+  %1 = load %struct.Bitstream** getelementptr inbounds (%struct.spare_picture_struct* @seiSparePicturePayload, i64 0, i32 3), align 8, !dbg !1244, !tbaa !962
+  tail call void @llvm.dbg.value(metadata %struct.Bitstream* %1, i64 0, metadata !138, metadata !931), !dbg !1245
+  %2 = bitcast %struct.syntaxelement* %sym to i8*, !dbg !1246
+  call void @llvm.lifetime.start(i64 48, i8* %2) #7, !dbg !1246
+  %3 = getelementptr inbounds %struct.syntaxelement* %sym, i64 0, i32 0, !dbg !1247
+  store i32 0, i32* %3, align 8, !dbg !1248, !tbaa !1249
+  %4 = getelementptr inbounds %struct.syntaxelement* %sym, i64 0, i32 8, !dbg !1251
+  store void (i32, i32, i32*, i32*)* @ue_linfo, void (i32, i32, i32*, i32*)** %4, align 8, !dbg !1252, !tbaa !1253
+  %5 = getelementptr inbounds %struct.syntaxelement* %sym, i64 0, i32 1, !dbg !1254
+  store i32 %delta_spare_frame_num, i32* %5, align 4, !dbg !1255, !tbaa !1256
+  tail call void @llvm.dbg.value(metadata %struct.syntaxelement* %sym, i64 0, metadata !139, metadata !931), !dbg !1257
+  %6 = call i32 @writeSyntaxElement2Buf_UVLC(%struct.syntaxelement* %sym, %struct.Bitstream* %1) #8, !dbg !1258
+  store i32 %ref_area_indicator, i32* %5, align 4, !dbg !1259, !tbaa !1256
+  call void @llvm.dbg.value(metadata %struct.syntaxelement* %sym, i64 0, metadata !139, metadata !931), !dbg !1257
+  %7 = call i32 @writeSyntaxElement2Buf_UVLC(%struct.syntaxelement* %sym, %struct.Bitstream* %1) #8, !dbg !1260
+  call void @AppendTmpbits2Buf(%struct.Bitstream* %1, %struct.Bitstream* %tmpBitstream) #9, !dbg !1261
+  call void @llvm.lifetime.end(i64 48, i8* %2) #7, !dbg !1262
+  ret void, !dbg !1262
 }

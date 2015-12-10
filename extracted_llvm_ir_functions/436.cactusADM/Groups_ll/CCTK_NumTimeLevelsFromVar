@@ -1,23 +1,25 @@
 define i32 @CCTK_NumTimeLevelsFromVar(i8* %var) #2 {
-  %1 = tail call i32 @CCTK_VarIndex(i8* %var) #9
-  %2 = icmp sgt i32 %1, -1
-  %3 = load i32* @total_variables, align 4
-  %4 = icmp sgt i32 %3, %1
-  %or.cond.i = and i1 %2, %4
-  br i1 %or.cond.i, label %5, label %CCTK_NumTimeLevelsFromVarI.exit
+  tail call void @llvm.dbg.value(metadata i8* %var, i64 0, metadata !271, metadata !483), !dbg !1075
+  %1 = tail call i32 @CCTK_VarIndex(i8* %var) #9, !dbg !1076
+  tail call void @llvm.dbg.value(metadata i32 %1, i64 0, metadata !264, metadata !483), !dbg !1077
+  %2 = icmp sgt i32 %1, -1, !dbg !1079
+  %3 = load i32* @total_variables, align 4, !dbg !1080
+  %4 = icmp sgt i32 %3, %1, !dbg !1081
+  %or.cond.i = and i1 %2, %4, !dbg !1082
+  br i1 %or.cond.i, label %5, label %CCTK_NumTimeLevelsFromVarI.exit, !dbg !1082
 
 ; <label>:5                                       ; preds = %0
-  %6 = sext i32 %1 to i64
-  %7 = load i32** @group_of_variable, align 8, !tbaa !2
-  %8 = getelementptr inbounds i32* %7, i64 %6
-  %9 = load i32* %8, align 4, !tbaa !6
-  %10 = sext i32 %9 to i64
-  %11 = load %struct.cGroupDefinition** @groups, align 8, !tbaa !2
-  %12 = getelementptr inbounds %struct.cGroupDefinition* %11, i64 %10, i32 10
-  %13 = load i32* %12, align 4, !tbaa !20
-  br label %CCTK_NumTimeLevelsFromVarI.exit
+  %6 = sext i32 %1 to i64, !dbg !1083
+  %7 = load i32** @group_of_variable, align 8, !dbg !1083, !tbaa !487
+  %8 = getelementptr inbounds i32* %7, i64 %6, !dbg !1083
+  %9 = load i32* %8, align 4, !dbg !1083, !tbaa !502
+  %10 = sext i32 %9 to i64, !dbg !1084
+  %11 = load %struct.cGroupDefinition** @groups, align 8, !dbg !1084, !tbaa !487
+  %12 = getelementptr inbounds %struct.cGroupDefinition* %11, i64 %10, i32 10, !dbg !1085
+  %13 = load i32* %12, align 4, !dbg !1085, !tbaa !904
+  br label %CCTK_NumTimeLevelsFromVarI.exit, !dbg !1086
 
 CCTK_NumTimeLevelsFromVarI.exit:                  ; preds = %0, %5
-  %14 = phi i32 [ %13, %5 ], [ -1, %0 ]
-  ret i32 %14
+  %14 = phi i32 [ %13, %5 ], [ -1, %0 ], !dbg !1086
+  ret i32 %14, !dbg !1087
 }

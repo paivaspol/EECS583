@@ -1,103 +1,115 @@
-define void @Lawless422(float* nocapture %x, i32* %y, i32 %n, i32 %z, float %c, float %lambda, float* nocapture %ret_f, float* nocapture %ret_df) #0 {
-entry:
-  %cmp137 = icmp sgt i32 %n, 0
-  br i1 %cmp137, label %for.body.lr.ph, label %entry.for.end_crit_edge
+define void @Lawless422(float* nocapture readonly %x, i32* readonly %y, i32 %n, i32 %z, float %c, float %lambda, float* nocapture %ret_f, float* nocapture %ret_df) #0 {
+  tail call void @llvm.dbg.value(metadata float* %x, i64 0, metadata !305, metadata !372), !dbg !1824
+  tail call void @llvm.dbg.value(metadata i32* %y, i64 0, metadata !306, metadata !372), !dbg !1825
+  tail call void @llvm.dbg.value(metadata i32 %n, i64 0, metadata !307, metadata !372), !dbg !1826
+  tail call void @llvm.dbg.value(metadata i32 %z, i64 0, metadata !308, metadata !372), !dbg !1827
+  tail call void @llvm.dbg.value(metadata float %c, i64 0, metadata !309, metadata !372), !dbg !1828
+  tail call void @llvm.dbg.value(metadata float %lambda, i64 0, metadata !310, metadata !372), !dbg !1829
+  tail call void @llvm.dbg.value(metadata float* %ret_f, i64 0, metadata !311, metadata !372), !dbg !1830
+  tail call void @llvm.dbg.value(metadata float* %ret_df, i64 0, metadata !312, metadata !372), !dbg !1831
+  tail call void @llvm.dbg.value(metadata double 0.000000e+00, i64 0, metadata !318, metadata !372), !dbg !1832
+  tail call void @llvm.dbg.value(metadata double 0.000000e+00, i64 0, metadata !315, metadata !372), !dbg !1833
+  tail call void @llvm.dbg.value(metadata double 0.000000e+00, i64 0, metadata !316, metadata !372), !dbg !1834
+  tail call void @llvm.dbg.value(metadata double 0.000000e+00, i64 0, metadata !314, metadata !372), !dbg !1835
+  tail call void @llvm.dbg.value(metadata double 0.000000e+00, i64 0, metadata !313, metadata !372), !dbg !1836
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !319, metadata !372), !dbg !1837
+  %1 = icmp sgt i32 %n, 0, !dbg !1838
+  br i1 %1, label %.lr.ph, label %._crit_edge15, !dbg !1841
 
-entry.for.end_crit_edge:                          ; preds = %entry
-  %conv45.pre = fpext float %lambda to double
-  %mul46.pre = fmul double %conv45.pre, -1.000000e+00
-  br label %for.end
+._crit_edge15:                                    ; preds = %0
+  %.pre = fpext float %lambda to double, !dbg !1842
+  br label %._crit_edge, !dbg !1841
 
-for.body.lr.ph:                                   ; preds = %entry
-  %cmp1 = icmp eq i32* %y, null
-  %conv5 = fpext float %lambda to double
-  %mul6 = fmul double %conv5, -1.000000e+00
-  br label %for.body
+.lr.ph:                                           ; preds = %0
+  %2 = icmp eq i32* %y, null, !dbg !1843
+  %3 = fpext float %lambda to double, !dbg !1845
+  %4 = add i32 %n, -1, !dbg !1841
+  br label %5, !dbg !1841
 
-for.body:                                         ; preds = %cond.end, %for.body.lr.ph
-  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %cond.end ]
-  %total.0142 = phi double [ 0.000000e+00, %for.body.lr.ph ], [ %add43, %cond.end ]
-  %esum.0141 = phi double [ 0.000000e+00, %for.body.lr.ph ], [ %add12, %cond.end ]
-  %xsum.0140 = phi double [ 0.000000e+00, %for.body.lr.ph ], [ %add, %cond.end ]
-  %xxesum.0139 = phi double [ 0.000000e+00, %for.body.lr.ph ], [ %add42, %cond.end ]
-  %xesum.0138 = phi double [ 0.000000e+00, %for.body.lr.ph ], [ %add25, %cond.end ]
-  br i1 %cmp1, label %cond.end, label %cond.false
+; <label>:5                                       ; preds = %11, %.lr.ph
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %11 ]
+  %total.05 = phi double [ 0.000000e+00, %.lr.ph ], [ %30, %11 ]
+  %esum.04 = phi double [ 0.000000e+00, %.lr.ph ], [ %22, %11 ]
+  %xsum.03 = phi double [ 0.000000e+00, %.lr.ph ], [ %17, %11 ]
+  %6 = phi <2 x double> [ zeroinitializer, %.lr.ph ], [ %29, %11 ]
+  br i1 %2, label %11, label %7, !dbg !1846
 
-cond.false:                                       ; preds = %for.body
-  %arrayidx = getelementptr inbounds i32* %y, i64 %indvars.iv
-  %0 = load i32* %arrayidx, align 4, !tbaa !0
-  %conv = sitofp i32 %0 to double
-  br label %cond.end
+; <label>:7                                       ; preds = %5
+  %8 = getelementptr inbounds i32* %y, i64 %indvars.iv, !dbg !1847
+  %9 = load i32* %8, align 4, !dbg !1847, !tbaa !504
+  %10 = sitofp i32 %9 to double, !dbg !1848
+  br label %11, !dbg !1846
 
-cond.end:                                         ; preds = %for.body, %cond.false
-  %cond = phi double [ %conv, %cond.false ], [ 1.000000e+00, %for.body ]
-  %arrayidx3 = getelementptr inbounds float* %x, i64 %indvars.iv
-  %1 = load float* %arrayidx3, align 4, !tbaa !4
-  %conv4 = fpext float %1 to double
-  %mul = fmul double %cond, %conv4
-  %add = fadd double %xsum.0140, %mul
-  %mul10 = fmul double %mul6, %conv4
-  %call = tail call double @exp(double %mul10) #4
-  %mul11 = fmul double %cond, %call
-  %add12 = fadd double %esum.0141, %mul11
-  %2 = load float* %arrayidx3, align 4, !tbaa !4
-  %conv15 = fpext float %2 to double
-  %mul16 = fmul double %cond, %conv15
-  %mul22 = fmul double %mul6, %conv15
-  %call23 = tail call double @exp(double %mul22) #4
-  %mul24 = fmul double %call23, %mul16
-  %add25 = fadd double %xesum.0138, %mul24
-  %3 = load float* %arrayidx3, align 4, !tbaa !4
-  %conv28 = fpext float %3 to double
-  %mul29 = fmul double %cond, %conv28
-  %mul33 = fmul double %conv28, %mul29
-  %mul39 = fmul double %mul6, %conv28
-  %call40 = tail call double @exp(double %mul39) #4
-  %mul41 = fmul double %call40, %mul33
-  %add42 = fadd double %xxesum.0139, %mul41
-  %add43 = fadd double %total.0142, %cond
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %n
-  br i1 %exitcond, label %for.end, label %for.body
+; <label>:11                                      ; preds = %5, %7
+  %12 = phi double [ %10, %7 ], [ 1.000000e+00, %5 ], !dbg !1846
+  tail call void @llvm.dbg.value(metadata double %12, i64 0, metadata !317, metadata !372), !dbg !1849
+  %13 = getelementptr inbounds float* %x, i64 %indvars.iv, !dbg !1850
+  %14 = load float* %13, align 4, !dbg !1850, !tbaa !687
+  %15 = fpext float %14 to double, !dbg !1850
+  %16 = fmul double %12, %15, !dbg !1851
+  %17 = fadd double %xsum.03, %16, !dbg !1852
+  tail call void @llvm.dbg.value(metadata double %17, i64 0, metadata !316, metadata !372), !dbg !1834
+  %18 = fmul double %3, %15, !dbg !1853
+  %19 = fsub double -0.000000e+00, %18, !dbg !1853
+  %20 = tail call double @exp(double %19) #9, !dbg !1854
+  %21 = fmul double %12, %20, !dbg !1855
+  %22 = fadd double %esum.04, %21, !dbg !1856
+  tail call void @llvm.dbg.value(metadata double %22, i64 0, metadata !313, metadata !372), !dbg !1836
+  tail call void @llvm.dbg.value(metadata double undef, i64 0, metadata !314, metadata !372), !dbg !1835
+  %23 = fmul double %15, %16, !dbg !1857
+  %24 = insertelement <2 x double> undef, double %23, i32 0, !dbg !1858
+  %25 = insertelement <2 x double> %24, double %16, i32 1, !dbg !1858
+  %26 = insertelement <2 x double> undef, double %20, i32 0, !dbg !1858
+  %27 = insertelement <2 x double> %26, double %20, i32 1, !dbg !1858
+  %28 = fmul <2 x double> %25, %27, !dbg !1858
+  %29 = fadd <2 x double> %6, %28, !dbg !1859
+  tail call void @llvm.dbg.value(metadata double undef, i64 0, metadata !315, metadata !372), !dbg !1833
+  %30 = fadd double %total.05, %12, !dbg !1860
+  tail call void @llvm.dbg.value(metadata double %30, i64 0, metadata !318, metadata !372), !dbg !1832
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !1841
+  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !1841
+  %exitcond = icmp eq i32 %lftr.wideiv, %4, !dbg !1841
+  br i1 %exitcond, label %._crit_edge, label %5, !dbg !1841
 
-for.end:                                          ; preds = %cond.end, %entry.for.end_crit_edge
-  %mul46.pre-phi = phi double [ %mul46.pre, %entry.for.end_crit_edge ], [ %mul6, %cond.end ]
-  %conv45.pre-phi = phi double [ %conv45.pre, %entry.for.end_crit_edge ], [ %conv5, %cond.end ]
-  %total.0.lcssa = phi double [ 0.000000e+00, %entry.for.end_crit_edge ], [ %add43, %cond.end ]
-  %esum.0.lcssa = phi double [ 0.000000e+00, %entry.for.end_crit_edge ], [ %add12, %cond.end ]
-  %xsum.0.lcssa = phi double [ 0.000000e+00, %entry.for.end_crit_edge ], [ %add, %cond.end ]
-  %xxesum.0.lcssa = phi double [ 0.000000e+00, %entry.for.end_crit_edge ], [ %add42, %cond.end ]
-  %xesum.0.lcssa = phi double [ 0.000000e+00, %entry.for.end_crit_edge ], [ %add25, %cond.end ]
-  %conv44 = sitofp i32 %z to double
-  %conv47 = fpext float %c to double
-  %mul48 = fmul double %conv47, %mul46.pre-phi
-  %call49 = tail call double @exp(double %mul48) #4
-  %mul50 = fmul double %conv44, %call49
-  %add51 = fadd double %esum.0.lcssa, %mul50
-  %mul54 = fmul double %conv44, %conv47
-  %call59 = tail call double @exp(double %mul48) #4
-  %mul60 = fmul double %mul54, %call59
-  %add61 = fadd double %xesum.0.lcssa, %mul60
-  %mul66 = fmul double %conv47, %mul54
-  %call71 = tail call double @exp(double %mul48) #4
-  %mul72 = fmul double %mul66, %call71
-  %add73 = fadd double %xxesum.0.lcssa, %mul72
-  %div = fdiv double 1.000000e+00, %conv45.pre-phi
-  %div75 = fdiv double %xsum.0.lcssa, %total.0.lcssa
-  %sub = fsub double %div, %div75
-  %div76 = fdiv double %add61, %add51
-  %add77 = fadd double %sub, %div76
-  %conv78 = fptrunc double %add77 to float
-  store float %conv78, float* %ret_f, align 4, !tbaa !4
-  %mul81 = fmul double %div76, %div76
-  %div82 = fdiv double %add73, %add51
-  %sub83 = fsub double %mul81, %div82
-  %mul84 = fmul float %lambda, %lambda
-  %conv85 = fpext float %mul84 to double
-  %div86 = fdiv double 1.000000e+00, %conv85
-  %sub87 = fsub double %sub83, %div86
-  %conv88 = fptrunc double %sub87 to float
-  store float %conv88, float* %ret_df, align 4, !tbaa !4
-  ret void
+._crit_edge:                                      ; preds = %11, %._crit_edge15
+  %.pre-phi = phi double [ %.pre, %._crit_edge15 ], [ %3, %11 ], !dbg !1842
+  %total.0.lcssa = phi double [ 0.000000e+00, %._crit_edge15 ], [ %30, %11 ]
+  %esum.0.lcssa = phi double [ 0.000000e+00, %._crit_edge15 ], [ %22, %11 ]
+  %xsum.0.lcssa = phi double [ 0.000000e+00, %._crit_edge15 ], [ %17, %11 ]
+  %31 = phi <2 x double> [ zeroinitializer, %._crit_edge15 ], [ %29, %11 ]
+  %32 = sitofp i32 %z to double, !dbg !1861
+  %33 = fpext float %c to double, !dbg !1862
+  %34 = fmul double %33, %.pre-phi, !dbg !1863
+  %35 = fsub double -0.000000e+00, %34, !dbg !1863
+  %36 = tail call double @exp(double %35) #9, !dbg !1864
+  %37 = fmul double %32, %36, !dbg !1865
+  %38 = fadd double %esum.0.lcssa, %37, !dbg !1866
+  tail call void @llvm.dbg.value(metadata double %38, i64 0, metadata !313, metadata !372), !dbg !1836
+  %39 = fmul double %32, %33, !dbg !1867
+  %40 = fmul double %39, %36, !dbg !1868
+  %41 = extractelement <2 x double> %31, i32 1, !dbg !1869
+  %42 = fadd double %41, %40, !dbg !1869
+  tail call void @llvm.dbg.value(metadata double %42, i64 0, metadata !314, metadata !372), !dbg !1835
+  %43 = fmul double %33, %39, !dbg !1870
+  %44 = fmul double %43, %36, !dbg !1871
+  %45 = extractelement <2 x double> %31, i32 0, !dbg !1872
+  %46 = fadd double %45, %44, !dbg !1872
+  tail call void @llvm.dbg.value(metadata double %46, i64 0, metadata !315, metadata !372), !dbg !1833
+  %47 = fdiv double 1.000000e+00, %.pre-phi, !dbg !1873
+  %48 = fdiv double %xsum.0.lcssa, %total.0.lcssa, !dbg !1874
+  %49 = fsub double %47, %48, !dbg !1875
+  %50 = fdiv double %42, %38, !dbg !1876
+  %51 = fadd double %49, %50, !dbg !1877
+  %52 = fptrunc double %51 to float, !dbg !1878
+  store float %52, float* %ret_f, align 4, !dbg !1879, !tbaa !687
+  %53 = fmul double %50, %50, !dbg !1880
+  %54 = fdiv double %46, %38, !dbg !1881
+  %55 = fsub double %53, %54, !dbg !1882
+  %56 = fmul float %lambda, %lambda, !dbg !1883
+  %57 = fpext float %56 to double, !dbg !1884
+  %58 = fdiv double 1.000000e+00, %57, !dbg !1885
+  %59 = fsub double %55, %58, !dbg !1886
+  %60 = fptrunc double %59 to float, !dbg !1887
+  store float %60, float* %ret_df, align 4, !dbg !1888, !tbaa !687
+  ret void, !dbg !1889
 }

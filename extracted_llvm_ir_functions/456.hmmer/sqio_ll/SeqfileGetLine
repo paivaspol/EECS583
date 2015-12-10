@@ -1,39 +1,39 @@
 define internal fastcc void @SeqfileGetLine(%struct.ReadSeqVars* %V) #0 {
-entry:
-  %ssimode = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 5
-  %0 = load i32* %ssimode, align 4, !tbaa !0
-  %cmp = icmp sgt i32 %0, -1
-  %f = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 0
-  br i1 %cmp, label %if.then, label %if.end4
+  tail call void @llvm.dbg.value(metadata %struct.ReadSeqVars* %V, i64 0, metadata !490, metadata !624), !dbg !840
+  %1 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 5, !dbg !841
+  %2 = load i32* %1, align 4, !dbg !841, !tbaa !639
+  %3 = icmp sgt i32 %2, -1, !dbg !843
+  %4 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 0, !dbg !844
+  br i1 %3, label %5, label %._crit_edge, !dbg !846
 
-if.then:                                          ; preds = %entry
-  %1 = load %struct._IO_FILE** %f, align 8, !tbaa !3
-  %ssioffset = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 6
-  %call = tail call i32 @SSIGetFilePosition(%struct._IO_FILE* %1, i32 %0, %struct.ssioffset_s* %ssioffset) #8
-  %cmp2 = icmp eq i32 %call, 0
-  br i1 %cmp2, label %if.end4, label %if.then3
+; <label>:5                                       ; preds = %0
+  %6 = load %struct.__sFILE** %4, align 8, !dbg !844, !tbaa !671
+  %7 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 6, !dbg !847
+  %8 = tail call i32 @SSIGetFilePosition(%struct.__sFILE* %6, i32 %2, %struct.ssioffset_s* %7) #8, !dbg !848
+  %9 = icmp eq i32 %8, 0, !dbg !849
+  br i1 %9, label %._crit_edge, label %10, !dbg !850
 
-if.then3:                                         ; preds = %if.then
-  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([28 x i8]* @.str120, i64 0, i64 0)) #8
-  br label %if.end4
+; <label>:10                                      ; preds = %5
+  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([28 x i8]* @.str119, i64 0, i64 0)) #8, !dbg !851
+  br label %._crit_edge, !dbg !851
 
-if.end4:                                          ; preds = %entry, %if.then, %if.then3
-  %buf = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 3
-  %buflen = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 4
-  %2 = load %struct._IO_FILE** %f, align 8, !tbaa !3
-  %call6 = tail call i8* @sre_fgets(i8** %buf, i32* %buflen, %struct._IO_FILE* %2) #8
-  %cmp7 = icmp eq i8* %call6, null
-  br i1 %cmp7, label %if.then8, label %if.end10
+._crit_edge:                                      ; preds = %0, %5, %10
+  %11 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 3, !dbg !852
+  %12 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 4, !dbg !854
+  %13 = load %struct.__sFILE** %4, align 8, !dbg !855, !tbaa !671
+  %14 = tail call i8* @sre_fgets(i8** %11, i32* %12, %struct.__sFILE* %13) #8, !dbg !856
+  %15 = icmp eq i8* %14, null, !dbg !857
+  br i1 %15, label %16, label %18, !dbg !858
 
-if.then8:                                         ; preds = %if.end4
-  %3 = load i8** %buf, align 8, !tbaa !3
-  store i8 0, i8* %3, align 1, !tbaa !1
-  br label %if.end10
+; <label>:16                                      ; preds = %._crit_edge
+  %17 = load i8** %11, align 8, !dbg !859, !tbaa !759
+  store i8 0, i8* %17, align 1, !dbg !860, !tbaa !861
+  br label %18, !dbg !862
 
-if.end10:                                         ; preds = %if.then8, %if.end4
-  %linenumber = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 2
-  %4 = load i32* %linenumber, align 4, !tbaa !0
-  %inc = add nsw i32 %4, 1
-  store i32 %inc, i32* %linenumber, align 4, !tbaa !0
-  ret void
+; <label>:18                                      ; preds = %16, %._crit_edge
+  %19 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 2, !dbg !863
+  %20 = load i32* %19, align 4, !dbg !864, !tbaa !756
+  %21 = add nsw i32 %20, 1, !dbg !864
+  store i32 %21, i32* %19, align 4, !dbg !864, !tbaa !756
+  ret void, !dbg !865
 }

@@ -1,98 +1,109 @@
 define %struct.T_SKTREE* @SKTreeStoreData(%struct.T_SKTREE* %root, %struct.T_SKTREE* %subtree, i8* %key, i8* %data) #1 {
-  %1 = icmp eq %struct.T_SKTREE* %subtree, null
-  br i1 %1, label %tailrecurse._crit_edge, label %.lr.ph
+  tail call void @llvm.dbg.value(metadata %struct.T_SKTREE* %root, i64 0, metadata !29, metadata !109), !dbg !110
+  tail call void @llvm.dbg.value(metadata %struct.T_SKTREE* %subtree, i64 0, metadata !30, metadata !109), !dbg !111
+  tail call void @llvm.dbg.value(metadata i8* %key, i64 0, metadata !31, metadata !109), !dbg !112
+  tail call void @llvm.dbg.value(metadata i8* %data, i64 0, metadata !32, metadata !109), !dbg !113
+  %1 = icmp eq %struct.T_SKTREE* %subtree, null, !dbg !114
+  br i1 %1, label %tailrecurse._crit_edge, label %.lr.ph, !dbg !116
 
 tailrecurse._crit_edge:                           ; preds = %tailrecurse.backedge, %0
   %root.tr.lcssa = phi %struct.T_SKTREE* [ %root, %0 ], [ %subtree.tr2, %tailrecurse.backedge ]
-  %2 = tail call i8* @malloc(i64 48) #8
-  %3 = bitcast i8* %2 to %struct.T_SKTREE*
-  %4 = icmp eq i8* %2, null
-  br i1 %4, label %.loopexit, label %5
+  %2 = tail call i8* @malloc(i64 48) #8, !dbg !117
+  %3 = bitcast i8* %2 to %struct.T_SKTREE*, !dbg !119
+  tail call void @llvm.dbg.value(metadata %struct.T_SKTREE* %3, i64 0, metadata !35, metadata !109), !dbg !120
+  %4 = icmp eq i8* %2, null, !dbg !121
+  br i1 %4, label %.loopexit, label %5, !dbg !123
 
 ; <label>:5                                       ; preds = %tailrecurse._crit_edge
-  %6 = getelementptr inbounds i8* %2, i64 16
-  %7 = bitcast i8* %6 to %struct.T_SKTREE**
-  %8 = getelementptr inbounds i8* %2, i64 24
-  %9 = bitcast i8* %8 to %struct.T_SKTREE**
-  %10 = getelementptr inbounds i8* %2, i64 40
-  %11 = bitcast i8* %10 to i8**
-  call void @llvm.memset.p0i8.i64(i8* %2, i8 0, i64 32, i32 8, i1 false)
-  store i8* %data, i8** %11, align 8, !tbaa !2
-  %12 = tail call i64 @strlen(i8* %key) #8
-  %13 = add i64 %12, 1
-  %14 = tail call i8* @malloc(i64 %13) #8
-  %15 = getelementptr inbounds i8* %2, i64 32
-  %16 = bitcast i8* %15 to i8**
-  store i8* %14, i8** %16, align 8, !tbaa !7
-  %17 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %14, i1 false)
-  %18 = tail call i8* @__strcpy_chk(i8* %14, i8* %key, i64 %17) #8
-  %19 = icmp eq %struct.T_SKTREE* %root.tr.lcssa, null
-  br i1 %19, label %.loopexit, label %20
+  %6 = getelementptr inbounds i8* %2, i64 16, !dbg !124
+  %7 = bitcast i8* %6 to %struct.T_SKTREE**, !dbg !124
+  %8 = getelementptr inbounds i8* %2, i64 24, !dbg !126
+  %9 = bitcast i8* %8 to %struct.T_SKTREE**, !dbg !126
+  %10 = getelementptr inbounds i8* %2, i64 40, !dbg !127
+  %11 = bitcast i8* %10 to i8**, !dbg !127
+  call void @llvm.memset.p0i8.i64(i8* %2, i8 0, i64 32, i32 8, i1 false), !dbg !128
+  store i8* %data, i8** %11, align 8, !dbg !129, !tbaa !130
+  %12 = tail call i64 @strlen(i8* %key) #8, !dbg !135
+  %13 = add i64 %12, 1, !dbg !136
+  %14 = tail call i8* @malloc(i64 %13) #8, !dbg !137
+  %15 = getelementptr inbounds i8* %2, i64 32, !dbg !138
+  %16 = bitcast i8* %15 to i8**, !dbg !138
+  store i8* %14, i8** %16, align 8, !dbg !139, !tbaa !140
+  %17 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %14, i1 false), !dbg !141
+  %18 = tail call i8* @__strcpy_chk(i8* %14, i8* %key, i64 %17) #8, !dbg !141
+  %19 = icmp eq %struct.T_SKTREE* %root.tr.lcssa, null, !dbg !142
+  br i1 %19, label %.loopexit, label %20, !dbg !144
 
 ; <label>:20                                      ; preds = %5
-  %21 = getelementptr inbounds %struct.T_SKTREE* %root.tr.lcssa, i64 0, i32 4
-  %22 = load i8** %21, align 8, !tbaa !7
-  %23 = tail call i32 @STR_cmpi(i8* %key, i8* %22) #9
-  %24 = icmp slt i32 %23, 0
-  br i1 %24, label %25, label %33
+  %21 = getelementptr inbounds %struct.T_SKTREE* %root.tr.lcssa, i64 0, i32 4, !dbg !145
+  %22 = load i8** %21, align 8, !dbg !145, !tbaa !140
+  %23 = tail call i32 @STR_cmpi(i8* %key, i8* %22) #9, !dbg !145
+  tail call void @llvm.dbg.value(metadata i32 %23, i64 0, metadata !33, metadata !109), !dbg !148
+  %24 = icmp slt i32 %23, 0, !dbg !149
+  br i1 %24, label %25, label %33, !dbg !150
 
 ; <label>:25                                      ; preds = %20
-  %26 = bitcast %struct.T_SKTREE* %root.tr.lcssa to i8**
-  store i8* %2, i8** %26, align 8, !tbaa !8
-  store %struct.T_SKTREE* %root.tr.lcssa, %struct.T_SKTREE** %7, align 8, !tbaa !9
-  %27 = getelementptr inbounds %struct.T_SKTREE* %root.tr.lcssa, i64 0, i32 3
-  %28 = load %struct.T_SKTREE** %27, align 8, !tbaa !10
-  store %struct.T_SKTREE* %28, %struct.T_SKTREE** %9, align 8, !tbaa !10
-  %29 = icmp eq %struct.T_SKTREE* %28, null
-  br i1 %29, label %.loopexit, label %30
+  %26 = bitcast %struct.T_SKTREE* %root.tr.lcssa to i8**, !dbg !151
+  store i8* %2, i8** %26, align 8, !dbg !151, !tbaa !153
+  store %struct.T_SKTREE* %root.tr.lcssa, %struct.T_SKTREE** %7, align 8, !dbg !154, !tbaa !155
+  %27 = getelementptr inbounds %struct.T_SKTREE* %root.tr.lcssa, i64 0, i32 3, !dbg !156
+  %28 = load %struct.T_SKTREE** %27, align 8, !dbg !156, !tbaa !157
+  store %struct.T_SKTREE* %28, %struct.T_SKTREE** %9, align 8, !dbg !158, !tbaa !157
+  %29 = icmp eq %struct.T_SKTREE* %28, null, !dbg !159
+  br i1 %29, label %.loopexit, label %30, !dbg !161
 
 ; <label>:30                                      ; preds = %25
-  %31 = getelementptr inbounds %struct.T_SKTREE* %28, i64 0, i32 2
-  %32 = bitcast %struct.T_SKTREE** %31 to i8**
-  store i8* %2, i8** %32, align 8, !tbaa !9
-  br label %.loopexit
+  %31 = getelementptr inbounds %struct.T_SKTREE* %28, i64 0, i32 2, !dbg !162
+  %32 = bitcast %struct.T_SKTREE** %31 to i8**, !dbg !164
+  store i8* %2, i8** %32, align 8, !dbg !164, !tbaa !155
+  br label %.loopexit, !dbg !165
 
 ; <label>:33                                      ; preds = %20
-  %34 = getelementptr inbounds %struct.T_SKTREE* %root.tr.lcssa, i64 0, i32 1
-  %35 = bitcast %struct.T_SKTREE** %34 to i8**
-  store i8* %2, i8** %35, align 8, !tbaa !11
-  %36 = getelementptr inbounds %struct.T_SKTREE* %root.tr.lcssa, i64 0, i32 2
-  %37 = bitcast %struct.T_SKTREE** %36 to i64*
-  %38 = load i64* %37, align 8, !tbaa !9
-  %39 = bitcast i8* %6 to i64*
-  store i64 %38, i64* %39, align 8, !tbaa !9
-  store %struct.T_SKTREE* %root.tr.lcssa, %struct.T_SKTREE** %9, align 8, !tbaa !10
-  %40 = bitcast %struct.T_SKTREE** %36 to i8**
-  store i8* %2, i8** %40, align 8, !tbaa !9
+  %34 = getelementptr inbounds %struct.T_SKTREE* %root.tr.lcssa, i64 0, i32 1, !dbg !166
+  %35 = bitcast %struct.T_SKTREE** %34 to i8**, !dbg !168
+  store i8* %2, i8** %35, align 8, !dbg !168, !tbaa !169
+  %36 = getelementptr inbounds %struct.T_SKTREE* %root.tr.lcssa, i64 0, i32 2, !dbg !170
+  %37 = bitcast %struct.T_SKTREE** %36 to i64*, !dbg !170
+  %38 = load i64* %37, align 8, !dbg !170, !tbaa !155
+  %39 = bitcast i8* %6 to i64*, !dbg !171
+  store i64 %38, i64* %39, align 8, !dbg !171, !tbaa !155
+  store %struct.T_SKTREE* %root.tr.lcssa, %struct.T_SKTREE** %9, align 8, !dbg !172, !tbaa !157
+  %40 = bitcast %struct.T_SKTREE** %36 to i8**, !dbg !173
+  store i8* %2, i8** %40, align 8, !dbg !173, !tbaa !155
   br label %.loopexit
 
 .lr.ph:                                           ; preds = %0, %tailrecurse.backedge
   %subtree.tr2 = phi %struct.T_SKTREE* [ %subtree.tr.be, %tailrecurse.backedge ], [ %subtree, %0 ]
-  %41 = getelementptr inbounds %struct.T_SKTREE* %subtree.tr2, i64 0, i32 4
-  %42 = load i8** %41, align 8, !tbaa !7
-  %43 = tail call i32 @STR_cmpi(i8* %key, i8* %42) #9
-  %44 = icmp slt i32 %43, 0
-  br i1 %44, label %45, label %47
+  %41 = getelementptr inbounds %struct.T_SKTREE* %subtree.tr2, i64 0, i32 4, !dbg !174
+  %42 = load i8** %41, align 8, !dbg !174, !tbaa !140
+  %43 = tail call i32 @STR_cmpi(i8* %key, i8* %42) #9, !dbg !174
+  tail call void @llvm.dbg.value(metadata i32 %43, i64 0, metadata !33, metadata !109), !dbg !148
+  %44 = icmp slt i32 %43, 0, !dbg !177
+  br i1 %44, label %45, label %47, !dbg !178
 
 ; <label>:45                                      ; preds = %.lr.ph
-  %46 = getelementptr inbounds %struct.T_SKTREE* %subtree.tr2, i64 0, i32 0
-  br label %tailrecurse.backedge
+  %46 = getelementptr inbounds %struct.T_SKTREE* %subtree.tr2, i64 0, i32 0, !dbg !179
+  br label %tailrecurse.backedge, !dbg !181
 
 ; <label>:47                                      ; preds = %.lr.ph
-  %48 = icmp sgt i32 %43, 0
-  br i1 %48, label %49, label %.loopexit
+  %48 = icmp sgt i32 %43, 0, !dbg !182
+  br i1 %48, label %49, label %.loopexit, !dbg !184
 
 ; <label>:49                                      ; preds = %47
-  %50 = getelementptr inbounds %struct.T_SKTREE* %subtree.tr2, i64 0, i32 1
-  br label %tailrecurse.backedge
+  %50 = getelementptr inbounds %struct.T_SKTREE* %subtree.tr2, i64 0, i32 1, !dbg !185
+  br label %tailrecurse.backedge, !dbg !187
 
 tailrecurse.backedge:                             ; preds = %49, %45
   %subtree.tr.be.in = phi %struct.T_SKTREE** [ %50, %49 ], [ %46, %45 ]
-  %subtree.tr.be = load %struct.T_SKTREE** %subtree.tr.be.in, align 8
-  %51 = icmp eq %struct.T_SKTREE* %subtree.tr.be, null
-  br i1 %51, label %tailrecurse._crit_edge, label %.lr.ph
+  %subtree.tr.be = load %struct.T_SKTREE** %subtree.tr.be.in, align 8, !dbg !185
+  tail call void @llvm.dbg.value(metadata %struct.T_SKTREE* %subtree.tr2, i64 0, metadata !29, metadata !109), !dbg !110
+  tail call void @llvm.dbg.value(metadata %struct.T_SKTREE* %subtree.tr.be, i64 0, metadata !30, metadata !109), !dbg !111
+  tail call void @llvm.dbg.value(metadata i8* %key, i64 0, metadata !31, metadata !109), !dbg !112
+  tail call void @llvm.dbg.value(metadata i8* %data, i64 0, metadata !32, metadata !109), !dbg !113
+  %51 = icmp eq %struct.T_SKTREE* %subtree.tr.be, null, !dbg !114
+  br i1 %51, label %tailrecurse._crit_edge, label %.lr.ph, !dbg !116
 
 .loopexit:                                        ; preds = %47, %25, %5, %tailrecurse._crit_edge, %33, %30
   %newsubtree.0 = phi %struct.T_SKTREE* [ %3, %30 ], [ %3, %25 ], [ %3, %33 ], [ %3, %5 ], [ %3, %tailrecurse._crit_edge ], [ null, %47 ]
-  ret %struct.T_SKTREE* %newsubtree.0
+  ret %struct.T_SKTREE* %newsubtree.0, !dbg !188
 }

@@ -1,15 +1,18 @@
 define i32 @quantum_inverse_mod(i32 %n, i32 %c) #0 {
-entry:
-  br label %for.cond
+  tail call void @llvm.dbg.value(metadata i32 %n, i64 0, metadata !46, metadata !53), !dbg !133
+  tail call void @llvm.dbg.value(metadata i32 %c, i64 0, metadata !47, metadata !53), !dbg !134
+  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !48, metadata !53), !dbg !135
+  br label %1, !dbg !136
 
-for.cond:                                         ; preds = %for.cond, %entry
-  %i.0 = phi i32 [ 1, %entry ], [ %inc, %for.cond ]
-  %mul = mul nsw i32 %i.0, %c
-  %rem = srem i32 %mul, %n
-  %cmp = icmp eq i32 %rem, 1
-  %inc = add nsw i32 %i.0, 1
-  br i1 %cmp, label %for.end, label %for.cond
+; <label>:1                                       ; preds = %1, %0
+  %i.0 = phi i32 [ 1, %0 ], [ %5, %1 ]
+  %2 = mul nsw i32 %i.0, %c, !dbg !138
+  %3 = srem i32 %2, %n, !dbg !140
+  %4 = icmp eq i32 %3, 1, !dbg !141
+  %5 = add nuw nsw i32 %i.0, 1, !dbg !142
+  tail call void @llvm.dbg.value(metadata i32 %5, i64 0, metadata !48, metadata !53), !dbg !135
+  br i1 %4, label %6, label %1, !dbg !143
 
-for.end:                                          ; preds = %for.cond
-  ret i32 %i.0
+; <label>:6                                       ; preds = %1
+  ret i32 %i.0, !dbg !144
 }

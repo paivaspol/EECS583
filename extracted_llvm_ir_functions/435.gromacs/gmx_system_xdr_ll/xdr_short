@@ -1,43 +1,49 @@
 define i32 @xdr_short(%struct.XDR* %xdrs, i16* nocapture %sp) #0 {
   %l = alloca i64, align 8
-  %1 = getelementptr inbounds %struct.XDR* %xdrs, i64 0, i32 0
-  %2 = load i32* %1, align 4, !tbaa !2
+  tail call void @llvm.dbg.value(metadata %struct.XDR* %xdrs, i64 0, metadata !178, metadata !360), !dbg !460
+  tail call void @llvm.dbg.value(metadata i16* %sp, i64 0, metadata !179, metadata !360), !dbg !461
+  %1 = getelementptr inbounds %struct.XDR* %xdrs, i64 0, i32 0, !dbg !462
+  %2 = load i32* %1, align 4, !dbg !462, !tbaa !366
   switch i32 %2, label %21 [
     i32 0, label %3
     i32 1, label %11
     i32 2, label %22
-  ]
+  ], !dbg !463
 
 ; <label>:3                                       ; preds = %0
-  %4 = load i16* %sp, align 2, !tbaa !15
-  %5 = sext i16 %4 to i64
-  store i64 %5, i64* %l, align 8, !tbaa !9
-  %6 = getelementptr inbounds %struct.XDR* %xdrs, i64 0, i32 1
-  %7 = load %struct.xdr_ops** %6, align 8, !tbaa !11
-  %8 = getelementptr inbounds %struct.xdr_ops* %7, i64 0, i32 1
-  %9 = load i32 (%struct.XDR*, i64*)** %8, align 8, !tbaa !12
-  %10 = call i32 %9(%struct.XDR* %xdrs, i64* %l) #6
-  br label %22
+  %4 = load i16* %sp, align 2, !dbg !464, !tbaa !466
+  %5 = sext i16 %4 to i64, !dbg !468
+  tail call void @llvm.dbg.value(metadata i64 %5, i64 0, metadata !180, metadata !360), !dbg !469
+  store i64 %5, i64* %l, align 8, !dbg !470, !tbaa !386
+  %6 = getelementptr inbounds %struct.XDR* %xdrs, i64 0, i32 1, !dbg !471
+  %7 = load %struct.xdr_ops** %6, align 8, !dbg !471, !tbaa !389
+  %8 = getelementptr inbounds %struct.xdr_ops* %7, i64 0, i32 1, !dbg !471
+  %9 = load i32 (%struct.XDR*, i64*)** %8, align 8, !dbg !471, !tbaa !390
+  tail call void @llvm.dbg.value(metadata i64* %l, i64 0, metadata !180, metadata !360), !dbg !469
+  %10 = call i32 %9(%struct.XDR* %xdrs, i64* %l) #7, !dbg !471
+  br label %22, !dbg !472
 
 ; <label>:11                                      ; preds = %0
-  %12 = getelementptr inbounds %struct.XDR* %xdrs, i64 0, i32 1
-  %13 = load %struct.xdr_ops** %12, align 8, !tbaa !11
-  %14 = getelementptr inbounds %struct.xdr_ops* %13, i64 0, i32 0
-  %15 = load i32 (%struct.XDR*, i64*)** %14, align 8, !tbaa !14
-  %16 = call i32 %15(%struct.XDR* %xdrs, i64* %l) #6
-  %17 = icmp eq i32 %16, 0
-  br i1 %17, label %22, label %18
+  %12 = getelementptr inbounds %struct.XDR* %xdrs, i64 0, i32 1, !dbg !473
+  %13 = load %struct.xdr_ops** %12, align 8, !dbg !473, !tbaa !389
+  %14 = getelementptr inbounds %struct.xdr_ops* %13, i64 0, i32 0, !dbg !473
+  %15 = load i32 (%struct.XDR*, i64*)** %14, align 8, !dbg !473, !tbaa !395
+  tail call void @llvm.dbg.value(metadata i64* %l, i64 0, metadata !180, metadata !360), !dbg !469
+  %16 = call i32 %15(%struct.XDR* %xdrs, i64* %l) #7, !dbg !473
+  %17 = icmp eq i32 %16, 0, !dbg !473
+  br i1 %17, label %22, label %18, !dbg !475
 
 ; <label>:18                                      ; preds = %11
-  %19 = load i64* %l, align 8, !tbaa !9
-  %20 = trunc i64 %19 to i16
-  store i16 %20, i16* %sp, align 2, !tbaa !15
-  br label %22
+  call void @llvm.dbg.value(metadata i64* %l, i64 0, metadata !180, metadata !360), !dbg !469
+  %19 = load i64* %l, align 8, !dbg !476, !tbaa !386
+  %20 = trunc i64 %19 to i16, !dbg !477
+  store i16 %20, i16* %sp, align 2, !dbg !478, !tbaa !466
+  br label %22, !dbg !479
 
 ; <label>:21                                      ; preds = %0
-  br label %22
+  br label %22, !dbg !480
 
 ; <label>:22                                      ; preds = %0, %11, %21, %18, %3
   %.0 = phi i32 [ 0, %21 ], [ 1, %18 ], [ %10, %3 ], [ 0, %11 ], [ 1, %0 ]
-  ret i32 %.0
+  ret i32 %.0, !dbg !481
 }

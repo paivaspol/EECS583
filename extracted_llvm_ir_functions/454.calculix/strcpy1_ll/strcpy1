@@ -1,40 +1,51 @@
-define i32 @strcpy1(i8* nocapture %s1, i8* nocapture %s2, i32 %length) #0 {
-entry:
-  %cmp20 = icmp sgt i32 %length, 0
-  br i1 %cmp20, label %for.body, label %for.end
+define i32 @strcpy1(i8* nocapture %s1, i8* nocapture readonly %s2, i32 %length) #0 {
+  tail call void @llvm.dbg.value(metadata i8* %s1, i64 0, metadata !13, metadata !23), !dbg !24
+  tail call void @llvm.dbg.value(metadata i8* %s2, i64 0, metadata !14, metadata !23), !dbg !25
+  tail call void @llvm.dbg.value(metadata i32 %length, i64 0, metadata !15, metadata !23), !dbg !26
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !18, metadata !23), !dbg !27
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !17, metadata !23), !dbg !28
+  %1 = icmp sgt i32 %length, 0, !dbg !29
+  br i1 %1, label %.lr.ph, label %._crit_edge, !dbg !32
 
-for.body:                                         ; preds = %entry, %if.end9
-  %blank.025 = phi i32 [ %blank.118, %if.end9 ], [ 0, %entry ]
-  %i.024 = phi i32 [ %inc, %if.end9 ], [ 0, %entry ]
-  %s1.addr.022 = phi i8* [ %incdec.ptr10, %if.end9 ], [ %s1, %entry ]
-  %s2.addr.021 = phi i8* [ %s2.addr.1, %if.end9 ], [ %s2, %entry ]
-  %cmp1 = icmp eq i32 %blank.025, 0
-  br i1 %cmp1, label %if.end5, label %if.else
+.lr.ph:                                           ; preds = %0
+  %2 = add i32 %length, -1, !dbg !32
+  br label %3, !dbg !32
 
-if.end5:                                          ; preds = %for.body
-  %0 = load i8* %s2.addr.021, align 1, !tbaa !0
-  %cmp2 = icmp eq i8 %0, 0
-  %.blank.0 = zext i1 %cmp2 to i32
-  br i1 %cmp2, label %if.else, label %if.then8
+; <label>:3                                       ; preds = %10, %.lr.ph
+  %blank.010 = phi i32 [ 0, %.lr.ph ], [ %blank.12, %10 ]
+  %i.09 = phi i32 [ 0, %.lr.ph ], [ %12, %10 ]
+  %.07 = phi i8* [ %s1, %.lr.ph ], [ %11, %10 ]
+  %.016 = phi i8* [ %s2, %.lr.ph ], [ %.1, %10 ]
+  %4 = icmp eq i32 %blank.010, 0, !dbg !33
+  br i1 %4, label %5, label %select.unfold, !dbg !36
 
-if.then8:                                         ; preds = %if.end5
-  store i8 %0, i8* %s1.addr.022, align 1, !tbaa !0
-  %incdec.ptr = getelementptr inbounds i8* %s2.addr.021, i64 1
-  br label %if.end9
+; <label>:5                                       ; preds = %3
+  %6 = load i8* %.016, align 1, !dbg !37, !tbaa !39
+  %7 = icmp eq i8 %6, 0, !dbg !42
+  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !18, metadata !23), !dbg !27
+  br i1 %7, label %select.unfold, label %8
 
-if.else:                                          ; preds = %if.end5, %for.body
-  %blank.119 = phi i32 [ %.blank.0, %if.end5 ], [ %blank.025, %for.body ]
-  store i8 32, i8* %s1.addr.022, align 1, !tbaa !0
-  br label %if.end9
+; <label>:8                                       ; preds = %5
+  store i8 %6, i8* %.07, align 1, !dbg !44, !tbaa !39
+  %9 = getelementptr inbounds i8* %.016, i64 1, !dbg !47
+  tail call void @llvm.dbg.value(metadata i8* %9, i64 0, metadata !14, metadata !23), !dbg !25
+  br label %10, !dbg !48
 
-if.end9:                                          ; preds = %if.else, %if.then8
-  %blank.118 = phi i32 [ 0, %if.then8 ], [ %blank.119, %if.else ]
-  %s2.addr.1 = phi i8* [ %incdec.ptr, %if.then8 ], [ %s2.addr.021, %if.else ]
-  %incdec.ptr10 = getelementptr inbounds i8* %s1.addr.022, i64 1
-  %inc = add nsw i32 %i.024, 1
-  %exitcond = icmp eq i32 %inc, %length
-  br i1 %exitcond, label %for.end, label %for.body
+select.unfold:                                    ; preds = %5, %3
+  %blank.1.ph = phi i32 [ %blank.010, %3 ], [ 1, %5 ]
+  store i8 32, i8* %.07, align 1, !dbg !49, !tbaa !39
+  br label %10
 
-for.end:                                          ; preds = %if.end9, %entry
-  ret i32 0
+; <label>:10                                      ; preds = %select.unfold, %8
+  %blank.12 = phi i32 [ 0, %8 ], [ %blank.1.ph, %select.unfold ]
+  %.1 = phi i8* [ %9, %8 ], [ %.016, %select.unfold ]
+  %11 = getelementptr inbounds i8* %.07, i64 1, !dbg !50
+  tail call void @llvm.dbg.value(metadata i8* %11, i64 0, metadata !13, metadata !23), !dbg !24
+  %12 = add nuw nsw i32 %i.09, 1, !dbg !51
+  tail call void @llvm.dbg.value(metadata i32 %12, i64 0, metadata !17, metadata !23), !dbg !28
+  %exitcond = icmp eq i32 %i.09, %2, !dbg !32
+  br i1 %exitcond, label %._crit_edge, label %3, !dbg !32
+
+._crit_edge:                                      ; preds = %10, %0
+  ret i32 0, !dbg !52
 }

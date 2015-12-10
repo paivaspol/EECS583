@@ -1,88 +1,94 @@
-define i32 @writeSyntaxElement_Level_VLC1(%struct.syntaxelement* nocapture %se, %struct.datapartition* nocapture %this_dataPart) #0 {
-entry:
-  %value1 = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 1
-  %0 = load i32* %value1, align 4, !tbaa !0
-  %ispos = icmp sgt i32 %0, -1
-  %neg = sub i32 0, %0
-  %1 = select i1 %ispos, i32 %0, i32 %neg
-  %.lobit = lshr i32 %0, 31
-  %cmp1 = icmp slt i32 %1, 8
-  br i1 %cmp1, label %if.end15, label %if.else
+define i32 @writeSyntaxElement_Level_VLC1(%struct.syntaxelement* nocapture %se, %struct.datapartition* nocapture readonly %this_dataPart) #0 {
+  tail call void @llvm.dbg.value(metadata %struct.syntaxelement* %se, i64 0, metadata !287, metadata !814), !dbg !1510
+  tail call void @llvm.dbg.value(metadata %struct.datapartition* %this_dataPart, i64 0, metadata !288, metadata !814), !dbg !1511
+  %1 = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 1, !dbg !1512
+  %2 = load i32* %1, align 4, !dbg !1512, !tbaa !833
+  tail call void @llvm.dbg.value(metadata i32 %2, i64 0, metadata !289, metadata !814), !dbg !1513
+  %ispos = icmp sgt i32 %2, -1, !dbg !1514
+  %neg = sub i32 0, %2, !dbg !1514
+  %3 = select i1 %ispos, i32 %2, i32 %neg, !dbg !1514
+  tail call void @llvm.dbg.value(metadata i32 %3, i64 0, metadata !290, metadata !814), !dbg !1515
+  %.lobit = lshr i32 %2, 31, !dbg !1516
+  tail call void @llvm.dbg.value(metadata i32 %.lobit, i64 0, metadata !291, metadata !814), !dbg !1517
+  %4 = icmp slt i32 %3, 8, !dbg !1518
+  br i1 %4, label %21, label %5, !dbg !1520
 
-if.else:                                          ; preds = %entry
-  %cmp2 = icmp slt i32 %1, 16
-  %len4 = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 3
-  br i1 %cmp2, label %if.then3, label %if.else8
+; <label>:5                                       ; preds = %0
+  %6 = icmp slt i32 %3, 16, !dbg !1521
+  %7 = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 3, !dbg !1523
+  br i1 %6, label %8, label %14, !dbg !1525
 
-if.then3:                                         ; preds = %if.else
-  store i32 19, i32* %len4, align 4, !tbaa !0
-  %sub5 = shl i32 %1, 1
-  %shl = add i32 %sub5, -16
-  %or = or i32 %.lobit, %shl
-  %or6 = or i32 %or, 16
-  %inf7 = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 4
-  store i32 %or6, i32* %inf7, align 4, !tbaa !0
-  br label %if.end15.thread
+; <label>:8                                       ; preds = %5
+  store i32 19, i32* %7, align 4, !dbg !1526, !tbaa !880
+  %9 = shl i32 %3, 1, !dbg !1527
+  %10 = add i32 %9, -16, !dbg !1527
+  %11 = or i32 %.lobit, %10, !dbg !1528
+  %12 = or i32 %11, 16, !dbg !1528
+  %13 = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 4, !dbg !1529
+  store i32 %12, i32* %13, align 4, !dbg !1530, !tbaa !885
+  br label %.thread, !dbg !1531
 
-if.else8:                                         ; preds = %if.else
-  store i32 28, i32* %len4, align 4, !tbaa !0
-  %sub10 = shl i32 %1, 1
-  %shl11 = add i32 %sub10, -32
-  %or12 = or i32 %.lobit, %shl11
-  %or13 = or i32 %or12, 4096
-  %inf14 = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 4
-  store i32 %or13, i32* %inf14, align 4, !tbaa !0
-  br label %if.end15.thread
+; <label>:14                                      ; preds = %5
+  store i32 28, i32* %7, align 4, !dbg !1532, !tbaa !880
+  %15 = shl i32 %3, 1, !dbg !1534
+  %16 = add i32 %15, -32, !dbg !1534
+  %17 = or i32 %.lobit, %16, !dbg !1535
+  %18 = or i32 %17, 4096, !dbg !1535
+  %19 = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 4, !dbg !1536
+  store i32 %18, i32* %19, align 4, !dbg !1537, !tbaa !885
+  br label %.thread
 
-if.end15.thread:                                  ; preds = %if.then3, %if.else8
-  %.ph = phi i32 [ %or6, %if.then3 ], [ %or13, %if.else8 ]
-  %.ph32 = phi i32 [ 19, %if.then3 ], [ 28, %if.else8 ]
-  %len.i33 = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 3
-  %bitpattern.i34 = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 5
-  store i32 0, i32* %bitpattern.i34, align 4, !tbaa !0
-  br label %while.body.lr.ph.i
+.thread:                                          ; preds = %8, %14
+  %.ph = phi i32 [ %18, %14 ], [ %12, %8 ]
+  %.ph1 = phi i32 [ 28, %14 ], [ 19, %8 ]
+  tail call void @llvm.dbg.value(metadata %struct.syntaxelement* %se, i64 0, metadata !253, metadata !814), !dbg !1538
+  tail call void @llvm.dbg.value(metadata i32 %24, i64 0, metadata !254, metadata !814), !dbg !1540
+  %20 = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 5, !dbg !1541
+  store i32 0, i32* %20, align 4, !dbg !1542, !tbaa !891
+  br label %.lr.ph.i, !dbg !1543
 
-if.end15:                                         ; preds = %entry
-  %mul = shl nsw i32 %1, 1
-  %add = or i32 %mul, %.lobit
-  %sub = add nsw i32 %add, -1
-  %len = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 3
-  store i32 %sub, i32* %len, align 4, !tbaa !0
-  %inf = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 4
-  store i32 1, i32* %inf, align 4, !tbaa !0
-  %len.i = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 3
-  %bitpattern.i = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 5
-  store i32 0, i32* %bitpattern.i, align 4, !tbaa !0
-  %cmp10.i = icmp sgt i32 %sub, 0
-  br i1 %cmp10.i, label %while.body.lr.ph.i, label %symbol2vlc.exit
+; <label>:21                                      ; preds = %0
+  %22 = shl nsw i32 %3, 1, !dbg !1544
+  %23 = or i32 %22, %.lobit, !dbg !1546
+  %24 = add nsw i32 %23, -1, !dbg !1547
+  %25 = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 3, !dbg !1548
+  store i32 %24, i32* %25, align 4, !dbg !1549, !tbaa !880
+  %26 = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 4, !dbg !1550
+  store i32 1, i32* %26, align 4, !dbg !1551, !tbaa !885
+  tail call void @llvm.dbg.value(metadata %struct.syntaxelement* %se, i64 0, metadata !253, metadata !814), !dbg !1538
+  tail call void @llvm.dbg.value(metadata i32 %24, i64 0, metadata !254, metadata !814), !dbg !1540
+  %27 = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 5, !dbg !1541
+  store i32 0, i32* %27, align 4, !dbg !1542, !tbaa !891
+  %28 = icmp sgt i32 %23, 1, !dbg !1552
+  br i1 %28, label %.lr.ph.i, label %symbol2vlc.exit, !dbg !1543
 
-while.body.lr.ph.i:                               ; preds = %if.end15.thread, %if.end15
-  %bitpattern.i38 = phi i32* [ %bitpattern.i34, %if.end15.thread ], [ %bitpattern.i, %if.end15 ]
-  %len.i37 = phi i32* [ %len.i33, %if.end15.thread ], [ %len.i, %if.end15 ]
-  %2 = phi i32 [ %.ph32, %if.end15.thread ], [ %sub, %if.end15 ]
-  %3 = phi i32 [ %.ph, %if.end15.thread ], [ 1, %if.end15 ]
-  br label %while.body.i
+.lr.ph.i:                                         ; preds = %.thread, %21
+  %29 = phi i32* [ %20, %.thread ], [ %27, %21 ]
+  %30 = phi i32 [ %.ph1, %.thread ], [ %24, %21 ]
+  %31 = phi i32 [ %.ph, %.thread ], [ 1, %21 ]
+  %.pre-phi3 = phi i32* [ %7, %.thread ], [ %25, %21 ]
+  br label %32, !dbg !1543
 
-while.body.i:                                     ; preds = %while.body.i, %while.body.lr.ph.i
-  %dec12.in.i = phi i32 [ %2, %while.body.lr.ph.i ], [ %dec12.i, %while.body.i ]
-  %storemerge11.i = phi i32 [ 0, %while.body.lr.ph.i ], [ %or.i, %while.body.i ]
-  %dec12.i = add nsw i32 %dec12.in.i, -1
-  %shl.i = shl i32 %storemerge11.i, 1
-  %shr8.i = lshr i32 %3, %dec12.i
-  %and.i = and i32 %shr8.i, 1
-  %or.i = or i32 %and.i, %shl.i
-  %cmp.i = icmp sgt i32 %dec12.i, 0
-  br i1 %cmp.i, label %while.body.i, label %while.cond.while.end_crit_edge.i
+; <label>:32                                      ; preds = %32, %.lr.ph.i
+  %.in.i = phi i32 [ %30, %.lr.ph.i ], [ %33, %32 ], !dbg !1553
+  %storemerge1.i = phi i32 [ 0, %.lr.ph.i ], [ %37, %32 ], !dbg !1553
+  %33 = add nsw i32 %.in.i, -1, !dbg !1554
+  %34 = shl i32 %storemerge1.i, 1, !dbg !1555
+  %35 = lshr i32 %31, %33, !dbg !1556
+  %36 = and i32 %35, 1, !dbg !1557
+  %37 = or i32 %36, %34, !dbg !1542
+  %38 = icmp sgt i32 %.in.i, 1, !dbg !1552
+  br i1 %38, label %32, label %._crit_edge.i, !dbg !1543
 
-while.cond.while.end_crit_edge.i:                 ; preds = %while.body.i
-  store i32 %or.i, i32* %bitpattern.i38, align 4, !tbaa !0
-  br label %symbol2vlc.exit
+._crit_edge.i:                                    ; preds = %32
+  store i32 %37, i32* %29, align 4, !dbg !1542, !tbaa !891
+  br label %symbol2vlc.exit, !dbg !1543
 
-symbol2vlc.exit:                                  ; preds = %if.end15, %while.cond.while.end_crit_edge.i
-  %len.i36 = phi i32* [ %len.i, %if.end15 ], [ %len.i37, %while.cond.while.end_crit_edge.i ]
-  %bitstream = getelementptr inbounds %struct.datapartition* %this_dataPart, i64 0, i32 0
-  %4 = load %struct.Bitstream** %bitstream, align 8, !tbaa !3
-  tail call void @writeUVLC2buffer(%struct.syntaxelement* %se, %struct.Bitstream* %4) #4
-  %5 = load i32* %len.i36, align 4, !tbaa !0
-  ret i32 %5
+symbol2vlc.exit:                                  ; preds = %21, %._crit_edge.i
+  %.pre-phi2 = phi i32* [ %25, %21 ], [ %.pre-phi3, %._crit_edge.i ]
+  %39 = getelementptr inbounds %struct.datapartition* %this_dataPart, i64 0, i32 0, !dbg !1558
+  %40 = load %struct.Bitstream** %39, align 8, !dbg !1558, !tbaa !838
+  tail call void @writeUVLC2buffer(%struct.syntaxelement* %se, %struct.Bitstream* %40) #6, !dbg !1559
+  %41 = load i32* %.pre-phi2, align 4, !dbg !1560, !tbaa !880
+  ret i32 %41, !dbg !1561
 }

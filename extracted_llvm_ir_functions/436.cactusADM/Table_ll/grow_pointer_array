@@ -1,36 +1,40 @@
 define internal fastcc i32 @grow_pointer_array(i32* nocapture %pN, i8*** nocapture %pvp_array) #1 {
-  %1 = load i32* %pN, align 4, !tbaa !2
-  %2 = bitcast i8*** %pvp_array to i8**
-  %3 = load i8** %2, align 8, !tbaa !6
-  %4 = shl nsw i32 %1, 1
-  %5 = add nsw i32 %4, 10
-  %6 = sext i32 %5 to i64
-  %7 = shl nsw i64 %6, 3
-  %8 = tail call i8* @realloc(i8* %3, i64 %7) #10
-  %9 = icmp eq i8* %8, null
-  br i1 %9, label %18, label %.preheader
+  tail call void @llvm.dbg.value(metadata i32* %pN, i64 0, metadata !587, metadata !608), !dbg !654
+  tail call void @llvm.dbg.value(metadata i8*** %pvp_array, i64 0, metadata !588, metadata !608), !dbg !655
+  %1 = load i32* %pN, align 4, !dbg !656, !tbaa !615
+  tail call void @llvm.dbg.value(metadata i32 %1, i64 0, metadata !589, metadata !608), !dbg !657
+  %2 = bitcast i8*** %pvp_array to i8**, !dbg !658
+  %3 = load i8** %2, align 8, !dbg !658, !tbaa !631
+  %4 = shl nsw i32 %1, 1, !dbg !659
+  %5 = add nsw i32 %4, 10, !dbg !659
+  tail call void @llvm.dbg.value(metadata i32 %5, i64 0, metadata !591, metadata !608), !dbg !660
+  %6 = sext i32 %5 to i64, !dbg !661
+  %7 = shl nsw i64 %6, 3, !dbg !662
+  %8 = tail call i8* @realloc(i8* %3, i64 %7) #10, !dbg !663
+  %9 = icmp eq i8* %8, null, !dbg !664
+  br i1 %9, label %18, label %.preheader, !dbg !666
 
 .preheader:                                       ; preds = %0
-  %10 = icmp slt i32 %1, %5
-  br i1 %10, label %.lr.ph, label %17
+  %10 = icmp slt i32 %1, %5, !dbg !667
+  br i1 %10, label %.lr.ph, label %17, !dbg !670
 
 .lr.ph:                                           ; preds = %.preheader
   %11 = sext i32 %1 to i64
-  %12 = shl nsw i64 %11, 3
+  %12 = shl nsw i64 %11, 3, !dbg !670
   %scevgep = getelementptr i8* %8, i64 %12
-  %13 = add i32 %1, 9
+  %13 = add i32 %1, 9, !dbg !670
   %14 = zext i32 %13 to i64
-  %15 = shl nuw nsw i64 %14, 3
-  %16 = add nuw nsw i64 %15, 8
-  call void @llvm.memset.p0i8.i64(i8* %scevgep, i8 0, i64 %16, i32 8, i1 false)
-  br label %17
+  %15 = shl nuw nsw i64 %14, 3, !dbg !670
+  %16 = add nuw nsw i64 %15, 8, !dbg !670
+  call void @llvm.memset.p0i8.i64(i8* %scevgep, i8 0, i64 %16, i32 8, i1 false), !dbg !671
+  br label %17, !dbg !670
 
 ; <label>:17                                      ; preds = %.lr.ph, %.preheader
-  store i8* %8, i8** %2, align 8, !tbaa !6
-  store i32 %5, i32* %pN, align 4, !tbaa !2
-  br label %18
+  store i8* %8, i8** %2, align 8, !dbg !673, !tbaa !631
+  store i32 %5, i32* %pN, align 4, !dbg !674, !tbaa !615
+  br label %18, !dbg !675
 
 ; <label>:18                                      ; preds = %0, %17
   %.0 = phi i32 [ 0, %17 ], [ -1, %0 ]
-  ret i32 %.0
+  ret i32 %.0, !dbg !676
 }

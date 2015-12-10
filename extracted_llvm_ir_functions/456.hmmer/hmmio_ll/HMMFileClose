@@ -1,26 +1,26 @@
 define void @HMMFileClose(%struct.hmmfile_s* nocapture %hmmfp) #0 {
-entry:
-  %f = getelementptr inbounds %struct.hmmfile_s* %hmmfp, i64 0, i32 0
-  %0 = load %struct._IO_FILE** %f, align 8, !tbaa !3
-  %cmp = icmp eq %struct._IO_FILE* %0, null
-  br i1 %cmp, label %if.end, label %if.then
+  tail call void @llvm.dbg.value(metadata %struct.hmmfile_s* %hmmfp, i64 0, metadata !226, metadata !464), !dbg !667
+  %1 = getelementptr inbounds %struct.hmmfile_s* %hmmfp, i64 0, i32 0, !dbg !668
+  %2 = load %struct.__sFILE** %1, align 8, !dbg !668, !tbaa !490
+  %3 = icmp eq %struct.__sFILE* %2, null, !dbg !670
+  br i1 %3, label %6, label %4, !dbg !671
 
-if.then:                                          ; preds = %entry
-  %call = tail call i32 @fclose(%struct._IO_FILE* %0) #6
-  br label %if.end
+; <label>:4                                       ; preds = %0
+  %5 = tail call i32 @fclose(%struct.__sFILE* %2) #6, !dbg !672
+  br label %6, !dbg !672
 
-if.end:                                           ; preds = %entry, %if.then
-  %ssi = getelementptr inbounds %struct.hmmfile_s* %hmmfp, i64 0, i32 1
-  %1 = load %struct.ssifile_s** %ssi, align 8, !tbaa !3
-  %cmp2 = icmp eq %struct.ssifile_s* %1, null
-  br i1 %cmp2, label %if.end5, label %if.then3
+; <label>:6                                       ; preds = %0, %4
+  %7 = getelementptr inbounds %struct.hmmfile_s* %hmmfp, i64 0, i32 1, !dbg !673
+  %8 = load %struct.ssifile_s** %7, align 8, !dbg !673, !tbaa !675
+  %9 = icmp eq %struct.ssifile_s* %8, null, !dbg !676
+  br i1 %9, label %11, label %10, !dbg !677
 
-if.then3:                                         ; preds = %if.end
-  tail call void @SSIClose(%struct.ssifile_s* %1) #6
-  br label %if.end5
+; <label>:10                                      ; preds = %6
+  tail call void @SSIClose(%struct.ssifile_s* %8) #6, !dbg !678
+  br label %11, !dbg !678
 
-if.end5:                                          ; preds = %if.end, %if.then3
-  %2 = bitcast %struct.hmmfile_s* %hmmfp to i8*
-  tail call void @free(i8* %2) #6
-  ret void
+; <label>:11                                      ; preds = %6, %10
+  %12 = bitcast %struct.hmmfile_s* %hmmfp to i8*, !dbg !679
+  tail call void @free(i8* %12) #7, !dbg !680
+  ret void, !dbg !681
 }

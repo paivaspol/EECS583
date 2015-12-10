@@ -1,21 +1,29 @@
 define i32 @CCTK_RegexMatch(i8* %string, i8* %pattern, i32 %nmatch, %struct.regmatch_t* %pmatch) #1 {
   %re = alloca %struct.re_pattern_buffer, align 8
-  %1 = bitcast %struct.re_pattern_buffer* %re to i8*
-  call void @llvm.lifetime.start(i64 64, i8* %1) #4
-  %2 = call i32 @regcomp(%struct.re_pattern_buffer* %re, i8* %pattern, i32 1) #7
-  %3 = icmp eq i32 %2, 0
-  br i1 %3, label %4, label %8
+  tail call void @llvm.dbg.value(metadata i8* %string, i64 0, metadata !195, metadata !252), !dbg !423
+  tail call void @llvm.dbg.value(metadata i8* %pattern, i64 0, metadata !196, metadata !252), !dbg !424
+  tail call void @llvm.dbg.value(metadata i32 %nmatch, i64 0, metadata !197, metadata !252), !dbg !425
+  tail call void @llvm.dbg.value(metadata %struct.regmatch_t* %pmatch, i64 0, metadata !198, metadata !252), !dbg !426
+  %1 = bitcast %struct.re_pattern_buffer* %re to i8*, !dbg !427
+  call void @llvm.lifetime.start(i64 64, i8* %1) #5, !dbg !427
+  tail call void @llvm.dbg.value(metadata %struct.re_pattern_buffer* %re, i64 0, metadata !201, metadata !252), !dbg !428
+  %2 = call i32 @regcomp(%struct.re_pattern_buffer* %re, i8* %pattern, i32 1) #7, !dbg !429
+  %3 = icmp eq i32 %2, 0, !dbg !431
+  br i1 %3, label %4, label %8, !dbg !432
 
 ; <label>:4                                       ; preds = %0
-  %5 = sext i32 %nmatch to i64
-  %6 = call i32 @regexec(%struct.re_pattern_buffer* %re, i8* %string, i64 %5, %struct.regmatch_t* %pmatch, i32 0) #7
-  call void @regfree(%struct.re_pattern_buffer* %re) #7
-  %7 = icmp eq i32 %6, 0
+  %5 = sext i32 %nmatch to i64, !dbg !433
+  call void @llvm.dbg.value(metadata %struct.re_pattern_buffer* %re, i64 0, metadata !201, metadata !252), !dbg !428
+  %6 = call i32 @regexec(%struct.re_pattern_buffer* %re, i8* %string, i64 %5, %struct.regmatch_t* %pmatch, i32 0) #7, !dbg !435
+  call void @llvm.dbg.value(metadata i32 %6, i64 0, metadata !200, metadata !252), !dbg !436
+  call void @llvm.dbg.value(metadata %struct.re_pattern_buffer* %re, i64 0, metadata !201, metadata !252), !dbg !428
+  call void @regfree(%struct.re_pattern_buffer* %re) #7, !dbg !437
+  %7 = icmp eq i32 %6, 0, !dbg !438
   %. = zext i1 %7 to i32
   br label %8
 
 ; <label>:8                                       ; preds = %0, %4
   %retval.0 = phi i32 [ %., %4 ], [ 0, %0 ]
-  call void @llvm.lifetime.end(i64 64, i8* %1) #4
-  ret i32 %retval.0
+  call void @llvm.lifetime.end(i64 64, i8* %1) #5, !dbg !440
+  ret i32 %retval.0, !dbg !440
 }

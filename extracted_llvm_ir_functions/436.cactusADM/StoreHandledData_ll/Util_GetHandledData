@@ -1,30 +1,33 @@
 define i8* @Util_GetHandledData(%struct.cHandledData* readonly %storage, i32 %handle) #5 {
-  %1 = icmp ne %struct.cHandledData* %storage, null
-  %2 = icmp sgt i32 %handle, -1
-  %or.cond = and i1 %1, %2
-  br i1 %or.cond, label %3, label %17
+  tail call void @llvm.dbg.value(metadata %struct.cHandledData* %storage, i64 0, metadata !51, metadata !83), !dbg !232
+  tail call void @llvm.dbg.value(metadata i32 %handle, i64 0, metadata !52, metadata !83), !dbg !233
+  %1 = icmp ne %struct.cHandledData* %storage, null, !dbg !234
+  %2 = icmp sgt i32 %handle, -1, !dbg !236
+  %or.cond = and i1 %1, %2, !dbg !239
+  br i1 %or.cond, label %3, label %17, !dbg !239
 
 ; <label>:3                                       ; preds = %0
-  %4 = getelementptr inbounds %struct.cHandledData* %storage, i64 0, i32 1
-  %5 = load i32* %4, align 4, !tbaa !9
-  %6 = icmp ugt i32 %5, %handle
-  br i1 %6, label %7, label %17
+  %4 = getelementptr inbounds %struct.cHandledData* %storage, i64 0, i32 1, !dbg !240
+  %5 = load i32* %4, align 4, !dbg !240, !tbaa !109
+  %6 = icmp ugt i32 %5, %handle, !dbg !241
+  br i1 %6, label %7, label %17, !dbg !242
 
 ; <label>:7                                       ; preds = %3
-  %8 = sext i32 %handle to i64
-  %9 = getelementptr inbounds %struct.cHandledData* %storage, i64 0, i32 0
-  %10 = load %struct.cHandleStorage** %9, align 8, !tbaa !6
-  %11 = getelementptr inbounds %struct.cHandleStorage* %10, i64 %8, i32 0
-  %12 = load i32* %11, align 4, !tbaa !11
-  %13 = icmp eq i32 %12, 1
-  br i1 %13, label %14, label %17
+  %8 = sext i32 %handle to i64, !dbg !243
+  %9 = getelementptr inbounds %struct.cHandledData* %storage, i64 0, i32 0, !dbg !244
+  %10 = load %struct.cHandleStorage** %9, align 8, !dbg !244, !tbaa !104
+  %11 = getelementptr inbounds %struct.cHandleStorage* %10, i64 %8, i32 0, !dbg !245
+  %12 = load i32* %11, align 4, !dbg !245, !tbaa !140
+  %13 = icmp eq i32 %12, 1, !dbg !246
+  br i1 %13, label %14, label %17, !dbg !247
 
 ; <label>:14                                      ; preds = %7
-  %15 = getelementptr inbounds %struct.cHandleStorage* %10, i64 %8, i32 2
-  %16 = load i8** %15, align 8, !tbaa !13
-  br label %17
+  %15 = getelementptr inbounds %struct.cHandleStorage* %10, i64 %8, i32 2, !dbg !248
+  %16 = load i8** %15, align 8, !dbg !248, !tbaa !144
+  tail call void @llvm.dbg.value(metadata i8* %16, i64 0, metadata !53, metadata !83), !dbg !250
+  br label %17, !dbg !251
 
 ; <label>:17                                      ; preds = %0, %3, %7, %14
   %data.0 = phi i8* [ %16, %14 ], [ null, %7 ], [ null, %3 ], [ null, %0 ]
-  ret i8* %data.0
+  ret i8* %data.0, !dbg !252
 }

@@ -1,0 +1,37 @@
+define internal fastcc void @_ZN6soplexL10enQueueMaxEPiS0_i(i32* nocapture %heap, i32* nocapture %size, i32 %elem) #0 {
+  tail call void @llvm.dbg.value(metadata i32* %heap, i64 0, metadata !1370, metadata !2223), !dbg !2776
+  tail call void @llvm.dbg.value(metadata i32* %size, i64 0, metadata !1371, metadata !2223), !dbg !2777
+  tail call void @llvm.dbg.value(metadata i32 %elem, i64 0, metadata !1372, metadata !2223), !dbg !2778
+  %1 = load i32* %size, align 4, !dbg !2779, !tbaa !2266
+  %2 = add nsw i32 %1, 1, !dbg !2779
+  store i32 %2, i32* %size, align 4, !dbg !2779, !tbaa !2266
+  tail call void @llvm.dbg.value(metadata i32 %1, i64 0, metadata !1374, metadata !2223), !dbg !2780
+  %3 = icmp sgt i32 %1, 0, !dbg !2781
+  br i1 %3, label %.lr.ph, label %._crit_edge, !dbg !2782
+
+.lr.ph:                                           ; preds = %0, %10
+  %j.01 = phi i32 [ %5, %10 ], [ %1, %0 ]
+  %4 = add nsw i32 %j.01, -1, !dbg !2783
+  %5 = sdiv i32 %4, 2, !dbg !2785
+  tail call void @llvm.dbg.value(metadata i32 %5, i64 0, metadata !1373, metadata !2223), !dbg !2786
+  %6 = sext i32 %5 to i64, !dbg !2787
+  %7 = getelementptr inbounds i32* %heap, i64 %6, !dbg !2787
+  %8 = load i32* %7, align 4, !dbg !2787, !tbaa !2266
+  %9 = icmp slt i32 %8, %elem, !dbg !2789
+  br i1 %9, label %10, label %._crit_edge, !dbg !2790
+
+; <label>:10                                      ; preds = %.lr.ph
+  %11 = sext i32 %j.01 to i64, !dbg !2791
+  %12 = getelementptr inbounds i32* %heap, i64 %11, !dbg !2791
+  store i32 %8, i32* %12, align 4, !dbg !2793, !tbaa !2266
+  tail call void @llvm.dbg.value(metadata i32 %5, i64 0, metadata !1374, metadata !2223), !dbg !2780
+  %13 = icmp sgt i32 %4, 1, !dbg !2781
+  br i1 %13, label %.lr.ph, label %._crit_edge, !dbg !2782
+
+._crit_edge:                                      ; preds = %10, %.lr.ph, %0
+  %j.0.lcssa = phi i32 [ %1, %0 ], [ %5, %10 ], [ %j.01, %.lr.ph ]
+  %14 = sext i32 %j.0.lcssa to i64, !dbg !2794
+  %15 = getelementptr inbounds i32* %heap, i64 %14, !dbg !2794
+  store i32 %elem, i32* %15, align 4, !dbg !2795, !tbaa !2266
+  ret void, !dbg !2796
+}

@@ -1,60 +1,76 @@
 define i32 @writeLumaCoeff8x8(i32 %block8x8, i32 %block_mode, i32 %transform_size_flag) #0 {
-entry:
-  %cmp = icmp eq i32 %block_mode, 11
-  %conv = zext i1 %cmp to i32
-  %tobool = icmp ne i32 %transform_size_flag, 0
-  br i1 %tobool, label %lor.lhs.false, label %for.cond.preheader
+  tail call void @llvm.dbg.value(metadata i32 %block8x8, i64 0, metadata !1004, metadata !1584), !dbg !7227
+  tail call void @llvm.dbg.value(metadata i32 %block_mode, i64 0, metadata !1005, metadata !1584), !dbg !7228
+  tail call void @llvm.dbg.value(metadata i32 %transform_size_flag, i64 0, metadata !1006, metadata !1584), !dbg !7229
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !1008, metadata !1584), !dbg !7230
+  %1 = icmp eq i32 %block_mode, 11, !dbg !7231
+  %2 = zext i1 %1 to i32, !dbg !7231
+  tail call void @llvm.dbg.value(metadata i32 %2, i64 0, metadata !1009, metadata !1584), !dbg !7232
+  %3 = icmp eq i32 %block_mode, 13, !dbg !7233
+  %.not = xor i1 %3, true, !dbg !7235
+  %4 = icmp eq i32 %transform_size_flag, 1, !dbg !7236
+  %or.cond = or i1 %4, %.not, !dbg !7235
+  br i1 %or.cond, label %6, label %5, !dbg !7235
 
-lor.lhs.false:                                    ; preds = %entry
-  %0 = load %struct.InputParameters** @input, align 8, !tbaa !0
-  %symbol_mode = getelementptr inbounds %struct.InputParameters* %0, i64 0, i32 59
-  %1 = load i32* %symbol_mode, align 4, !tbaa !3
-  %cmp3 = icmp eq i32 %1, 0
-  br i1 %cmp3, label %for.cond.preheader, label %if.else18
+; <label>:5                                       ; preds = %0
+  tail call void @__assert_rtn(i8* getelementptr inbounds ([18 x i8]* @__func__.writeLumaCoeff8x8, i64 0, i64 0), i8* getelementptr inbounds ([70 x i8]* @.str1, i64 0, i64 0), i32 3390, i8* getelementptr inbounds ([25 x i8]* @.str2, i64 0, i64 0)) #9, !dbg !7236
+  unreachable, !dbg !7236
 
-for.cond.preheader:                               ; preds = %lor.lhs.false, %entry
-  %cmp13 = icmp eq i32 %block_mode, 13
-  %conv14 = zext i1 %cmp13 to i32
-  br label %for.body
+; <label>:6                                       ; preds = %0
+  %7 = icmp ne i32 %transform_size_flag, 0, !dbg !7237
+  br i1 %7, label %8, label %.preheader, !dbg !7239
 
-for.body:                                         ; preds = %for.inc, %for.cond.preheader
-  %block4x4.042 = phi i32 [ 0, %for.cond.preheader ], [ %inc, %for.inc ]
-  %rate.041 = phi i32 [ 0, %for.cond.preheader ], [ %rate.1, %for.inc ]
-  %2 = load %struct.InputParameters** @input, align 8, !tbaa !0
-  %symbol_mode8 = getelementptr inbounds %struct.InputParameters* %2, i64 0, i32 59
-  %3 = load i32* %symbol_mode8, align 4, !tbaa !3
-  %cmp9 = icmp eq i32 %3, 0
-  br i1 %cmp9, label %if.then11, label %if.else
+; <label>:8                                       ; preds = %6
+  %9 = load %struct.InputParameters** @input, align 8, !dbg !7240, !tbaa !1587
+  %10 = getelementptr inbounds %struct.InputParameters* %9, i64 0, i32 59, !dbg !7241
+  %11 = load i32* %10, align 4, !dbg !7241, !tbaa !1924
+  %12 = icmp eq i32 %11, 0, !dbg !7242
+  br i1 %12, label %.preheader, label %26, !dbg !7243
 
-if.then11:                                        ; preds = %for.body
-  %conv14.conv = select i1 %tobool, i32 %conv14, i32 %conv
-  %call = tail call i32 @writeCoeff4x4_CAVLC(i32 0, i32 %block8x8, i32 %block4x4.042, i32 %conv14.conv) #8
-  br label %for.inc
+.preheader:                                       ; preds = %8, %6
+  %13 = zext i1 %3 to i32, !dbg !7244
+  %14 = select i1 %7, i32 %13, i32 %2, !dbg !7250
+  br label %15, !dbg !7251
 
-if.else:                                          ; preds = %for.body
-  %call15 = tail call i32 @writeLumaCoeff4x4_CABAC(i32 %block8x8, i32 %block4x4.042, i32 %conv) #8
-  br label %for.inc
+; <label>:15                                      ; preds = %24, %.preheader
+  %block4x4.02 = phi i32 [ 0, %.preheader ], [ %25, %24 ]
+  %rate.01 = phi i32 [ 0, %.preheader ], [ %rate.1, %24 ]
+  %16 = load %struct.InputParameters** @input, align 8, !dbg !7252, !tbaa !1587
+  %17 = getelementptr inbounds %struct.InputParameters* %16, i64 0, i32 59, !dbg !7253
+  %18 = load i32* %17, align 4, !dbg !7253, !tbaa !1924
+  %19 = icmp eq i32 %18, 0, !dbg !7254
+  br i1 %19, label %20, label %22, !dbg !7255
 
-for.inc:                                          ; preds = %if.then11, %if.else
-  %call.pn = phi i32 [ %call, %if.then11 ], [ %call15, %if.else ]
-  %rate.1 = add nsw i32 %call.pn, %rate.041
-  %inc = add nsw i32 %block4x4.042, 1
-  %exitcond = icmp eq i32 %inc, 4
-  br i1 %exitcond, label %if.end28, label %for.body
+; <label>:20                                      ; preds = %15
+  %21 = tail call i32 @writeCoeff4x4_CAVLC(i32 0, i32 %block8x8, i32 %block4x4.02, i32 %14) #8, !dbg !7256
+  br label %24, !dbg !7257
 
-if.else18:                                        ; preds = %lor.lhs.false
-  %cmp19 = icmp eq i32 %block_mode, 13
-  br i1 %cmp19, label %if.then21, label %if.else24
+; <label>:22                                      ; preds = %15
+  %23 = tail call i32 @writeLumaCoeff4x4_CABAC(i32 %block8x8, i32 %block4x4.02, i32 %2) #8, !dbg !7258
+  br label %24
 
-if.then21:                                        ; preds = %if.else18
-  %call22 = tail call i32 @writeLumaCoeff8x8_CABAC(i32 %block8x8, i32 1) #8
-  br label %if.end28
+; <label>:24                                      ; preds = %20, %22
+  %.pn = phi i32 [ %21, %20 ], [ %23, %22 ]
+  %rate.1 = add nsw i32 %.pn, %rate.01, !dbg !7259
+  %25 = add nuw nsw i32 %block4x4.02, 1, !dbg !7260
+  tail call void @llvm.dbg.value(metadata i32 %25, i64 0, metadata !1007, metadata !1584), !dbg !7261
+  %exitcond = icmp eq i32 %25, 4, !dbg !7251
+  br i1 %exitcond, label %.loopexit, label %15, !dbg !7251
 
-if.else24:                                        ; preds = %if.else18
-  %call25 = tail call i32 @writeLumaCoeff8x8_CABAC(i32 %block8x8, i32 0) #8
-  br label %if.end28
+; <label>:26                                      ; preds = %8
+  br i1 %3, label %27, label %29, !dbg !7262
 
-if.end28:                                         ; preds = %for.inc, %if.then21, %if.else24
-  %rate.2 = phi i32 [ %call22, %if.then21 ], [ %call25, %if.else24 ], [ %rate.1, %for.inc ]
-  ret i32 %rate.2
+; <label>:27                                      ; preds = %26
+  %28 = tail call i32 @writeLumaCoeff8x8_CABAC(i32 %block8x8, i32 1) #8, !dbg !7263
+  tail call void @llvm.dbg.value(metadata i32 %28, i64 0, metadata !1008, metadata !1584), !dbg !7230
+  br label %.loopexit, !dbg !7266
+
+; <label>:29                                      ; preds = %26
+  %30 = tail call i32 @writeLumaCoeff8x8_CABAC(i32 %block8x8, i32 0) #8, !dbg !7267
+  tail call void @llvm.dbg.value(metadata i32 %30, i64 0, metadata !1008, metadata !1584), !dbg !7230
+  br label %.loopexit
+
+.loopexit:                                        ; preds = %24, %27, %29
+  %rate.2 = phi i32 [ %28, %27 ], [ %30, %29 ], [ %rate.1, %24 ]
+  ret i32 %rate.2, !dbg !7269
 }

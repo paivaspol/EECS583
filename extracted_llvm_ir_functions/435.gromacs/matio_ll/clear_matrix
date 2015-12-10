@@ -1,33 +1,37 @@
-define void @clear_matrix(i32 %nx, i32 %ny, float** nocapture readonly %m) #3 {
-  %1 = icmp sgt i32 %nx, 0
-  br i1 %1, label %.preheader.lr.ph, label %._crit_edge3
+define void @clear_matrix(i32 %nx, i32 %ny, float** nocapture readonly %m) #4 {
+  tail call void @llvm.dbg.value(metadata i32 %nx, i64 0, metadata !108, metadata !477), !dbg !549
+  tail call void @llvm.dbg.value(metadata i32 %ny, i64 0, metadata !109, metadata !477), !dbg !550
+  tail call void @llvm.dbg.value(metadata float** %m, i64 0, metadata !110, metadata !477), !dbg !551
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !111, metadata !477), !dbg !552
+  %1 = icmp sgt i32 %nx, 0, !dbg !553
+  br i1 %1, label %.preheader.lr.ph, label %._crit_edge3, !dbg !556
 
 .preheader.lr.ph:                                 ; preds = %0
-  %2 = icmp sgt i32 %ny, 0
-  %3 = add i32 %ny, -1
+  %2 = icmp sgt i32 %ny, 0, !dbg !557
+  %3 = add i32 %ny, -1, !dbg !556
   %4 = zext i32 %3 to i64
-  %5 = shl nuw nsw i64 %4, 2
-  %6 = add nuw nsw i64 %5, 4
-  %7 = add i32 %nx, -1
-  br label %.preheader
+  %5 = shl nuw nsw i64 %4, 2, !dbg !556
+  %6 = add nuw nsw i64 %5, 4, !dbg !556
+  %7 = add i32 %nx, -1, !dbg !556
+  br label %.preheader, !dbg !556
 
 .preheader:                                       ; preds = %11, %.preheader.lr.ph
   %indvars.iv = phi i64 [ 0, %.preheader.lr.ph ], [ %indvars.iv.next, %11 ]
-  br i1 %2, label %.lr.ph, label %11
+  br i1 %2, label %.lr.ph, label %11, !dbg !560
 
 .lr.ph:                                           ; preds = %.preheader
-  %8 = getelementptr inbounds float** %m, i64 %indvars.iv
-  %9 = bitcast float** %8 to i8**
-  %10 = load i8** %9, align 8, !tbaa !14
-  call void @llvm.memset.p0i8.i64(i8* %10, i8 0, i64 %6, i32 4, i1 false)
-  br label %11
+  %8 = getelementptr inbounds float** %m, i64 %indvars.iv, !dbg !561
+  %9 = bitcast float** %8 to i8**, !dbg !561
+  %10 = load i8** %9, align 8, !dbg !561, !tbaa !525
+  call void @llvm.memset.p0i8.i64(i8* %10, i8 0, i64 %6, i32 4, i1 false), !dbg !562
+  br label %11, !dbg !560
 
 ; <label>:11                                      ; preds = %.lr.ph, %.preheader
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %7
-  br i1 %exitcond, label %._crit_edge3, label %.preheader
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !556
+  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !556
+  %exitcond = icmp eq i32 %lftr.wideiv, %7, !dbg !556
+  br i1 %exitcond, label %._crit_edge3, label %.preheader, !dbg !556
 
 ._crit_edge3:                                     ; preds = %11, %0
-  ret void
+  ret void, !dbg !563
 }

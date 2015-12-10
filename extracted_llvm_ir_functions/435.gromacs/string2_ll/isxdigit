@@ -1,16 +1,19 @@
 define i32 @isxdigit(i32 %_c) #4 {
-  %1 = icmp ugt i32 %_c, 255
-  br i1 %1, label %__isctype.exit, label %2
+  tail call void @llvm.dbg.value(metadata i32 %_c, i64 0, metadata !137, metadata !281), !dbg !390
+  tail call void @llvm.dbg.value(metadata i32 %_c, i64 0, metadata !94, metadata !281), !dbg !391
+  tail call void @llvm.dbg.value(metadata i64 65536, i64 0, metadata !95, metadata !281), !dbg !393
+  %1 = icmp ugt i32 %_c, 255, !dbg !394
+  br i1 %1, label %__isctype.exit, label %2, !dbg !394
 
 ; <label>:2                                       ; preds = %0
-  %3 = sext i32 %_c to i64
-  %4 = getelementptr inbounds %struct._RuneLocale* @_DefaultRuneLocale, i64 0, i32 5, i64 %3
-  %5 = load i32* %4, align 4, !tbaa !14
-  %6 = lshr i32 %5, 16
-  %.lobit = and i32 %6, 1
-  br label %__isctype.exit
+  %3 = sext i32 %_c to i64, !dbg !395
+  %4 = getelementptr inbounds %struct._RuneLocale* @_DefaultRuneLocale, i64 0, i32 5, i64 %3, !dbg !395
+  %5 = load i32* %4, align 4, !dbg !395, !tbaa !321
+  %6 = lshr i32 %5, 16, !dbg !396
+  %.lobit = and i32 %6, 1, !dbg !396
+  br label %__isctype.exit, !dbg !397
 
 __isctype.exit:                                   ; preds = %0, %2
-  %7 = phi i32 [ %.lobit, %2 ], [ 0, %0 ]
-  ret i32 %7
+  %7 = phi i32 [ %.lobit, %2 ], [ 0, %0 ], !dbg !397
+  ret i32 %7, !dbg !398
 }

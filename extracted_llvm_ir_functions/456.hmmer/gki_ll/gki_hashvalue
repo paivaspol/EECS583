@@ -1,42 +1,49 @@
-define internal fastcc i32 @gki_hashvalue(%struct.GKI* nocapture %hash, i8* nocapture %key) #2 {
-entry:
-  %0 = load i8* %key, align 1, !tbaa !1
-  %cmp20 = icmp eq i8 %0, 0
-  br i1 %cmp20, label %for.end, label %for.body.lr.ph
+define internal fastcc i32 @gki_hashvalue(%struct.GKI* nocapture readonly %hash, i8* nocapture readonly %key) #2 {
+  tail call void @llvm.dbg.value(metadata %struct.GKI* %hash, i64 0, metadata !70, metadata !93), !dbg !242
+  tail call void @llvm.dbg.value(metadata i8* %key, i64 0, metadata !71, metadata !93), !dbg !243
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !72, metadata !93), !dbg !244
+  %1 = load i8* %key, align 1, !dbg !245, !tbaa !248
+  %2 = icmp eq i8 %1, 0, !dbg !249
+  br i1 %2, label %.loopexit, label %.lr.ph, !dbg !250
 
-for.body.lr.ph:                                   ; preds = %entry
-  %nhash9 = getelementptr inbounds %struct.GKI* %hash, i64 0, i32 2
-  br label %for.body
+.lr.ph:                                           ; preds = %0
+  %3 = getelementptr inbounds %struct.GKI* %hash, i64 0, i32 2, !dbg !251
+  br label %4, !dbg !250
 
-for.body:                                         ; preds = %for.body.lr.ph, %if.end
-  %1 = phi i8 [ %0, %for.body.lr.ph ], [ %5, %if.end ]
-  %val.022 = phi i32 [ 0, %for.body.lr.ph ], [ %rem10, %if.end ]
-  %key.addr.021 = phi i8* [ %key, %for.body.lr.ph ], [ %incdec.ptr11, %if.end ]
-  %conv = sext i8 %1 to i32
-  %mul = shl nsw i32 %val.022, 7
-  %add = add nsw i32 %conv, %mul
-  %incdec.ptr = getelementptr inbounds i8* %key.addr.021, i64 1
-  %2 = load i8* %incdec.ptr, align 1, !tbaa !1
-  %cmp4 = icmp eq i8 %2, 0
-  br i1 %cmp4, label %if.then, label %if.end
+; <label>:4                                       ; preds = %.lr.ph, %15
+  %5 = phi i8 [ %1, %.lr.ph ], [ %22, %15 ]
+  %val.03 = phi i32 [ 0, %.lr.ph ], [ %20, %15 ]
+  %.02 = phi i8* [ %key, %.lr.ph ], [ %21, %15 ]
+  %6 = sext i8 %5 to i32, !dbg !245
+  %7 = shl nsw i32 %val.03, 7, !dbg !253
+  %8 = add nsw i32 %6, %7, !dbg !254
+  tail call void @llvm.dbg.value(metadata i32 %8, i64 0, metadata !72, metadata !93), !dbg !244
+  %9 = getelementptr inbounds i8* %.02, i64 1, !dbg !255
+  tail call void @llvm.dbg.value(metadata i8* %9, i64 0, metadata !71, metadata !93), !dbg !243
+  %10 = load i8* %9, align 1, !dbg !257, !tbaa !248
+  %11 = icmp eq i8 %10, 0, !dbg !258
+  br i1 %11, label %12, label %15, !dbg !259
 
-if.then:                                          ; preds = %for.body
-  %3 = load i32* %nhash9, align 4, !tbaa !0
-  %rem = srem i32 %add, %3
-  br label %for.end
+; <label>:12                                      ; preds = %4
+  %13 = load i32* %3, align 4, !dbg !260, !tbaa !114
+  %14 = srem i32 %8, %13, !dbg !262
+  tail call void @llvm.dbg.value(metadata i32 %14, i64 0, metadata !72, metadata !93), !dbg !244
+  br label %.loopexit, !dbg !263
 
-if.end:                                           ; preds = %for.body
-  %conv3 = sext i8 %2 to i32
-  %mul6 = shl i32 %add, 7
-  %add8 = add nsw i32 %conv3, %mul6
-  %4 = load i32* %nhash9, align 4, !tbaa !0
-  %rem10 = srem i32 %add8, %4
-  %incdec.ptr11 = getelementptr inbounds i8* %key.addr.021, i64 2
-  %5 = load i8* %incdec.ptr11, align 1, !tbaa !1
-  %cmp = icmp eq i8 %5, 0
-  br i1 %cmp, label %for.end, label %for.body
+; <label>:15                                      ; preds = %4
+  %16 = sext i8 %10 to i32, !dbg !257
+  %17 = shl i32 %8, 7, !dbg !264
+  %18 = add nsw i32 %16, %17, !dbg !265
+  %19 = load i32* %3, align 4, !dbg !251, !tbaa !114
+  %20 = srem i32 %18, %19, !dbg !266
+  tail call void @llvm.dbg.value(metadata i32 %20, i64 0, metadata !72, metadata !93), !dbg !244
+  %21 = getelementptr inbounds i8* %.02, i64 2, !dbg !267
+  tail call void @llvm.dbg.value(metadata i8* %21, i64 0, metadata !71, metadata !93), !dbg !243
+  %22 = load i8* %21, align 1, !dbg !245, !tbaa !248
+  %23 = icmp eq i8 %22, 0, !dbg !249
+  br i1 %23, label %.loopexit, label %4, !dbg !250
 
-for.end:                                          ; preds = %entry, %if.end, %if.then
-  %val.1 = phi i32 [ %rem, %if.then ], [ 0, %entry ], [ %rem10, %if.end ]
-  ret i32 %val.1
+.loopexit:                                        ; preds = %15, %0, %12
+  %val.1 = phi i32 [ %14, %12 ], [ 0, %0 ], [ %20, %15 ]
+  ret i32 %val.1, !dbg !268
 }

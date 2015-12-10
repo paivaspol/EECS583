@@ -1,30 +1,30 @@
 define double @DV_sum(%struct._DV* %dv) #0 {
-entry:
-  %cmp = icmp eq %struct._DV* %dv, null
-  br i1 %cmp, label %if.then, label %lor.lhs.false
+  tail call void @llvm.dbg.value(metadata %struct._DV* %dv, i64 0, metadata !42, metadata !102), !dbg !195
+  %1 = icmp eq %struct._DV* %dv, null, !dbg !196
+  br i1 %1, label %._crit_edge, label %2, !dbg !198
 
-lor.lhs.false:                                    ; preds = %entry
-  %size = getelementptr inbounds %struct._DV* %dv, i64 0, i32 0
-  %0 = load i32* %size, align 4, !tbaa !3
-  %cmp1 = icmp slt i32 %0, 1
-  br i1 %cmp1, label %if.then, label %lor.lhs.false2
+; <label>:2                                       ; preds = %0
+  %3 = getelementptr inbounds %struct._DV* %dv, i64 0, i32 0, !dbg !199
+  %4 = load i32* %3, align 4, !dbg !199, !tbaa !126
+  %5 = icmp slt i32 %4, 1, !dbg !200
+  br i1 %5, label %._crit_edge, label %6, !dbg !201
 
-lor.lhs.false2:                                   ; preds = %lor.lhs.false
-  %vec = getelementptr inbounds %struct._DV* %dv, i64 0, i32 3
-  %1 = load double** %vec, align 8, !tbaa !0
-  %cmp3 = icmp eq double* %1, null
-  br i1 %cmp3, label %if.then, label %if.end
+; <label>:6                                       ; preds = %2
+  %7 = getelementptr inbounds %struct._DV* %dv, i64 0, i32 3, !dbg !202
+  %8 = load double** %7, align 8, !dbg !202, !tbaa !118
+  %9 = icmp eq double* %8, null, !dbg !203
+  br i1 %9, label %._crit_edge, label %15, !dbg !204
 
-if.then:                                          ; preds = %lor.lhs.false, %entry, %lor.lhs.false2
-  %2 = phi i32 [ %0, %lor.lhs.false2 ], [ 0, %entry ], [ %0, %lor.lhs.false ]
-  %3 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %vec5 = getelementptr inbounds %struct._DV* %dv, i64 0, i32 3
-  %4 = load double** %vec5, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([49 x i8]* @.str4, i64 0, i64 0), %struct._DV* %dv, i32 %2, double* %4) #4
-  tail call void @exit(i32 -1) #5
-  unreachable
+._crit_edge:                                      ; preds = %0, %6, %2
+  %10 = phi i32 [ %4, %6 ], [ %4, %2 ], [ 0, %0 ]
+  %11 = load %struct.__sFILE** @__stderrp, align 8, !dbg !205, !tbaa !110
+  %12 = getelementptr inbounds %struct._DV* %dv, i64 0, i32 3, !dbg !207
+  %13 = load double** %12, align 8, !dbg !207, !tbaa !118
+  %14 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %11, i8* getelementptr inbounds ([49 x i8]* @.str4, i64 0, i64 0), %struct._DV* %dv, i32 %10, double* %13) #5, !dbg !208
+  tail call void @exit(i32 -1) #6, !dbg !209
+  unreachable, !dbg !209
 
-if.end:                                           ; preds = %lor.lhs.false2
-  %call8 = tail call double @DVsum(i32 %0, double* %1) #4
-  ret double %call8
+; <label>:15                                      ; preds = %6
+  %16 = tail call double @DVsum(i32 %4, double* %8) #5, !dbg !210
+  ret double %16, !dbg !211
 }

@@ -1,69 +1,83 @@
 define void @CCTKi_CommandLineDescribeAllParameters(i8* %argument) #1 {
   %param = alloca i8*, align 8
   %properties = alloca %struct.PARAM_PROPS*, align 8
-  %1 = load i32 (%struct.cGH*)** @CCTK_MyProc, align 8, !tbaa !2
-  %2 = tail call i32 %1(%struct.cGH* null) #5
-  %3 = icmp eq i32 %2, 0
-  br i1 %3, label %4, label %.loopexit
+  tail call void @llvm.dbg.value(metadata i8* %argument, i64 0, metadata !21, metadata !130), !dbg !148
+  %1 = load i32 (%struct.cGH*)** @CCTK_MyProc, align 8, !dbg !149, !tbaa !136
+  %2 = tail call i32 %1(%struct.cGH* null) #6, !dbg !149
+  %3 = icmp eq i32 %2, 0, !dbg !151
+  br i1 %3, label %4, label %.loopexit, !dbg !152
 
 ; <label>:4                                       ; preds = %0
-  %5 = tail call i32 @CCTK_NumCompiledThorns() #5
-  %6 = icmp sgt i32 %5, 0
-  br i1 %6, label %.lr.ph3, label %.loopexit
+  %5 = tail call i32 @CCTK_NumCompiledThorns() #6, !dbg !153
+  tail call void @llvm.dbg.value(metadata i32 %5, i64 0, metadata !23, metadata !130), !dbg !155
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !24, metadata !130), !dbg !156
+  %6 = icmp sgt i32 %5, 0, !dbg !157
+  br i1 %6, label %.lr.ph3, label %.loopexit, !dbg !160
 
 .lr.ph3:                                          ; preds = %4
-  %7 = icmp eq i8* %argument, null
-  %8 = add i32 %5, -1
-  br label %9
+  %7 = icmp eq i8* %argument, null, !dbg !161
+  %8 = add i32 %5, -1, !dbg !160
+  br label %9, !dbg !160
 
 ; <label>:9                                       ; preds = %._crit_edge, %.lr.ph3
   %thorn.01 = phi i32 [ 0, %.lr.ph3 ], [ %30, %._crit_edge ]
-  %10 = call i8* @CCTK_CompiledThorn(i32 %thorn.01) #5
-  %11 = call i8* @CCTK_ThornImplementation(i8* %10) #5
-  %12 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([58 x i8]* @.str3, i64 0, i64 0), i8* %10, i8* %11) #5
-  %13 = call i32 @CCTK_ParameterWalk(i32 1, i8* %10, i8** %param, %struct.PARAM_PROPS** %properties) #5
-  %14 = icmp eq i32 %13, 0
-  br i1 %14, label %.lr.ph, label %._crit_edge
+  %10 = call i8* @CCTK_CompiledThorn(i32 %thorn.01) #6, !dbg !165
+  call void @llvm.dbg.value(metadata i8* %10, i64 0, metadata !27, metadata !130), !dbg !166
+  %11 = call i8* @CCTK_ThornImplementation(i8* %10) #6, !dbg !167
+  %12 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([58 x i8]* @.str3, i64 0, i64 0), i8* %10, i8* %11) #6, !dbg !168
+  call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !22, metadata !130), !dbg !169
+  call void @llvm.dbg.value(metadata i8** %param, i64 0, metadata !25, metadata !130), !dbg !170
+  call void @llvm.dbg.value(metadata %struct.PARAM_PROPS** %properties, i64 0, metadata !28, metadata !130), !dbg !171
+  %13 = call i32 @CCTK_ParameterWalk(i32 1, i8* %10, i8** %param, %struct.PARAM_PROPS** %properties) #6, !dbg !172
+  %14 = icmp eq i32 %13, 0, !dbg !173
+  br i1 %14, label %.lr.ph, label %._crit_edge, !dbg !174
 
 .lr.ph:                                           ; preds = %9, %26
-  br i1 %7, label %24, label %15
+  br i1 %7, label %24, label %15, !dbg !175
 
 ; <label>:15                                      ; preds = %.lr.ph
-  %16 = load i8* %argument, align 1, !tbaa !6
-  %cond = icmp eq i8 %16, 118
-  br i1 %cond, label %17, label %19
+  %16 = load i8* %argument, align 1, !dbg !176, !tbaa !178
+  %cond = icmp eq i8 %16, 118, !dbg !179
+  br i1 %cond, label %17, label %19, !dbg !179
 
 ; <label>:17                                      ; preds = %15
-  %18 = load %struct.PARAM_PROPS** %properties, align 8, !tbaa !2
-  call fastcc void @CommandLinePrintParameter(%struct.PARAM_PROPS* %18) #6
-  br label %26
+  call void @llvm.dbg.value(metadata %struct.PARAM_PROPS** %properties, i64 0, metadata !28, metadata !130), !dbg !171
+  %18 = load %struct.PARAM_PROPS** %properties, align 8, !dbg !180, !tbaa !136
+  call fastcc void @CommandLinePrintParameter(%struct.PARAM_PROPS* %18) #7, !dbg !182
+  br label %26, !dbg !183
 
 ; <label>:19                                      ; preds = %15
-  %20 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !2
-  %21 = call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %20, i8* getelementptr inbounds ([29 x i8]* @.str4, i64 0, i64 0), i8* %argument) #5
-  %22 = load i32 (%struct.cGH*, i32)** @CCTK_Exit, align 8, !tbaa !2
-  %23 = call i32 %22(%struct.cGH* null, i32 2) #5
-  br label %26
+  %20 = load %struct.__sFILE** @__stderrp, align 8, !dbg !184, !tbaa !136
+  %21 = call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %20, i8* getelementptr inbounds ([29 x i8]* @.str4, i64 0, i64 0), i8* %argument) #6, !dbg !185
+  %22 = load i32 (%struct.cGH*, i32)** @CCTK_Exit, align 8, !dbg !186, !tbaa !136
+  %23 = call i32 %22(%struct.cGH* null, i32 2) #6, !dbg !186
+  br label %26, !dbg !187
 
 ; <label>:24                                      ; preds = %.lr.ph
-  %25 = load i8** %param, align 8, !tbaa !2
-  %puts = call i32 @puts(i8* %25)
+  call void @llvm.dbg.value(metadata i8** %param, i64 0, metadata !25, metadata !130), !dbg !170
+  %25 = load i8** %param, align 8, !dbg !188, !tbaa !136
+  %puts = call i32 @puts(i8* %25), !dbg !190
   br label %26
 
 ; <label>:26                                      ; preds = %17, %19, %24
-  %27 = load i8** %param, align 8, !tbaa !2
-  call void @free(i8* %27) #6
-  %28 = call i32 @CCTK_ParameterWalk(i32 0, i8* %10, i8** %param, %struct.PARAM_PROPS** %properties) #5
-  %29 = icmp eq i32 %28, 0
-  br i1 %29, label %.lr.ph, label %._crit_edge
+  call void @llvm.dbg.value(metadata i8** %param, i64 0, metadata !25, metadata !130), !dbg !170
+  %27 = load i8** %param, align 8, !dbg !191, !tbaa !136
+  call void @free(i8* %27) #7, !dbg !192
+  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !22, metadata !130), !dbg !169
+  call void @llvm.dbg.value(metadata i8** %param, i64 0, metadata !25, metadata !130), !dbg !170
+  call void @llvm.dbg.value(metadata %struct.PARAM_PROPS** %properties, i64 0, metadata !28, metadata !130), !dbg !171
+  %28 = call i32 @CCTK_ParameterWalk(i32 0, i8* %10, i8** %param, %struct.PARAM_PROPS** %properties) #6, !dbg !172
+  %29 = icmp eq i32 %28, 0, !dbg !173
+  br i1 %29, label %.lr.ph, label %._crit_edge, !dbg !174
 
 ._crit_edge:                                      ; preds = %26, %9
-  %30 = add nuw nsw i32 %thorn.01, 1
-  %exitcond = icmp eq i32 %thorn.01, %8
-  br i1 %exitcond, label %.loopexit, label %9
+  %30 = add nuw nsw i32 %thorn.01, 1, !dbg !193
+  call void @llvm.dbg.value(metadata i32 %30, i64 0, metadata !24, metadata !130), !dbg !156
+  %exitcond = icmp eq i32 %thorn.01, %8, !dbg !160
+  br i1 %exitcond, label %.loopexit, label %9, !dbg !160
 
 .loopexit:                                        ; preds = %._crit_edge, %4, %0
-  %31 = load i32 (%struct.cGH*, i32)** @CCTK_Exit, align 8, !tbaa !2
-  %32 = call i32 %31(%struct.cGH* null, i32 0) #5
-  ret void
+  %31 = load i32 (%struct.cGH*, i32)** @CCTK_Exit, align 8, !dbg !194, !tbaa !136
+  %32 = call i32 %31(%struct.cGH* null, i32 0) #6, !dbg !194
+  ret void, !dbg !195
 }

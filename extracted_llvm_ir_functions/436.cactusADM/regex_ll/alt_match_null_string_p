@@ -1,46 +1,57 @@
 define internal fastcc signext i8 @alt_match_null_string_p(i8* %p, i8* %end, %union.register_info_type* nocapture %reg_info) #0 {
   %p1 = alloca i8*, align 8
-  store i8* %p, i8** %p1, align 8, !tbaa !13
-  %1 = icmp ult i8* %p, %end
-  br i1 %1, label %.lr.ph, label %._crit_edge
+  tail call void @llvm.dbg.value(metadata i8* %p, i64 0, metadata !452, metadata !797), !dbg !4110
+  tail call void @llvm.dbg.value(metadata i8* %end, i64 0, metadata !453, metadata !797), !dbg !4111
+  tail call void @llvm.dbg.value(metadata %union.register_info_type* %reg_info, i64 0, metadata !454, metadata !797), !dbg !4112
+  tail call void @llvm.dbg.value(metadata i8* %p, i64 0, metadata !456, metadata !797), !dbg !4113
+  store i8* %p, i8** %p1, align 8, !dbg !4113, !tbaa !856
+  tail call void @llvm.dbg.value(metadata i8** %p1, i64 0, metadata !456, metadata !797), !dbg !4113
+  %1 = icmp ult i8* %p, %end, !dbg !4114
+  br i1 %1, label %.lr.ph, label %._crit_edge, !dbg !4115
 
 .lr.ph:                                           ; preds = %0, %.backedge
   %2 = phi i8* [ %14, %.backedge ], [ %p, %0 ]
-  %3 = load i8* %2, align 1, !tbaa !12
-  %cond = icmp eq i8 %3, 15
-  br i1 %cond, label %4, label %16
+  %3 = load i8* %2, align 1, !dbg !4116, !tbaa !844
+  %cond = icmp eq i8 %3, 15, !dbg !4118
+  br i1 %cond, label %4, label %16, !dbg !4118
 
 ; <label>:4                                       ; preds = %.lr.ph
-  %5 = getelementptr inbounds i8* %2, i64 1
-  store i8* %5, i8** %p1, align 8, !tbaa !13
-  %6 = load i8* %5, align 1, !tbaa !12
-  %7 = zext i8 %6 to i32
-  %8 = getelementptr inbounds i8* %2, i64 2
-  %9 = load i8* %8, align 1, !tbaa !12
-  %10 = sext i8 %9 to i32
-  %11 = shl nsw i32 %10, 8
-  %12 = or i32 %11, %7
-  %addconv = add nsw i32 %12, 3
-  %.sum = sext i32 %addconv to i64
-  %13 = getelementptr inbounds i8* %2, i64 %.sum
-  store i8* %13, i8** %p1, align 8, !tbaa !13
-  br label %.backedge
+  %5 = getelementptr inbounds i8* %2, i64 1, !dbg !4119
+  tail call void @llvm.dbg.value(metadata i8* %5, i64 0, metadata !456, metadata !797), !dbg !4113
+  store i8* %5, i8** %p1, align 8, !dbg !4119, !tbaa !856
+  %6 = load i8* %5, align 1, !dbg !4121, !tbaa !844
+  %7 = zext i8 %6 to i32, !dbg !4121
+  tail call void @llvm.dbg.value(metadata i32 %7, i64 0, metadata !455, metadata !797), !dbg !4124
+  %8 = getelementptr inbounds i8* %2, i64 2, !dbg !4121
+  %9 = load i8* %8, align 1, !dbg !4121, !tbaa !844
+  %10 = sext i8 %9 to i32, !dbg !4121
+  %11 = shl nsw i32 %10, 8, !dbg !4121
+  %12 = or i32 %11, %7, !dbg !4121
+  tail call void @llvm.dbg.value(metadata i32 %12, i64 0, metadata !455, metadata !797), !dbg !4124
+  %addconv = add nsw i32 %12, 3, !dbg !4125
+  %.sum = sext i32 %addconv to i64, !dbg !4125
+  %13 = getelementptr inbounds i8* %2, i64 %.sum, !dbg !4125
+  tail call void @llvm.dbg.value(metadata i8* %13, i64 0, metadata !456, metadata !797), !dbg !4113
+  store i8* %13, i8** %p1, align 8, !dbg !4125, !tbaa !856
+  br label %.backedge, !dbg !4126
 
 .backedge:                                        ; preds = %..backedge_crit_edge, %4
   %14 = phi i8* [ %.pre, %..backedge_crit_edge ], [ %13, %4 ]
-  %15 = icmp ult i8* %14, %end
-  br i1 %15, label %.lr.ph, label %._crit_edge
+  tail call void @llvm.dbg.value(metadata i8** %p1, i64 0, metadata !456, metadata !797), !dbg !4113
+  %15 = icmp ult i8* %14, %end, !dbg !4114
+  br i1 %15, label %.lr.ph, label %._crit_edge, !dbg !4115
 
 ; <label>:16                                      ; preds = %.lr.ph
-  %17 = call fastcc signext i8 @common_op_match_null_string_p(i8** %p1, i8* %end, %union.register_info_type* %reg_info) #8
-  %18 = icmp eq i8 %17, 0
-  br i1 %18, label %._crit_edge, label %..backedge_crit_edge
+  tail call void @llvm.dbg.value(metadata i8** %p1, i64 0, metadata !456, metadata !797), !dbg !4113
+  %17 = call fastcc signext i8 @common_op_match_null_string_p(i8** %p1, i8* %end, %union.register_info_type* %reg_info) #8, !dbg !4127
+  %18 = icmp eq i8 %17, 0, !dbg !4127
+  br i1 %18, label %._crit_edge, label %..backedge_crit_edge, !dbg !4129
 
 ..backedge_crit_edge:                             ; preds = %16
-  %.pre = load i8** %p1, align 8, !tbaa !13
-  br label %.backedge
+  %.pre = load i8** %p1, align 8, !dbg !4130, !tbaa !856
+  br label %.backedge, !dbg !4129
 
 ._crit_edge:                                      ; preds = %16, %.backedge, %0
   %.0 = phi i8 [ 1, %0 ], [ 0, %16 ], [ 1, %.backedge ]
-  ret i8 %.0
+  ret i8 %.0, !dbg !4131
 }

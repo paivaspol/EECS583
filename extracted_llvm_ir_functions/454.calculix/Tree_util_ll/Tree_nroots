@@ -1,38 +1,38 @@
 define i32 @Tree_nroots(%struct._Tree* %tree) #0 {
-entry:
-  %cmp = icmp eq %struct._Tree* %tree, null
-  br i1 %cmp, label %if.then, label %lor.lhs.false
+  tail call void @llvm.dbg.value(metadata %struct._Tree* %tree, i64 0, metadata !44, metadata !98), !dbg !221
+  %1 = icmp eq %struct._Tree* %tree, null, !dbg !222
+  br i1 %1, label %9, label %2, !dbg !224
 
-lor.lhs.false:                                    ; preds = %entry
-  %n = getelementptr inbounds %struct._Tree* %tree, i64 0, i32 0
-  %0 = load i32* %n, align 4, !tbaa !0
-  %cmp1 = icmp slt i32 %0, 1
-  br i1 %cmp1, label %if.then, label %for.body.lr.ph
+; <label>:2                                       ; preds = %0
+  %3 = getelementptr inbounds %struct._Tree* %tree, i64 0, i32 0, !dbg !225
+  %4 = load i32* %3, align 4, !dbg !225, !tbaa !104
+  %5 = icmp slt i32 %4, 1, !dbg !226
+  br i1 %5, label %9, label %.lr.ph, !dbg !227
 
-for.body.lr.ph:                                   ; preds = %lor.lhs.false
-  %par = getelementptr inbounds %struct._Tree* %tree, i64 0, i32 2
-  %1 = load i32** %par, align 8, !tbaa !3
-  br label %for.body
+.lr.ph:                                           ; preds = %2
+  %6 = getelementptr inbounds %struct._Tree* %tree, i64 0, i32 2, !dbg !228
+  %7 = load i32** %6, align 8, !dbg !228, !tbaa !156
+  %8 = sext i32 %4 to i64, !dbg !233
+  br label %12, !dbg !233
 
-if.then:                                          ; preds = %lor.lhs.false, %entry
-  %2 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([45 x i8]* @.str5, i64 0, i64 0), %struct._Tree* %tree) #4
-  tail call void @exit(i32 -1) #5
-  unreachable
+; <label>:9                                       ; preds = %2, %0
+  %10 = load %struct.__sFILE** @__stderrp, align 8, !dbg !234, !tbaa !114
+  %11 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %10, i8* getelementptr inbounds ([45 x i8]* @.str5, i64 0, i64 0), %struct._Tree* %tree) #5, !dbg !236
+  tail call void @exit(i32 -1) #6, !dbg !237
+  unreachable, !dbg !237
 
-for.body:                                         ; preds = %for.body.lr.ph, %for.body
-  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
-  %nroot.016 = phi i32 [ 0, %for.body.lr.ph ], [ %inc.nroot.0, %for.body ]
-  %arrayidx = getelementptr inbounds i32* %1, i64 %indvars.iv
-  %3 = load i32* %arrayidx, align 4, !tbaa !0
-  %cmp4 = icmp eq i32 %3, -1
-  %inc = zext i1 %cmp4 to i32
-  %inc.nroot.0 = add nsw i32 %inc, %nroot.016
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %4 = trunc i64 %indvars.iv.next to i32
-  %cmp3 = icmp slt i32 %4, %0
-  br i1 %cmp3, label %for.body, label %for.end
+; <label>:12                                      ; preds = %.lr.ph, %12
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %12 ]
+  %nroot.01 = phi i32 [ 0, %.lr.ph ], [ %.nroot.0, %12 ]
+  %13 = getelementptr inbounds i32* %7, i64 %indvars.iv, !dbg !238
+  %14 = load i32* %13, align 4, !dbg !238, !tbaa !127
+  %15 = icmp eq i32 %14, -1, !dbg !239
+  %16 = zext i1 %15 to i32, !dbg !240
+  %.nroot.0 = add nsw i32 %16, %nroot.01, !dbg !240
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !233
+  %17 = icmp slt i64 %indvars.iv.next, %8, !dbg !241
+  br i1 %17, label %12, label %._crit_edge, !dbg !233
 
-for.end:                                          ; preds = %for.body
-  ret i32 %inc.nroot.0
+._crit_edge:                                      ; preds = %12
+  ret i32 %.nroot.0, !dbg !242
 }

@@ -1,13 +1,16 @@
 define noalias i8* @sre_malloc(i8* %file, i32 %line, i64 %size) #0 {
-entry:
-  %call = tail call noalias i8* @malloc(i64 %size) #8
-  %cmp = icmp eq i8* %call, null
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata i8* %file, i64 0, metadata !52, metadata !225), !dbg !315
+  tail call void @llvm.dbg.value(metadata i32 %line, i64 0, metadata !53, metadata !225), !dbg !316
+  tail call void @llvm.dbg.value(metadata i64 %size, i64 0, metadata !54, metadata !225), !dbg !317
+  %1 = tail call i8* @malloc(i64 %size) #5, !dbg !318
+  tail call void @llvm.dbg.value(metadata i8* %1, i64 0, metadata !55, metadata !225), !dbg !320
+  %2 = icmp eq i8* %1, null, !dbg !321
+  br i1 %2, label %3, label %4, !dbg !322
 
-if.then:                                          ; preds = %entry
-  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([44 x i8]* @.str, i64 0, i64 0), i64 %size, i8* %file, i32 %line) #8
-  br label %if.end
+; <label>:3                                       ; preds = %0
+  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([44 x i8]* @.str, i64 0, i64 0), i64 %size, i8* %file, i32 %line) #5, !dbg !323
+  br label %4, !dbg !323
 
-if.end:                                           ; preds = %if.then, %entry
-  ret i8* %call
+; <label>:4                                       ; preds = %3, %0
+  ret i8* %1, !dbg !324
 }

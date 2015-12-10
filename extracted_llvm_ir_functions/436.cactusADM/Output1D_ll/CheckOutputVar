@@ -1,16 +1,20 @@
 define internal fastcc i32 @CheckOutputVar(i32 %vindex) #1 {
-  %1 = tail call i32 @CCTK_GroupTypeFromVarI(i32 %vindex) #6
-  %2 = and i32 %1, -2
-  %.cmp = icmp ne i32 %2, 2
-  %3 = zext i1 %.cmp to i32
-  br i1 %.cmp, label %4, label %7
+  tail call void @llvm.dbg.value(metadata i32 %vindex, i64 0, metadata !207, metadata !219), !dbg !406
+  %1 = tail call i32 @CCTK_GroupTypeFromVarI(i32 %vindex) #6, !dbg !407
+  tail call void @llvm.dbg.value(metadata i32 %1, i64 0, metadata !209, metadata !219), !dbg !408
+  %2 = and i32 %1, -2, !dbg !409
+  %.cmp = icmp ne i32 %2, 2, !dbg !409
+  %3 = zext i1 %.cmp to i32, !dbg !409
+  tail call void @llvm.dbg.value(metadata i32 %3, i64 0, metadata !208, metadata !219), !dbg !410
+  br i1 %.cmp, label %4, label %7, !dbg !411
 
 ; <label>:4                                       ; preds = %0
-  %5 = tail call i8* @CCTK_FullName(i32 %vindex) #6
-  %6 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 2, i32 391, i8* getelementptr inbounds ([78 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([8 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([80 x i8]* @.str11, i64 0, i64 0), i8* %5) #6
-  tail call void @free(i8* %5) #7
-  br label %7
+  %5 = tail call i8* @CCTK_FullName(i32 %vindex) #6, !dbg !412
+  tail call void @llvm.dbg.value(metadata i8* %5, i64 0, metadata !210, metadata !219), !dbg !415
+  %6 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 2, i32 391, i8* getelementptr inbounds ([78 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([8 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([80 x i8]* @.str11, i64 0, i64 0), i8* %5) #6, !dbg !416
+  tail call void @free(i8* %5) #7, !dbg !417
+  br label %7, !dbg !418
 
 ; <label>:7                                       ; preds = %4, %0
-  ret i32 %3
+  ret i32 %3, !dbg !419
 }

@@ -1,0 +1,32 @@
+define internal fastcc zeroext i1 @_ZN3povL10Parse_CallEv() #0 {
+  %1 = load i8* @_ZN3pov24Allow_Identifier_In_CallE, align 1, !dbg !5236, !tbaa !2735, !range !2737
+  %2 = icmp eq i8 %1, 0, !dbg !5236
+  tail call void @_ZN3pov9Get_TokenEv() #7, !dbg !5237
+  %3 = load i32* getelementptr inbounds (%"struct.pov::Token_Struct"* @_ZN3pov5TokenE, i64 0, i32 0), align 8, !dbg !5239, !tbaa !2742
+  %4 = icmp eq i32 %3, 173, !dbg !5239
+  br i1 %2, label %8, label %5, !dbg !5241
+
+; <label>:5                                       ; preds = %0
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !2127, metadata !2727), !dbg !5242
+  br i1 %4, label %6, label %7, !dbg !5243
+
+; <label>:6                                       ; preds = %5
+  store i8 0, i8* @_ZN3pov18Identifier_In_CallE, align 1, !dbg !5245, !tbaa !2735
+  br label %10, !dbg !5247
+
+; <label>:7                                       ; preds = %5
+  tail call void @_ZN3pov11Unget_TokenEv() #7, !dbg !5248
+  store i8 1, i8* @_ZN3pov18Identifier_In_CallE, align 1, !dbg !5249, !tbaa !2735
+  br label %10, !dbg !5250
+
+; <label>:8                                       ; preds = %0
+  br i1 %4, label %10, label %9, !dbg !5237
+
+; <label>:9                                       ; preds = %8
+  tail call void @_ZN3pov11Parse_ErrorEi(i32 173) #7, !dbg !5239
+  br label %10, !dbg !5239
+
+; <label>:10                                      ; preds = %9, %8, %7, %6
+  %.0 = phi i1 [ true, %6 ], [ false, %7 ], [ true, %8 ], [ true, %9 ]
+  ret i1 %.0, !dbg !5251
+}

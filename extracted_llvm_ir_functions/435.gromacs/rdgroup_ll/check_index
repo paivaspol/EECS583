@@ -1,34 +1,40 @@
-define void @check_index(i8* %gname, i32 %n, i32* nocapture readonly %index, i8* %traj, i32 %natoms) #3 {
-  %1 = icmp sgt i32 %n, 0
-  br i1 %1, label %.lr.ph, label %._crit_edge
+define void @check_index(i8* %gname, i32 %n, i32* nocapture readonly %index, i8* %traj, i32 %natoms) #4 {
+  tail call void @llvm.dbg.value(metadata i8* %gname, i64 0, metadata !88, metadata !249), !dbg !288
+  tail call void @llvm.dbg.value(metadata i32 %n, i64 0, metadata !89, metadata !249), !dbg !289
+  tail call void @llvm.dbg.value(metadata i32* %index, i64 0, metadata !90, metadata !249), !dbg !290
+  tail call void @llvm.dbg.value(metadata i8* %traj, i64 0, metadata !91, metadata !249), !dbg !291
+  tail call void @llvm.dbg.value(metadata i32 %natoms, i64 0, metadata !92, metadata !249), !dbg !292
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !93, metadata !249), !dbg !293
+  %1 = icmp sgt i32 %n, 0, !dbg !294
+  br i1 %1, label %.lr.ph, label %._crit_edge, !dbg !297
 
 .lr.ph:                                           ; preds = %0
-  %2 = icmp ne i8* %gname, null
-  %3 = select i1 %2, i8* %gname, i8* getelementptr inbounds ([6 x i8]* @.str1, i64 0, i64 0)
-  %4 = icmp ne i8* %traj, null
-  %5 = select i1 %4, i8* %traj, i8* getelementptr inbounds ([15 x i8]* @.str2, i64 0, i64 0)
-  %6 = add i32 %n, -1
-  br label %7
+  %2 = icmp ne i8* %gname, null, !dbg !298
+  %3 = select i1 %2, i8* %gname, i8* getelementptr inbounds ([6 x i8]* @.str1, i64 0, i64 0), !dbg !298
+  %4 = icmp ne i8* %traj, null, !dbg !300
+  %5 = select i1 %4, i8* %traj, i8* getelementptr inbounds ([15 x i8]* @.str2, i64 0, i64 0), !dbg !300
+  %6 = add i32 %n, -1, !dbg !297
+  br label %7, !dbg !297
 
 ; <label>:7                                       ; preds = %._crit_edge2, %.lr.ph
   %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %.pre, %._crit_edge2 ]
-  %8 = getelementptr inbounds i32* %index, i64 %indvars.iv
-  %9 = load i32* %8, align 4, !tbaa !14
-  %10 = icmp slt i32 %9, %natoms
-  %.pre = add nuw nsw i64 %indvars.iv, 1
-  br i1 %10, label %._crit_edge2, label %11
+  %8 = getelementptr inbounds i32* %index, i64 %indvars.iv, !dbg !301
+  %9 = load i32* %8, align 4, !dbg !301, !tbaa !302
+  %10 = icmp slt i32 %9, %natoms, !dbg !303
+  %.pre = add nuw nsw i64 %indvars.iv, 1, !dbg !297
+  br i1 %10, label %._crit_edge2, label %11, !dbg !304
 
 ; <label>:11                                      ; preds = %7
-  %12 = add nsw i32 %9, 1
-  %13 = trunc i64 %.pre to i32
-  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([76 x i8]* @.str, i64 0, i64 0), i8* %3, i32 %13, i32 %12, i8* %5, i32 %natoms) #7
-  br label %._crit_edge2
+  %12 = add nsw i32 %9, 1, !dbg !305
+  %13 = trunc i64 %.pre to i32, !dbg !306
+  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([76 x i8]* @.str, i64 0, i64 0), i8* %3, i32 %13, i32 %12, i8* %5, i32 %natoms) #8, !dbg !306
+  br label %._crit_edge2, !dbg !306
 
 ._crit_edge2:                                     ; preds = %7, %11
-  %lftr.wideiv = trunc i64 %indvars.iv to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %6
-  br i1 %exitcond, label %._crit_edge, label %7
+  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !297
+  %exitcond = icmp eq i32 %lftr.wideiv, %6, !dbg !297
+  br i1 %exitcond, label %._crit_edge, label %7, !dbg !297
 
 ._crit_edge:                                      ; preds = %._crit_edge2, %0
-  ret void
+  ret void, !dbg !307
 }

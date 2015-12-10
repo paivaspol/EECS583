@@ -1,0 +1,69 @@
+define i32 @_ZN6soplex10SPxDevexPR12selectLeaveXERdii(%"class.soplex::SPxDevexPR"* nocapture %this, double* nocapture dereferenceable(8) %best, i32 %start, i32 %incr) #3 align 2 {
+  tail call void @llvm.dbg.value(metadata %"class.soplex::SPxDevexPR"* %this, i64 0, metadata !5050, metadata !6202), !dbg !6340
+  tail call void @llvm.dbg.value(metadata double* %best, i64 0, metadata !5051, metadata !6202), !dbg !6341
+  tail call void @llvm.dbg.value(metadata i32 %start, i64 0, metadata !5052, metadata !6202), !dbg !6342
+  tail call void @llvm.dbg.value(metadata i32 %incr, i64 0, metadata !5053, metadata !6202), !dbg !6343
+  %1 = getelementptr inbounds %"class.soplex::SPxDevexPR"* %this, i64 0, i32 0, i32 2, !dbg !6344
+  %2 = load %"class.soplex::SoPlex"** %1, align 8, !dbg !6344, !tbaa !6207
+  tail call void @llvm.dbg.value(metadata %"class.soplex::SoPlex"* %2, i64 0, metadata !5170, metadata !6202), !dbg !6345
+  %3 = getelementptr inbounds %"class.soplex::SoPlex"* %2, i64 0, i32 48, i32 0, i32 1, !dbg !6347
+  %4 = load double** %3, align 8, !dbg !6347, !tbaa !6287
+  tail call void @llvm.dbg.value(metadata double* %4, i64 0, metadata !5055, metadata !6202), !dbg !6349
+  %5 = getelementptr inbounds %"class.soplex::SPxDevexPR"* %this, i64 0, i32 3, i32 0, i32 1, !dbg !6350
+  %6 = load double** %5, align 8, !dbg !6350, !tbaa !6287
+  tail call void @llvm.dbg.value(metadata double* %6, i64 0, metadata !5056, metadata !6202), !dbg !6352
+  tail call void @llvm.dbg.value(metadata double 0.000000e+00, i64 0, metadata !5057, metadata !6202), !dbg !6353
+  tail call void @llvm.dbg.value(metadata i32 -1, i64 0, metadata !5058, metadata !6202), !dbg !6354
+  %7 = getelementptr inbounds %"class.soplex::SPxDevexPR"* %this, i64 0, i32 3, i32 0, i32 0, !dbg !6355
+  %8 = load i32* %7, align 4, !dbg !6355, !tbaa !6243
+  tail call void @llvm.dbg.value(metadata i32 %8, i64 0, metadata !5059, metadata !6202), !dbg !6357
+  %9 = icmp sgt i32 %8, %start, !dbg !6358
+  br i1 %9, label %.lr.ph, label %._crit_edge, !dbg !6361
+
+.lr.ph:                                           ; preds = %0
+  %10 = getelementptr inbounds %"class.soplex::SPxDevexPR"* %this, i64 0, i32 0, i32 3, !dbg !6362
+  %11 = getelementptr inbounds %"class.soplex::SPxDevexPR"* %this, i64 0, i32 1, !dbg !6365
+  %12 = sext i32 %start to i64
+  %13 = sext i32 %incr to i64
+  %14 = sext i32 %8 to i64, !dbg !6361
+  %.pre = load double* %10, align 8, !dbg !6362, !tbaa !6369
+  br label %15, !dbg !6361
+
+; <label>:15                                      ; preds = %.lr.ph, %28
+  %indvars.iv = phi i64 [ %12, %.lr.ph ], [ %indvars.iv.next, %28 ]
+  %bstI.02 = phi i32 [ -1, %.lr.ph ], [ %bstI.1, %28 ]
+  %bstX.01 = phi double [ 0.000000e+00, %.lr.ph ], [ %bstX.1, %28 ]
+  %16 = getelementptr inbounds double* %4, i64 %indvars.iv, !dbg !6370
+  %17 = load double* %16, align 8, !dbg !6370, !tbaa !6289
+  %18 = fsub double -0.000000e+00, %.pre, !dbg !6371
+  %19 = fcmp olt double %17, %18, !dbg !6372
+  br i1 %19, label %20, label %28, !dbg !6373
+
+; <label>:20                                      ; preds = %15
+  %21 = fmul double %17, %17, !dbg !6374
+  %22 = getelementptr inbounds double* %6, i64 %indvars.iv, !dbg !6375
+  %23 = load double* %22, align 8, !dbg !6375, !tbaa !6289
+  %24 = fdiv double %21, %23, !dbg !6376
+  tail call void @llvm.dbg.value(metadata double %24, i64 0, metadata !5054, metadata !6202), !dbg !6377
+  %25 = fcmp ogt double %24, %bstX.01, !dbg !6378
+  br i1 %25, label %26, label %28, !dbg !6379
+
+; <label>:26                                      ; preds = %20
+  tail call void @llvm.dbg.value(metadata double %24, i64 0, metadata !5057, metadata !6202), !dbg !6353
+  store double %23, double* %11, align 8, !dbg !6380, !tbaa !6381
+  %27 = trunc i64 %indvars.iv to i32, !dbg !6383
+  br label %28, !dbg !6383
+
+; <label>:28                                      ; preds = %15, %26, %20
+  %bstX.1 = phi double [ %24, %26 ], [ %bstX.01, %20 ], [ %bstX.01, %15 ]
+  %bstI.1 = phi i32 [ %27, %26 ], [ %bstI.02, %20 ], [ %bstI.02, %15 ]
+  %indvars.iv.next = add i64 %indvars.iv, %13, !dbg !6361
+  %29 = icmp slt i64 %indvars.iv.next, %14, !dbg !6358
+  br i1 %29, label %15, label %._crit_edge, !dbg !6361
+
+._crit_edge:                                      ; preds = %28, %0
+  %bstI.0.lcssa = phi i32 [ -1, %0 ], [ %bstI.1, %28 ]
+  %bstX.0.lcssa = phi double [ 0.000000e+00, %0 ], [ %bstX.1, %28 ]
+  store double %bstX.0.lcssa, double* %best, align 8, !dbg !6384, !tbaa !6289
+  ret i32 %bstI.0.lcssa, !dbg !6385
+}

@@ -1,109 +1,116 @@
 define void @SSIClose(%struct.ssifile_s* %sfp) #0 {
-entry:
-  %cmp = icmp eq %struct.ssifile_s* %sfp, null
-  br i1 %cmp, label %if.end4, label %if.then
+  tail call void @llvm.dbg.value(metadata %struct.ssifile_s* %sfp, i64 0, metadata !199, metadata !535), !dbg !1169
+  %1 = icmp eq %struct.ssifile_s* %sfp, null, !dbg !1170
+  br i1 %1, label %52, label %2, !dbg !1172
 
-if.then:                                          ; preds = %entry
-  %filename.i = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 16
-  %0 = load i8*** %filename.i, align 8, !tbaa !0
-  %cmp.i = icmp eq i8** %0, null
-  br i1 %cmp.i, label %if.end11.i, label %for.cond.preheader.i
+; <label>:2                                       ; preds = %0
+  tail call void @llvm.dbg.value(metadata %struct.ssifile_s* %sfp, i64 0, metadata !398, metadata !535) #4, !dbg !1173
+  %3 = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 16, !dbg !1176
+  %4 = load i8*** %3, align 8, !dbg !1176, !tbaa !668
+  %5 = icmp eq i8** %4, null, !dbg !1178
+  br i1 %5, label %21, label %.preheader.i, !dbg !1179
 
-for.cond.preheader.i:                             ; preds = %if.then
-  %nfiles.i = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 2
-  %1 = load i16* %nfiles.i, align 2, !tbaa !3
-  %cmp148.i = icmp eq i16 %1, 0
-  br i1 %cmp148.i, label %for.end.i, label %for.body.i
+.preheader.i:                                     ; preds = %2
+  %6 = bitcast i8** %4 to i8*, !dbg !1180
+  %7 = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 2, !dbg !1181
+  %8 = load i16* %7, align 2, !dbg !1181, !tbaa !570
+  %9 = icmp eq i16 %8, 0, !dbg !1185
+  br i1 %9, label %.preheader._crit_edge.i, label %.lr.ph.i, !dbg !1186
 
-for.body.i:                                       ; preds = %for.cond.preheader.i, %for.inc.i
-  %2 = phi i8** [ %.pre51.i, %for.inc.i ], [ %0, %for.cond.preheader.i ]
-  %3 = phi i16 [ %5, %for.inc.i ], [ %1, %for.cond.preheader.i ]
-  %indvars.iv.i = phi i64 [ %indvars.iv.next.i, %for.inc.i ], [ 0, %for.cond.preheader.i ]
-  %arrayidx.i = getelementptr inbounds i8** %2, i64 %indvars.iv.i
-  %4 = load i8** %arrayidx.i, align 8, !tbaa !0
-  %cmp4.i = icmp eq i8* %4, null
-  br i1 %cmp4.i, label %for.inc.i, label %if.then6.i
+.lr.ph.i:                                         ; preds = %.preheader.i, %._crit_edge2.i
+  %10 = phi i16 [ %17, %._crit_edge2.i ], [ %8, %.preheader.i ], !dbg !1180
+  %11 = phi i8** [ %.pre.i, %._crit_edge2.i ], [ %4, %.preheader.i ], !dbg !1187
+  %indvars.iv.i = phi i64 [ %indvars.iv.next.i, %._crit_edge2.i ], [ 0, %.preheader.i ], !dbg !1180
+  %12 = getelementptr inbounds i8** %11, i64 %indvars.iv.i, !dbg !1189
+  %13 = load i8** %12, align 8, !dbg !1189, !tbaa !675
+  %14 = icmp eq i8* %13, null, !dbg !1190
+  br i1 %14, label %16, label %15, !dbg !1191
 
-if.then6.i:                                       ; preds = %for.body.i
-  tail call void @free(i8* %4) #8
-  %.pre50.i = load i16* %nfiles.i, align 2, !tbaa !3
-  %.pre51.i.pre = load i8*** %filename.i, align 8, !tbaa !0
-  br label %for.inc.i
+; <label>:15                                      ; preds = %.lr.ph.i
+  tail call void @free(i8* %13) #9, !dbg !1192
+  %.pre3.i = load i16* %7, align 2, !dbg !1181, !tbaa !570
+  br label %16, !dbg !1192
 
-for.inc.i:                                        ; preds = %if.then6.i, %for.body.i
-  %.pre51.i = phi i8** [ %2, %for.body.i ], [ %.pre51.i.pre, %if.then6.i ]
-  %5 = phi i16 [ %3, %for.body.i ], [ %.pre50.i, %if.then6.i ]
-  %indvars.iv.next.i = add i64 %indvars.iv.i, 1
-  %conv.i = zext i16 %5 to i32
-  %6 = trunc i64 %indvars.iv.next.i to i32
-  %cmp1.i = icmp slt i32 %6, %conv.i
-  br i1 %cmp1.i, label %for.body.i, label %for.end.i
+; <label>:16                                      ; preds = %15, %.lr.ph.i
+  %17 = phi i16 [ %10, %.lr.ph.i ], [ %.pre3.i, %15 ], !dbg !1186
+  %indvars.iv.next.i = add nuw nsw i64 %indvars.iv.i, 1, !dbg !1186
+  %18 = zext i16 %17 to i64, !dbg !1185
+  %19 = icmp slt i64 %indvars.iv.next.i, %18, !dbg !1185
+  br i1 %19, label %._crit_edge2.i, label %._crit_edge.i, !dbg !1186
 
-for.end.i:                                        ; preds = %for.inc.i, %for.cond.preheader.i
-  %7 = phi i8** [ %0, %for.cond.preheader.i ], [ %.pre51.i, %for.inc.i ]
-  %8 = bitcast i8** %7 to i8*
-  tail call void @free(i8* %8) #8
-  br label %if.end11.i
+._crit_edge2.i:                                   ; preds = %16
+  %.pre.i = load i8*** %3, align 8, !dbg !1187, !tbaa !668
+  br label %.lr.ph.i, !dbg !1186
 
-if.end11.i:                                       ; preds = %for.end.i, %if.then
-  %fileformat.i = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 17
-  %9 = load i32** %fileformat.i, align 8, !tbaa !0
-  %cmp12.i = icmp eq i32* %9, null
-  br i1 %cmp12.i, label %if.end16.i, label %if.then14.i
+._crit_edge.i:                                    ; preds = %16
+  %.phi.trans.insert.i = bitcast i8*** %3 to i8**, !dbg !1180
+  %.pre4.i = load i8** %.phi.trans.insert.i, align 8, !dbg !1193, !tbaa !668
+  br label %.preheader._crit_edge.i, !dbg !1186
 
-if.then14.i:                                      ; preds = %if.end11.i
-  %10 = bitcast i32* %9 to i8*
-  tail call void @free(i8* %10) #8
-  br label %if.end16.i
+.preheader._crit_edge.i:                          ; preds = %._crit_edge.i, %.preheader.i
+  %20 = phi i8* [ %.pre4.i, %._crit_edge.i ], [ %6, %.preheader.i ], !dbg !1180
+  tail call void @free(i8* %20) #9, !dbg !1194
+  br label %21, !dbg !1195
 
-if.end16.i:                                       ; preds = %if.then14.i, %if.end11.i
-  %fileflags.i = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 18
-  %11 = load i32** %fileflags.i, align 8, !tbaa !0
-  %cmp17.i = icmp eq i32* %11, null
-  br i1 %cmp17.i, label %if.end21.i, label %if.then19.i
+; <label>:21                                      ; preds = %.preheader._crit_edge.i, %2
+  %22 = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 17, !dbg !1196
+  %23 = load i32** %22, align 8, !dbg !1196, !tbaa !684
+  %24 = icmp eq i32* %23, null, !dbg !1198
+  br i1 %24, label %27, label %25, !dbg !1199
 
-if.then19.i:                                      ; preds = %if.end16.i
-  %12 = bitcast i32* %11 to i8*
-  tail call void @free(i8* %12) #8
-  br label %if.end21.i
+; <label>:25                                      ; preds = %21
+  %26 = bitcast i32* %23 to i8*, !dbg !1200
+  tail call void @free(i8* %26) #9, !dbg !1201
+  br label %27, !dbg !1201
 
-if.end21.i:                                       ; preds = %if.then19.i, %if.end16.i
-  %bpl.i = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 19
-  %13 = load i32** %bpl.i, align 8, !tbaa !0
-  %cmp22.i = icmp eq i32* %13, null
-  br i1 %cmp22.i, label %if.end26.i, label %if.then24.i
+; <label>:27                                      ; preds = %25, %21
+  %28 = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 18, !dbg !1202
+  %29 = load i32** %28, align 8, !dbg !1202, !tbaa !690
+  %30 = icmp eq i32* %29, null, !dbg !1204
+  br i1 %30, label %33, label %31, !dbg !1205
 
-if.then24.i:                                      ; preds = %if.end21.i
-  %14 = bitcast i32* %13 to i8*
-  tail call void @free(i8* %14) #8
-  br label %if.end26.i
+; <label>:31                                      ; preds = %27
+  %32 = bitcast i32* %29 to i8*, !dbg !1206
+  tail call void @free(i8* %32) #9, !dbg !1207
+  br label %33, !dbg !1207
 
-if.end26.i:                                       ; preds = %if.then24.i, %if.end21.i
-  %rpl.i = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 20
-  %15 = load i32** %rpl.i, align 8, !tbaa !0
-  %cmp27.i = icmp eq i32* %15, null
-  br i1 %cmp27.i, label %clear_ssifile.exit, label %if.then29.i
+; <label>:33                                      ; preds = %31, %27
+  %34 = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 19, !dbg !1208
+  %35 = load i32** %34, align 8, !dbg !1208, !tbaa !696
+  %36 = icmp eq i32* %35, null, !dbg !1210
+  br i1 %36, label %39, label %37, !dbg !1211
 
-if.then29.i:                                      ; preds = %if.end26.i
-  %16 = bitcast i32* %15 to i8*
-  tail call void @free(i8* %16) #8
-  br label %clear_ssifile.exit
+; <label>:37                                      ; preds = %33
+  %38 = bitcast i32* %35 to i8*, !dbg !1212
+  tail call void @free(i8* %38) #9, !dbg !1213
+  br label %39, !dbg !1213
 
-clear_ssifile.exit:                               ; preds = %if.end26.i, %if.then29.i
-  %fp = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 0
-  %17 = load %struct._IO_FILE** %fp, align 8, !tbaa !0
-  %cmp1 = icmp eq %struct._IO_FILE* %17, null
-  br i1 %cmp1, label %if.end, label %if.then2
+; <label>:39                                      ; preds = %37, %33
+  %40 = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 20, !dbg !1214
+  %41 = load i32** %40, align 8, !dbg !1214, !tbaa !702
+  %42 = icmp eq i32* %41, null, !dbg !1216
+  br i1 %42, label %clear_ssifile.exit, label %43, !dbg !1217
 
-if.then2:                                         ; preds = %clear_ssifile.exit
-  %call = tail call i32 @fclose(%struct._IO_FILE* %17) #8
-  br label %if.end
+; <label>:43                                      ; preds = %39
+  %44 = bitcast i32* %41 to i8*, !dbg !1218
+  tail call void @free(i8* %44) #9, !dbg !1219
+  br label %clear_ssifile.exit, !dbg !1219
 
-if.end:                                           ; preds = %clear_ssifile.exit, %if.then2
-  %18 = bitcast %struct.ssifile_s* %sfp to i8*
-  tail call void @free(i8* %18) #8
-  br label %if.end4
+clear_ssifile.exit:                               ; preds = %39, %43
+  %45 = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 0, !dbg !1220
+  %46 = load %struct.__sFILE** %45, align 8, !dbg !1220, !tbaa !547
+  %47 = icmp eq %struct.__sFILE* %46, null, !dbg !1222
+  br i1 %47, label %50, label %48, !dbg !1223
 
-if.end4:                                          ; preds = %entry, %if.end
-  ret void
+; <label>:48                                      ; preds = %clear_ssifile.exit
+  %49 = tail call i32 @fclose(%struct.__sFILE* %46) #9, !dbg !1224
+  br label %50, !dbg !1224
+
+; <label>:50                                      ; preds = %clear_ssifile.exit, %48
+  %51 = bitcast %struct.ssifile_s* %sfp to i8*, !dbg !1225
+  tail call void @free(i8* %51) #10, !dbg !1226
+  br label %52, !dbg !1227
+
+; <label>:52                                      ; preds = %0, %50
+  ret void, !dbg !1228
 }

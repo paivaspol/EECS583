@@ -1,0 +1,81 @@
+define void @_ZN3pov18Scale_Blob_ElementEPNS_19Blob_Element_StructEPd(%"struct.pov::Blob_Element_Struct"* nocapture %Element, double* %Vector) #0 {
+  %Trans = alloca %"struct.pov::Transform_Struct", align 8
+  tail call void @llvm.dbg.value(metadata %"struct.pov::Blob_Element_Struct"* %Element, i64 0, metadata !1052, metadata !1893), !dbg !3838
+  tail call void @llvm.dbg.value(metadata double* %Vector, i64 0, metadata !1053, metadata !1893), !dbg !3839
+  %1 = bitcast %"struct.pov::Transform_Struct"* %Trans to i8*, !dbg !3840
+  call void @llvm.lifetime.start(i64 256, i8* %1) #5, !dbg !3840
+  %2 = load double* %Vector, align 8, !dbg !3841, !tbaa !1939
+  %3 = getelementptr inbounds double* %Vector, i64 1, !dbg !3843
+  %4 = load double* %3, align 8, !dbg !3843, !tbaa !1939
+  %5 = fcmp une double %2, %4, !dbg !3844
+  br i1 %5, label %10, label %6, !dbg !3845
+
+; <label>:6                                       ; preds = %0
+  %7 = getelementptr inbounds double* %Vector, i64 2, !dbg !3846
+  %8 = load double* %7, align 8, !dbg !3846, !tbaa !1939
+  %9 = fcmp une double %2, %8, !dbg !3847
+  br i1 %9, label %10, label %._crit_edge, !dbg !3848
+
+._crit_edge:                                      ; preds = %6
+  %.pre = getelementptr inbounds %"struct.pov::Blob_Element_Struct"* %Element, i64 0, i32 8, !dbg !3849
+  br label %17, !dbg !3848
+
+; <label>:10                                      ; preds = %6, %0
+  %11 = getelementptr inbounds %"struct.pov::Blob_Element_Struct"* %Element, i64 0, i32 8, !dbg !3851
+  %12 = load %"struct.pov::Transform_Struct"** %11, align 8, !dbg !3851, !tbaa !2332
+  %13 = icmp eq %"struct.pov::Transform_Struct"* %12, null, !dbg !3854
+  br i1 %13, label %14, label %17, !dbg !3855
+
+; <label>:14                                      ; preds = %10
+  %15 = getelementptr inbounds %"struct.pov::Blob_Element_Struct"* %Element, i64 0, i32 0, !dbg !3856
+  store i16 8, i16* %15, align 2, !dbg !3858, !tbaa !2247
+  %16 = tail call %"struct.pov::Transform_Struct"* @_ZN3pov16Create_TransformEv() #6, !dbg !3859
+  store %"struct.pov::Transform_Struct"* %16, %"struct.pov::Transform_Struct"** %11, align 8, !dbg !3860, !tbaa !2332
+  br label %17, !dbg !3861
+
+; <label>:17                                      ; preds = %._crit_edge, %10, %14
+  %.pre-phi = phi %"struct.pov::Transform_Struct"** [ %.pre, %._crit_edge ], [ %11, %10 ], [ %11, %14 ], !dbg !3849
+  tail call void @llvm.dbg.value(metadata %"struct.pov::Transform_Struct"* %Trans, i64 0, metadata !1054, metadata !1893), !dbg !3862
+  call void @_ZN3pov25Compute_Scaling_TransformEPNS_16Transform_StructEPd(%"struct.pov::Transform_Struct"* %Trans, double* %Vector) #6, !dbg !3863
+  %18 = load %"struct.pov::Transform_Struct"** %.pre-phi, align 8, !dbg !3849, !tbaa !2332
+  %19 = icmp eq %"struct.pov::Transform_Struct"* %18, null, !dbg !3864
+  br i1 %19, label %20, label %39, !dbg !3865
+
+; <label>:20                                      ; preds = %17
+  %21 = getelementptr inbounds %"struct.pov::Blob_Element_Struct"* %Element, i64 0, i32 2, i64 0, !dbg !3866
+  %22 = load double* %Vector, align 8, !dbg !3868, !tbaa !1939
+  tail call void @llvm.dbg.value(metadata double* %21, i64 0, metadata !1506, metadata !1893), !dbg !3869
+  tail call void @llvm.dbg.value(metadata double %22, i64 0, metadata !1507, metadata !1893), !dbg !3871
+  %23 = bitcast double* %21 to <2 x double>*, !dbg !3872
+  %24 = load <2 x double>* %23, align 8, !dbg !3872, !tbaa !1939
+  %25 = insertelement <2 x double> undef, double %22, i32 0, !dbg !3872
+  %26 = insertelement <2 x double> %25, double %22, i32 1, !dbg !3872
+  %27 = fmul <2 x double> %26, %24, !dbg !3872
+  %28 = bitcast double* %21 to <2 x double>*, !dbg !3872
+  store <2 x double> %27, <2 x double>* %28, align 8, !dbg !3872, !tbaa !1939
+  %29 = getelementptr inbounds %"struct.pov::Blob_Element_Struct"* %Element, i64 0, i32 2, i64 2, !dbg !3873
+  %30 = load double* %29, align 8, !dbg !3874, !tbaa !1939
+  %31 = fmul double %22, %30, !dbg !3874
+  store double %31, double* %29, align 8, !dbg !3874, !tbaa !1939
+  %32 = load double* %Vector, align 8, !dbg !3875, !tbaa !1939
+  tail call void @llvm.dbg.value(metadata double %32, i64 0, metadata !1512, metadata !1893), !dbg !3876
+  %33 = fmul double %32, %32, !dbg !3878
+  %34 = getelementptr inbounds %"struct.pov::Blob_Element_Struct"* %Element, i64 0, i32 4, !dbg !3879
+  %35 = load double* %34, align 8, !dbg !3880, !tbaa !3881
+  %36 = fmul double %35, %33, !dbg !3880
+  store double %36, double* %34, align 8, !dbg !3880, !tbaa !3881
+  %37 = getelementptr inbounds %"struct.pov::Blob_Element_Struct"* %Element, i64 0, i32 7, !dbg !3882
+  %38 = load %"struct.pov::Texture_Struct"** %37, align 8, !dbg !3882, !tbaa !3259
+  call void @llvm.dbg.value(metadata %"struct.pov::Transform_Struct"* %Trans, i64 0, metadata !1054, metadata !1893), !dbg !3862
+  call void @_ZN3pov18Transform_TexturesEPNS_14Texture_StructEPNS_16Transform_StructE(%"struct.pov::Texture_Struct"* %38, %"struct.pov::Transform_Struct"* %Trans) #6, !dbg !3883
+  br label %40, !dbg !3884
+
+; <label>:39                                      ; preds = %17
+  call void @llvm.dbg.value(metadata %"struct.pov::Transform_Struct"* %Trans, i64 0, metadata !1054, metadata !1893), !dbg !3862
+  call void @_ZN3pov22Transform_Blob_ElementEPNS_19Blob_Element_StructEPNS_16Transform_StructE(%"struct.pov::Blob_Element_Struct"* %Element, %"struct.pov::Transform_Struct"* %Trans) #6, !dbg !3885
+  br label %40
+
+; <label>:40                                      ; preds = %39, %20
+  call void @llvm.lifetime.end(i64 256, i8* %1) #5, !dbg !3887
+  ret void, !dbg !3887
+}

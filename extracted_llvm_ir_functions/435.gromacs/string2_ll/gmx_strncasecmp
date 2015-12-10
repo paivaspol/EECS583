@@ -1,38 +1,46 @@
 define i32 @gmx_strncasecmp(i8* nocapture readonly %str1, i8* nocapture readonly %str2, i32 %n) #3 {
-  %1 = icmp eq i32 %n, 0
-  br i1 %1, label %.critedge, label %.preheader
+  tail call void @llvm.dbg.value(metadata i8* %str1, i64 0, metadata !249, metadata !281), !dbg !593
+  tail call void @llvm.dbg.value(metadata i8* %str2, i64 0, metadata !250, metadata !281), !dbg !594
+  tail call void @llvm.dbg.value(metadata i32 %n, i64 0, metadata !251, metadata !281), !dbg !595
+  %1 = icmp eq i32 %n, 0, !dbg !596
+  br i1 %1, label %.critedge, label %.preheader, !dbg !598
 
 .preheader:                                       ; preds = %0, %13
   %.04 = phi i8* [ %14, %13 ], [ %str2, %0 ]
   %.03 = phi i32 [ %16, %13 ], [ %n, %0 ]
   %.02 = phi i8* [ %15, %13 ], [ %str1, %0 ]
-  %2 = load i8* %.02, align 1, !tbaa !13
-  %3 = sext i8 %2 to i32
-  %4 = tail call i32 @__toupper(i32 %3) #10
-  %5 = load i8* %.04, align 1, !tbaa !13
-  %6 = sext i8 %5 to i32
-  %7 = tail call i32 @__toupper(i32 %6) #10
-  %sext = shl i32 %4, 24
-  %8 = ashr exact i32 %sext, 24
-  %sext5 = shl i32 %7, 24
-  %9 = ashr exact i32 %sext5, 24
-  %10 = icmp eq i32 %8, %9
-  br i1 %10, label %13, label %11
+  tail call void @llvm.dbg.value(metadata i8* %15, i64 0, metadata !249, metadata !281), !dbg !593
+  %2 = load i8* %.02, align 1, !dbg !599, !tbaa !309
+  %3 = sext i8 %2 to i32, !dbg !599
+  tail call void @llvm.dbg.value(metadata i32 %3, i64 0, metadata !146, metadata !281) #9, !dbg !601
+  %4 = tail call i32 @__toupper(i32 %3) #10, !dbg !603
+  tail call void @llvm.dbg.value(metadata i8* %14, i64 0, metadata !250, metadata !281), !dbg !594
+  %5 = load i8* %.04, align 1, !dbg !604, !tbaa !309
+  %6 = sext i8 %5 to i32, !dbg !604
+  tail call void @llvm.dbg.value(metadata i32 %6, i64 0, metadata !146, metadata !281) #9, !dbg !605
+  %7 = tail call i32 @__toupper(i32 %6) #10, !dbg !607
+  %sext = shl i32 %4, 24, !dbg !608
+  %8 = ashr exact i32 %sext, 24, !dbg !608
+  %sext5 = shl i32 %7, 24, !dbg !610
+  %9 = ashr exact i32 %sext5, 24, !dbg !610
+  %10 = icmp eq i32 %8, %9, !dbg !611
+  br i1 %10, label %13, label %11, !dbg !612
 
 ; <label>:11                                      ; preds = %.preheader
-  %12 = sub nsw i32 %8, %9
-  br label %.critedge
+  %12 = sub nsw i32 %8, %9, !dbg !613
+  br label %.critedge, !dbg !614
 
 ; <label>:13                                      ; preds = %.preheader
-  %14 = getelementptr inbounds i8* %.04, i64 1
-  %15 = getelementptr inbounds i8* %.02, i64 1
-  %16 = add nsw i32 %.03, -1
-  %17 = icmp ne i32 %8, 0
-  %18 = icmp ne i32 %16, 0
-  %or.cond = and i1 %18, %17
-  br i1 %or.cond, label %.preheader, label %.critedge
+  %14 = getelementptr inbounds i8* %.04, i64 1, !dbg !615
+  %15 = getelementptr inbounds i8* %.02, i64 1, !dbg !616
+  %16 = add nsw i32 %.03, -1, !dbg !617
+  tail call void @llvm.dbg.value(metadata i32 %16, i64 0, metadata !251, metadata !281), !dbg !595
+  %17 = icmp ne i32 %8, 0, !dbg !618
+  %18 = icmp ne i32 %16, 0, !dbg !619
+  %or.cond = and i1 %18, %17, !dbg !619
+  br i1 %or.cond, label %.preheader, label %.critedge, !dbg !619
 
 .critedge:                                        ; preds = %13, %0, %11
   %.0 = phi i32 [ %12, %11 ], [ 0, %0 ], [ 0, %13 ]
-  ret i32 %.0
+  ret i32 %.0, !dbg !620
 }

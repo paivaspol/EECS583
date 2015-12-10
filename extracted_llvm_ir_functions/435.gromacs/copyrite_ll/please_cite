@@ -1,64 +1,70 @@
-define void @please_cite(%struct.__sFILE* %fp, i8* %key) #3 {
-  br label %1
+define void @please_cite(%struct.__sFILE* %fp, i8* %key) #4 {
+  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %fp, i64 0, metadata !139, metadata !221), !dbg !427
+  tail call void @llvm.dbg.value(metadata i8* %key, i64 0, metadata !140, metadata !221), !dbg !428
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !142, metadata !221), !dbg !429
+  br label %1, !dbg !430
 
 ; <label>:1                                       ; preds = %0, %7
   %indvars.iv = phi i64 [ 0, %0 ], [ %indvars.iv.next, %7 ]
   %index.01 = phi i32 [ 0, %0 ], [ %8, %7 ]
-  %2 = getelementptr inbounds [18 x %struct.t_citerec]* @please_cite.citedb, i64 0, i64 %indvars.iv, i32 0
-  %3 = load i8** %2, align 16, !tbaa !15
-  %4 = tail call i32 @strcmp(i8* %3, i8* %key) #8
-  %5 = icmp eq i32 %4, 0
-  %6 = trunc i64 %indvars.iv to i32
-  br i1 %5, label %.critedge, label %7
+  %2 = getelementptr inbounds [18 x %struct.t_citerec]* @please_cite.citedb, i64 0, i64 %indvars.iv, i32 0, !dbg !433
+  %3 = load i8** %2, align 16, !dbg !433, !tbaa !434
+  %4 = tail call i32 @strcmp(i8* %3, i8* %key) #9, !dbg !436
+  %5 = icmp eq i32 %4, 0, !dbg !437
+  %6 = trunc i64 %indvars.iv to i32, !dbg !438
+  br i1 %5, label %.critedge, label %7, !dbg !438
 
 ; <label>:7                                       ; preds = %1
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %8 = add nuw nsw i32 %index.01, 1
-  %9 = icmp slt i64 %indvars.iv.next, 18
-  br i1 %9, label %1, label %.critedge
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !430
+  %8 = add nuw nsw i32 %index.01, 1, !dbg !439
+  tail call void @llvm.dbg.value(metadata i32 %8, i64 0, metadata !142, metadata !221), !dbg !429
+  %9 = icmp slt i64 %indvars.iv.next, 18, !dbg !440
+  br i1 %9, label %1, label %.critedge, !dbg !430
 
 .critedge:                                        ; preds = %1, %7
   %.lcssa = phi i1 [ true, %1 ], [ false, %7 ]
   %index.0.lcssa = phi i32 [ %6, %1 ], [ %8, %7 ]
-  %10 = icmp eq %struct.__sFILE* %fp, null
-  br i1 %10, label %37, label %11
+  %10 = icmp eq %struct.__sFILE* %fp, null, !dbg !441
+  br i1 %10, label %37, label %11, !dbg !443
 
 ; <label>:11                                      ; preds = %.critedge
-  %12 = tail call i64 @fwrite(i8* getelementptr inbounds ([56 x i8]* @.str83, i64 0, i64 0), i64 55, i64 1, %struct.__sFILE* %fp)
-  br i1 %.lcssa, label %13, label %32
+  %12 = tail call i64 @fwrite(i8* getelementptr inbounds ([56 x i8]* @.str83, i64 0, i64 0), i64 55, i64 1, %struct.__sFILE* %fp), !dbg !444
+  br i1 %.lcssa, label %13, label %32, !dbg !446
 
 ; <label>:13                                      ; preds = %11
-  %14 = sext i32 %index.0.lcssa to i64
-  %15 = getelementptr inbounds [18 x %struct.t_citerec]* @please_cite.citedb, i64 0, i64 %14, i32 1
-  %16 = load i8** %15, align 8, !tbaa !17
-  %17 = tail call i8* @wrap_lines(i8* %16, i32 79, i32 0) #8
-  %18 = getelementptr inbounds [18 x %struct.t_citerec]* @please_cite.citedb, i64 0, i64 %14, i32 2
-  %19 = load i8** %18, align 16, !tbaa !18
-  %20 = tail call i8* @wrap_lines(i8* %19, i32 79, i32 0) #8
-  %21 = getelementptr inbounds [18 x %struct.t_citerec]* @please_cite.citedb, i64 0, i64 %14, i32 3
-  %22 = load i8** %21, align 8, !tbaa !19
-  %23 = getelementptr inbounds [18 x %struct.t_citerec]* @please_cite.citedb, i64 0, i64 %14, i32 4
-  %24 = load i32* %23, align 16, !tbaa !20
-  %25 = getelementptr inbounds [18 x %struct.t_citerec]* @please_cite.citedb, i64 0, i64 %14, i32 5
-  %26 = load i32* %25, align 4, !tbaa !21
-  %27 = getelementptr inbounds [18 x %struct.t_citerec]* @please_cite.citedb, i64 0, i64 %14, i32 6
-  %28 = load i32* %27, align 8, !tbaa !22
-  %29 = getelementptr inbounds [18 x %struct.t_citerec]* @please_cite.citedb, i64 0, i64 %14, i32 7
-  %30 = load i32* %29, align 4, !tbaa !23
-  %31 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %fp, i8* getelementptr inbounds ([28 x i8]* @.str84, i64 0, i64 0), i8* %17, i8* %20, i8* %22, i32 %24, i32 %26, i32 %28, i32 %30) #8
-  tail call void @save_free(i8* getelementptr inbounds ([7 x i8]* @.str85, i64 0, i64 0), i8* getelementptr inbounds ([68 x i8]* @.str13, i64 0, i64 0), i32 385, i8* %17) #8
-  tail call void @save_free(i8* getelementptr inbounds ([6 x i8]* @.str86, i64 0, i64 0), i8* getelementptr inbounds ([68 x i8]* @.str13, i64 0, i64 0), i32 386, i8* %20) #8
-  br label %34
+  %14 = sext i32 %index.0.lcssa to i64, !dbg !447
+  %15 = getelementptr inbounds [18 x %struct.t_citerec]* @please_cite.citedb, i64 0, i64 %14, i32 1, !dbg !450
+  %16 = load i8** %15, align 8, !dbg !450, !tbaa !451
+  %17 = tail call i8* @wrap_lines(i8* %16, i32 79, i32 0) #9, !dbg !452
+  tail call void @llvm.dbg.value(metadata i8* %17, i64 0, metadata !143, metadata !221), !dbg !453
+  %18 = getelementptr inbounds [18 x %struct.t_citerec]* @please_cite.citedb, i64 0, i64 %14, i32 2, !dbg !454
+  %19 = load i8** %18, align 16, !dbg !454, !tbaa !455
+  %20 = tail call i8* @wrap_lines(i8* %19, i32 79, i32 0) #9, !dbg !456
+  tail call void @llvm.dbg.value(metadata i8* %20, i64 0, metadata !144, metadata !221), !dbg !457
+  %21 = getelementptr inbounds [18 x %struct.t_citerec]* @please_cite.citedb, i64 0, i64 %14, i32 3, !dbg !458
+  %22 = load i8** %21, align 8, !dbg !458, !tbaa !459
+  %23 = getelementptr inbounds [18 x %struct.t_citerec]* @please_cite.citedb, i64 0, i64 %14, i32 4, !dbg !460
+  %24 = load i32* %23, align 16, !dbg !460, !tbaa !461
+  %25 = getelementptr inbounds [18 x %struct.t_citerec]* @please_cite.citedb, i64 0, i64 %14, i32 5, !dbg !462
+  %26 = load i32* %25, align 4, !dbg !462, !tbaa !463
+  %27 = getelementptr inbounds [18 x %struct.t_citerec]* @please_cite.citedb, i64 0, i64 %14, i32 6, !dbg !464
+  %28 = load i32* %27, align 8, !dbg !464, !tbaa !465
+  %29 = getelementptr inbounds [18 x %struct.t_citerec]* @please_cite.citedb, i64 0, i64 %14, i32 7, !dbg !466
+  %30 = load i32* %29, align 4, !dbg !466, !tbaa !467
+  %31 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %fp, i8* getelementptr inbounds ([28 x i8]* @.str84, i64 0, i64 0), i8* %17, i8* %20, i8* %22, i32 %24, i32 %26, i32 %28, i32 %30) #9, !dbg !468
+  tail call void @save_free(i8* getelementptr inbounds ([7 x i8]* @.str85, i64 0, i64 0), i8* getelementptr inbounds ([68 x i8]* @.str13, i64 0, i64 0), i32 385, i8* %17) #9, !dbg !469
+  tail call void @save_free(i8* getelementptr inbounds ([6 x i8]* @.str86, i64 0, i64 0), i8* getelementptr inbounds ([68 x i8]* @.str13, i64 0, i64 0), i32 386, i8* %20) #9, !dbg !470
+  br label %34, !dbg !471
 
 ; <label>:32                                      ; preds = %11
-  %33 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %fp, i8* getelementptr inbounds ([41 x i8]* @.str87, i64 0, i64 0), i8* %key) #8
+  %33 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %fp, i8* getelementptr inbounds ([41 x i8]* @.str87, i64 0, i64 0), i8* %key) #9, !dbg !472
   br label %34
 
 ; <label>:34                                      ; preds = %32, %13
-  %35 = tail call i64 @fwrite(i8* getelementptr inbounds ([56 x i8]* @.str88, i64 0, i64 0), i64 55, i64 1, %struct.__sFILE* %fp)
-  %36 = tail call i32 @fflush(%struct.__sFILE* %fp) #8
-  br label %37
+  %35 = tail call i64 @fwrite(i8* getelementptr inbounds ([56 x i8]* @.str88, i64 0, i64 0), i64 55, i64 1, %struct.__sFILE* %fp), !dbg !474
+  %36 = tail call i32 @fflush(%struct.__sFILE* %fp) #9, !dbg !475
+  br label %37, !dbg !476
 
 ; <label>:37                                      ; preds = %.critedge, %34
-  ret void
+  ret void, !dbg !477
 }

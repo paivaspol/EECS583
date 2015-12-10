@@ -1,37 +1,39 @@
 define i32 @Util_DeleteHandle(%struct.cHandledData* nocapture %storage, i32 %handle) #1 {
-  %1 = icmp sgt i32 %handle, -1
-  br i1 %1, label %2, label %20
+  tail call void @llvm.dbg.value(metadata %struct.cHandledData* %storage, i64 0, metadata !44, metadata !83), !dbg !204
+  tail call void @llvm.dbg.value(metadata i32 %handle, i64 0, metadata !45, metadata !83), !dbg !205
+  %1 = icmp sgt i32 %handle, -1, !dbg !206
+  br i1 %1, label %2, label %20, !dbg !208
 
 ; <label>:2                                       ; preds = %0
-  %3 = getelementptr inbounds %struct.cHandledData* %storage, i64 0, i32 1
-  %4 = load i32* %3, align 4, !tbaa !9
-  %5 = icmp ugt i32 %4, %handle
-  br i1 %5, label %6, label %20
+  %3 = getelementptr inbounds %struct.cHandledData* %storage, i64 0, i32 1, !dbg !209
+  %4 = load i32* %3, align 4, !dbg !209, !tbaa !109
+  %5 = icmp ugt i32 %4, %handle, !dbg !210
+  br i1 %5, label %6, label %20, !dbg !211
 
 ; <label>:6                                       ; preds = %2
-  %7 = sext i32 %handle to i64
-  %8 = getelementptr inbounds %struct.cHandledData* %storage, i64 0, i32 0
-  %9 = load %struct.cHandleStorage** %8, align 8, !tbaa !6
-  %10 = getelementptr inbounds %struct.cHandleStorage* %9, i64 %7, i32 0
-  store i32 0, i32* %10, align 4, !tbaa !11
-  %11 = getelementptr inbounds %struct.cHandleStorage* %9, i64 %7, i32 2
-  store i8* null, i8** %11, align 8, !tbaa !13
-  %12 = getelementptr inbounds %struct.cHandleStorage* %9, i64 %7, i32 1
-  %13 = load i8** %12, align 8, !tbaa !14
-  tail call void @free(i8* %13) #7
-  %14 = load %struct.cHandleStorage** %8, align 8, !tbaa !6
-  %15 = getelementptr inbounds %struct.cHandleStorage* %14, i64 %7, i32 1
-  store i8* null, i8** %15, align 8, !tbaa !14
-  %16 = getelementptr inbounds %struct.cHandledData* %storage, i64 0, i32 2
-  %17 = load i32* %16, align 4, !tbaa !10
-  %18 = icmp ugt i32 %17, %handle
-  br i1 %18, label %19, label %20
+  %7 = sext i32 %handle to i64, !dbg !212
+  %8 = getelementptr inbounds %struct.cHandledData* %storage, i64 0, i32 0, !dbg !214
+  %9 = load %struct.cHandleStorage** %8, align 8, !dbg !214, !tbaa !104
+  %10 = getelementptr inbounds %struct.cHandleStorage* %9, i64 %7, i32 0, !dbg !215
+  store i32 0, i32* %10, align 4, !dbg !216, !tbaa !140
+  %11 = getelementptr inbounds %struct.cHandleStorage* %9, i64 %7, i32 2, !dbg !217
+  store i8* null, i8** %11, align 8, !dbg !218, !tbaa !144
+  %12 = getelementptr inbounds %struct.cHandleStorage* %9, i64 %7, i32 1, !dbg !219
+  %13 = load i8** %12, align 8, !dbg !219, !tbaa !154
+  tail call void @free(i8* %13) #7, !dbg !220
+  %14 = load %struct.cHandleStorage** %8, align 8, !dbg !221, !tbaa !104
+  %15 = getelementptr inbounds %struct.cHandleStorage* %14, i64 %7, i32 1, !dbg !222
+  store i8* null, i8** %15, align 8, !dbg !223, !tbaa !154
+  %16 = getelementptr inbounds %struct.cHandledData* %storage, i64 0, i32 2, !dbg !224
+  %17 = load i32* %16, align 4, !dbg !224, !tbaa !112
+  %18 = icmp ugt i32 %17, %handle, !dbg !226
+  br i1 %18, label %19, label %20, !dbg !227
 
 ; <label>:19                                      ; preds = %6
-  store i32 %handle, i32* %16, align 4, !tbaa !10
-  br label %20
+  store i32 %handle, i32* %16, align 4, !dbg !228, !tbaa !112
+  br label %20, !dbg !230
 
 ; <label>:20                                      ; preds = %0, %2, %6, %19
   %return_code.0 = phi i32 [ 0, %19 ], [ 0, %6 ], [ 1, %2 ], [ 1, %0 ]
-  ret i32 %return_code.0
+  ret i32 %return_code.0, !dbg !231
 }

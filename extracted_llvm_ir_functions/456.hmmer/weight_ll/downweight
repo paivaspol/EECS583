@@ -1,100 +1,109 @@
-define internal fastcc void @downweight(%struct.phylo_s* %tree, i32 %nseq, float* %lwt, float* %rwt, float* %fwt, i32 %node) #0 {
-entry:
+define internal fastcc void @downweight(%struct.phylo_s* readonly %tree, i32 %nseq, float* readonly %lwt, float* readonly %rwt, float* %fwt, i32 %node) #0 {
   br label %tailrecurse
 
-tailrecurse:                                      ; preds = %if.end69, %entry
-  %node.tr = phi i32 [ %node, %entry ], [ %1, %if.end69 ]
-  %sub = sub nsw i32 %node.tr, %nseq
-  %idxprom = sext i32 %sub to i64
-  %left = getelementptr inbounds %struct.phylo_s* %tree, i64 %idxprom, i32 1
-  %0 = load i32* %left, align 4, !tbaa !4
-  %right = getelementptr inbounds %struct.phylo_s* %tree, i64 %idxprom, i32 2
-  %1 = load i32* %right, align 4, !tbaa !4
-  %idxprom4 = sext i32 %node.tr to i64
-  %arrayidx5 = getelementptr inbounds float* %lwt, i64 %idxprom4
-  %2 = load float* %arrayidx5, align 4, !tbaa !0
-  %arrayidx7 = getelementptr inbounds float* %rwt, i64 %idxprom4
-  %3 = load float* %arrayidx7, align 4, !tbaa !0
-  %add = fadd float %2, %3
-  %cmp = fcmp ogt float %add, 0.000000e+00
-  br i1 %cmp, label %if.then, label %if.else
+tailrecurse:                                      ; preds = %63, %0
+  %node.tr = phi i32 [ %node, %0 ], [ %6, %63 ]
+  tail call void @llvm.dbg.value(metadata %struct.phylo_s* %tree, i64 0, metadata !234, metadata !292), !dbg !393
+  tail call void @llvm.dbg.value(metadata i32 %nseq, i64 0, metadata !235, metadata !292), !dbg !394
+  tail call void @llvm.dbg.value(metadata float* %lwt, i64 0, metadata !236, metadata !292), !dbg !395
+  tail call void @llvm.dbg.value(metadata float* %rwt, i64 0, metadata !237, metadata !292), !dbg !396
+  tail call void @llvm.dbg.value(metadata float* %fwt, i64 0, metadata !238, metadata !292), !dbg !397
+  tail call void @llvm.dbg.value(metadata i32 %node.tr, i64 0, metadata !239, metadata !292), !dbg !398
+  %1 = sub nsw i32 %node.tr, %nseq, !dbg !399
+  %2 = sext i32 %1 to i64, !dbg !400
+  %3 = getelementptr inbounds %struct.phylo_s* %tree, i64 %2, i32 1, !dbg !401
+  %4 = load i32* %3, align 4, !dbg !401, !tbaa !361
+  tail call void @llvm.dbg.value(metadata i32 %4, i64 0, metadata !240, metadata !292), !dbg !402
+  %5 = getelementptr inbounds %struct.phylo_s* %tree, i64 %2, i32 2, !dbg !403
+  %6 = load i32* %5, align 4, !dbg !403, !tbaa !370
+  tail call void @llvm.dbg.value(metadata i32 %6, i64 0, metadata !241, metadata !292), !dbg !404
+  %7 = sext i32 %node.tr to i64, !dbg !405
+  %8 = getelementptr inbounds float* %lwt, i64 %7, !dbg !405
+  %9 = load float* %8, align 4, !dbg !405, !tbaa !302
+  %10 = getelementptr inbounds float* %rwt, i64 %7, !dbg !407
+  %11 = load float* %10, align 4, !dbg !407, !tbaa !302
+  %12 = fadd float %9, %11, !dbg !408
+  %13 = fcmp ogt float %12, 0.000000e+00, !dbg !409
+  br i1 %13, label %14, label %29, !dbg !410
 
-if.then:                                          ; preds = %tailrecurse
-  %arrayidx10 = getelementptr inbounds float* %fwt, i64 %idxprom4
-  %4 = load float* %arrayidx10, align 4, !tbaa !0
-  %div = fdiv float %2, %add
-  %mul = fmul float %4, %div
-  %idxprom18 = sext i32 %0 to i64
-  %arrayidx19 = getelementptr inbounds float* %fwt, i64 %idxprom18
-  store float %mul, float* %arrayidx19, align 4, !tbaa !0
-  %5 = load float* %arrayidx10, align 4, !tbaa !0
-  %6 = load float* %arrayidx7, align 4, !tbaa !0
-  %7 = load float* %arrayidx5, align 4, !tbaa !0
-  %add28 = fadd float %6, %7
-  %div29 = fdiv float %6, %add28
-  %mul30 = fmul float %5, %div29
-  %idxprom31 = sext i32 %1 to i64
-  %arrayidx32 = getelementptr inbounds float* %fwt, i64 %idxprom31
-  store float %mul30, float* %arrayidx32, align 4, !tbaa !0
-  br label %if.end
+; <label>:14                                      ; preds = %tailrecurse
+  %15 = getelementptr inbounds float* %fwt, i64 %7, !dbg !411
+  %16 = load float* %15, align 4, !dbg !411, !tbaa !302
+  %17 = fdiv float %9, %12, !dbg !413
+  %18 = fmul float %16, %17, !dbg !414
+  %19 = sext i32 %4 to i64, !dbg !415
+  %20 = getelementptr inbounds float* %fwt, i64 %19, !dbg !415
+  store float %18, float* %20, align 4, !dbg !416, !tbaa !302
+  %21 = load float* %15, align 4, !dbg !417, !tbaa !302
+  %22 = load float* %10, align 4, !dbg !418, !tbaa !302
+  %23 = load float* %8, align 4, !dbg !419, !tbaa !302
+  %24 = fadd float %22, %23, !dbg !420
+  %25 = fdiv float %22, %24, !dbg !421
+  %26 = fmul float %21, %25, !dbg !422
+  %27 = sext i32 %6 to i64, !dbg !423
+  %28 = getelementptr inbounds float* %fwt, i64 %27, !dbg !423
+  store float %26, float* %28, align 4, !dbg !424, !tbaa !302
+  br label %60, !dbg !425
 
-if.else:                                          ; preds = %tailrecurse
-  %cmp33 = icmp slt i32 %0, %nseq
-  br i1 %cmp33, label %cond.end, label %cond.true
+; <label>:29                                      ; preds = %tailrecurse
+  %30 = icmp slt i32 %4, %nseq, !dbg !426
+  br i1 %30, label %37, label %31, !dbg !428
 
-cond.true:                                        ; preds = %if.else
-  %sub35 = sub nsw i32 %0, %nseq
-  %idxprom36 = sext i32 %sub35 to i64
-  %incnum = getelementptr inbounds %struct.phylo_s* %tree, i64 %idxprom36, i32 7
-  %8 = load i32* %incnum, align 4, !tbaa !4
-  %conv38 = sitofp i32 %8 to double
-  %phitmp = fptrunc double %conv38 to float
-  br label %cond.end
+; <label>:31                                      ; preds = %29
+  %32 = sub nsw i32 %4, %nseq, !dbg !429
+  %33 = sext i32 %32 to i64, !dbg !430
+  %34 = getelementptr inbounds %struct.phylo_s* %tree, i64 %33, i32 7, !dbg !431
+  %35 = load i32* %34, align 4, !dbg !431, !tbaa !432
+  %36 = sitofp i32 %35 to double, !dbg !430
+  %phitmp = fptrunc double %36 to float, !dbg !428
+  br label %37, !dbg !428
 
-cond.end:                                         ; preds = %if.else, %cond.true
-  %cond = phi float [ %phitmp, %cond.true ], [ 1.000000e+00, %if.else ]
-  %cmp40 = icmp slt i32 %1, %nseq
-  br i1 %cmp40, label %cond.end49, label %cond.true42
+; <label>:37                                      ; preds = %29, %31
+  %38 = phi float [ %phitmp, %31 ], [ 1.000000e+00, %29 ]
+  tail call void @llvm.dbg.value(metadata float %38, i64 0, metadata !242, metadata !292), !dbg !433
+  %39 = icmp slt i32 %6, %nseq, !dbg !434
+  br i1 %39, label %46, label %40, !dbg !435
 
-cond.true42:                                      ; preds = %cond.end
-  %sub43 = sub nsw i32 %1, %nseq
-  %idxprom44 = sext i32 %sub43 to i64
-  %incnum46 = getelementptr inbounds %struct.phylo_s* %tree, i64 %idxprom44, i32 7
-  %9 = load i32* %incnum46, align 4, !tbaa !4
-  %conv47 = sitofp i32 %9 to double
-  %phitmp134 = fptrunc double %conv47 to float
-  br label %cond.end49
+; <label>:40                                      ; preds = %37
+  %41 = sub nsw i32 %6, %nseq, !dbg !436
+  %42 = sext i32 %41 to i64, !dbg !437
+  %43 = getelementptr inbounds %struct.phylo_s* %tree, i64 %42, i32 7, !dbg !438
+  %44 = load i32* %43, align 4, !dbg !438, !tbaa !432
+  %45 = sitofp i32 %44 to double, !dbg !437
+  %phitmp1 = fptrunc double %45 to float, !dbg !435
+  br label %46, !dbg !435
 
-cond.end49:                                       ; preds = %cond.end, %cond.true42
-  %cond50 = phi float [ %phitmp134, %cond.true42 ], [ 1.000000e+00, %cond.end ]
-  %arrayidx53 = getelementptr inbounds float* %fwt, i64 %idxprom4
-  %10 = load float* %arrayidx53, align 4, !tbaa !0
-  %mul54 = fmul float %cond, %10
-  %add55 = fadd float %cond, %cond50
-  %div56 = fdiv float %mul54, %add55
-  %idxprom57 = sext i32 %0 to i64
-  %arrayidx58 = getelementptr inbounds float* %fwt, i64 %idxprom57
-  store float %div56, float* %arrayidx58, align 4, !tbaa !0
-  %11 = load float* %arrayidx53, align 4, !tbaa !0
-  %mul61 = fmul float %cond50, %11
-  %div63 = fdiv float %mul61, %add55
-  %idxprom64 = sext i32 %1 to i64
-  %arrayidx65 = getelementptr inbounds float* %fwt, i64 %idxprom64
-  store float %div63, float* %arrayidx65, align 4, !tbaa !0
-  br label %if.end
+; <label>:46                                      ; preds = %37, %40
+  %47 = phi float [ %phitmp1, %40 ], [ 1.000000e+00, %37 ]
+  tail call void @llvm.dbg.value(metadata float %47, i64 0, metadata !243, metadata !292), !dbg !439
+  %48 = getelementptr inbounds float* %fwt, i64 %7, !dbg !440
+  %49 = load float* %48, align 4, !dbg !440, !tbaa !302
+  %50 = fmul float %38, %49, !dbg !441
+  %51 = fadd float %38, %47, !dbg !442
+  %52 = fdiv float %50, %51, !dbg !443
+  %53 = sext i32 %4 to i64, !dbg !444
+  %54 = getelementptr inbounds float* %fwt, i64 %53, !dbg !444
+  store float %52, float* %54, align 4, !dbg !445, !tbaa !302
+  %55 = load float* %48, align 4, !dbg !446, !tbaa !302
+  %56 = fmul float %47, %55, !dbg !447
+  %57 = fdiv float %56, %51, !dbg !448
+  %58 = sext i32 %6 to i64, !dbg !449
+  %59 = getelementptr inbounds float* %fwt, i64 %58, !dbg !449
+  store float %57, float* %59, align 4, !dbg !450, !tbaa !302
+  br label %60
 
-if.end:                                           ; preds = %cond.end49, %if.then
-  %cmp66 = icmp slt i32 %0, %nseq
-  br i1 %cmp66, label %if.end69, label %if.then68
+; <label>:60                                      ; preds = %46, %14
+  %61 = icmp slt i32 %4, %nseq, !dbg !451
+  br i1 %61, label %63, label %62, !dbg !453
 
-if.then68:                                        ; preds = %if.end
-  tail call fastcc void @downweight(%struct.phylo_s* %tree, i32 %nseq, float* %lwt, float* %rwt, float* %fwt, i32 %0) #6
-  br label %if.end69
+; <label>:62                                      ; preds = %60
+  tail call fastcc void @downweight(%struct.phylo_s* %tree, i32 %nseq, float* %lwt, float* %rwt, float* %fwt, i32 %4) #6, !dbg !454
+  br label %63, !dbg !454
 
-if.end69:                                         ; preds = %if.end, %if.then68
-  %cmp70 = icmp slt i32 %1, %nseq
-  br i1 %cmp70, label %if.end73, label %tailrecurse
+; <label>:63                                      ; preds = %60, %62
+  %64 = icmp slt i32 %6, %nseq, !dbg !455
+  br i1 %64, label %65, label %tailrecurse, !dbg !457
 
-if.end73:                                         ; preds = %if.end69
-  ret void
+; <label>:65                                      ; preds = %63
+  ret void, !dbg !458
 }

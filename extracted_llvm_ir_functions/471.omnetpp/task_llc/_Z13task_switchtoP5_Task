@@ -1,16 +1,17 @@
 define void @_Z13task_switchtoP5_Task(%struct._Task* %p) #6 {
-  %1 = load %struct._Task** @current_task, align 8, !tbaa !17
-  %2 = getelementptr inbounds %struct._Task* %1, i64 0, i32 1, i64 0
-  %3 = call i32 @setjmp(i32* %2) #9
-  %4 = icmp eq i32 %3, 0
-  br i1 %4, label %5, label %7
+  call void @llvm.dbg.value(metadata %struct._Task* %p, i64 0, metadata !71, metadata !99), !dbg !242
+  %1 = load %struct._Task** @current_task, align 8, !dbg !243, !tbaa !245
+  %2 = getelementptr inbounds %struct._Task* %1, i64 0, i32 1, i64 0, !dbg !243
+  %3 = call i32 @setjmp(i32* %2) #10, !dbg !246
+  %4 = icmp eq i32 %3, 0, !dbg !247
+  br i1 %4, label %5, label %7, !dbg !248
 
 ; <label>:5                                       ; preds = %0
-  store %struct._Task* %p, %struct._Task** @current_task, align 8, !tbaa !17
-  %6 = getelementptr inbounds %struct._Task* %p, i64 0, i32 1, i64 0
-  call void @longjmp(i32* %6, i32 1) #10
-  unreachable
+  store %struct._Task* %p, %struct._Task** @current_task, align 8, !dbg !249, !tbaa !245
+  %6 = getelementptr inbounds %struct._Task* %p, i64 0, i32 1, i64 0, !dbg !251
+  call void @longjmp(i32* %6, i32 1) #11, !dbg !252
+  unreachable, !dbg !252
 
 ; <label>:7                                       ; preds = %0
-  ret void
+  ret void, !dbg !253
 }

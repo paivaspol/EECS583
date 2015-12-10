@@ -1,0 +1,116 @@
+define void @_ZN3pov11mem_releaseEv() #1 {
+  tail call void @llvm.dbg.value(metadata %"class.pov_base::OStream"* null, i64 0, metadata !315, metadata !689), !dbg !904
+  %1 = load %"struct.pov::mem_node"** @_ZN3povL7memlistE, align 8, !dbg !905, !tbaa !676
+  tail call void @llvm.dbg.value(metadata %"struct.pov::mem_node"* %1, i64 0, metadata !317, metadata !689), !dbg !906
+  tail call void @llvm.dbg.value(metadata i64 0, i64 0, metadata !319, metadata !689), !dbg !907
+  %2 = icmp eq %"struct.pov::mem_node"* %1, null, !dbg !908
+  br i1 %2, label %.thread, label %3, !dbg !910
+
+; <label>:3                                       ; preds = %0
+  %4 = getelementptr inbounds %"struct.pov::mem_node"* %1, i64 0, i32 3, !dbg !911
+  %5 = load i32* %4, align 4, !dbg !911, !tbaa !912
+  %6 = load i32* @_ZN3povL6poolnoE, align 4, !dbg !913, !tbaa !673
+  %7 = icmp eq i32 %5, %6, !dbg !914
+  br i1 %7, label %8, label %.lr.ph, !dbg !915
+
+; <label>:8                                       ; preds = %3
+  %9 = tail call %"class.pov_base::OStream"* @_ZN8pov_base11New_OStreamEPKcjb(i8* getelementptr inbounds ([11 x i8]* @.str3, i64 0, i64 0), i32 18, i1 zeroext true) #8, !dbg !916
+  tail call void @llvm.dbg.value(metadata %"class.pov_base::OStream"* %9, i64 0, metadata !315, metadata !689), !dbg !904
+  br label %.lr.ph, !dbg !917
+
+.lr.ph:                                           ; preds = %3, %8
+  %f.0.ph.ph = phi %"class.pov_base::OStream"* [ %9, %8 ], [ null, %3 ]
+  %10 = icmp eq %"class.pov_base::OStream"* %f.0.ph.ph, null, !dbg !918
+  br label %11, !dbg !921
+
+; <label>:11                                      ; preds = %.lr.ph, %31
+  %totsize.02 = phi i64 [ 0, %.lr.ph ], [ %20, %31 ]
+  %p.01 = phi %"struct.pov::mem_node"* [ %1, %.lr.ph ], [ %36, %31 ]
+  %12 = getelementptr inbounds %"struct.pov::mem_node"* %p.01, i64 0, i32 3, !dbg !922
+  %13 = load i32* %12, align 4, !dbg !922, !tbaa !912
+  %14 = load i32* @_ZN3povL6poolnoE, align 4, !dbg !923, !tbaa !673
+  %15 = icmp eq i32 %13, %14, !dbg !924
+  br i1 %15, label %16, label %.critedge, !dbg !925
+
+; <label>:16                                      ; preds = %11
+  %17 = getelementptr inbounds %"struct.pov::mem_node"* %p.01, i64 0, i32 0, !dbg !926
+  %18 = load i64* %17, align 8, !dbg !926, !tbaa !710
+  %19 = add i64 %totsize.02, -48, !dbg !927
+  %20 = add i64 %19, %18, !dbg !928
+  tail call void @llvm.dbg.value(metadata i64 %20, i64 0, metadata !319, metadata !689), !dbg !907
+  %.b = load i1* @_ZN3povL8leak_msgE, align 1
+  br i1 %.b, label %23, label %21, !dbg !929
+
+; <label>:21                                      ; preds = %16
+  %22 = tail call i32 (i8*, ...)* @_ZN3pov10Debug_InfoEPKcz(i8* getelementptr inbounds ([49 x i8]* @.str4, i64 0, i64 0), i8* getelementptr inbounds ([11 x i8]* @.str3, i64 0, i64 0)) #8, !dbg !930
+  store i1 true, i1* @_ZN3povL8leak_msgE, align 1
+  br label %23, !dbg !933
+
+; <label>:23                                      ; preds = %21, %16
+  br i1 %10, label %31, label %24, !dbg !934
+
+; <label>:24                                      ; preds = %23
+  %25 = getelementptr inbounds %"struct.pov::mem_node"* %p.01, i64 0, i32 4, !dbg !935
+  %26 = load i8** %25, align 8, !dbg !935, !tbaa !714
+  %27 = getelementptr inbounds %"struct.pov::mem_node"* %p.01, i64 0, i32 5, !dbg !936
+  %28 = load i32* %27, align 4, !dbg !936, !tbaa !717
+  %29 = load i64* %17, align 8, !dbg !937, !tbaa !710
+  %30 = add i64 %29, -48, !dbg !938
+  tail call void (%"class.pov_base::OStream"*, i8*, ...)* @_ZN8pov_base7OStream6printfEPKcz(%"class.pov_base::OStream"* %f.0.ph.ph, i8* getelementptr inbounds ([31 x i8]* @.str5, i64 0, i64 0), i8* %26, i32 %28, i64 %30) #8, !dbg !939
+  br label %31, !dbg !939
+
+; <label>:31                                      ; preds = %23, %24
+  %32 = load i64* %17, align 8, !dbg !940, !tbaa !710
+  tail call void @llvm.dbg.value(metadata i64 %32, i64 0, metadata !374, metadata !689), !dbg !941
+  %33 = load i64* @_ZN3povL9mem_statsE.2, align 8, !dbg !943, !tbaa !685
+  %34 = sub i64 %33, %32, !dbg !943
+  store i64 %34, i64* @_ZN3povL9mem_statsE.2, align 8, !dbg !943, !tbaa !685
+  tail call void @llvm.dbg.value(metadata %"struct.pov::mem_node"* %36, i64 0, metadata !318, metadata !689), !dbg !944
+  %35 = getelementptr inbounds %"struct.pov::mem_node"* %p.01, i64 0, i32 2, !dbg !945
+  %36 = load %"struct.pov::mem_node"** %35, align 8, !dbg !945, !tbaa !740
+  tail call void @llvm.dbg.value(metadata %"struct.pov::mem_node"* %36, i64 0, metadata !317, metadata !689), !dbg !906
+  tail call fastcc void @_ZN3povL11remove_nodeEPNS_8mem_nodeE(%"struct.pov::mem_node"* %p.01) #8, !dbg !946
+  %37 = bitcast %"struct.pov::mem_node"* %p.01 to i8*, !dbg !947
+  tail call void @free(i8* %37) #8, !dbg !948
+  %38 = icmp eq %"struct.pov::mem_node"* %36, null, !dbg !949
+  br i1 %38, label %.critedge, label %11, !dbg !921
+
+.critedge:                                        ; preds = %11, %31
+  %totsize.0.lcssa = phi i64 [ %20, %31 ], [ %totsize.02, %11 ]
+  %39 = icmp eq %"class.pov_base::OStream"* %f.0.ph.ph, null, !dbg !950
+  br i1 %39, label %45, label %40, !dbg !952
+
+; <label>:40                                      ; preds = %.critedge
+  %41 = bitcast %"class.pov_base::OStream"* %f.0.ph.ph to void (%"class.pov_base::OStream"*)***, !dbg !953
+  %42 = load void (%"class.pov_base::OStream"*)*** %41, align 8, !dbg !953, !tbaa !954
+  %43 = getelementptr inbounds void (%"class.pov_base::OStream"*)** %42, i64 1, !dbg !953
+  %44 = load void (%"class.pov_base::OStream"*)** %43, align 8, !dbg !953
+  tail call void %44(%"class.pov_base::OStream"* %f.0.ph.ph) #8, !dbg !953
+  br label %45, !dbg !953
+
+; <label>:45                                      ; preds = %.critedge, %40
+  %46 = icmp eq i64 %totsize.0.lcssa, 0, !dbg !956
+  br i1 %46, label %.thread, label %47, !dbg !958
+
+; <label>:47                                      ; preds = %45
+  %48 = load i32* @_ZN3povL6poolnoE, align 4, !dbg !959, !tbaa !673
+  %49 = tail call i32 (i8*, ...)* @_ZN3pov10Debug_InfoEPKcz(i8* getelementptr inbounds ([32 x i8]* @.str6, i64 0, i64 0), i64 %totsize.0.lcssa, i32 %48) #8, !dbg !960
+  br label %.thread, !dbg !960
+
+.thread:                                          ; preds = %0, %45, %47
+  %50 = load i32* @_ZN3povL6poolnoE, align 4, !dbg !961, !tbaa !673
+  %51 = icmp sgt i32 %50, 0, !dbg !963
+  br i1 %51, label %52, label %54, !dbg !964
+
+; <label>:52                                      ; preds = %.thread
+  %53 = add nsw i32 %50, -1, !dbg !965
+  store i32 %53, i32* @_ZN3povL6poolnoE, align 4, !dbg !965, !tbaa !673
+  br label %54, !dbg !966
+
+; <label>:54                                      ; preds = %52, %.thread
+  store i64 65535, i64* @_ZN3povL9mem_statsE.0, align 8, !dbg !967, !tbaa !680
+  store i64 0, i64* @_ZN3povL9mem_statsE.1, align 8, !dbg !969, !tbaa !683
+  store i64 0, i64* @_ZN3povL9mem_statsE.2, align 8, !dbg !970, !tbaa !685
+  store i64 0, i64* @_ZN3povL9mem_statsE.3, align 8, !dbg !971, !tbaa !687
+  ret void, !dbg !972
+}

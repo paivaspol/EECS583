@@ -1,63 +1,72 @@
 define internal fastcc i32 @compile_range(i8** nocapture %p_ptr, i8* readnone %pend, i8* readonly %translate, i64 %syntax, i8* nocapture %b) #0 {
-  %1 = load i8** %p_ptr, align 8, !tbaa !13
-  %2 = icmp eq i8* %1, %pend
-  br i1 %2, label %.loopexit, label %3
+  tail call void @llvm.dbg.value(metadata i8** %p_ptr, i64 0, metadata !689, metadata !797), !dbg !4187
+  tail call void @llvm.dbg.value(metadata i8* %pend, i64 0, metadata !690, metadata !797), !dbg !4188
+  tail call void @llvm.dbg.value(metadata i8* %translate, i64 0, metadata !691, metadata !797), !dbg !4189
+  tail call void @llvm.dbg.value(metadata i64 %syntax, i64 0, metadata !692, metadata !797), !dbg !4190
+  tail call void @llvm.dbg.value(metadata i8* %b, i64 0, metadata !693, metadata !797), !dbg !4191
+  %1 = load i8** %p_ptr, align 8, !dbg !4192, !tbaa !856
+  tail call void @llvm.dbg.value(metadata i8* %1, i64 0, metadata !695, metadata !797), !dbg !4193
+  %2 = icmp eq i8* %1, %pend, !dbg !4194
+  br i1 %2, label %.loopexit, label %3, !dbg !4196
 
 ; <label>:3                                       ; preds = %0
-  %4 = getelementptr inbounds i8* %1, i64 -2
-  %5 = load i8* %4, align 1, !tbaa !12
-  %6 = load i8* %1, align 1, !tbaa !12
-  %7 = getelementptr inbounds i8* %1, i64 1
-  store i8* %7, i8** %p_ptr, align 8, !tbaa !13
-  %8 = icmp ugt i8 %5, %6
-  br i1 %8, label %9, label %.lr.ph
+  %4 = getelementptr inbounds i8* %1, i64 -2, !dbg !4197
+  %5 = load i8* %4, align 1, !dbg !4197, !tbaa !844
+  tail call void @llvm.dbg.value(metadata i32 %13, i64 0, metadata !696, metadata !797), !dbg !4198
+  %6 = load i8* %1, align 1, !dbg !4199, !tbaa !844
+  %7 = getelementptr inbounds i8* %1, i64 1, !dbg !4200
+  store i8* %7, i8** %p_ptr, align 8, !dbg !4200, !tbaa !856
+  %8 = icmp ugt i8 %5, %6, !dbg !4201
+  br i1 %8, label %9, label %.lr.ph, !dbg !4203
 
 ; <label>:9                                       ; preds = %3
-  %10 = and i64 %syntax, 65536
-  %11 = icmp ne i64 %10, 0
-  %12 = select i1 %11, i32 11, i32 0
-  br label %.loopexit
+  %10 = and i64 %syntax, 65536, !dbg !4204
+  %11 = icmp ne i64 %10, 0, !dbg !4205
+  %12 = select i1 %11, i32 11, i32 0, !dbg !4205
+  br label %.loopexit, !dbg !4206
 
 .lr.ph:                                           ; preds = %3
-  %13 = zext i8 %5 to i32
-  %14 = icmp eq i8* %translate, null
+  tail call void @llvm.dbg.value(metadata i32 %13, i64 0, metadata !694, metadata !797), !dbg !4207
+  %13 = zext i8 %5 to i32, !dbg !4197
+  %14 = icmp eq i8* %translate, null, !dbg !4208
   %15 = zext i8 %5 to i64
   %16 = zext i8 %6 to i32
-  br label %17
+  br label %17, !dbg !4212
 
 ; <label>:17                                      ; preds = %.lr.ph, %25
   %indvars.iv = phi i64 [ %15, %.lr.ph ], [ %indvars.iv.next, %25 ]
   %this_char.01 = phi i32 [ %13, %.lr.ph ], [ %35, %25 ]
-  %18 = trunc i64 %indvars.iv to i32
-  br i1 %14, label %25, label %19
+  %18 = trunc i64 %indvars.iv to i32, !dbg !4208
+  br i1 %14, label %25, label %19, !dbg !4208
 
 ; <label>:19                                      ; preds = %17
-  %20 = and i64 %indvars.iv, 255
-  %21 = getelementptr inbounds i8* %translate, i64 %20
-  %22 = load i8* %21, align 1, !tbaa !12
-  %23 = zext i8 %22 to i32
-  %24 = sext i8 %22 to i64
-  br label %25
+  %20 = and i64 %indvars.iv, 255, !dbg !4208
+  %21 = getelementptr inbounds i8* %translate, i64 %20, !dbg !4208
+  %22 = load i8* %21, align 1, !dbg !4208, !tbaa !844
+  %23 = zext i8 %22 to i32, !dbg !4208
+  %24 = sext i8 %22 to i64, !dbg !4208
+  br label %25, !dbg !4208
 
 ; <label>:25                                      ; preds = %17, %19
   %.pn.in = phi i32 [ %23, %19 ], [ %18, %17 ]
-  %26 = phi i64 [ %24, %19 ], [ %indvars.iv, %17 ]
-  %.pn = and i32 %.pn.in, 7
-  %27 = shl i32 1, %.pn
-  %28 = lshr i64 %26, 3
-  %29 = and i64 %28, 31
-  %30 = getelementptr inbounds i8* %b, i64 %29
-  %31 = load i8* %30, align 1, !tbaa !12
-  %32 = zext i8 %31 to i32
-  %33 = or i32 %32, %27
-  %34 = trunc i32 %33 to i8
-  store i8 %34, i8* %30, align 1, !tbaa !12
-  %35 = add nuw nsw i32 %this_char.01, 1
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %exitcond = icmp eq i32 %this_char.01, %16
-  br i1 %exitcond, label %.loopexit, label %17
+  %26 = phi i64 [ %24, %19 ], [ %indvars.iv, %17 ], !dbg !4208
+  %.pn = and i32 %.pn.in, 7, !dbg !4208
+  %27 = shl i32 1, %.pn, !dbg !4208
+  %28 = lshr i64 %26, 3, !dbg !4208
+  %29 = and i64 %28, 31, !dbg !4208
+  %30 = getelementptr inbounds i8* %b, i64 %29, !dbg !4208
+  %31 = load i8* %30, align 1, !dbg !4208, !tbaa !844
+  %32 = zext i8 %31 to i32, !dbg !4208
+  %33 = or i32 %32, %27, !dbg !4208
+  %34 = trunc i32 %33 to i8, !dbg !4208
+  store i8 %34, i8* %30, align 1, !dbg !4208, !tbaa !844
+  %35 = add nuw nsw i32 %this_char.01, 1, !dbg !4213
+  tail call void @llvm.dbg.value(metadata i32 %35, i64 0, metadata !694, metadata !797), !dbg !4207
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !4212
+  %exitcond = icmp eq i32 %this_char.01, %16, !dbg !4212
+  br i1 %exitcond, label %.loopexit, label %17, !dbg !4212
 
 .loopexit:                                        ; preds = %25, %0, %9
   %.0 = phi i32 [ %12, %9 ], [ 11, %0 ], [ 0, %25 ]
-  ret i32 %.0
+  ret i32 %.0, !dbg !4214
 }

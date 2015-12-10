@@ -1,78 +1,140 @@
-define i32 @is_move(i8* nocapture %str) #4 {
-entry:
-  %0 = load i8* %str, align 1, !tbaa !1
-  %idxprom = sext i8 %0 to i64
-  %call = tail call i16** @__ctype_b_loc() #14
-  %1 = load i16** %call, align 8, !tbaa !3
-  %arrayidx1 = getelementptr inbounds i16* %1, i64 %idxprom
-  %2 = load i16* %arrayidx1, align 2, !tbaa !4
-  %and = and i16 %2, 1024
-  %tobool = icmp eq i16 %and, 0
-  br i1 %tobool, label %if.else60, label %land.lhs.true
+define i32 @is_move(i8* nocapture readonly %str) #0 {
+  tail call void @llvm.dbg.value(metadata i8* %str, i64 0, metadata !153, metadata !388), !dbg !863
+  %1 = load i8* %str, align 1, !dbg !864, !tbaa !807
+  tail call void @llvm.dbg.value(metadata i32 %8, i64 0, metadata !349, metadata !388) #2, !dbg !866
+  tail call void @llvm.dbg.value(metadata i32 %8, i64 0, metadata !356, metadata !388) #2, !dbg !868
+  tail call void @llvm.dbg.value(metadata i64 256, i64 0, metadata !357, metadata !388) #2, !dbg !870
+  %isascii.i.i17 = icmp sgt i8 %1, -1, !dbg !871
+  br i1 %isascii.i.i17, label %2, label %7, !dbg !871
 
-land.lhs.true:                                    ; preds = %entry
-  %arrayidx3 = getelementptr inbounds i8* %str, i64 1
-  %3 = load i8* %arrayidx3, align 1, !tbaa !1
-  %idxprom5 = sext i8 %3 to i64
-  %arrayidx7 = getelementptr inbounds i16* %1, i64 %idxprom5
-  %4 = load i16* %arrayidx7, align 2, !tbaa !4
-  %and9 = and i16 %4, 2048
-  %tobool10 = icmp eq i16 %and9, 0
-  br i1 %tobool10, label %land.lhs.true37, label %land.lhs.true11
+; <label>:2                                       ; preds = %0
+  %3 = sext i8 %1 to i64, !dbg !872
+  %4 = getelementptr inbounds %struct._RuneLocale* @_DefaultRuneLocale, i64 0, i32 5, i64 %3, !dbg !872
+  %5 = load i32* %4, align 4, !dbg !872, !tbaa !393
+  %6 = and i32 %5, 256, !dbg !873
+  br label %isalpha.exit, !dbg !871
 
-land.lhs.true11:                                  ; preds = %land.lhs.true
-  %arrayidx12 = getelementptr inbounds i8* %str, i64 2
-  %5 = load i8* %arrayidx12, align 1, !tbaa !1
-  %idxprom14 = sext i8 %5 to i64
-  %arrayidx16 = getelementptr inbounds i16* %1, i64 %idxprom14
-  %6 = load i16* %arrayidx16, align 2, !tbaa !4
-  %and18 = and i16 %6, 1024
-  %tobool19 = icmp eq i16 %and18, 0
-  br i1 %tobool19, label %if.else, label %land.lhs.true20
+; <label>:7                                       ; preds = %0
+  %8 = sext i8 %1 to i32, !dbg !864
+  %9 = tail call i32 @__maskrune(i32 %8, i64 256) #10, !dbg !874
+  br label %isalpha.exit, !dbg !871
 
-land.lhs.true20:                                  ; preds = %land.lhs.true11
-  %arrayidx21 = getelementptr inbounds i8* %str, i64 3
-  %7 = load i8* %arrayidx21, align 1, !tbaa !1
-  %idxprom23 = sext i8 %7 to i64
-  %arrayidx25 = getelementptr inbounds i16* %1, i64 %idxprom23
-  %8 = load i16* %arrayidx25, align 2, !tbaa !4
-  %and27 = and i16 %8, 2048
-  %tobool28 = icmp eq i16 %and27, 0
-  br i1 %tobool28, label %if.else, label %return
+isalpha.exit:                                     ; preds = %2, %7
+  %.sink.i.in.i = phi i32 [ %6, %2 ], [ %9, %7 ], !dbg !875
+  %.sink.i.i = icmp eq i32 %.sink.i.in.i, 0, !dbg !876
+  br i1 %.sink.i.i, label %29, label %10, !dbg !877
 
-if.else:                                          ; preds = %land.lhs.true20, %land.lhs.true11
-  br i1 %tobool, label %if.else60, label %land.lhs.true37
+; <label>:10                                      ; preds = %isalpha.exit
+  %11 = getelementptr inbounds i8* %str, i64 1, !dbg !878
+  %12 = load i8* %11, align 1, !dbg !878, !tbaa !807
+  %13 = sext i8 %12 to i32, !dbg !878
+  %isdigittmp1 = add nsw i32 %13, -48, !dbg !879
+  %isdigit2 = icmp ult i32 %isdigittmp1, 10, !dbg !879
+  br i1 %isdigit2, label %14, label %29, !dbg !880
 
-land.lhs.true37:                                  ; preds = %land.lhs.true, %if.else
-  %arrayidx38 = getelementptr inbounds i8* %str, i64 1
-  %9 = load i8* %arrayidx38, align 1, !tbaa !1
-  %cmp = icmp eq i8 %9, 64
-  br i1 %cmp, label %land.lhs.true41, label %if.else60
+; <label>:14                                      ; preds = %10
+  %15 = getelementptr inbounds i8* %str, i64 2, !dbg !881
+  %16 = load i8* %15, align 1, !dbg !881, !tbaa !807
+  tail call void @llvm.dbg.value(metadata i32 %23, i64 0, metadata !349, metadata !388) #2, !dbg !882
+  tail call void @llvm.dbg.value(metadata i32 %23, i64 0, metadata !356, metadata !388) #2, !dbg !884
+  tail call void @llvm.dbg.value(metadata i64 256, i64 0, metadata !357, metadata !388) #2, !dbg !886
+  %isascii.i.i520 = icmp sgt i8 %16, -1, !dbg !887
+  br i1 %isascii.i.i520, label %17, label %22, !dbg !887
 
-land.lhs.true41:                                  ; preds = %land.lhs.true37
-  %arrayidx42 = getelementptr inbounds i8* %str, i64 2
-  %10 = load i8* %arrayidx42, align 1, !tbaa !1
-  %idxprom44 = sext i8 %10 to i64
-  %arrayidx46 = getelementptr inbounds i16* %1, i64 %idxprom44
-  %11 = load i16* %arrayidx46, align 2, !tbaa !4
-  %and48 = and i16 %11, 1024
-  %tobool49 = icmp eq i16 %and48, 0
-  br i1 %tobool49, label %if.else60, label %land.lhs.true50
+; <label>:17                                      ; preds = %14
+  %18 = sext i8 %16 to i64, !dbg !888
+  %19 = getelementptr inbounds %struct._RuneLocale* @_DefaultRuneLocale, i64 0, i32 5, i64 %18, !dbg !888
+  %20 = load i32* %19, align 4, !dbg !888, !tbaa !393
+  %21 = and i32 %20, 256, !dbg !889
+  br label %isalpha.exit8, !dbg !887
 
-land.lhs.true50:                                  ; preds = %land.lhs.true41
-  %arrayidx51 = getelementptr inbounds i8* %str, i64 3
-  %12 = load i8* %arrayidx51, align 1, !tbaa !1
-  %idxprom53 = sext i8 %12 to i64
-  %arrayidx55 = getelementptr inbounds i16* %1, i64 %idxprom53
-  %13 = load i16* %arrayidx55, align 2, !tbaa !4
-  %and57 = and i16 %13, 2048
-  %tobool58 = icmp eq i16 %and57, 0
-  br i1 %tobool58, label %if.else60, label %return
+; <label>:22                                      ; preds = %14
+  %23 = sext i8 %16 to i32, !dbg !881
+  %24 = tail call i32 @__maskrune(i32 %23, i64 256) #10, !dbg !890
+  br label %isalpha.exit8, !dbg !887
 
-if.else60:                                        ; preds = %entry, %land.lhs.true50, %land.lhs.true41, %if.else, %land.lhs.true37
-  br label %return
+isalpha.exit8:                                    ; preds = %17, %22
+  %.sink.i.in.i6 = phi i32 [ %21, %17 ], [ %24, %22 ], !dbg !891
+  %.sink.i.i7 = icmp eq i32 %.sink.i.in.i6, 0, !dbg !892
+  br i1 %.sink.i.i7, label %29, label %25, !dbg !893
 
-return:                                           ; preds = %land.lhs.true50, %land.lhs.true20, %if.else60
-  %retval.0 = phi i32 [ 0, %if.else60 ], [ 1, %land.lhs.true20 ], [ 1, %land.lhs.true50 ]
-  ret i32 %retval.0
+; <label>:25                                      ; preds = %isalpha.exit8
+  %26 = getelementptr inbounds i8* %str, i64 3, !dbg !894
+  %27 = load i8* %26, align 1, !dbg !894, !tbaa !807
+  %28 = sext i8 %27 to i32, !dbg !894
+  %isdigittmp3 = add nsw i32 %28, -48, !dbg !895
+  %isdigit4 = icmp ult i32 %isdigittmp3, 10, !dbg !895
+  br i1 %isdigit4, label %59, label %29, !dbg !896
+
+; <label>:29                                      ; preds = %isalpha.exit8, %isalpha.exit, %25, %10
+  %30 = load i8* %str, align 1, !dbg !897, !tbaa !807
+  tail call void @llvm.dbg.value(metadata i32 %37, i64 0, metadata !349, metadata !388) #2, !dbg !899
+  tail call void @llvm.dbg.value(metadata i32 %37, i64 0, metadata !356, metadata !388) #2, !dbg !901
+  tail call void @llvm.dbg.value(metadata i64 256, i64 0, metadata !357, metadata !388) #2, !dbg !903
+  %isascii.i.i918 = icmp sgt i8 %30, -1, !dbg !904
+  br i1 %isascii.i.i918, label %31, label %36, !dbg !904
+
+; <label>:31                                      ; preds = %29
+  %32 = sext i8 %30 to i64, !dbg !905
+  %33 = getelementptr inbounds %struct._RuneLocale* @_DefaultRuneLocale, i64 0, i32 5, i64 %32, !dbg !905
+  %34 = load i32* %33, align 4, !dbg !905, !tbaa !393
+  %35 = and i32 %34, 256, !dbg !906
+  br label %isalpha.exit12, !dbg !904
+
+; <label>:36                                      ; preds = %29
+  %37 = sext i8 %30 to i32, !dbg !897
+  %38 = tail call i32 @__maskrune(i32 %37, i64 256) #10, !dbg !907
+  br label %isalpha.exit12, !dbg !904
+
+isalpha.exit12:                                   ; preds = %31, %36
+  %.sink.i.in.i10 = phi i32 [ %35, %31 ], [ %38, %36 ], !dbg !908
+  %.sink.i.i11 = icmp eq i32 %.sink.i.in.i10, 0, !dbg !909
+  br i1 %.sink.i.i11, label %58, label %39, !dbg !910
+
+; <label>:39                                      ; preds = %isalpha.exit12
+  %40 = getelementptr inbounds i8* %str, i64 1, !dbg !911
+  %41 = load i8* %40, align 1, !dbg !911, !tbaa !807
+  %42 = icmp eq i8 %41, 64, !dbg !912
+  br i1 %42, label %43, label %58, !dbg !913
+
+; <label>:43                                      ; preds = %39
+  %44 = getelementptr inbounds i8* %str, i64 2, !dbg !914
+  %45 = load i8* %44, align 1, !dbg !914, !tbaa !807
+  tail call void @llvm.dbg.value(metadata i32 %52, i64 0, metadata !349, metadata !388) #2, !dbg !915
+  tail call void @llvm.dbg.value(metadata i32 %52, i64 0, metadata !356, metadata !388) #2, !dbg !917
+  tail call void @llvm.dbg.value(metadata i64 256, i64 0, metadata !357, metadata !388) #2, !dbg !919
+  %isascii.i.i1319 = icmp sgt i8 %45, -1, !dbg !920
+  br i1 %isascii.i.i1319, label %46, label %51, !dbg !920
+
+; <label>:46                                      ; preds = %43
+  %47 = sext i8 %45 to i64, !dbg !921
+  %48 = getelementptr inbounds %struct._RuneLocale* @_DefaultRuneLocale, i64 0, i32 5, i64 %47, !dbg !921
+  %49 = load i32* %48, align 4, !dbg !921, !tbaa !393
+  %50 = and i32 %49, 256, !dbg !922
+  br label %isalpha.exit16, !dbg !920
+
+; <label>:51                                      ; preds = %43
+  %52 = sext i8 %45 to i32, !dbg !914
+  %53 = tail call i32 @__maskrune(i32 %52, i64 256) #10, !dbg !923
+  br label %isalpha.exit16, !dbg !920
+
+isalpha.exit16:                                   ; preds = %46, %51
+  %.sink.i.in.i14 = phi i32 [ %50, %46 ], [ %53, %51 ], !dbg !924
+  %.sink.i.i15 = icmp eq i32 %.sink.i.in.i14, 0, !dbg !925
+  br i1 %.sink.i.i15, label %58, label %54, !dbg !926
+
+; <label>:54                                      ; preds = %isalpha.exit16
+  %55 = getelementptr inbounds i8* %str, i64 3, !dbg !927
+  %56 = load i8* %55, align 1, !dbg !927, !tbaa !807
+  %57 = sext i8 %56 to i32, !dbg !927
+  %isdigittmp = add nsw i32 %57, -48, !dbg !928
+  %isdigit = icmp ult i32 %isdigittmp, 10, !dbg !928
+  br i1 %isdigit, label %59, label %58, !dbg !929
+
+; <label>:58                                      ; preds = %isalpha.exit16, %isalpha.exit12, %54, %39
+  br label %59, !dbg !930
+
+; <label>:59                                      ; preds = %54, %25, %58
+  %.0 = phi i32 [ 0, %58 ], [ 1, %25 ], [ 1, %54 ]
+  ret i32 %.0, !dbg !932
 }

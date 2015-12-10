@@ -1,19 +1,23 @@
 define void @add_nrnb(%struct.t_nrnb* nocapture %dest, %struct.t_nrnb* nocapture readonly %s1, %struct.t_nrnb* nocapture readonly %s2) #3 {
-  br label %1
+  tail call void @llvm.dbg.value(metadata %struct.t_nrnb* %dest, i64 0, metadata !241, metadata !340), !dbg !397
+  tail call void @llvm.dbg.value(metadata %struct.t_nrnb* %s1, i64 0, metadata !242, metadata !340), !dbg !398
+  tail call void @llvm.dbg.value(metadata %struct.t_nrnb* %s2, i64 0, metadata !243, metadata !340), !dbg !399
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !244, metadata !340), !dbg !400
+  br label %1, !dbg !401
 
 ; <label>:1                                       ; preds = %1, %0
   %indvars.iv = phi i64 [ 0, %0 ], [ %indvars.iv.next, %1 ]
-  %2 = getelementptr inbounds %struct.t_nrnb* %s1, i64 0, i32 0, i64 %indvars.iv
-  %3 = load double* %2, align 8, !tbaa !14
-  %4 = getelementptr inbounds %struct.t_nrnb* %s2, i64 0, i32 0, i64 %indvars.iv
-  %5 = load double* %4, align 8, !tbaa !14
-  %6 = fadd double %3, %5
-  %7 = getelementptr inbounds %struct.t_nrnb* %dest, i64 0, i32 0, i64 %indvars.iv
-  store double %6, double* %7, align 8, !tbaa !14
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %exitcond = icmp eq i64 %indvars.iv.next, 129
-  br i1 %exitcond, label %8, label %1
+  %2 = getelementptr inbounds %struct.t_nrnb* %s1, i64 0, i32 0, i64 %indvars.iv, !dbg !403
+  %3 = load double* %2, align 8, !dbg !403, !tbaa !392
+  %4 = getelementptr inbounds %struct.t_nrnb* %s2, i64 0, i32 0, i64 %indvars.iv, !dbg !405
+  %5 = load double* %4, align 8, !dbg !405, !tbaa !392
+  %6 = fadd double %3, %5, !dbg !406
+  %7 = getelementptr inbounds %struct.t_nrnb* %dest, i64 0, i32 0, i64 %indvars.iv, !dbg !407
+  store double %6, double* %7, align 8, !dbg !408, !tbaa !392
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !401
+  %exitcond = icmp eq i64 %indvars.iv.next, 129, !dbg !401
+  br i1 %exitcond, label %8, label %1, !dbg !401
 
 ; <label>:8                                       ; preds = %1
-  ret void
+  ret void, !dbg !409
 }

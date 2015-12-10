@@ -1,40 +1,52 @@
-define i8* @Getline(i8* %s, i32 %n, %struct._IO_FILE* nocapture %fp) #0 {
-entry:
-  %call13 = tail call i8* @fgets(i8* %s, i32 %n, %struct._IO_FILE* %fp) #6
-  %cmp14 = icmp eq i8* %call13, null
-  br i1 %cmp14, label %return, label %while.cond.preheader.lr.ph
+define i8* @Getline(i8* %s, i32 %n, %struct.__sFILE* nocapture %fp) #0 {
+  tail call void @llvm.dbg.value(metadata i8* %s, i64 0, metadata !102, metadata !204), !dbg !272
+  tail call void @llvm.dbg.value(metadata i32 %n, i64 0, metadata !103, metadata !204), !dbg !273
+  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %fp, i64 0, metadata !104, metadata !204), !dbg !274
+  %1 = tail call i8* @fgets(i8* %s, i32 %n, %struct.__sFILE* %fp) #6, !dbg !275
+  %2 = icmp eq i8* %1, null, !dbg !278
+  br i1 %2, label %._crit_edge, label %.preheader, !dbg !279
 
-while.cond.preheader.lr.ph:                       ; preds = %entry
-  %call1 = tail call i16** @__ctype_b_loc() #8
-  br label %while.cond.preheader
+.preheader:                                       ; preds = %.critedge.backedge, %isspace.exit, %0
+  %first.0 = phi i8* [ %s, %0 ], [ %12, %isspace.exit ], [ %s, %.critedge.backedge ]
+  %3 = load i8* %first.0, align 1, !dbg !280, !tbaa !239
+  tail call void @llvm.dbg.value(metadata i32 %10, i64 0, metadata !181, metadata !204) #5, !dbg !281
+  tail call void @llvm.dbg.value(metadata i32 %10, i64 0, metadata !188, metadata !204) #5, !dbg !283
+  tail call void @llvm.dbg.value(metadata i64 16384, i64 0, metadata !189, metadata !204) #5, !dbg !285
+  %isascii.i.i1 = icmp sgt i8 %3, -1, !dbg !286
+  br i1 %isascii.i.i1, label %4, label %9, !dbg !286
 
-while.cond.preheader:                             ; preds = %while.cond.preheader.lr.ph, %do.body.backedge
-  %0 = load i16** %call1, align 8, !tbaa !0
-  br label %while.cond
+; <label>:4                                       ; preds = %.preheader
+  %5 = sext i8 %3 to i64, !dbg !287
+  %6 = getelementptr inbounds %struct._RuneLocale* @_DefaultRuneLocale, i64 0, i32 5, i64 %5, !dbg !287
+  %7 = load i32* %6, align 4, !dbg !287, !tbaa !288
+  %8 = and i32 %7, 16384, !dbg !290
+  br label %isspace.exit, !dbg !286
 
-while.cond:                                       ; preds = %while.cond, %while.cond.preheader
-  %first.0 = phi i8* [ %incdec.ptr, %while.cond ], [ %s, %while.cond.preheader ]
-  %1 = load i8* %first.0, align 1, !tbaa !1
-  %idxprom = sext i8 %1 to i64
-  %arrayidx = getelementptr inbounds i16* %0, i64 %idxprom
-  %2 = load i16* %arrayidx, align 2, !tbaa !3
-  %and = and i16 %2, 8192
-  %tobool = icmp eq i16 %and, 0
-  %incdec.ptr = getelementptr inbounds i8* %first.0, i64 1
-  br i1 %tobool, label %do.cond, label %while.cond
+; <label>:9                                       ; preds = %.preheader
+  %10 = sext i8 %3 to i32, !dbg !291
+  %11 = tail call i32 @__maskrune(i32 %10, i64 16384) #6, !dbg !292
+  br label %isspace.exit, !dbg !286
 
-do.cond:                                          ; preds = %while.cond
-  switch i8 %1, label %return [
-    i8 35, label %do.body.backedge
-    i8 0, label %do.body.backedge
-  ]
+isspace.exit:                                     ; preds = %4, %9
+  %.sink.i.in.i = phi i32 [ %8, %4 ], [ %11, %9 ], !dbg !293
+  %.sink.i.i = icmp eq i32 %.sink.i.in.i, 0, !dbg !294
+  %12 = getelementptr inbounds i8* %first.0, i64 1, !dbg !295
+  tail call void @llvm.dbg.value(metadata i8* %12, i64 0, metadata !105, metadata !204), !dbg !296
+  br i1 %.sink.i.i, label %13, label %.preheader, !dbg !297
 
-do.body.backedge:                                 ; preds = %do.cond, %do.cond
-  %call = tail call i8* @fgets(i8* %s, i32 %n, %struct._IO_FILE* %fp) #6
-  %cmp = icmp eq i8* %call, null
-  br i1 %cmp, label %return, label %while.cond.preheader
+; <label>:13                                      ; preds = %isspace.exit
+  %14 = load i8* %first.0, align 1, !dbg !298, !tbaa !239
+  switch i8 %14, label %._crit_edge [
+    i8 35, label %.critedge.backedge
+    i8 0, label %.critedge.backedge
+  ], !dbg !299
 
-return:                                           ; preds = %do.body.backedge, %do.cond, %entry
-  %retval.0 = phi i8* [ null, %entry ], [ %s, %do.cond ], [ null, %do.body.backedge ]
-  ret i8* %retval.0
+.critedge.backedge:                               ; preds = %13, %13
+  %15 = tail call i8* @fgets(i8* %s, i32 %n, %struct.__sFILE* %fp) #6, !dbg !275
+  %16 = icmp eq i8* %15, null, !dbg !278
+  br i1 %16, label %._crit_edge, label %.preheader, !dbg !279
+
+._crit_edge:                                      ; preds = %.critedge.backedge, %13, %0
+  %.0 = phi i8* [ null, %0 ], [ null, %.critedge.backedge ], [ %s, %13 ]
+  ret i8* %.0, !dbg !300
 }

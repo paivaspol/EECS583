@@ -1,31 +1,32 @@
 define i32 @IV_min(%struct._IV* %iv) #0 {
-entry:
   %i = alloca i32, align 4
-  %cmp = icmp eq %struct._IV* %iv, null
-  br i1 %cmp, label %if.then, label %lor.lhs.false
+  tail call void @llvm.dbg.value(metadata %struct._IV* %iv, i64 0, metadata !31, metadata !175), !dbg !231
+  %1 = icmp eq %struct._IV* %iv, null, !dbg !232
+  br i1 %1, label %._crit_edge, label %2, !dbg !234
 
-lor.lhs.false:                                    ; preds = %entry
-  %size = getelementptr inbounds %struct._IV* %iv, i64 0, i32 0
-  %0 = load i32* %size, align 4, !tbaa !3
-  %cmp1 = icmp slt i32 %0, 1
-  br i1 %cmp1, label %if.then, label %lor.lhs.false2
+; <label>:2                                       ; preds = %0
+  %3 = getelementptr inbounds %struct._IV* %iv, i64 0, i32 0, !dbg !235
+  %4 = load i32* %3, align 4, !dbg !235, !tbaa !196
+  %5 = icmp slt i32 %4, 1, !dbg !236
+  br i1 %5, label %._crit_edge, label %6, !dbg !237
 
-lor.lhs.false2:                                   ; preds = %lor.lhs.false
-  %vec = getelementptr inbounds %struct._IV* %iv, i64 0, i32 3
-  %1 = load i32** %vec, align 8, !tbaa !0
-  %cmp3 = icmp eq i32* %1, null
-  br i1 %cmp3, label %if.then, label %if.end
+; <label>:6                                       ; preds = %2
+  %7 = getelementptr inbounds %struct._IV* %iv, i64 0, i32 3, !dbg !238
+  %8 = load i32** %7, align 8, !dbg !238, !tbaa !191
+  %9 = icmp eq i32* %8, null, !dbg !239
+  br i1 %9, label %._crit_edge, label %15, !dbg !240
 
-if.then:                                          ; preds = %lor.lhs.false, %entry, %lor.lhs.false2
-  %2 = phi i32 [ %0, %lor.lhs.false2 ], [ 0, %entry ], [ %0, %lor.lhs.false ]
-  %3 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %vec5 = getelementptr inbounds %struct._IV* %iv, i64 0, i32 3
-  %4 = load i32** %vec5, align 8, !tbaa !0
-  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([49 x i8]* @.str2, i64 0, i64 0), %struct._IV* %iv, i32 %2, i32* %4) #5
-  call void @exit(i32 -1) #6
-  unreachable
+._crit_edge:                                      ; preds = %0, %6, %2
+  %10 = phi i32 [ %4, %6 ], [ %4, %2 ], [ 0, %0 ]
+  %11 = load %struct.__sFILE** @__stderrp, align 8, !dbg !241, !tbaa !183
+  %12 = getelementptr inbounds %struct._IV* %iv, i64 0, i32 3, !dbg !243
+  %13 = load i32** %12, align 8, !dbg !243, !tbaa !191
+  %14 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %11, i8* getelementptr inbounds ([49 x i8]* @.str2, i64 0, i64 0), %struct._IV* %iv, i32 %10, i32* %13) #6, !dbg !244
+  tail call void @exit(i32 -1) #7, !dbg !245
+  unreachable, !dbg !245
 
-if.end:                                           ; preds = %lor.lhs.false2
-  %call8 = call i32 @IVmin(i32 %0, i32* %1, i32* %i) #5
-  ret i32 %call8
+; <label>:15                                      ; preds = %6
+  tail call void @llvm.dbg.value(metadata i32* %i, i64 0, metadata !32, metadata !175), !dbg !246
+  %16 = call i32 @IVmin(i32 %4, i32* %8, i32* %i) #6, !dbg !247
+  ret i32 %16, !dbg !248
 }

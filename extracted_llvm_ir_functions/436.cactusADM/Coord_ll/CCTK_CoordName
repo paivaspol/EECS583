@@ -1,26 +1,31 @@
 define i8* @CCTK_CoordName(i32 %dir, i8* %systemname) #1 {
   %coord_system = alloca %struct.Coordsystem*, align 8
-  %1 = load %struct.cHandledData** @CoordSystems, align 8, !tbaa !2
-  %2 = bitcast %struct.Coordsystem** %coord_system to i8**
-  %3 = call i32 @Util_GetHandle(%struct.cHandledData* %1, i8* %systemname, i8** %2) #5
-  %4 = load %struct.Coordsystem** %coord_system, align 8, !tbaa !2
-  %5 = icmp eq %struct.Coordsystem* %4, null
-  br i1 %5, label %6, label %8
+  tail call void @llvm.dbg.value(metadata i32 %dir, i64 0, metadata !361, metadata !389), !dbg !1229
+  tail call void @llvm.dbg.value(metadata i8* %systemname, i64 0, metadata !362, metadata !389), !dbg !1230
+  %1 = load %struct.cHandledData** @CoordSystems, align 8, !dbg !1231, !tbaa !395
+  %2 = bitcast %struct.Coordsystem** %coord_system to i8**, !dbg !1232
+  %3 = call i32 @Util_GetHandle(%struct.cHandledData* %1, i8* %systemname, i8** %2) #6, !dbg !1233
+  call void @llvm.dbg.value(metadata %struct.Coordsystem** %coord_system, i64 0, metadata !363, metadata !389), !dbg !1234
+  %4 = load %struct.Coordsystem** %coord_system, align 8, !dbg !1235, !tbaa !395
+  %5 = icmp eq %struct.Coordsystem* %4, null, !dbg !1235
+  br i1 %5, label %6, label %8, !dbg !1237
 
 ; <label>:6                                       ; preds = %0
-  %7 = call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 4, i32 1492, i8* getelementptr inbounds ([74 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([43 x i8]* @.str41, i64 0, i64 0), i8* %systemname) #5
-  br label %15
+  %7 = call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 4, i32 1492, i8* getelementptr inbounds ([74 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([43 x i8]* @.str41, i64 0, i64 0), i8* %systemname) #6, !dbg !1238
+  call void @llvm.dbg.value(metadata i8* null, i64 0, metadata !364, metadata !389), !dbg !1240
+  br label %15, !dbg !1241
 
 ; <label>:8                                       ; preds = %0
-  %9 = add nsw i32 %dir, -1
-  %10 = sext i32 %9 to i64
-  %11 = getelementptr inbounds %struct.Coordsystem* %4, i64 0, i32 3
-  %12 = load %struct.Coordprops** %11, align 8, !tbaa !11
-  %13 = getelementptr inbounds %struct.Coordprops* %12, i64 %10, i32 0
-  %14 = load i8** %13, align 8, !tbaa !13
+  %9 = add nsw i32 %dir, -1, !dbg !1242
+  %10 = sext i32 %9 to i64, !dbg !1244
+  %11 = getelementptr inbounds %struct.Coordsystem* %4, i64 0, i32 3, !dbg !1245
+  %12 = load %struct.Coordprops** %11, align 8, !dbg !1245, !tbaa !436
+  %13 = getelementptr inbounds %struct.Coordprops* %12, i64 %10, i32 0, !dbg !1246
+  %14 = load i8** %13, align 8, !dbg !1246, !tbaa !499
+  call void @llvm.dbg.value(metadata i8* %14, i64 0, metadata !364, metadata !389), !dbg !1240
   br label %15
 
 ; <label>:15                                      ; preds = %8, %6
   %retval.0 = phi i8* [ %14, %8 ], [ null, %6 ]
-  ret i8* %retval.0
+  ret i8* %retval.0, !dbg !1247
 }

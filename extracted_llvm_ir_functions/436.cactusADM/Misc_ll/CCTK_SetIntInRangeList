@@ -1,56 +1,66 @@
 define i32 @CCTK_SetIntInRangeList(i32* nocapture %data, i8* nocapture readonly %value, i32 %n_elements, ...) #1 {
   %ap = alloca [1 x %struct.__va_list_tag], align 16
-  %1 = tail call i32 @atoi(i8* %value) #7
-  %2 = bitcast [1 x %struct.__va_list_tag]* %ap to i8*
-  call void @llvm.va_start(i8* %2)
-  %3 = icmp sgt i32 %n_elements, 0
-  br i1 %3, label %.lr.ph, label %.loopexit
+  tail call void @llvm.dbg.value(metadata i32* %data, i64 0, metadata !146, metadata !252), !dbg !568
+  tail call void @llvm.dbg.value(metadata i8* %value, i64 0, metadata !147, metadata !252), !dbg !569
+  tail call void @llvm.dbg.value(metadata i32 %n_elements, i64 0, metadata !148, metadata !252), !dbg !570
+  tail call void @llvm.dbg.declare(metadata [1 x %struct.__va_list_tag]* %ap, metadata !151, metadata !252), !dbg !571
+  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !149, metadata !252), !dbg !572
+  %1 = tail call i32 @atoi(i8* %value) #7, !dbg !573
+  tail call void @llvm.dbg.value(metadata i32 %1, i64 0, metadata !153, metadata !252), !dbg !574
+  %2 = bitcast [1 x %struct.__va_list_tag]* %ap to i8*, !dbg !575
+  call void @llvm.va_start(i8* %2), !dbg !575
+  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !150, metadata !252), !dbg !576
+  %3 = icmp sgt i32 %n_elements, 0, !dbg !577
+  br i1 %3, label %.lr.ph, label %.loopexit, !dbg !580
 
 .lr.ph:                                           ; preds = %0
-  %4 = getelementptr inbounds [1 x %struct.__va_list_tag]* %ap, i64 0, i64 0, i32 0
-  %5 = getelementptr inbounds [1 x %struct.__va_list_tag]* %ap, i64 0, i64 0, i32 3
-  %6 = getelementptr inbounds [1 x %struct.__va_list_tag]* %ap, i64 0, i64 0, i32 2
-  br label %9
+  %4 = getelementptr inbounds [1 x %struct.__va_list_tag]* %ap, i64 0, i64 0, i32 0, !dbg !581
+  %5 = getelementptr inbounds [1 x %struct.__va_list_tag]* %ap, i64 0, i64 0, i32 3, !dbg !581
+  %6 = getelementptr inbounds [1 x %struct.__va_list_tag]* %ap, i64 0, i64 0, i32 2, !dbg !581
+  br label %9, !dbg !580
 
 ; <label>:7                                       ; preds = %20
-  %8 = icmp slt i32 %25, %n_elements
-  br i1 %8, label %9, label %.loopexit
+  %8 = icmp slt i32 %25, %n_elements, !dbg !577
+  br i1 %8, label %9, label %.loopexit, !dbg !580
 
 ; <label>:9                                       ; preds = %.lr.ph, %7
   %arg.01 = phi i32 [ 0, %.lr.ph ], [ %25, %7 ]
-  %10 = load i32* %4, align 16
-  %11 = icmp ult i32 %10, 41
-  br i1 %11, label %12, label %17
+  %10 = load i32* %4, align 16, !dbg !581
+  %11 = icmp ult i32 %10, 41, !dbg !581
+  br i1 %11, label %12, label %17, !dbg !581
 
 ; <label>:12                                      ; preds = %9
-  %13 = load i8** %5, align 16
-  %14 = sext i32 %10 to i64
-  %15 = getelementptr i8* %13, i64 %14
-  %16 = add i32 %10, 8
-  store i32 %16, i32* %4, align 16
-  br label %20
+  %13 = load i8** %5, align 16, !dbg !581
+  %14 = sext i32 %10 to i64, !dbg !581
+  %15 = getelementptr i8* %13, i64 %14, !dbg !581
+  %16 = add i32 %10, 8, !dbg !581
+  store i32 %16, i32* %4, align 16, !dbg !581
+  br label %20, !dbg !581
 
 ; <label>:17                                      ; preds = %9
-  %18 = load i8** %6, align 8
-  %19 = getelementptr i8* %18, i64 8
-  store i8* %19, i8** %6, align 8
-  br label %20
+  %18 = load i8** %6, align 8, !dbg !581
+  %19 = getelementptr i8* %18, i64 8, !dbg !581
+  store i8* %19, i8** %6, align 8, !dbg !581
+  br label %20, !dbg !581
 
 ; <label>:20                                      ; preds = %17, %12
   %.in = phi i8* [ %15, %12 ], [ %18, %17 ]
-  %21 = bitcast i8* %.in to i8**
-  %22 = load i8** %21, align 8
-  %23 = call i32 @Util_IntInRange(i32 %1, i8* %22) #8
-  %24 = icmp eq i32 %23, 0
-  %25 = add nuw nsw i32 %arg.01, 1
-  br i1 %24, label %7, label %26
+  %21 = bitcast i8* %.in to i8**, !dbg !581
+  %22 = load i8** %21, align 8, !dbg !581
+  call void @llvm.dbg.value(metadata i8* %22, i64 0, metadata !152, metadata !252), !dbg !583
+  %23 = call i32 @Util_IntInRange(i32 %1, i8* %22) #8, !dbg !584
+  %24 = icmp eq i32 %23, 0, !dbg !584
+  %25 = add nuw nsw i32 %arg.01, 1, !dbg !586
+  call void @llvm.dbg.value(metadata i32 %25, i64 0, metadata !150, metadata !252), !dbg !576
+  br i1 %24, label %7, label %26, !dbg !587
 
 ; <label>:26                                      ; preds = %20
-  store i32 %1, i32* %data, align 4, !tbaa !12
-  br label %.loopexit
+  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !149, metadata !252), !dbg !572
+  store i32 %1, i32* %data, align 4, !dbg !588, !tbaa !590
+  br label %.loopexit, !dbg !591
 
 .loopexit:                                        ; preds = %7, %0, %26
   %retval.0 = phi i32 [ 0, %26 ], [ 1, %0 ], [ 1, %7 ]
-  call void @llvm.va_end(i8* %2)
-  ret i32 %retval.0
+  call void @llvm.va_end(i8* %2), !dbg !592
+  ret i32 %retval.0, !dbg !593
 }

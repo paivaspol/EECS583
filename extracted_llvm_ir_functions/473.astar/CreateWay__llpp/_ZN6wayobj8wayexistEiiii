@@ -1,0 +1,43 @@
+define zeroext i1 @_ZN6wayobj8wayexistEiiii(%class.wayobj* %this, i32 %startx, i32 %starty, i32 %endx, i32 %endy) #0 align 2 {
+  tail call void @llvm.dbg.value(metadata %class.wayobj* %this, i64 0, metadata !367, metadata !451), !dbg !1296
+  tail call void @llvm.dbg.value(metadata i32 %startx, i64 0, metadata !368, metadata !451), !dbg !1297
+  tail call void @llvm.dbg.value(metadata i32 %starty, i64 0, metadata !369, metadata !451), !dbg !1298
+  tail call void @llvm.dbg.value(metadata i32 %endx, i64 0, metadata !370, metadata !451), !dbg !1299
+  tail call void @llvm.dbg.value(metadata i32 %endy, i64 0, metadata !371, metadata !451), !dbg !1300
+  %1 = tail call zeroext i1 @_ZN6wayobj5ismapEii(%class.wayobj* %this, i32 %startx, i32 %starty) #9, !dbg !1301
+  br i1 %1, label %2, label %20, !dbg !1303
+
+; <label>:2                                       ; preds = %0
+  %3 = tail call zeroext i1 @_ZN6wayobj5ismapEii(%class.wayobj* %this, i32 %endx, i32 %endy) #9, !dbg !1304
+  br i1 %3, label %4, label %20, !dbg !1305
+
+; <label>:4                                       ; preds = %2
+  tail call void @llvm.dbg.value(metadata %class.wayobj* %this, i64 0, metadata !429, metadata !451), !dbg !1306
+  tail call void @llvm.dbg.value(metadata i32 %endx, i64 0, metadata !430, metadata !451), !dbg !1309
+  tail call void @llvm.dbg.value(metadata i32 %endy, i64 0, metadata !431, metadata !451), !dbg !1310
+  %5 = getelementptr inbounds %class.wayobj* %this, i64 0, i32 2, !dbg !1311
+  %6 = load i32* %5, align 4, !dbg !1311, !tbaa !566
+  %7 = shl i32 %endy, %6, !dbg !1312
+  %8 = or i32 %7, %endx, !dbg !1313
+  %9 = sext i32 %8 to i64, !dbg !1314
+  %10 = getelementptr inbounds %class.wayobj* %this, i64 0, i32 17, !dbg !1314
+  %11 = load i16** %10, align 8, !dbg !1314, !tbaa !1315
+  %12 = getelementptr inbounds i16* %11, i64 %9, !dbg !1314
+  %13 = load i16* %12, align 2, !dbg !1316, !tbaa !1317
+  %14 = icmp eq i16 %13, 0, !dbg !1318
+  br i1 %14, label %15, label %20, !dbg !1319
+
+; <label>:15                                      ; preds = %4
+  %16 = icmp eq i32 %startx, %endx, !dbg !1320
+  %17 = icmp eq i32 %starty, %endy, !dbg !1322
+  %or.cond = and i1 %16, %17, !dbg !1323
+  br i1 %or.cond, label %20, label %18, !dbg !1323
+
+; <label>:18                                      ; preds = %15
+  %19 = tail call zeroext i1 @_ZN6wayobj4fillEiiii(%class.wayobj* %this, i32 %startx, i32 %starty, i32 %endx, i32 %endy) #9, !dbg !1324
+  br label %20, !dbg !1325
+
+; <label>:20                                      ; preds = %15, %4, %0, %2, %18
+  %.0 = phi i1 [ %19, %18 ], [ false, %2 ], [ false, %0 ], [ false, %4 ], [ true, %15 ]
+  ret i1 %.0, !dbg !1326
+}

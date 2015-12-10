@@ -1,25 +1,34 @@
 define i32 @xdr_vector(%struct.XDR* %xdrs, i8* %basep, i32 %nelem, i32 %elemsize, i32 (%struct.XDR*, i8*, ...)* nocapture %xdr_elem) #0 {
-  %1 = icmp eq i32 %nelem, 0
-  br i1 %1, label %._crit_edge, label %.lr.ph
+  tail call void @llvm.dbg.value(metadata %struct.XDR* %xdrs, i64 0, metadata !272, metadata !360), !dbg !693
+  tail call void @llvm.dbg.value(metadata i8* %basep, i64 0, metadata !273, metadata !360), !dbg !694
+  tail call void @llvm.dbg.value(metadata i32 %nelem, i64 0, metadata !274, metadata !360), !dbg !695
+  tail call void @llvm.dbg.value(metadata i32 %elemsize, i64 0, metadata !275, metadata !360), !dbg !696
+  tail call void @llvm.dbg.value(metadata i32 (%struct.XDR*, i8*, ...)* %xdr_elem, i64 0, metadata !276, metadata !360), !dbg !697
+  tail call void @llvm.dbg.value(metadata i8* %basep, i64 0, metadata !278, metadata !360), !dbg !698
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !277, metadata !360), !dbg !699
+  %1 = icmp eq i32 %nelem, 0, !dbg !700
+  br i1 %1, label %._crit_edge, label %.lr.ph, !dbg !703
 
 .lr.ph:                                           ; preds = %0
-  %2 = zext i32 %elemsize to i64
-  br label %3
+  %2 = zext i32 %elemsize to i64, !dbg !704
+  br label %3, !dbg !703
 
 ; <label>:3                                       ; preds = %.lr.ph, %6
   %elptr.02 = phi i8* [ %basep, %.lr.ph ], [ %7, %6 ]
   %i.01 = phi i32 [ 0, %.lr.ph ], [ %8, %6 ]
-  %4 = tail call i32 (%struct.XDR*, i8*, ...)* %xdr_elem(%struct.XDR* %xdrs, i8* %elptr.02, i32 -1) #6
-  %5 = icmp eq i32 %4, 0
-  br i1 %5, label %._crit_edge, label %6
+  %4 = tail call i32 (%struct.XDR*, i8*, ...)* %xdr_elem(%struct.XDR* %xdrs, i8* %elptr.02, i32 -1) #7, !dbg !706
+  %5 = icmp eq i32 %4, 0, !dbg !706
+  br i1 %5, label %._crit_edge, label %6, !dbg !708
 
 ; <label>:6                                       ; preds = %3
-  %7 = getelementptr inbounds i8* %elptr.02, i64 %2
-  %8 = add nuw i32 %i.01, 1
-  %9 = icmp ult i32 %8, %nelem
-  br i1 %9, label %3, label %._crit_edge
+  %7 = getelementptr inbounds i8* %elptr.02, i64 %2, !dbg !704
+  tail call void @llvm.dbg.value(metadata i8* %7, i64 0, metadata !278, metadata !360), !dbg !698
+  %8 = add nuw i32 %i.01, 1, !dbg !709
+  tail call void @llvm.dbg.value(metadata i32 %8, i64 0, metadata !277, metadata !360), !dbg !699
+  %9 = icmp ult i32 %8, %nelem, !dbg !700
+  br i1 %9, label %3, label %._crit_edge, !dbg !703
 
 ._crit_edge:                                      ; preds = %3, %6, %0
   %.0 = phi i32 [ 1, %0 ], [ 0, %3 ], [ 1, %6 ]
-  ret i32 %.0
+  ret i32 %.0, !dbg !710
 }

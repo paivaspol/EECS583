@@ -1,48 +1,53 @@
 define void @_ZN16MACRelayUnitBase14broadcastFrameEP10EtherFramei(%class.MACRelayUnitBase* %this, %class.EtherFrame* %frame, i32 %inputport) #0 align 2 {
-  %1 = getelementptr inbounds %class.MACRelayUnitBase* %this, i64 0, i32 1
-  %2 = load i32* %1, align 4, !tbaa !9
-  %3 = icmp sgt i32 %2, 0
-  br i1 %3, label %.lr.ph, label %._crit_edge
+  tail call void @llvm.dbg.value(metadata %class.MACRelayUnitBase* %this, i64 0, metadata !4955, metadata !6977), !dbg !7387
+  tail call void @llvm.dbg.value(metadata %class.EtherFrame* %frame, i64 0, metadata !4956, metadata !6977), !dbg !7388
+  tail call void @llvm.dbg.value(metadata i32 %inputport, i64 0, metadata !4957, metadata !6977), !dbg !7389
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !4958, metadata !6977), !dbg !7390
+  %1 = getelementptr inbounds %class.MACRelayUnitBase* %this, i64 0, i32 1, !dbg !7391
+  %2 = load i32* %1, align 4, !dbg !7391, !tbaa !6993
+  %3 = icmp sgt i32 %2, 0, !dbg !7393
+  br i1 %3, label %.lr.ph, label %._crit_edge, !dbg !7394
 
 .lr.ph:                                           ; preds = %0
-  %4 = getelementptr inbounds %class.MACRelayUnitBase* %this, i64 0, i32 0
-  %5 = bitcast %class.EtherFrame* %frame to %class.cObject* (%class.EtherFrame*)***
-  br label %6
+  %4 = getelementptr inbounds %class.MACRelayUnitBase* %this, i64 0, i32 0, !dbg !7395
+  %5 = bitcast %class.EtherFrame* %frame to %class.cObject* (%class.EtherFrame*)***, !dbg !7397
+  br label %6, !dbg !7394
 
 ; <label>:6                                       ; preds = %.lr.ph, %16
   %7 = phi i32 [ %2, %.lr.ph ], [ %17, %16 ]
   %i.01 = phi i32 [ 0, %.lr.ph ], [ %18, %16 ]
-  %8 = icmp eq i32 %i.01, %inputport
-  br i1 %8, label %16, label %9
+  %8 = icmp eq i32 %i.01, %inputport, !dbg !7398
+  br i1 %8, label %16, label %9, !dbg !7399
 
 ; <label>:9                                       ; preds = %6
-  %10 = load %class.cObject* (%class.EtherFrame*)*** %5, align 8, !tbaa !20
-  %11 = getelementptr inbounds %class.cObject* (%class.EtherFrame*)** %10, i64 2
-  %12 = load %class.cObject* (%class.EtherFrame*)** %11, align 8
-  %13 = tail call %class.cObject* %12(%class.EtherFrame* %frame) #11
-  %14 = bitcast %class.cObject* %13 to %class.cMessage*
-  %15 = tail call i32 @_ZN13cSimpleModule4sendEP8cMessagePKci(%class.cSimpleModule* %4, %class.cMessage* %14, i8* getelementptr inbounds ([14 x i8]* @.str, i64 0, i64 0), i32 %i.01) #11
-  %.pre = load i32* %1, align 4, !tbaa !9
-  br label %16
+  %10 = load %class.cObject* (%class.EtherFrame*)*** %5, align 8, !dbg !7397, !tbaa !7099
+  %11 = getelementptr inbounds %class.cObject* (%class.EtherFrame*)** %10, i64 2, !dbg !7397
+  %12 = load %class.cObject* (%class.EtherFrame*)** %11, align 8, !dbg !7397
+  %13 = tail call %class.cObject* %12(%class.EtherFrame* %frame) #12, !dbg !7397
+  %14 = bitcast %class.cObject* %13 to %class.cMessage*, !dbg !7400
+  %15 = tail call i32 @_ZN13cSimpleModule4sendEP8cMessagePKci(%class.cSimpleModule* %4, %class.cMessage* %14, i8* getelementptr inbounds ([14 x i8]* @.str, i64 0, i64 0), i32 %i.01) #12, !dbg !7395
+  %.pre = load i32* %1, align 4, !dbg !7391, !tbaa !6993
+  br label %16, !dbg !7395
 
 ; <label>:16                                      ; preds = %6, %9
-  %17 = phi i32 [ %7, %6 ], [ %.pre, %9 ]
-  %18 = add nuw nsw i32 %i.01, 1
-  %19 = icmp slt i32 %18, %17
-  br i1 %19, label %6, label %._crit_edge
+  %17 = phi i32 [ %7, %6 ], [ %.pre, %9 ], !dbg !7401
+  %18 = add nuw nsw i32 %i.01, 1, !dbg !7401
+  tail call void @llvm.dbg.value(metadata i32 %18, i64 0, metadata !4958, metadata !6977), !dbg !7390
+  %19 = icmp slt i32 %18, %17, !dbg !7393
+  br i1 %19, label %6, label %._crit_edge, !dbg !7394
 
 ._crit_edge:                                      ; preds = %16, %0
-  %20 = icmp eq %class.EtherFrame* %frame, null
-  br i1 %20, label %26, label %21
+  %20 = icmp eq %class.EtherFrame* %frame, null, !dbg !7402
+  br i1 %20, label %26, label %21, !dbg !7402
 
 ; <label>:21                                      ; preds = %._crit_edge
-  %22 = bitcast %class.EtherFrame* %frame to void (%class.EtherFrame*)***
-  %23 = load void (%class.EtherFrame*)*** %22, align 8, !tbaa !20
-  %24 = getelementptr inbounds void (%class.EtherFrame*)** %23, i64 1
-  %25 = load void (%class.EtherFrame*)** %24, align 8
-  tail call void %25(%class.EtherFrame* %frame) #11
-  br label %26
+  %22 = bitcast %class.EtherFrame* %frame to void (%class.EtherFrame*)***, !dbg !7402
+  %23 = load void (%class.EtherFrame*)*** %22, align 8, !dbg !7402, !tbaa !7099
+  %24 = getelementptr inbounds void (%class.EtherFrame*)** %23, i64 1, !dbg !7402
+  %25 = load void (%class.EtherFrame*)** %24, align 8, !dbg !7402
+  tail call void %25(%class.EtherFrame* %frame) #12, !dbg !7402
+  br label %26, !dbg !7402
 
 ; <label>:26                                      ; preds = %21, %._crit_edge
-  ret void
+  ret void, !dbg !7403
 }

@@ -1,17 +1,18 @@
 define noalias %struct._Pencil* @Pencil_free(%struct._Pencil* %pencil) #0 {
-entry:
-  %cmp = icmp eq %struct._Pencil* %pencil, null
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata %struct._Pencil* %pencil, i64 0, metadata !79, metadata !88), !dbg !141
+  %1 = icmp eq %struct._Pencil* %pencil, null, !dbg !142
+  br i1 %1, label %2, label %5, !dbg !144
 
-if.then:                                          ; preds = %entry
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([45 x i8]* @.str4, i64 0, i64 0), %struct._Pencil* null) #5
-  tail call void @exit(i32 -1) #6
-  unreachable
+; <label>:2                                       ; preds = %0
+  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !145, !tbaa !93
+  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([45 x i8]* @.str4, i64 0, i64 0), %struct._Pencil* null) #6, !dbg !147
+  tail call void @exit(i32 -1) #7, !dbg !148
+  unreachable, !dbg !148
 
-if.end:                                           ; preds = %entry
-  tail call void @Pencil_clearData(%struct._Pencil* %pencil) #7
-  %1 = bitcast %struct._Pencil* %pencil to i8*
-  tail call void @free(i8* %1) #5
-  ret %struct._Pencil* null
+; <label>:5                                       ; preds = %0
+  tail call void @Pencil_clearData(%struct._Pencil* %pencil) #8, !dbg !149
+  %6 = bitcast %struct._Pencil* %pencil to i8*, !dbg !150
+  tail call void @free(i8* %6) #8, !dbg !150
+  tail call void @llvm.dbg.value(metadata %struct._Pencil* null, i64 0, metadata !79, metadata !88), !dbg !141
+  ret %struct._Pencil* null, !dbg !153
 }

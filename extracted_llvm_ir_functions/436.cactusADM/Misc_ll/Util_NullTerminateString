@@ -1,49 +1,52 @@
 define noalias i8* @Util_NullTerminateString(i8* nocapture readonly %instring, i32 %len) #1 {
-  %1 = icmp ugt i32 %len, 100000
-  br i1 %1, label %2, label %.preheader1
+  tail call void @llvm.dbg.value(metadata i8* %instring, i64 0, metadata !40, metadata !252), !dbg !291
+  tail call void @llvm.dbg.value(metadata i32 %len, i64 0, metadata !41, metadata !252), !dbg !292
+  %1 = icmp ugt i32 %len, 100000, !dbg !293
+  br i1 %1, label %2, label %.preheader1, !dbg !295
 
 ; <label>:2                                       ; preds = %0
-  %3 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 205, i8* getelementptr inbounds ([73 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([106 x i8]* @.str5, i64 0, i64 0), i32 %len) #7
-  br label %.preheader1
+  %3 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 205, i8* getelementptr inbounds ([73 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([106 x i8]* @.str5, i64 0, i64 0), i32 %len) #7, !dbg !296
+  br label %.preheader1, !dbg !298
 
 .preheader1:                                      ; preds = %0, %2, %5
   %position.0 = phi i32 [ %6, %5 ], [ %len, %2 ], [ %len, %0 ]
-  %4 = icmp eq i32 %position.0, 0
-  br i1 %4, label %.critedge, label %5
+  %4 = icmp eq i32 %position.0, 0, !dbg !299
+  br i1 %4, label %.critedge, label %5, !dbg !300
 
 ; <label>:5                                       ; preds = %.preheader1
-  %6 = add i32 %position.0, -1
-  %7 = zext i32 %6 to i64
-  %8 = getelementptr inbounds i8* %instring, i64 %7
-  %9 = load i8* %8, align 1, !tbaa !6
-  %10 = icmp eq i8 %9, 32
-  br i1 %10, label %.preheader1, label %.critedge
+  %6 = add i32 %position.0, -1, !dbg !301
+  %7 = zext i32 %6 to i64, !dbg !302
+  %8 = getelementptr inbounds i8* %instring, i64 %7, !dbg !302
+  %9 = load i8* %8, align 1, !dbg !302, !tbaa !303
+  %10 = icmp eq i8 %9, 32, !dbg !304
+  br i1 %10, label %.preheader1, label %.critedge, !dbg !305
 
 .critedge:                                        ; preds = %.preheader1, %5
   %position.0.lcssa = phi i32 [ 0, %.preheader1 ], [ %position.0, %5 ]
-  %11 = add i32 %position.0.lcssa, 1
-  %12 = zext i32 %11 to i64
-  %13 = tail call i8* @malloc(i64 %12) #7
-  %14 = icmp eq i8* %13, null
-  br i1 %14, label %22, label %.preheader
+  %11 = add i32 %position.0.lcssa, 1, !dbg !306
+  %12 = zext i32 %11 to i64, !dbg !307
+  %13 = tail call i8* @malloc(i64 %12) #7, !dbg !308
+  tail call void @llvm.dbg.value(metadata i8* %13, i64 0, metadata !42, metadata !252), !dbg !309
+  %14 = icmp eq i8* %13, null, !dbg !310
+  br i1 %14, label %22, label %.preheader, !dbg !312
 
 .preheader:                                       ; preds = %.critedge
-  %15 = icmp eq i32 %position.0.lcssa, 0
-  br i1 %15, label %19, label %.lr.ph
+  %15 = icmp eq i32 %position.0.lcssa, 0, !dbg !313
+  br i1 %15, label %19, label %.lr.ph, !dbg !317
 
 .lr.ph:                                           ; preds = %.preheader
-  %16 = add i32 %position.0.lcssa, -1
+  %16 = add i32 %position.0.lcssa, -1, !dbg !317
   %17 = zext i32 %16 to i64
-  %18 = add nuw nsw i64 %17, 1
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %13, i8* %instring, i64 %18, i32 1, i1 false)
-  br label %19
+  %18 = add nuw nsw i64 %17, 1, !dbg !317
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %13, i8* %instring, i64 %18, i32 1, i1 false), !dbg !318
+  br label %19, !dbg !317
 
 ; <label>:19                                      ; preds = %.preheader, %.lr.ph
-  %20 = zext i32 %position.0.lcssa to i64
-  %21 = getelementptr inbounds i8* %13, i64 %20
-  store i8 0, i8* %21, align 1, !tbaa !6
-  br label %22
+  %20 = zext i32 %position.0.lcssa to i64, !dbg !320
+  %21 = getelementptr inbounds i8* %13, i64 %20, !dbg !320
+  store i8 0, i8* %21, align 1, !dbg !321, !tbaa !303
+  br label %22, !dbg !322
 
 ; <label>:22                                      ; preds = %.critedge, %19
-  ret i8* %13
+  ret i8* %13, !dbg !323
 }

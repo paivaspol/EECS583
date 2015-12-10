@@ -1,24 +1,26 @@
 define i32 @is_hydrogen(i8* %nm) #4 {
   %buf = alloca [30 x i8], align 16
-  %1 = getelementptr inbounds [30 x i8]* %buf, i64 0, i64 0
-  %2 = call i8* @__strcpy_chk(i8* %1, i8* %nm, i64 30) #10
-  call void @trim(i8* %1) #10
-  %3 = bitcast [30 x i8]* %buf to i16*
-  %4 = load i16* %3, align 16
-  %5 = trunc i16 %4 to i8
-  %6 = icmp eq i8 %5, 72
-  br i1 %6, label %10, label %7
+  tail call void @llvm.dbg.value(metadata i8* %nm, i64 0, metadata !363, metadata !551), !dbg !1097
+  tail call void @llvm.dbg.declare(metadata [30 x i8]* %buf, metadata !364, metadata !551), !dbg !1098
+  %1 = getelementptr inbounds [30 x i8]* %buf, i64 0, i64 0, !dbg !1099
+  %2 = call i8* @__strcpy_chk(i8* %1, i8* %nm, i64 30) #10, !dbg !1099
+  call void @trim(i8* %1) #10, !dbg !1100
+  %3 = bitcast [30 x i8]* %buf to i16*, !dbg !1101
+  %4 = load i16* %3, align 16, !dbg !1101
+  %5 = trunc i16 %4 to i8, !dbg !1101
+  %6 = icmp eq i8 %5, 72, !dbg !1103
+  br i1 %6, label %10, label %7, !dbg !1104
 
 ; <label>:7                                       ; preds = %0
-  %8 = sext i8 %5 to i32
-  %isdigittmp = add nsw i32 %8, -48
-  %isdigit = icmp ult i32 %isdigittmp, 10
+  %8 = sext i8 %5 to i32, !dbg !1101
+  %isdigittmp = add nsw i32 %8, -48, !dbg !1105
+  %isdigit = icmp ult i32 %isdigittmp, 10, !dbg !1105
   %.mask = and i16 %4, -256
-  %9 = icmp eq i16 %.mask, 18432
-  %or.cond = and i1 %isdigit, %9
-  %. = zext i1 %or.cond to i32
-  ret i32 %.
+  %9 = icmp eq i16 %.mask, 18432, !dbg !1107
+  %or.cond = and i1 %isdigit, %9, !dbg !1108
+  %. = zext i1 %or.cond to i32, !dbg !1108
+  ret i32 %., !dbg !1108
 
 ; <label>:10                                      ; preds = %0
-  ret i32 1
+  ret i32 1, !dbg !1109
 }

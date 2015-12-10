@@ -1,31 +1,36 @@
 define void @free_mem3D(i8*** %array3D, i32 %frames) #0 {
-entry:
-  %tobool = icmp eq i8*** %array3D, null
-  br i1 %tobool, label %if.else, label %for.cond.preheader
+  tail call void @llvm.dbg.value(metadata i8*** %array3D, i64 0, metadata !168, metadata !769), !dbg !1201
+  tail call void @llvm.dbg.value(metadata i32 %frames, i64 0, metadata !169, metadata !769), !dbg !1202
+  %1 = icmp eq i8*** %array3D, null, !dbg !1203
+  br i1 %1, label %8, label %.preheader, !dbg !1205
 
-for.cond.preheader:                               ; preds = %entry
-  %cmp5 = icmp sgt i32 %frames, 0
-  br i1 %cmp5, label %for.body, label %for.end
+.preheader:                                       ; preds = %0
+  %2 = icmp sgt i32 %frames, 0, !dbg !1206
+  br i1 %2, label %.lr.ph, label %._crit_edge, !dbg !1210
 
-for.body:                                         ; preds = %for.cond.preheader, %for.body
-  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %for.cond.preheader ]
-  %arrayidx = getelementptr inbounds i8*** %array3D, i64 %indvars.iv
-  %0 = load i8*** %arrayidx, align 8, !tbaa !0
-  tail call void @free_mem2D(i8** %0) #4
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %frames
-  br i1 %exitcond, label %for.end, label %for.body
+.lr.ph:                                           ; preds = %.preheader
+  %3 = add i32 %frames, -1, !dbg !1210
+  br label %4, !dbg !1210
 
-for.end:                                          ; preds = %for.body, %for.cond.preheader
-  %1 = bitcast i8*** %array3D to i8*
-  tail call void @free(i8* %1) #3
-  br label %if.end
+; <label>:4                                       ; preds = %4, %.lr.ph
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %4 ]
+  %5 = getelementptr inbounds i8*** %array3D, i64 %indvars.iv, !dbg !1211
+  %6 = load i8*** %5, align 8, !dbg !1211, !tbaa !780
+  tail call void @free_mem2D(i8** %6) #6, !dbg !1213
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !1210
+  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !1210
+  %exitcond = icmp eq i32 %lftr.wideiv, %3, !dbg !1210
+  br i1 %exitcond, label %._crit_edge, label %4, !dbg !1210
 
-if.else:                                          ; preds = %entry
-  tail call void @error(i8* getelementptr inbounds ([41 x i8]* @.str16, i64 0, i64 0), i32 100) #3
-  br label %if.end
+._crit_edge:                                      ; preds = %4, %.preheader
+  %7 = bitcast i8*** %array3D to i8*, !dbg !1214
+  tail call void @free(i8* %7) #6, !dbg !1215
+  br label %9, !dbg !1216
 
-if.end:                                           ; preds = %if.else, %for.end
-  ret void
+; <label>:8                                       ; preds = %0
+  tail call void @error(i8* getelementptr inbounds ([41 x i8]* @.str16, i64 0, i64 0), i32 100) #4, !dbg !1217
+  br label %9
+
+; <label>:9                                       ; preds = %8, %._crit_edge
+  ret void, !dbg !1219
 }

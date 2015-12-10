@@ -1,19 +1,22 @@
 define void @left_su2_hit_n(%struct.su2_matrix* %u, i32 %p, i32 %q, %struct.su3_matrix* %link) #0 {
-entry:
-  %idxprom1 = sext i32 %p to i64
-  %idxprom4 = sext i32 %q to i64
-  br label %for.body
+  tail call void @llvm.dbg.value(metadata %struct.su2_matrix* %u, i64 0, metadata !33, metadata !42), !dbg !43
+  tail call void @llvm.dbg.value(metadata i32 %p, i64 0, metadata !34, metadata !42), !dbg !44
+  tail call void @llvm.dbg.value(metadata i32 %q, i64 0, metadata !35, metadata !42), !dbg !45
+  tail call void @llvm.dbg.value(metadata %struct.su3_matrix* %link, i64 0, metadata !36, metadata !42), !dbg !46
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !37, metadata !42), !dbg !47
+  %1 = sext i32 %p to i64, !dbg !48
+  %2 = sext i32 %q to i64, !dbg !51
+  br label %3, !dbg !52
 
-for.body:                                         ; preds = %for.body, %entry
-  %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %for.body ]
-  %arrayidx2 = getelementptr inbounds %struct.su3_matrix* %link, i64 0, i32 0, i64 %idxprom1, i64 %indvars.iv
-  %arrayidx7 = getelementptr inbounds %struct.su3_matrix* %link, i64 0, i32 0, i64 %idxprom4, i64 %indvars.iv
-  tail call void @mult_su2_mat_vec_elem_n(%struct.su2_matrix* %u, %struct.complex* %arrayidx2, %struct.complex* %arrayidx7) #2
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, 3
-  br i1 %exitcond, label %for.end, label %for.body
+; <label>:3                                       ; preds = %3, %0
+  %indvars.iv = phi i64 [ 0, %0 ], [ %indvars.iv.next, %3 ]
+  %4 = getelementptr inbounds %struct.su3_matrix* %link, i64 0, i32 0, i64 %1, i64 %indvars.iv, !dbg !48
+  %5 = getelementptr inbounds %struct.su3_matrix* %link, i64 0, i32 0, i64 %2, i64 %indvars.iv, !dbg !51
+  tail call void @mult_su2_mat_vec_elem_n(%struct.su2_matrix* %u, %struct.complex* %4, %struct.complex* %5) #3, !dbg !53
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !52
+  %exitcond = icmp eq i64 %indvars.iv.next, 3, !dbg !52
+  br i1 %exitcond, label %6, label %3, !dbg !52
 
-for.end:                                          ; preds = %for.body
-  ret void
+; <label>:6                                       ; preds = %3
+  ret void, !dbg !54
 }

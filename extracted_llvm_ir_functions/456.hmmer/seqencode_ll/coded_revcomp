@@ -1,51 +1,57 @@
-define i32 @coded_revcomp(i8* nocapture %comp, i8* nocapture %seq) #1 {
-entry:
-  %call = tail call i64 @strlen(i8* %seq) #7
-  %cmp29 = icmp sgt i64 %call, 0
-  br i1 %cmp29, label %for.cond2.preheader.lr.ph, label %return
+define i32 @coded_revcomp(i8* nocapture %comp, i8* nocapture readonly %seq) #1 {
+  tail call void @llvm.dbg.value(metadata i8* %comp, i64 0, metadata !35, metadata !81), !dbg !188
+  tail call void @llvm.dbg.value(metadata i8* %seq, i64 0, metadata !36, metadata !81), !dbg !189
+  %1 = tail call i64 @strlen(i8* %seq) #6, !dbg !190
+  tail call void @llvm.dbg.value(metadata i64 %1, i64 0, metadata !37, metadata !81), !dbg !191
+  tail call void @llvm.dbg.value(metadata i8* %comp, i64 0, metadata !40, metadata !81), !dbg !192
+  tail call void @llvm.dbg.value(metadata i8* %3, i64 0, metadata !39, metadata !81), !dbg !193
+  tail call void @llvm.dbg.value(metadata i64 0, i64 0, metadata !42, metadata !81), !dbg !194
+  %2 = icmp sgt i64 %1, 0, !dbg !195
+  br i1 %2, label %.preheader.lr.ph, label %._crit_edge, !dbg !198
 
-for.cond2.preheader.lr.ph:                        ; preds = %entry
-  %add.ptr.sum = add i64 %call, -1
-  %add.ptr1 = getelementptr inbounds i8* %seq, i64 %add.ptr.sum
-  br label %for.cond2.preheader
+.preheader.lr.ph:                                 ; preds = %0
+  %.sum = add i64 %1, -1, !dbg !199
+  %3 = getelementptr inbounds i8* %seq, i64 %.sum, !dbg !199
+  br label %.preheader, !dbg !198
 
-for.cond2.preheader:                              ; preds = %for.cond2.preheader.lr.ph, %if.else
-  %pos.032 = phi i64 [ 0, %for.cond2.preheader.lr.ph ], [ %inc16, %if.else ]
-  %fwdp.031 = phi i8* [ %comp, %for.cond2.preheader.lr.ph ], [ %incdec.ptr, %if.else ]
-  %bckp.030 = phi i8* [ %add.ptr1, %for.cond2.preheader.lr.ph ], [ %incdec.ptr14, %if.else ]
-  %0 = load i8* %bckp.030, align 1, !tbaa !0
-  br label %for.cond2
+.preheader:                                       ; preds = %.preheader.lr.ph, %12
+  %pos.04 = phi i64 [ 0, %.preheader.lr.ph ], [ %17, %12 ]
+  %fwdp.03 = phi i8* [ %comp, %.preheader.lr.ph ], [ %15, %12 ]
+  %bckp.02 = phi i8* [ %3, %.preheader.lr.ph ], [ %16, %12 ]
+  %4 = load i8* %bckp.02, align 1, !dbg !200, !tbaa !87
+  br label %5, !dbg !200
 
-for.cond2:                                        ; preds = %for.cond2, %for.cond2.preheader
-  %indvars.iv = phi i64 [ %indvars.iv.next, %for.cond2 ], [ 0, %for.cond2.preheader ]
-  %idx.0 = phi i32 [ %inc, %for.cond2 ], [ 0, %for.cond2.preheader ]
-  %code = getelementptr inbounds [0 x %struct.iupactype]* @iupac, i64 0, i64 %indvars.iv, i32 2
-  %1 = load i8* %code, align 1, !tbaa !0
-  %cmp4 = icmp ne i8 %0, %1
-  %2 = trunc i64 %indvars.iv to i32
-  %cmp6 = icmp slt i32 %2, 17
-  %or.cond = and i1 %cmp4, %cmp6
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %inc = add nsw i32 %idx.0, 1
-  br i1 %or.cond, label %for.cond2, label %for.end
+; <label>:5                                       ; preds = %5, %.preheader
+  %indvars.iv = phi i64 [ %indvars.iv.next, %5 ], [ 0, %.preheader ]
+  %6 = getelementptr inbounds [0 x %struct.iupactype]* @iupac, i64 0, i64 %indvars.iv, i32 2, !dbg !204
+  %7 = load i8* %6, align 1, !dbg !204, !tbaa !181
+  %8 = icmp ne i8 %4, %7, !dbg !205
+  %9 = icmp slt i64 %indvars.iv, 17, !dbg !206
+  %or.cond = and i1 %9, %8, !dbg !207
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !207
+  br i1 %or.cond, label %5, label %.critedge, !dbg !207
 
-for.end:                                          ; preds = %for.cond2
-  %cmp9 = icmp sgt i32 %idx.0, 17
-  br i1 %cmp9, label %return, label %if.else
+.critedge:                                        ; preds = %5
+  %10 = trunc i64 %indvars.iv to i32, !dbg !208
+  %11 = icmp sgt i32 %10, 17, !dbg !208
+  br i1 %11, label %._crit_edge, label %12, !dbg !210
 
-if.else:                                          ; preds = %for.end
-  %comp13 = getelementptr inbounds [0 x %struct.iupactype]* @iupac, i64 0, i64 %indvars.iv, i32 3
-  %3 = load i8* %comp13, align 1, !tbaa !0
-  store i8 %3, i8* %fwdp.031, align 1, !tbaa !0
-  %incdec.ptr = getelementptr inbounds i8* %fwdp.031, i64 1
-  %incdec.ptr14 = getelementptr inbounds i8* %bckp.030, i64 -1
-  %inc16 = add nsw i64 %pos.032, 1
-  %cmp = icmp slt i64 %inc16, %call
-  br i1 %cmp, label %for.cond2.preheader, label %return
+; <label>:12                                      ; preds = %.critedge
+  %13 = getelementptr inbounds [0 x %struct.iupactype]* @iupac, i64 0, i64 %indvars.iv, i32 3, !dbg !211
+  %14 = load i8* %13, align 1, !dbg !211, !tbaa !212
+  store i8 %14, i8* %fwdp.03, align 1, !dbg !213, !tbaa !87
+  %15 = getelementptr inbounds i8* %fwdp.03, i64 1, !dbg !214
+  tail call void @llvm.dbg.value(metadata i8* %15, i64 0, metadata !40, metadata !81), !dbg !192
+  %16 = getelementptr inbounds i8* %bckp.02, i64 -1, !dbg !215
+  tail call void @llvm.dbg.value(metadata i8* %16, i64 0, metadata !39, metadata !81), !dbg !193
+  %17 = add nuw nsw i64 %pos.04, 1, !dbg !216
+  tail call void @llvm.dbg.value(metadata i64 %17, i64 0, metadata !42, metadata !81), !dbg !194
+  %18 = icmp slt i64 %17, %1, !dbg !195
+  br i1 %18, label %.preheader, label %._crit_edge, !dbg !198
 
-return:                                           ; preds = %if.else, %for.end, %entry
-  %fwdp.0.lcssa = phi i8* [ %comp, %entry ], [ %fwdp.031, %for.end ], [ %incdec.ptr, %if.else ]
-  %retval.0 = phi i32 [ 1, %entry ], [ 0, %for.end ], [ 1, %if.else ]
-  store i8 0, i8* %fwdp.0.lcssa, align 1, !tbaa !0
-  ret i32 %retval.0
+._crit_edge:                                      ; preds = %.critedge, %12, %0
+  %fwdp.0.lcssa = phi i8* [ %comp, %0 ], [ %fwdp.03, %.critedge ], [ %15, %12 ]
+  %.0 = phi i32 [ 1, %0 ], [ 0, %.critedge ], [ 1, %12 ]
+  store i8 0, i8* %fwdp.0.lcssa, align 1, !dbg !217, !tbaa !87
+  ret i32 %.0, !dbg !219
 }

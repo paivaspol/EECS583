@@ -1,0 +1,141 @@
+define i32 @_ZN3pov22Read_ASCII_File_NumberEPN8pov_base7IStreamE(%"class.pov_base::IStream"* nocapture readonly %filep) #0 {
+  %buffer = alloca [50 x i8], align 16
+  tail call void @llvm.dbg.value(metadata %"class.pov_base::IStream"* %filep, i64 0, metadata !309, metadata !666), !dbg !667
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !311, metadata !666), !dbg !668
+  %1 = getelementptr inbounds [50 x i8]* %buffer, i64 0, i64 0, !dbg !669
+  call void @llvm.lifetime.start(i64 50, i8* %1) #2, !dbg !669
+  tail call void @llvm.dbg.declare(metadata [50 x i8]* %buffer, metadata !312, metadata !666), !dbg !670
+  %2 = getelementptr inbounds %"class.pov_base::IStream"* %filep, i64 0, i32 0, i32 1, !dbg !671
+  %3 = getelementptr inbounds %"class.pov_base::IStream"* %filep, i64 0, i32 0, i32 2, !dbg !674
+  br label %4, !dbg !675
+
+; <label>:4                                       ; preds = %_Z7isspacei.exit, %0
+  tail call void @llvm.dbg.value(metadata %"class.pov_base::IStream"* %filep, i64 0, metadata !345, metadata !666) #2, !dbg !676
+  %5 = load i8* %2, align 1, !dbg !671, !tbaa !677, !range !684
+  %6 = icmp eq i8 %5, 0, !dbg !671
+  br i1 %6, label %_ZN8pov_base7IStream9Read_ByteEv.exit, label %_ZN8pov_base7IStream9Read_ByteEv.exit.thread, !dbg !671
+
+_ZN8pov_base7IStream9Read_ByteEv.exit:            ; preds = %4
+  %7 = load %struct.__sFILE** %3, align 8, !dbg !674, !tbaa !685
+  %8 = tail call i32 @fgetc(%struct.__sFILE* %7) #6, !dbg !686
+  tail call void @llvm.dbg.value(metadata i32 %8, i64 0, metadata !310, metadata !666), !dbg !687
+  tail call void @llvm.dbg.value(metadata i32 %8, i64 0, metadata !351, metadata !666), !dbg !688
+  tail call void @llvm.dbg.value(metadata i32 %8, i64 0, metadata !357, metadata !666), !dbg !690
+  tail call void @llvm.dbg.value(metadata i64 16384, i64 0, metadata !358, metadata !666), !dbg !692
+  tail call void @llvm.dbg.value(metadata i32 %8, i64 0, metadata !361, metadata !666), !dbg !693
+  %9 = icmp ult i32 %8, 128, !dbg !695
+  br i1 %9, label %10, label %_ZN8pov_base7IStream9Read_ByteEv.exit.thread, !dbg !696
+
+; <label>:10                                      ; preds = %_ZN8pov_base7IStream9Read_ByteEv.exit
+  %11 = sext i32 %8 to i64, !dbg !697
+  %12 = getelementptr inbounds %struct._RuneLocale* @_DefaultRuneLocale, i64 0, i32 5, i64 %11, !dbg !697
+  %13 = load i32* %12, align 4, !dbg !697, !tbaa !698
+  %14 = and i32 %13, 16384, !dbg !699
+  br label %_Z7isspacei.exit, !dbg !696
+
+_ZN8pov_base7IStream9Read_ByteEv.exit.thread:     ; preds = %4, %_ZN8pov_base7IStream9Read_ByteEv.exit
+  %15 = phi i32 [ %8, %_ZN8pov_base7IStream9Read_ByteEv.exit ], [ -1, %4 ]
+  %16 = tail call i32 @__maskrune(i32 %15, i64 16384) #7, !dbg !700
+  br label %_Z7isspacei.exit, !dbg !696
+
+_Z7isspacei.exit:                                 ; preds = %10, %_ZN8pov_base7IStream9Read_ByteEv.exit.thread
+  %17 = phi i32 [ %8, %10 ], [ %15, %_ZN8pov_base7IStream9Read_ByteEv.exit.thread ]
+  %.sink1.i.in.i = phi i32 [ %14, %10 ], [ %16, %_ZN8pov_base7IStream9Read_ByteEv.exit.thread ], !dbg !701
+  %.sink1.i.i = icmp eq i32 %.sink1.i.in.i, 0, !dbg !702
+  br i1 %.sink1.i.i, label %18, label %4, !dbg !703
+
+; <label>:18                                      ; preds = %_Z7isspacei.exit
+  tail call void @llvm.dbg.value(metadata i32 %8, i64 0, metadata !364, metadata !666), !dbg !704
+  tail call void @llvm.dbg.value(metadata i32 %8, i64 0, metadata !369, metadata !666), !dbg !707
+  tail call void @llvm.dbg.value(metadata i64 1024, i64 0, metadata !370, metadata !666), !dbg !709
+  %19 = icmp ugt i32 %17, 255, !dbg !710
+  br i1 %19, label %_Z7isdigiti.exit.thread, label %_Z7isdigiti.exit, !dbg !710
+
+_Z7isdigiti.exit:                                 ; preds = %18
+  %20 = sext i32 %17 to i64, !dbg !711
+  %21 = getelementptr inbounds %struct._RuneLocale* @_DefaultRuneLocale, i64 0, i32 5, i64 %20, !dbg !711
+  %22 = load i32* %21, align 4, !dbg !711, !tbaa !698
+  %.lobit.i = and i32 %22, 1024, !dbg !712
+  %23 = icmp eq i32 %.lobit.i, 0, !dbg !713
+  br i1 %23, label %_Z7isdigiti.exit.thread, label %24, !dbg !714
+
+; <label>:24                                      ; preds = %_Z7isdigiti.exit
+  %25 = trunc i32 %17 to i8, !dbg !715
+  store i8 %25, i8* %1, align 16, !dbg !716, !tbaa !717
+  br label %26, !dbg !718
+
+; <label>:26                                      ; preds = %48, %24
+  %indvars.iv = phi i64 [ %indvars.iv.next, %48 ], [ 0, %24 ]
+  tail call void @llvm.dbg.value(metadata %"class.pov_base::IStream"* %filep, i64 0, metadata !345, metadata !666) #2, !dbg !719
+  %27 = load i8* %2, align 1, !dbg !721, !tbaa !677, !range !684
+  %28 = icmp eq i8 %27, 0, !dbg !721
+  br i1 %28, label %_ZN8pov_base7IStream9Read_ByteEv.exit7, label %_ZN8pov_base7IStream9Read_ByteEv.exit7.thread, !dbg !721
+
+_ZN8pov_base7IStream9Read_ByteEv.exit7:           ; preds = %26
+  %29 = load %struct.__sFILE** %3, align 8, !dbg !722, !tbaa !685
+  %30 = tail call i32 @fgetc(%struct.__sFILE* %29) #6, !dbg !723
+  tail call void @llvm.dbg.value(metadata i32 %30, i64 0, metadata !310, metadata !666), !dbg !687
+  tail call void @llvm.dbg.value(metadata i32 %30, i64 0, metadata !351, metadata !666), !dbg !724
+  tail call void @llvm.dbg.value(metadata i32 %30, i64 0, metadata !357, metadata !666), !dbg !726
+  tail call void @llvm.dbg.value(metadata i64 16384, i64 0, metadata !358, metadata !666), !dbg !728
+  tail call void @llvm.dbg.value(metadata i32 %30, i64 0, metadata !361, metadata !666), !dbg !729
+  %31 = icmp ult i32 %30, 128, !dbg !731
+  br i1 %31, label %32, label %_ZN8pov_base7IStream9Read_ByteEv.exit7.thread, !dbg !732
+
+; <label>:32                                      ; preds = %_ZN8pov_base7IStream9Read_ByteEv.exit7
+  %33 = sext i32 %30 to i64, !dbg !733
+  %34 = getelementptr inbounds %struct._RuneLocale* @_DefaultRuneLocale, i64 0, i32 5, i64 %33, !dbg !733
+  %35 = load i32* %34, align 4, !dbg !733, !tbaa !698
+  %36 = and i32 %35, 16384, !dbg !734
+  br label %_Z7isspacei.exit6, !dbg !732
+
+_ZN8pov_base7IStream9Read_ByteEv.exit7.thread:    ; preds = %26, %_ZN8pov_base7IStream9Read_ByteEv.exit7
+  %37 = phi i32 [ %30, %_ZN8pov_base7IStream9Read_ByteEv.exit7 ], [ -1, %26 ]
+  %38 = tail call i32 @__maskrune(i32 %37, i64 16384) #7, !dbg !735
+  br label %_Z7isspacei.exit6, !dbg !732
+
+_Z7isspacei.exit6:                                ; preds = %32, %_ZN8pov_base7IStream9Read_ByteEv.exit7.thread
+  %39 = phi i32 [ %30, %32 ], [ %37, %_ZN8pov_base7IStream9Read_ByteEv.exit7.thread ]
+  %.sink1.i.in.i4 = phi i32 [ %36, %32 ], [ %38, %_ZN8pov_base7IStream9Read_ByteEv.exit7.thread ], !dbg !736
+  %40 = icmp eq i32 %.sink1.i.in.i4, 0, !dbg !736
+  %41 = icmp slt i64 %indvars.iv, 48, !dbg !737
+  %or.cond = and i1 %41, %40, !dbg !738
+  br i1 %or.cond, label %42, label %.critedge, !dbg !738
+
+; <label>:42                                      ; preds = %_Z7isspacei.exit6
+  tail call void @llvm.dbg.value(metadata i32 %30, i64 0, metadata !364, metadata !666), !dbg !739
+  tail call void @llvm.dbg.value(metadata i32 %30, i64 0, metadata !369, metadata !666), !dbg !743
+  tail call void @llvm.dbg.value(metadata i64 1024, i64 0, metadata !370, metadata !666), !dbg !745
+  %43 = icmp ugt i32 %39, 255, !dbg !746
+  br i1 %43, label %_Z7isdigiti.exit.thread, label %_Z7isdigiti.exit3, !dbg !746
+
+_Z7isdigiti.exit3:                                ; preds = %42
+  %44 = sext i32 %39 to i64, !dbg !747
+  %45 = getelementptr inbounds %struct._RuneLocale* @_DefaultRuneLocale, i64 0, i32 5, i64 %44, !dbg !747
+  %46 = load i32* %45, align 4, !dbg !747, !tbaa !698
+  %.lobit.i2 = and i32 %46, 1024, !dbg !748
+  %47 = icmp eq i32 %.lobit.i2, 0, !dbg !749
+  br i1 %47, label %_Z7isdigiti.exit.thread, label %48, !dbg !750
+
+; <label>:48                                      ; preds = %_Z7isdigiti.exit3
+  %indvars.iv.next = add nuw i64 %indvars.iv, 1, !dbg !718
+  %49 = trunc i32 %39 to i8, !dbg !751
+  %50 = getelementptr inbounds [50 x i8]* %buffer, i64 0, i64 %indvars.iv.next, !dbg !753
+  store i8 %49, i8* %50, align 1, !dbg !754, !tbaa !717
+  br label %26, !dbg !718
+
+.critedge:                                        ; preds = %_Z7isspacei.exit6
+  %51 = shl i64 %indvars.iv, 32, !dbg !755
+  %sext = add i64 %51, 4294967296, !dbg !755
+  %52 = ashr exact i64 %sext, 32, !dbg !755
+  %53 = getelementptr inbounds [50 x i8]* %buffer, i64 0, i64 %52, !dbg !755
+  store i8 0, i8* %53, align 1, !dbg !756, !tbaa !717
+  %54 = call i32 @atoi(i8* %1) #7, !dbg !757
+  tail call void @llvm.dbg.value(metadata i32 %54, i64 0, metadata !310, metadata !666), !dbg !687
+  br label %_Z7isdigiti.exit.thread, !dbg !758
+
+_Z7isdigiti.exit.thread:                          ; preds = %42, %_Z7isdigiti.exit3, %18, %_Z7isdigiti.exit, %.critedge
+  %.0 = phi i32 [ %54, %.critedge ], [ -1, %_Z7isdigiti.exit ], [ -1, %18 ], [ -1, %_Z7isdigiti.exit3 ], [ -1, %42 ]
+  call void @llvm.lifetime.end(i64 50, i8* %1) #2, !dbg !759
+  ret i32 %.0, !dbg !759
+}

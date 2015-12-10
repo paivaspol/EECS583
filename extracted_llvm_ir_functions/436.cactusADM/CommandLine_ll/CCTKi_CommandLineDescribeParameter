@@ -1,49 +1,62 @@
 define void @CCTKi_CommandLineDescribeParameter(i8* %argument) #1 {
   %thorn = alloca i8*, align 8
   %param = alloca i8*, align 8
-  %1 = load i32 (%struct.cGH*)** @CCTK_MyProc, align 8, !tbaa !2
-  %2 = tail call i32 %1(%struct.cGH* null) #5
-  %3 = icmp eq i32 %2, 0
-  br i1 %3, label %4, label %23
+  tail call void @llvm.dbg.value(metadata i8* %argument, i64 0, metadata !57, metadata !130), !dbg !252
+  %1 = load i32 (%struct.cGH*)** @CCTK_MyProc, align 8, !dbg !253, !tbaa !136
+  %2 = tail call i32 %1(%struct.cGH* null) #6, !dbg !253
+  %3 = icmp eq i32 %2, 0, !dbg !255
+  br i1 %3, label %4, label %23, !dbg !256
 
 ; <label>:4                                       ; preds = %0
-  %5 = call i32 @Util_SplitString(i8** %thorn, i8** %param, i8* %argument, i8* getelementptr inbounds ([3 x i8]* @.str6, i64 0, i64 0)) #5
-  %6 = load i8** %param, align 8, !tbaa !2
-  %7 = icmp eq i8* %6, null
-  br i1 %7, label %8, label %10
+  tail call void @llvm.dbg.value(metadata i8** %thorn, i64 0, metadata !58, metadata !130), !dbg !257
+  tail call void @llvm.dbg.value(metadata i8** %param, i64 0, metadata !59, metadata !130), !dbg !258
+  %5 = call i32 @Util_SplitString(i8** %thorn, i8** %param, i8* %argument, i8* getelementptr inbounds ([3 x i8]* @.str6, i64 0, i64 0)) #6, !dbg !259
+  call void @llvm.dbg.value(metadata i8** %param, i64 0, metadata !59, metadata !130), !dbg !258
+  %6 = load i8** %param, align 8, !dbg !261, !tbaa !136
+  %7 = icmp eq i8* %6, null, !dbg !261
+  br i1 %7, label %8, label %10, !dbg !263
 
 ; <label>:8                                       ; preds = %4
-  %9 = call %struct.PARAM_PROPS* @CCTK_ParameterData(i8* %argument, i8* null) #5
-  br label %22
+  %9 = call %struct.PARAM_PROPS* @CCTK_ParameterData(i8* %argument, i8* null) #6, !dbg !264
+  call void @llvm.dbg.value(metadata %struct.PARAM_PROPS* %9, i64 0, metadata !61, metadata !130), !dbg !266
+  br label %22, !dbg !267
 
 ; <label>:10                                      ; preds = %4
-  %11 = load i8** %thorn, align 8, !tbaa !2
-  %12 = call %struct.PARAM_PROPS* @CCTK_ParameterData(i8* %6, i8* %11) #5
-  %13 = icmp eq %struct.PARAM_PROPS* %12, null
-  br i1 %13, label %14, label %19
+  call void @llvm.dbg.value(metadata i8** %thorn, i64 0, metadata !58, metadata !130), !dbg !257
+  %11 = load i8** %thorn, align 8, !dbg !268, !tbaa !136
+  %12 = call %struct.PARAM_PROPS* @CCTK_ParameterData(i8* %6, i8* %11) #6, !dbg !270
+  call void @llvm.dbg.value(metadata %struct.PARAM_PROPS* %12, i64 0, metadata !61, metadata !130), !dbg !266
+  %13 = icmp eq %struct.PARAM_PROPS* %12, null, !dbg !271
+  br i1 %13, label %14, label %19, !dbg !273
 
 ; <label>:14                                      ; preds = %10
-  %15 = load i8** %thorn, align 8, !tbaa !2
-  %16 = call i8* @CCTK_ImplementationThorn(i8* %15) #5
-  %17 = load i8** %param, align 8, !tbaa !2
-  %18 = call %struct.PARAM_PROPS* @CCTK_ParameterData(i8* %17, i8* %16) #5
-  br label %19
+  call void @llvm.dbg.value(metadata i8** %thorn, i64 0, metadata !58, metadata !130), !dbg !257
+  %15 = load i8** %thorn, align 8, !dbg !274, !tbaa !136
+  %16 = call i8* @CCTK_ImplementationThorn(i8* %15) #6, !dbg !276
+  call void @llvm.dbg.value(metadata i8* %16, i64 0, metadata !60, metadata !130), !dbg !277
+  call void @llvm.dbg.value(metadata i8** %param, i64 0, metadata !59, metadata !130), !dbg !258
+  %17 = load i8** %param, align 8, !dbg !278, !tbaa !136
+  %18 = call %struct.PARAM_PROPS* @CCTK_ParameterData(i8* %17, i8* %16) #6, !dbg !279
+  call void @llvm.dbg.value(metadata %struct.PARAM_PROPS* %18, i64 0, metadata !61, metadata !130), !dbg !266
+  br label %19, !dbg !280
 
 ; <label>:19                                      ; preds = %10, %14
   %properties.0 = phi %struct.PARAM_PROPS* [ %12, %10 ], [ %18, %14 ]
-  %20 = load i8** %thorn, align 8, !tbaa !2
-  call void @free(i8* %20) #6
-  %21 = load i8** %param, align 8, !tbaa !2
-  call void @free(i8* %21) #6
+  call void @llvm.dbg.value(metadata i8** %thorn, i64 0, metadata !58, metadata !130), !dbg !257
+  %20 = load i8** %thorn, align 8, !dbg !281, !tbaa !136
+  call void @free(i8* %20) #7, !dbg !282
+  call void @llvm.dbg.value(metadata i8** %param, i64 0, metadata !59, metadata !130), !dbg !258
+  %21 = load i8** %param, align 8, !dbg !283, !tbaa !136
+  call void @free(i8* %21) #7, !dbg !284
   br label %22
 
 ; <label>:22                                      ; preds = %19, %8
   %properties.1 = phi %struct.PARAM_PROPS* [ %properties.0, %19 ], [ %9, %8 ]
-  call fastcc void @CommandLinePrintParameter(%struct.PARAM_PROPS* %properties.1) #6
-  br label %23
+  call fastcc void @CommandLinePrintParameter(%struct.PARAM_PROPS* %properties.1) #7, !dbg !285
+  br label %23, !dbg !286
 
 ; <label>:23                                      ; preds = %22, %0
-  %24 = load i32 (%struct.cGH*, i32)** @CCTK_Exit, align 8, !tbaa !2
-  %25 = call i32 %24(%struct.cGH* null, i32 0) #5
-  ret void
+  %24 = load i32 (%struct.cGH*, i32)** @CCTK_Exit, align 8, !dbg !287, !tbaa !136
+  %25 = call i32 %24(%struct.cGH* null, i32 0) #6, !dbg !287
+  ret void, !dbg !288
 }

@@ -1,0 +1,2362 @@
+define internal fastcc void @_ZN3povL23compute_lighted_textureEPfPNS_14Texture_StructEPdS3_PNS_10Ray_StructEdPNS_10istk_entryE(float* %ResCol, %"struct.pov::Texture_Struct"* readonly %Texture, double* %IPoint, double* %Raw_Normal, %"struct.pov::Ray_Struct"* %Ray, double %Weight, %"struct.pov::istk_entry"* %Intersect) #0 {
+  %Light_Source_Ray.i = alloca %"struct.pov::Ray_Struct", align 16
+  %tempr.i = alloca double, align 8
+  %Local_Normal.i = alloca [3 x double], align 16
+  %NRay.i = alloca %"struct.pov::Ray_Struct", align 16
+  %Hue.i = alloca [5 x float], align 16
+  %Elem.i = alloca [5 x float], align 16
+  %LayNormal = alloca [3 x double], align 16
+  %TopNormal = alloca [3 x double], align 16
+  %LayCol = alloca [5 x float], align 16
+  %RflCol = alloca [5 x float], align 16
+  %RfrCol = alloca [5 x float], align 16
+  %TmpCol = alloca [5 x float], align 16
+  %AmbCol = alloca [5 x float], align 16
+  tail call void @llvm.dbg.value(metadata float* %ResCol, i64 0, metadata !1793, metadata !2666), !dbg !6490
+  tail call void @llvm.dbg.value(metadata %"struct.pov::Texture_Struct"* %Texture, i64 0, metadata !1794, metadata !2666), !dbg !6491
+  tail call void @llvm.dbg.value(metadata double* %IPoint, i64 0, metadata !1795, metadata !2666), !dbg !6492
+  tail call void @llvm.dbg.value(metadata double* %Raw_Normal, i64 0, metadata !1796, metadata !2666), !dbg !6493
+  tail call void @llvm.dbg.value(metadata %"struct.pov::Ray_Struct"* %Ray, i64 0, metadata !1797, metadata !2666), !dbg !6494
+  tail call void @llvm.dbg.value(metadata double %Weight, i64 0, metadata !1798, metadata !2666), !dbg !6495
+  tail call void @llvm.dbg.value(metadata %"struct.pov::istk_entry"* %Intersect, i64 0, metadata !1799, metadata !2666), !dbg !6496
+  tail call void @llvm.dbg.declare(metadata [3 x double]* %LayNormal, metadata !1812, metadata !2666), !dbg !6497
+  tail call void @llvm.dbg.declare(metadata [3 x double]* %TopNormal, metadata !1813, metadata !2666), !dbg !6498
+  tail call void @llvm.dbg.declare(metadata [5 x float]* undef, metadata !1814, metadata !2666), !dbg !6499
+  tail call void @llvm.dbg.declare(metadata [5 x float]* %LayCol, metadata !1815, metadata !2666), !dbg !6500
+  tail call void @llvm.dbg.declare(metadata [5 x float]* %RflCol, metadata !1816, metadata !2666), !dbg !6501
+  tail call void @llvm.dbg.declare(metadata [5 x float]* %RfrCol, metadata !1817, metadata !2666), !dbg !6502
+  tail call void @llvm.dbg.declare(metadata [5 x float]* undef, metadata !1818, metadata !2666), !dbg !6503
+  tail call void @llvm.dbg.declare(metadata [5 x float]* %TmpCol, metadata !1819, metadata !2666), !dbg !6504
+  tail call void @llvm.dbg.declare(metadata [5 x float]* %AmbCol, metadata !1820, metadata !2666), !dbg !6505
+  tail call void @llvm.dbg.declare(metadata [5 x float]* undef, metadata !1821, metadata !2666), !dbg !6506
+  %1 = tail call %"struct.pov::ComTexData_Struct"* @_ZN3pov13NewComTexDataEv() #6, !dbg !6507
+  tail call void @llvm.dbg.value(metadata %"struct.pov::ComTexData_Struct"* %1, i64 0, metadata !1828, metadata !2666), !dbg !6508
+  tail call void @llvm.dbg.value(metadata float* %ResCol, i64 0, metadata !1495, metadata !2666), !dbg !6509
+  tail call void @llvm.dbg.value(metadata float 0.000000e+00, i64 0, metadata !1496, metadata !2666), !dbg !6511
+  tail call void @llvm.dbg.value(metadata float 0.000000e+00, i64 0, metadata !1497, metadata !2666), !dbg !6512
+  tail call void @llvm.dbg.value(metadata float 0.000000e+00, i64 0, metadata !1498, metadata !2666), !dbg !6513
+  tail call void @llvm.dbg.value(metadata float 0.000000e+00, i64 0, metadata !1499, metadata !2666), !dbg !6514
+  tail call void @llvm.dbg.value(metadata float 0.000000e+00, i64 0, metadata !1500, metadata !2666), !dbg !6515
+  %2 = getelementptr inbounds float* %ResCol, i64 1, !dbg !6516
+  %3 = getelementptr inbounds float* %ResCol, i64 2, !dbg !6517
+  %4 = getelementptr inbounds float* %ResCol, i64 3, !dbg !6518
+  %5 = getelementptr inbounds float* %ResCol, i64 4, !dbg !6519
+  tail call void @llvm.dbg.value(metadata float* undef, i64 0, metadata !1495, metadata !2666), !dbg !6520
+  tail call void @llvm.dbg.value(metadata float 1.000000e+00, i64 0, metadata !1496, metadata !2666), !dbg !6522
+  tail call void @llvm.dbg.value(metadata float 1.000000e+00, i64 0, metadata !1497, metadata !2666), !dbg !6523
+  tail call void @llvm.dbg.value(metadata float 1.000000e+00, i64 0, metadata !1498, metadata !2666), !dbg !6524
+  tail call void @llvm.dbg.value(metadata float 1.000000e+00, i64 0, metadata !1499, metadata !2666), !dbg !6525
+  tail call void @llvm.dbg.value(metadata float 0.000000e+00, i64 0, metadata !1500, metadata !2666), !dbg !6526
+  tail call void @llvm.dbg.value(metadata float 1.000000e+00, i64 0, metadata !1818, metadata !3896), !dbg !6503
+  tail call void @llvm.dbg.value(metadata float 0.000000e+00, i64 0, metadata !1818, metadata !5339), !dbg !6503
+  tail call void @llvm.dbg.value(metadata double 1.000000e+00, i64 0, metadata !1810, metadata !2666), !dbg !6527
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !1801, metadata !2666), !dbg !6528
+  %6 = getelementptr inbounds [5 x float]* %AmbCol, i64 0, i64 0, !dbg !6529
+  tail call void @llvm.dbg.value(metadata float* %6, i64 0, metadata !1495, metadata !2666), !dbg !6530
+  tail call void @llvm.dbg.value(metadata float 0.000000e+00, i64 0, metadata !1496, metadata !2666), !dbg !6532
+  tail call void @llvm.dbg.value(metadata float 0.000000e+00, i64 0, metadata !1497, metadata !2666), !dbg !6533
+  tail call void @llvm.dbg.value(metadata float 0.000000e+00, i64 0, metadata !1498, metadata !2666), !dbg !6534
+  tail call void @llvm.dbg.value(metadata float 0.000000e+00, i64 0, metadata !1499, metadata !2666), !dbg !6535
+  tail call void @llvm.dbg.value(metadata float 0.000000e+00, i64 0, metadata !1500, metadata !2666), !dbg !6536
+  %7 = bitcast float* %ResCol to i8*, !dbg !6537
+  call void @llvm.memset.p0i8.i64(i8* %7, i8 0, i64 20, i32 4, i1 false), !dbg !6538
+  %8 = getelementptr inbounds [5 x float]* %AmbCol, i64 0, i64 1, !dbg !6539
+  %9 = getelementptr inbounds [5 x float]* %AmbCol, i64 0, i64 2, !dbg !6540
+  %10 = bitcast [5 x float]* %AmbCol to i8*, !dbg !6541
+  call void @llvm.memset.p0i8.i64(i8* %10, i8 0, i64 20, i32 16, i1 false), !dbg !6543
+  %11 = load i8* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 59), align 4, !dbg !6541, !tbaa !6544, !range !6545
+  %12 = icmp eq i8 %11, 0, !dbg !6541
+  tail call void @llvm.dbg.declare(metadata [3 x double]* %Local_Normal.i, metadata !1953, metadata !2666), !dbg !6546
+  tail call void @llvm.dbg.declare(metadata [5 x float]* %Hue.i, metadata !1955, metadata !2666), !dbg !6550
+  tail call void @llvm.dbg.declare(metadata [5 x float]* %Elem.i, metadata !1957, metadata !2666), !dbg !6551
+  tail call void @llvm.dbg.declare(metadata [3 x double]* %Local_Normal.i, metadata !1911, metadata !2666), !dbg !6552
+  tail call void @llvm.dbg.declare(metadata [5 x float]* %Hue.i, metadata !1912, metadata !2666), !dbg !6556
+  tail call void @llvm.dbg.declare(metadata [5 x float]* %Elem.i, metadata !1913, metadata !2666), !dbg !6557
+  tail call void @llvm.dbg.declare(metadata [3 x double]* %Local_Normal.i, metadata !1856, metadata !2666), !dbg !6558
+  br i1 %12, label %17, label %13, !dbg !6560
+
+; <label>:13                                      ; preds = %0
+  %14 = load i32* @_ZN3pov21Radiosity_Trace_LevelE, align 4, !dbg !6561, !tbaa !2664
+  %15 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 43), align 8, !dbg !6562, !tbaa !6563
+  %16 = icmp sgt i32 %14, %15, !dbg !6564
+  br i1 %16, label %17, label %18, !dbg !6565
+
+; <label>:17                                      ; preds = %13, %0
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !1802, metadata !2666), !dbg !6566
+  br label %18
+
+; <label>:18                                      ; preds = %13, %17
+  %radiosity_needed.0 = phi i32 [ 0, %17 ], [ 1, %13 ]
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !1805, metadata !2666), !dbg !6567
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !1803, metadata !2666), !dbg !6568
+  tail call void @llvm.dbg.value(metadata %"struct.pov::Texture_Struct"* %Texture, i64 0, metadata !1826, metadata !2666), !dbg !6569
+  %19 = icmp ne %"struct.pov::Texture_Struct"* %Texture, null, !dbg !6570
+  %20 = load double* @_ZN3pov11ADC_BailoutE, align 8
+  %21 = fcmp olt double %20, 1.000000e+00, !dbg !6571
+  %or.cond857 = and i1 %19, %21, !dbg !6572
+  br i1 %or.cond857, label %.lr.ph66, label %..critedge_crit_edge132, !dbg !6572
+
+..critedge_crit_edge132:                          ; preds = %18
+  %.pre133 = getelementptr inbounds %"struct.pov::istk_entry"* %Intersect, i64 0, i32 5, !dbg !6573
+  br label %.critedge, !dbg !6572
+
+.lr.ph66:                                         ; preds = %18
+  %22 = getelementptr inbounds [3 x double]* %LayNormal, i64 0, i64 0, !dbg !6574
+  %23 = bitcast [3 x double]* %LayNormal to i64*, !dbg !6575
+  %24 = getelementptr inbounds double* %Raw_Normal, i64 1, !dbg !6577
+  %25 = getelementptr inbounds [3 x double]* %LayNormal, i64 0, i64 1, !dbg !6578
+  %26 = bitcast double* %25 to i64*, !dbg !6579
+  %27 = getelementptr inbounds double* %Raw_Normal, i64 2, !dbg !6580
+  %28 = bitcast double* %27 to i64*, !dbg !6580
+  %29 = getelementptr inbounds [3 x double]* %LayNormal, i64 0, i64 2, !dbg !6581
+  %30 = bitcast double* %29 to i64*, !dbg !6582
+  %31 = bitcast [3 x double]* %TopNormal to i64*, !dbg !6583
+  %32 = getelementptr inbounds [3 x double]* %TopNormal, i64 0, i64 1, !dbg !6587
+  %33 = bitcast double* %32 to i64*, !dbg !6588
+  %34 = getelementptr inbounds [3 x double]* %TopNormal, i64 0, i64 2, !dbg !6589
+  %35 = bitcast double* %34 to i64*, !dbg !6590
+  %36 = getelementptr inbounds [5 x float]* %LayCol, i64 0, i64 0, !dbg !6591
+  %37 = getelementptr inbounds %"struct.pov::Ray_Struct"* %Ray, i64 0, i32 1, i64 0, !dbg !6592
+  %38 = getelementptr inbounds %"struct.pov::Ray_Struct"* %Ray, i64 0, i32 1, i64 1, !dbg !6593
+  %39 = getelementptr inbounds %"struct.pov::Ray_Struct"* %Ray, i64 0, i32 1, i64 2, !dbg !6595
+  %40 = getelementptr inbounds %"struct.pov::istk_entry"* %Intersect, i64 0, i32 5, !dbg !6596
+  %41 = getelementptr inbounds [5 x float]* %LayCol, i64 0, i64 1, !dbg !6598
+  %42 = getelementptr inbounds [5 x float]* %LayCol, i64 0, i64 2, !dbg !6599
+  %43 = getelementptr inbounds [5 x float]* %LayCol, i64 0, i64 3, !dbg !6600
+  %44 = getelementptr inbounds [5 x float]* %LayCol, i64 0, i64 4, !dbg !6601
+  %45 = getelementptr inbounds [5 x float]* %TmpCol, i64 0, i64 0, !dbg !6602
+  %46 = getelementptr inbounds [5 x float]* %TmpCol, i64 0, i64 1, !dbg !6603
+  %47 = getelementptr inbounds [5 x float]* %TmpCol, i64 0, i64 2, !dbg !6605
+  %48 = icmp eq i32 %radiosity_needed.0, 0, !dbg !6606
+  %49 = getelementptr inbounds %"struct.pov::istk_entry"* %Intersect, i64 0, i32 1, i64 0, !dbg !6608
+  %50 = bitcast [3 x double]* %Local_Normal.i to i8*, !dbg !6609
+  %51 = bitcast [5 x float]* %Hue.i to i8*, !dbg !6610
+  %52 = bitcast [5 x float]* %Elem.i to i8*, !dbg !6610
+  %53 = bitcast double* %tempr.i to i8*, !dbg !6610
+  %54 = bitcast %"struct.pov::Ray_Struct"* %Light_Source_Ray.i to i8*, !dbg !6611
+  %55 = bitcast [5 x float]* %TmpCol to i8*, !dbg !6612
+  %56 = getelementptr inbounds [3 x double]* %Local_Normal.i, i64 0, i64 0, !dbg !6615
+  %57 = getelementptr inbounds [3 x double]* %Local_Normal.i, i64 0, i64 2, !dbg !6618
+  %58 = getelementptr inbounds [5 x float]* %Elem.i, i64 0, i64 0, !dbg !6619
+  %59 = getelementptr inbounds [5 x float]* %Elem.i, i64 0, i64 2, !dbg !6620
+  %60 = bitcast float* %59 to i32*, !dbg !6622
+  %61 = getelementptr inbounds [5 x float]* %Hue.i, i64 0, i64 0, !dbg !6626
+  %62 = getelementptr inbounds %"struct.pov::Ray_Struct"* %Light_Source_Ray.i, i64 0, i32 1, i64 1, !dbg !6627
+  %63 = bitcast double* %62 to i64*, !dbg !6628
+  %64 = getelementptr inbounds %"struct.pov::Ray_Struct"* %Light_Source_Ray.i, i64 0, i32 1, i64 0, !dbg !6629
+  %65 = getelementptr inbounds %"struct.pov::Ray_Struct"* %Light_Source_Ray.i, i64 0, i32 1, i64 2, !dbg !6630
+  %66 = getelementptr inbounds %"struct.pov::Ray_Struct"* %Light_Source_Ray.i, i64 0, i32 0, i64 2, !dbg !6631
+  %67 = getelementptr inbounds [5 x float]* %Hue.i, i64 0, i64 1, !dbg !6633
+  %68 = getelementptr inbounds [5 x float]* %Hue.i, i64 0, i64 2, !dbg !6635
+  %69 = bitcast double* %tempr.i to i64*, !dbg !6636
+  %70 = bitcast [5 x float]* %Elem.i to i64*, !dbg !6639
+  %71 = bitcast float* %ResCol to i32*, !dbg !6640
+  %72 = bitcast float* %2 to i32*, !dbg !6643
+  %73 = bitcast float* %3 to i32*, !dbg !6644
+  br label %74, !dbg !6572
+
+; <label>:74                                      ; preds = %.lr.ph66, %731
+  %75 = phi double [ undef, %.lr.ph66 ], [ %160, %731 ]
+  %76 = phi double [ undef, %.lr.ph66 ], [ %161, %731 ]
+  %77 = phi double [ undef, %.lr.ph66 ], [ %162, %731 ]
+  %78 = phi double [ undef, %.lr.ph66 ], [ %163, %731 ]
+  %79 = phi double [ undef, %.lr.ph66 ], [ %164, %731 ]
+  %80 = phi double [ undef, %.lr.ph66 ], [ %165, %731 ]
+  %indvars.iv96 = phi i64 [ 0, %.lr.ph66 ], [ %indvars.iv.next97, %731 ]
+  %radiosity_done.064 = phi i32 [ 0, %.lr.ph66 ], [ %radiosity_done.2, %731 ]
+  %one_colour_found.061 = phi i32 [ 0, %.lr.ph66 ], [ %.one_colour_found.0, %731 ]
+  %Layer.059 = phi %"struct.pov::Texture_Struct"* [ %Texture, %.lr.ph66 ], [ %751, %731 ]
+  %Trans.058 = phi double [ 1.000000e+00, %.lr.ph66 ], [ %748, %731 ]
+  %81 = phi float [ 1.000000e+00, %.lr.ph66 ], [ %732, %731 ]
+  %82 = phi <2 x float> [ <float 1.000000e+00, float 1.000000e+00>, %.lr.ph66 ], [ %733, %731 ]
+  tail call void @llvm.dbg.value(metadata double* %22, i64 0, metadata !1348, metadata !2666), !dbg !6645
+  tail call void @llvm.dbg.value(metadata double* %Raw_Normal, i64 0, metadata !1349, metadata !2666), !dbg !6646
+  %83 = bitcast double* %Raw_Normal to <2 x i64>*, !dbg !6647
+  %84 = load <2 x i64>* %83, align 8, !dbg !6647, !tbaa !3114
+  %85 = bitcast [3 x double]* %LayNormal to <2 x i64>*, !dbg !6575
+  store <2 x i64> %84, <2 x i64>* %85, align 16, !dbg !6575, !tbaa !3114
+  %86 = load i64* %28, align 8, !dbg !6580, !tbaa !3114
+  store i64 %86, i64* %30, align 16, !dbg !6582, !tbaa !3114
+  %87 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 13), align 8, !dbg !6648, !tbaa !3797
+  %88 = and i32 %87, 64, !dbg !6650
+  %89 = icmp eq i32 %88, 0, !dbg !6650
+  br i1 %89, label %.loopexit26, label %90, !dbg !6651
+
+; <label>:90                                      ; preds = %74
+  %91 = getelementptr inbounds %"struct.pov::Texture_Struct"* %Layer.059, i64 0, i32 13, !dbg !6652
+  %92 = load %"struct.pov::Tnormal_Struct"** %91, align 8, !dbg !6652, !tbaa !3801
+  %93 = icmp eq %"struct.pov::Tnormal_Struct"* %92, null, !dbg !6653
+  br i1 %93, label %.loopexit26, label %94, !dbg !6654
+
+; <label>:94                                      ; preds = %90
+  %95 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 28), align 8, !dbg !6655, !tbaa !3543
+  %96 = icmp sgt i32 %95, 310, !dbg !6658
+  br i1 %96, label %.preheader27, label %149, !dbg !6659
+
+.preheader27:                                     ; preds = %94
+  %97 = load i32* @_ZN3pov18warpNormalTexturesE, align 4, !dbg !6660, !tbaa !2664
+  %98 = icmp sgt i32 %97, 0, !dbg !6664
+  br i1 %98, label %.lr.ph45, label %110, !dbg !6665
+
+.lr.ph45:                                         ; preds = %.preheader27, %.lr.ph45
+  %indvars.iv90 = phi i64 [ %indvars.iv.next91, %.lr.ph45 ], [ 0, %.preheader27 ]
+  %99 = load %"struct.pov::Texture_Struct"*** @_ZN3pov21warpNormalTextureListE, align 8, !dbg !6666, !tbaa !2657
+  %100 = getelementptr inbounds %"struct.pov::Texture_Struct"** %99, i64 %indvars.iv90, !dbg !6666
+  %101 = load %"struct.pov::Texture_Struct"** %100, align 8, !dbg !6666, !tbaa !2657
+  %102 = bitcast %"struct.pov::Texture_Struct"* %101 to %"struct.pov::Pattern_Struct"*, !dbg !6667
+  %103 = getelementptr inbounds %"struct.pov::Texture_Struct"* %101, i64 0, i32 2, !dbg !6668
+  %104 = load i16* %103, align 2, !dbg !6668, !tbaa !3819
+  %105 = zext i16 %104 to i32, !dbg !6668
+  %106 = and i32 %105, 8, !dbg !6668
+  call void @_ZN3pov11Warp_NormalEPdS0_PNS_14Pattern_StructEi(double* %22, double* %22, %"struct.pov::Pattern_Struct"* %102, i32 %106) #6, !dbg !6669
+  %indvars.iv.next91 = add nuw nsw i64 %indvars.iv90, 1, !dbg !6665
+  %107 = load i32* @_ZN3pov18warpNormalTexturesE, align 4, !dbg !6660, !tbaa !2664
+  %108 = sext i32 %107 to i64, !dbg !6664
+  %109 = icmp slt i64 %indvars.iv.next91, %108, !dbg !6664
+  br i1 %109, label %.lr.ph45, label %._crit_edge46, !dbg !6665
+
+._crit_edge46:                                    ; preds = %.lr.ph45
+  %.pre = load %"struct.pov::Tnormal_Struct"** %91, align 8, !dbg !6670, !tbaa !3801
+  br label %110, !dbg !6665
+
+; <label>:110                                     ; preds = %._crit_edge46, %.preheader27
+  %111 = phi %"struct.pov::Tnormal_Struct"* [ %.pre, %._crit_edge46 ], [ %92, %.preheader27 ]
+  call void @_ZN3pov14Perturb_NormalEPdPNS_14Tnormal_StructES0_PNS_10istk_entryE(double* %22, %"struct.pov::Tnormal_Struct"* %111, double* %IPoint, %"struct.pov::istk_entry"* %Intersect) #6, !dbg !6671
+  %112 = load %"struct.pov::Tnormal_Struct"** %91, align 8, !dbg !6672, !tbaa !3801
+  %113 = getelementptr inbounds %"struct.pov::Tnormal_Struct"* %112, i64 0, i32 2, !dbg !6672
+  %114 = load i16* %113, align 2, !dbg !6672, !tbaa !3825
+  %115 = and i16 %114, 8, !dbg !6674
+  %116 = icmp eq i16 %115, 0, !dbg !6674
+  br i1 %116, label %135, label %117, !dbg !6675
+
+; <label>:117                                     ; preds = %110
+  call void @llvm.dbg.value(metadata double* %22, i64 0, metadata !1404, metadata !2666) #5, !dbg !6676
+  call void @llvm.dbg.value(metadata double* %22, i64 0, metadata !1450, metadata !2666) #5, !dbg !6678
+  %118 = bitcast [3 x double]* %LayNormal to <2 x double>*, !dbg !6680
+  %119 = load <2 x double>* %118, align 16, !dbg !6680, !tbaa !3114
+  %120 = extractelement <2 x double> %119, i32 0, !dbg !6681
+  %121 = fmul double %120, %120, !dbg !6681
+  %122 = extractelement <2 x double> %119, i32 1, !dbg !6682
+  %123 = fmul double %122, %122, !dbg !6682
+  %124 = fadd double %121, %123, !dbg !6683
+  %125 = load double* %29, align 16, !dbg !6684, !tbaa !3114
+  %126 = fmul double %125, %125, !dbg !6685
+  %127 = fadd double %124, %126, !dbg !6686
+  %128 = call double @sqrt(double %127) #7, !dbg !6687
+  call void @llvm.dbg.value(metadata double %128, i64 0, metadata !1449, metadata !2666) #5, !dbg !6688
+  call void @llvm.dbg.value(metadata double %128, i64 0, metadata !1405, metadata !2666) #5, !dbg !6689
+  call void @llvm.dbg.value(metadata double %128, i64 0, metadata !1405, metadata !2666) #5, !dbg !6689
+  call void @llvm.dbg.value(metadata double* %22, i64 0, metadata !1408, metadata !2666) #5, !dbg !6690
+  call void @llvm.dbg.value(metadata double %128, i64 0, metadata !1409, metadata !2666) #5, !dbg !6692
+  %129 = fdiv double 1.000000e+00, %128, !dbg !6693
+  call void @llvm.dbg.value(metadata double %129, i64 0, metadata !1410, metadata !2666) #5, !dbg !6694
+  %130 = insertelement <2 x double> undef, double %129, i32 0, !dbg !6695
+  %131 = insertelement <2 x double> %130, double %129, i32 1, !dbg !6695
+  %132 = fmul <2 x double> %131, %119, !dbg !6695
+  %133 = bitcast [3 x double]* %LayNormal to <2 x double>*, !dbg !6695
+  store <2 x double> %132, <2 x double>* %133, align 16, !dbg !6695, !tbaa !3114
+  %134 = fmul double %125, %129, !dbg !6696
+  store double %134, double* %29, align 16, !dbg !6696, !tbaa !3114
+  br label %135, !dbg !6697
+
+; <label>:135                                     ; preds = %110, %117
+  %136 = load i32* @_ZN3pov18warpNormalTexturesE, align 4, !dbg !6698, !tbaa !2664
+  %137 = icmp sgt i32 %136, 0, !dbg !6700
+  br i1 %137, label %.lr.ph50, label %.loopexit26, !dbg !6702
+
+.lr.ph50:                                         ; preds = %135
+  %138 = sext i32 %136 to i64
+  br label %139, !dbg !6702
+
+; <label>:139                                     ; preds = %.lr.ph50, %139
+  %indvars.iv92 = phi i64 [ %138, %.lr.ph50 ], [ %indvars.iv.next93, %139 ]
+  %indvars.iv.next93 = add nsw i64 %indvars.iv92, -1, !dbg !6702
+  %140 = load %"struct.pov::Texture_Struct"*** @_ZN3pov21warpNormalTextureListE, align 8, !dbg !6703, !tbaa !2657
+  %141 = getelementptr inbounds %"struct.pov::Texture_Struct"** %140, i64 %indvars.iv.next93, !dbg !6703
+  %142 = load %"struct.pov::Texture_Struct"** %141, align 8, !dbg !6703, !tbaa !2657
+  %143 = bitcast %"struct.pov::Texture_Struct"* %142 to %"struct.pov::Pattern_Struct"*, !dbg !6704
+  %144 = getelementptr inbounds %"struct.pov::Texture_Struct"* %142, i64 0, i32 2, !dbg !6705
+  %145 = load i16* %144, align 2, !dbg !6705, !tbaa !3819
+  %146 = zext i16 %145 to i32, !dbg !6705
+  %147 = and i32 %146, 8, !dbg !6705
+  call void @_ZN3pov13UnWarp_NormalEPdS0_PNS_14Pattern_StructEi(double* %22, double* %22, %"struct.pov::Pattern_Struct"* %143, i32 %147) #6, !dbg !6706
+  %148 = icmp sgt i64 %indvars.iv92, 1, !dbg !6700
+  br i1 %148, label %139, label %.loopexit26, !dbg !6702
+
+; <label>:149                                     ; preds = %94
+  call void @_ZN3pov14Perturb_NormalEPdPNS_14Tnormal_StructES0_PNS_10istk_entryE(double* %22, %"struct.pov::Tnormal_Struct"* %92, double* %IPoint, %"struct.pov::istk_entry"* %Intersect) #6, !dbg !6707
+  br label %.loopexit26
+
+.loopexit26:                                      ; preds = %139, %135, %90, %74, %149
+  %150 = trunc i64 %indvars.iv96 to i32, !dbg !6708
+  %151 = icmp eq i32 %150, 0, !dbg !6708
+  br i1 %151, label %152, label %159, !dbg !6709
+
+; <label>:152                                     ; preds = %.loopexit26
+  tail call void @llvm.dbg.value(metadata double* %22, i64 0, metadata !1349, metadata !2666), !dbg !6710
+  %153 = load i64* %23, align 16, !dbg !6711, !tbaa !3114
+  store i64 %153, i64* %31, align 16, !dbg !6583, !tbaa !3114
+  %154 = load i64* %26, align 8, !dbg !6712, !tbaa !3114
+  store i64 %154, i64* %33, align 8, !dbg !6588, !tbaa !3114
+  %155 = load i64* %30, align 16, !dbg !6713, !tbaa !3114
+  store i64 %155, i64* %35, align 16, !dbg !6590, !tbaa !3114
+  %156 = bitcast i64 %153 to double
+  %157 = bitcast i64 %154 to double
+  %158 = bitcast i64 %155 to double
+  br label %159, !dbg !6714
+
+; <label>:159                                     ; preds = %.loopexit26, %152
+  %160 = phi double [ %75, %.loopexit26 ], [ %158, %152 ]
+  %161 = phi double [ %76, %.loopexit26 ], [ %157, %152 ]
+  %162 = phi double [ %77, %.loopexit26 ], [ %156, %152 ]
+  %163 = phi double [ %78, %.loopexit26 ], [ %158, %152 ]
+  %164 = phi double [ %79, %.loopexit26 ], [ %157, %152 ]
+  %165 = phi double [ %80, %.loopexit26 ], [ %156, %152 ]
+  %166 = fmul double %Trans.058, %Weight, !dbg !6715
+  call void @llvm.dbg.value(metadata double %166, i64 0, metadata !1808, metadata !2666), !dbg !6716
+  %167 = getelementptr inbounds %"struct.pov::Texture_Struct"* %Layer.059, i64 0, i32 12, !dbg !6717
+  %168 = load %"struct.pov::Pigment_Struct"** %167, align 8, !dbg !6717, !tbaa !3768
+  %169 = call i32 @_ZN3pov15Compute_PigmentEPfPNS_14Pigment_StructEPdPNS_10istk_entryE(float* %36, %"struct.pov::Pigment_Struct"* %168, double* %IPoint, %"struct.pov::istk_entry"* %Intersect) #6, !dbg !6718
+  call void @llvm.dbg.value(metadata i32 %169, i64 0, metadata !1806, metadata !2666), !dbg !6719
+  %170 = icmp ne i32 %169, 0, !dbg !6720
+  call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !1805, metadata !2666), !dbg !6567
+  %.one_colour_found.0 = select i1 %170, i32 1, i32 %one_colour_found.061, !dbg !6722
+  %171 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 13), align 8, !dbg !6723, !tbaa !3797
+  %172 = and i32 %171, 1, !dbg !6724
+  %173 = icmp eq i32 %172, 0, !dbg !6724
+  br i1 %173, label %183, label %174, !dbg !6725
+
+; <label>:174                                     ; preds = %159
+  tail call void @llvm.dbg.value(metadata float* %ResCol, i64 0, metadata !1391, metadata !2666), !dbg !6726
+  tail call void @llvm.dbg.value(metadata float* %36, i64 0, metadata !1392, metadata !2666), !dbg !6727
+  %175 = bitcast [5 x float]* %LayCol to i64*, !dbg !6728
+  %176 = load i64* %175, align 16, !dbg !6728
+  %177 = trunc i64 %176 to i32, !dbg !6728
+  store i32 %177, i32* %71, align 4, !dbg !6640, !tbaa !3269
+  %178 = lshr i64 %176, 32
+  %179 = trunc i64 %178 to i32
+  store i32 %179, i32* %72, align 4, !dbg !6643, !tbaa !3269
+  %180 = bitcast float* %42 to i64*, !dbg !6729
+  %181 = load i64* %180, align 8, !dbg !6729
+  %182 = trunc i64 %181 to i32, !dbg !6729
+  store i32 %182, i32* %73, align 4, !dbg !6644, !tbaa !3269
+  store float 0.000000e+00, float* %5, align 4, !dbg !6730, !tbaa !3269
+  store float 0.000000e+00, float* %4, align 4, !dbg !6731, !tbaa !3269
+  br label %689, !dbg !6732
+
+; <label>:183                                     ; preds = %159
+  %184 = icmp eq i32 %150, 100, !dbg !6733
+  br i1 %184, label %185, label %187, !dbg !6735
+
+; <label>:185                                     ; preds = %183
+  %186 = call i32 (i8*, ...)* @_ZN3pov5ErrorEPKcz(i8* getelementptr inbounds ([25 x i8]* @.str10, i64 0, i64 0)) #6, !dbg !6736
+  br label %187, !dbg !6738
+
+; <label>:187                                     ; preds = %185, %183
+  %188 = getelementptr inbounds %"struct.pov::Texture_Struct"* %Layer.059, i64 0, i32 14, !dbg !6739
+  %189 = load %"struct.pov::Finish_Struct"** %188, align 8, !dbg !6739, !tbaa !5678
+  %190 = getelementptr inbounds %"struct.pov::Finish_Struct"* %189, i64 0, i32 13, !dbg !6740
+  %191 = bitcast float* %190 to i32*, !dbg !6740
+  %192 = load i32* %191, align 4, !dbg !6740, !tbaa !5680
+  %193 = getelementptr inbounds %"struct.pov::ComTexData_Struct"* %1, i64 0, i32 5, i64 %indvars.iv96, !dbg !6741
+  %194 = bitcast float* %193 to i32*, !dbg !6742
+  store i32 %192, i32* %194, align 4, !dbg !6742, !tbaa !3269
+  %195 = getelementptr inbounds %"struct.pov::ComTexData_Struct"* %1, i64 0, i32 2, i64 %indvars.iv96, !dbg !6743
+  store double %166, double* %195, align 8, !dbg !6744, !tbaa !3114
+  %196 = getelementptr inbounds %"struct.pov::ComTexData_Struct"* %1, i64 0, i32 3, i64 %indvars.iv96, i64 0, !dbg !6745
+  tail call void @llvm.dbg.value(metadata double* %196, i64 0, metadata !1348, metadata !2666), !dbg !6746
+  tail call void @llvm.dbg.value(metadata double* %22, i64 0, metadata !1349, metadata !2666), !dbg !6748
+  %197 = load i64* %23, align 16, !dbg !6749, !tbaa !3114
+  %198 = bitcast double* %196 to i64*, !dbg !6750
+  store i64 %197, i64* %198, align 8, !dbg !6750, !tbaa !3114
+  %199 = load i64* %26, align 8, !dbg !6751, !tbaa !3114
+  %200 = getelementptr inbounds %"struct.pov::ComTexData_Struct"* %1, i64 0, i32 3, i64 %indvars.iv96, i64 1, !dbg !6752
+  %201 = bitcast double* %200 to i64*, !dbg !6753
+  store i64 %199, i64* %201, align 8, !dbg !6753, !tbaa !3114
+  %202 = load i64* %30, align 16, !dbg !6754, !tbaa !3114
+  %203 = getelementptr inbounds %"struct.pov::ComTexData_Struct"* %1, i64 0, i32 3, i64 %indvars.iv96, i64 2, !dbg !6755
+  %204 = bitcast double* %203 to i64*, !dbg !6756
+  store i64 %202, i64* %204, align 8, !dbg !6756, !tbaa !3114
+  tail call void @llvm.dbg.value(metadata double* %37, i64 0, metadata !1358, metadata !2666), !dbg !6757
+  tail call void @llvm.dbg.value(metadata double* %22, i64 0, metadata !1359, metadata !2666), !dbg !6758
+  %205 = load double* %37, align 8, !dbg !6759, !tbaa !3114
+  %206 = load double* %22, align 16, !dbg !6760, !tbaa !3114
+  %207 = fmul double %205, %206, !dbg !6761
+  %208 = load double* %38, align 8, !dbg !6593, !tbaa !3114
+  %209 = load double* %25, align 8, !dbg !6762, !tbaa !3114
+  %210 = fmul double %208, %209, !dbg !6763
+  %211 = fadd double %207, %210, !dbg !6764
+  %212 = load double* %39, align 8, !dbg !6595, !tbaa !3114
+  %213 = load double* %29, align 16, !dbg !6765, !tbaa !3114
+  %214 = fmul double %212, %213, !dbg !6766
+  %215 = fadd double %211, %214, !dbg !6767
+  call void @llvm.dbg.value(metadata double %215, i64 0, metadata !1357, metadata !2666), !dbg !6768
+  call void @llvm.dbg.value(metadata double %215, i64 0, metadata !1825, metadata !2666), !dbg !6769
+  call void @llvm.dbg.value(metadata double %215, i64 0, metadata !1825, metadata !2666), !dbg !6769
+  call void @llvm.dbg.value(metadata double %215, i64 0, metadata !1825, metadata !2666), !dbg !6769
+  call void @llvm.dbg.value(metadata double %215, i64 0, metadata !1825, metadata !2666), !dbg !6769
+  %216 = fsub double -0.000000e+00, %215, !dbg !6770
+  call void @llvm.dbg.value(metadata double %216, i64 0, metadata !1825, metadata !2666), !dbg !6769
+  call void @llvm.dbg.value(metadata double %216, i64 0, metadata !1357, metadata !2666), !dbg !6768
+  call void @llvm.dbg.value(metadata double %216, i64 0, metadata !1825, metadata !2666), !dbg !6769
+  call void @llvm.dbg.value(metadata double %216, i64 0, metadata !1825, metadata !2666), !dbg !6769
+  call void @llvm.dbg.value(metadata double %216, i64 0, metadata !1825, metadata !2666), !dbg !6769
+  call void @llvm.dbg.value(metadata double %216, i64 0, metadata !1825, metadata !2666), !dbg !6769
+  %217 = load %"struct.pov::Object_Struct"** %40, align 8, !dbg !6596, !tbaa !3151
+  %218 = getelementptr inbounds %"struct.pov::Object_Struct"* %217, i64 0, i32 5, !dbg !6771
+  %219 = load %"struct.pov::Interior_Struct"** %218, align 8, !dbg !6771, !tbaa !3723
+  %220 = icmp eq %"struct.pov::Interior_Struct"* %219, null, !dbg !6772
+  %221 = getelementptr inbounds %"struct.pov::Finish_Struct"* %189, i64 0, i32 20, !dbg !6773
+  %222 = load i32* %221, align 4, !dbg !6773, !tbaa !5716
+  %223 = icmp eq i32 %222, 1, !dbg !6774
+  %or.cond135 = and i1 %220, %223, !dbg !6775
+  br i1 %or.cond135, label %230, label %._crit_edge100, !dbg !6775
+
+._crit_edge100:                                   ; preds = %187
+  %224 = getelementptr inbounds %"struct.pov::ComTexData_Struct"* %1, i64 0, i32 4, i64 %indvars.iv96, i64 0, !dbg !6776
+  %225 = getelementptr inbounds %"struct.pov::Finish_Struct"* %189, i64 0, i32 17, i64 0, !dbg !6778
+  %226 = getelementptr inbounds %"struct.pov::Finish_Struct"* %189, i64 0, i32 18, i64 0, !dbg !6779
+  %227 = getelementptr inbounds %"struct.pov::Finish_Struct"* %189, i64 0, i32 19, !dbg !6780
+  %228 = load float* %227, align 4, !dbg !6780, !tbaa !5724
+  %229 = fpext float %228 to double, !dbg !6781
+  call fastcc void @_ZN3povL22determine_reflectivityEPdPfS1_S1_iddPNS_10Ray_StructEPNS_15Interior_StructE(double* %195, float* %224, float* %225, float* %226, i32 %222, double %229, double %216, %"struct.pov::Ray_Struct"* %Ray, %"struct.pov::Interior_Struct"* %219) #6, !dbg !6782
+  br label %232, !dbg !6783
+
+; <label>:230                                     ; preds = %187
+  %231 = call i32 (i8*, ...)* @_ZN3pov5ErrorEPKcz(i8* getelementptr inbounds ([41 x i8]* @.str11, i64 0, i64 0)) #6, !dbg !6784
+  br label %232
+
+; <label>:232                                     ; preds = %230, %._crit_edge100
+  %233 = load %"struct.pov::Finish_Struct"** %188, align 8, !dbg !6786, !tbaa !5678
+  %234 = getelementptr inbounds %"struct.pov::Finish_Struct"* %233, i64 0, i32 21, !dbg !6787
+  %235 = load float* %234, align 4, !dbg !6787, !tbaa !5732
+  %236 = fcmp une float %235, 0.000000e+00, !dbg !6788
+  br i1 %236, label %237, label %281, !dbg !6789
+
+; <label>:237                                     ; preds = %232
+  %238 = fpext float %235 to double, !dbg !6790
+  call void @llvm.dbg.value(metadata double %238, i64 0, metadata !1833, metadata !2666), !dbg !6791
+  %239 = call double @acos(double %216) #7, !dbg !6792
+  %240 = call double @fabs(double %239) #7, !dbg !6793
+  %241 = fdiv double %240, 0x3FF921FB54442D18, !dbg !6794
+  call void @llvm.dbg.value(metadata double %241, i64 0, metadata !1841, metadata !2666), !dbg !6795
+  %242 = fadd double %241, -1.120000e+00, !dbg !6796
+  tail call void @llvm.dbg.value(metadata double %242, i64 0, metadata !1430, metadata !2666), !dbg !6797
+  %243 = fmul double %242, %242, !dbg !6799
+  %244 = fdiv double 0x3F8DD56BD7BF6F16, %243, !dbg !6800
+  %245 = fadd double %244, 0xBF87C88174C5E0DC, !dbg !6801
+  call void @llvm.dbg.value(metadata double %245, i64 0, metadata !1842, metadata !2666), !dbg !6802
+  call void @llvm.dbg.value(metadata double %245, i64 0, metadata !2215, metadata !2666), !dbg !6803
+  call void @llvm.dbg.value(metadata double %245, i64 0, metadata !2208, metadata !2666), !dbg !6807
+  call void @llvm.dbg.value(metadata double %245, i64 0, metadata !2200, metadata !2666), !dbg !6808
+  call void @llvm.dbg.value(metadata double %245, i64 0, metadata !1842, metadata !2666), !dbg !6802
+  call void @llvm.dbg.value(metadata double %245, i64 0, metadata !1842, metadata !2666), !dbg !6802
+  call void @llvm.dbg.value(metadata double %245, i64 0, metadata !1842, metadata !2666), !dbg !6802
+  call void @llvm.dbg.value(metadata double 1.000000e+00, i64 0, metadata !2215, metadata !2666), !dbg !6809
+  call void @llvm.dbg.value(metadata double 1.000000e+00, i64 0, metadata !2222, metadata !2666), !dbg !6813
+  call void @llvm.dbg.value(metadata double 1.000000e+00, i64 0, metadata !2218, metadata !2666), !dbg !6814
+  %246 = fcmp ogt double %245, 0.000000e+00, !dbg !6815
+  %247 = select i1 %246, double %245, double 0.000000e+00, !dbg !6816
+  %248 = fcmp olt double %247, 1.000000e+00, !dbg !6817
+  %.op = fsub double 1.000000e+00, %247, !dbg !6818
+  %249 = select i1 %248, double %.op, double 0.000000e+00, !dbg !6818
+  %250 = fmul double %238, %249, !dbg !6819
+  %251 = load float* %36, align 16, !dbg !6820, !tbaa !3269
+  %252 = fpext float %251 to double, !dbg !6820
+  %253 = fadd double %252, -1.000000e+00, !dbg !6821
+  %254 = fmul double %253, %250, !dbg !6822
+  %255 = fadd double %254, 1.000000e+00, !dbg !6823
+  %256 = getelementptr inbounds %"struct.pov::ComTexData_Struct"* %1, i64 0, i32 4, i64 %indvars.iv96, i64 0, !dbg !6824
+  %257 = load float* %256, align 4, !dbg !6825, !tbaa !3269
+  %258 = fpext float %257 to double, !dbg !6825
+  %259 = fmul double %258, %255, !dbg !6825
+  %260 = fptrunc double %259 to float, !dbg !6825
+  store float %260, float* %256, align 4, !dbg !6825, !tbaa !3269
+  %261 = load float* %41, align 4, !dbg !6598, !tbaa !3269
+  %262 = fpext float %261 to double, !dbg !6598
+  %263 = fadd double %262, -1.000000e+00, !dbg !6826
+  %264 = fmul double %263, %250, !dbg !6827
+  %265 = fadd double %264, 1.000000e+00, !dbg !6828
+  %266 = getelementptr inbounds %"struct.pov::ComTexData_Struct"* %1, i64 0, i32 4, i64 %indvars.iv96, i64 1, !dbg !6829
+  %267 = load float* %266, align 4, !dbg !6830, !tbaa !3269
+  %268 = fpext float %267 to double, !dbg !6830
+  %269 = fmul double %268, %265, !dbg !6830
+  %270 = fptrunc double %269 to float, !dbg !6830
+  store float %270, float* %266, align 4, !dbg !6830, !tbaa !3269
+  %271 = load float* %42, align 8, !dbg !6599, !tbaa !3269
+  %272 = fpext float %271 to double, !dbg !6599
+  %273 = fadd double %272, -1.000000e+00, !dbg !6831
+  %274 = fmul double %250, %273, !dbg !6832
+  %275 = fadd double %274, 1.000000e+00, !dbg !6833
+  %276 = getelementptr inbounds %"struct.pov::ComTexData_Struct"* %1, i64 0, i32 4, i64 %indvars.iv96, i64 2, !dbg !6834
+  %277 = load float* %276, align 4, !dbg !6835, !tbaa !3269
+  %278 = fpext float %277 to double, !dbg !6835
+  %279 = fmul double %278, %275, !dbg !6835
+  %280 = fptrunc double %279 to float, !dbg !6835
+  store float %280, float* %276, align 4, !dbg !6835, !tbaa !3269
+  br label %281, !dbg !6836
+
+; <label>:281                                     ; preds = %237, %232
+  %282 = load float* %43, align 4, !dbg !6600, !tbaa !3269
+  tail call void @llvm.dbg.value(metadata float* %41, i64 0, metadata !1643, metadata !2666), !dbg !6837
+  tail call void @llvm.dbg.value(metadata float* %42, i64 0, metadata !1644, metadata !2666), !dbg !6839
+  tail call void @llvm.dbg.value(metadata float* %41, i64 0, metadata !1651, metadata !2666), !dbg !6840
+  tail call void @llvm.dbg.value(metadata float* %42, i64 0, metadata !1652, metadata !2666), !dbg !6842
+  tail call void @llvm.dbg.value(metadata float* %41, i64 0, metadata !1658, metadata !2666), !dbg !6843
+  tail call void @llvm.dbg.value(metadata float* %42, i64 0, metadata !1659, metadata !2666), !dbg !6845
+  %283 = load float* %41, align 4, !dbg !6846, !tbaa !3269
+  %284 = load float* %42, align 8, !dbg !6847, !tbaa !3269
+  %285 = fcmp olt float %283, %284, !dbg !6848
+  tail call void @llvm.dbg.value(metadata float* %36, i64 0, metadata !1643, metadata !2666), !dbg !6849
+  tail call void @llvm.dbg.value(metadata float* %36, i64 0, metadata !1651, metadata !2666), !dbg !6851
+  tail call void @llvm.dbg.value(metadata float* %36, i64 0, metadata !1658, metadata !2666), !dbg !6853
+  %286 = load float* %36, align 16, !dbg !6855, !tbaa !3269
+  %287 = select i1 %285, float %284, float %283, !dbg !6856
+  %288 = fcmp olt float %286, %287, !dbg !6857
+  %289 = select i1 %288, float %287, float %286, !dbg !6858
+  %290 = fmul float %282, %289, !dbg !6859
+  %291 = load float* %44, align 16, !dbg !6601, !tbaa !3269
+  %292 = fadd float %291, %290, !dbg !6860
+  %293 = fpext float %292 to double, !dbg !6861
+  %294 = fsub double 1.000000e+00, %293, !dbg !6862
+  call void @llvm.dbg.value(metadata double %294, i64 0, metadata !1809, metadata !2666), !dbg !6863
+  tail call void @llvm.dbg.value(metadata float* %45, i64 0, metadata !1535, metadata !2666), !dbg !6864
+  tail call void @llvm.dbg.value(metadata float 0.000000e+00, i64 0, metadata !1536, metadata !2666), !dbg !6865
+  tail call void @llvm.dbg.value(metadata float 0.000000e+00, i64 0, metadata !1537, metadata !2666), !dbg !6866
+  tail call void @llvm.dbg.value(metadata float 0.000000e+00, i64 0, metadata !1538, metadata !2666), !dbg !6867
+  %295 = icmp ne i32 %radiosity_done.064, 0, !dbg !6868
+  %or.cond = or i1 %48, %295, !dbg !6869
+  %296 = bitcast [5 x float]* %TmpCol to i8*, !dbg !6869
+  call void @llvm.memset.p0i8.i64(i8* %296, i8 0, i64 20, i32 16, i1 false), !dbg !6870
+  br i1 %or.cond, label %340, label %297, !dbg !6869
+
+; <label>:297                                     ; preds = %281
+  %298 = fpext float %81 to double, !dbg !6871
+  %299 = fmul double %298, %294, !dbg !6873
+  %300 = fpext float %286 to double, !dbg !6874
+  %301 = fmul double %299, %300, !dbg !6875
+  %302 = getelementptr inbounds %"struct.pov::Finish_Struct"* %233, i64 0, i32 0, !dbg !6876
+  %303 = load float* %302, align 4, !dbg !6876, !tbaa !4818
+  %304 = fpext float %303 to double, !dbg !6877
+  %305 = fmul double %301, %304, !dbg !6878
+  %306 = fptrunc double %305 to float, !dbg !6871
+  call void @llvm.dbg.value(metadata float %306, i64 0, metadata !1821, metadata !3896), !dbg !6506
+  %307 = extractelement <2 x float> %82, i32 0, !dbg !6879
+  %308 = fpext float %307 to double, !dbg !6879
+  %309 = fmul double %308, %294, !dbg !6880
+  %310 = fpext float %283 to double, !dbg !6881
+  %311 = fmul double %309, %310, !dbg !6882
+  %312 = fmul double %304, %311, !dbg !6883
+  %313 = fptrunc double %312 to float, !dbg !6879
+  call void @llvm.dbg.value(metadata float %313, i64 0, metadata !1821, metadata !3933), !dbg !6506
+  %314 = extractelement <2 x float> %82, i32 1, !dbg !6884
+  %315 = fpext float %314 to double, !dbg !6884
+  %316 = fmul double %315, %294, !dbg !6885
+  %317 = fpext float %284 to double, !dbg !6886
+  %318 = fmul double %316, %317, !dbg !6887
+  %319 = fmul double %304, %318, !dbg !6888
+  %320 = fptrunc double %319 to float, !dbg !6884
+  call void @llvm.dbg.value(metadata float %320, i64 0, metadata !1821, metadata !3940), !dbg !6506
+  %321 = fpext float %306 to double, !dbg !6889
+  %322 = fmul double %321, 2.970000e-01, !dbg !6889
+  %323 = fpext float %313 to double, !dbg !6889
+  %324 = fmul double %323, 5.890000e-01, !dbg !6889
+  %325 = fadd double %322, %324, !dbg !6889
+  %326 = fpext float %320 to double, !dbg !6889
+  %327 = fmul double %326, 1.140000e-01, !dbg !6889
+  %328 = fadd double %325, %327, !dbg !6889
+  call void @llvm.dbg.value(metadata double %328, i64 0, metadata !1811, metadata !2666), !dbg !6890
+  %329 = load double* @_ZN3pov11ADC_BailoutE, align 8, !dbg !6891, !tbaa !3114
+  %330 = fmul double %329, 3.000000e+00, !dbg !6893
+  %331 = fcmp ogt double %328, %330, !dbg !6894
+  br i1 %331, label %332, label %340, !dbg !6895
+
+; <label>:332                                     ; preds = %297
+  %333 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 54), align 8, !dbg !6896, !tbaa !6899
+  %334 = icmp eq i32 %333, 0, !dbg !6900
+  %335 = fmul double %328, %Weight, !dbg !6901
+  br i1 %334, label %338, label %336, !dbg !6902
+
+; <label>:336                                     ; preds = %332
+  %337 = call i32 @_ZN3pov15Compute_AmbientEPdS0_S0_Pfd(double* %49, double* %Raw_Normal, double* %22, float* %6, double %335) #6, !dbg !6903
+  br label %340, !dbg !6904
+
+; <label>:338                                     ; preds = %332
+  %339 = call i32 @_ZN3pov15Compute_AmbientEPdS0_S0_Pfd(double* %49, double* %Raw_Normal, double* %Raw_Normal, float* %6, double %335) #6, !dbg !6905
+  br label %340
+
+; <label>:340                                     ; preds = %336, %338, %297, %281
+  %radiosity_done.1 = phi i32 [ %radiosity_done.064, %281 ], [ 0, %297 ], [ 1, %338 ], [ 1, %336 ]
+  br i1 %48, label %._crit_edge102, label %343, !dbg !6906
+
+._crit_edge102:                                   ; preds = %340
+  %.pre103 = load float* %36, align 16, !dbg !6907, !tbaa !3269
+  %.pre104 = load %"struct.pov::Finish_Struct"** %188, align 8, !dbg !6908, !tbaa !5678
+  %.pre105 = load float* %41, align 4, !dbg !6909, !tbaa !3269
+  %.pre106 = load float* %42, align 8, !dbg !6910, !tbaa !3269
+  %.pre119 = fpext float %81 to double, !dbg !6911
+  %.pre120 = fmul double %.pre119, %294, !dbg !6912
+  %341 = extractelement <2 x float> %82, i32 0, !dbg !6913
+  %.pre122 = fpext float %341 to double, !dbg !6913
+  %.pre124 = fmul double %.pre122, %294, !dbg !6914
+  %342 = extractelement <2 x float> %82, i32 1, !dbg !6915
+  %.pre126 = fpext float %342 to double, !dbg !6915
+  %.pre128 = fmul double %.pre126, %294, !dbg !6916
+  br label %383, !dbg !6906
+
+; <label>:343                                     ; preds = %340
+  %344 = fpext float %81 to double, !dbg !6917
+  %345 = fmul double %344, %294, !dbg !6920
+  %346 = load float* %36, align 16, !dbg !6921, !tbaa !3269
+  %347 = fpext float %346 to double, !dbg !6921
+  %348 = fmul double %345, %347, !dbg !6922
+  %349 = load float* %6, align 16, !dbg !6923, !tbaa !3269
+  %350 = fpext float %349 to double, !dbg !6923
+  %351 = fmul double %348, %350, !dbg !6924
+  %352 = load %"struct.pov::Finish_Struct"** %188, align 8, !dbg !6925, !tbaa !5678
+  %353 = getelementptr inbounds %"struct.pov::Finish_Struct"* %352, i64 0, i32 0, !dbg !6926
+  %354 = load float* %353, align 4, !dbg !6926, !tbaa !4818
+  %355 = fpext float %354 to double, !dbg !6927
+  %356 = fmul double %351, %355, !dbg !6928
+  %357 = fadd double %356, 0.000000e+00, !dbg !6929
+  %358 = fptrunc double %357 to float, !dbg !6929
+  store float %358, float* %45, align 16, !dbg !6929, !tbaa !3269
+  %359 = extractelement <2 x float> %82, i32 0, !dbg !6930
+  %360 = fpext float %359 to double, !dbg !6930
+  %361 = fmul double %360, %294, !dbg !6931
+  %362 = load float* %41, align 4, !dbg !6932, !tbaa !3269
+  %363 = fpext float %362 to double, !dbg !6932
+  %364 = fmul double %361, %363, !dbg !6933
+  %365 = load float* %8, align 4, !dbg !6934, !tbaa !3269
+  %366 = fpext float %365 to double, !dbg !6934
+  %367 = fmul double %364, %366, !dbg !6935
+  %368 = fmul double %367, %355, !dbg !6936
+  %369 = fadd double %368, 0.000000e+00, !dbg !6937
+  %370 = fptrunc double %369 to float, !dbg !6937
+  store float %370, float* %46, align 4, !dbg !6937, !tbaa !3269
+  %371 = extractelement <2 x float> %82, i32 1, !dbg !6938
+  %372 = fpext float %371 to double, !dbg !6938
+  %373 = fmul double %372, %294, !dbg !6939
+  %374 = load float* %42, align 8, !dbg !6940, !tbaa !3269
+  %375 = fpext float %374 to double, !dbg !6940
+  %376 = fmul double %373, %375, !dbg !6941
+  %377 = load float* %9, align 8, !dbg !6942, !tbaa !3269
+  %378 = fpext float %377 to double, !dbg !6942
+  %379 = fmul double %376, %378, !dbg !6943
+  %380 = fmul double %379, %355, !dbg !6944
+  %381 = fadd double %380, 0.000000e+00, !dbg !6945
+  %382 = fptrunc double %381 to float, !dbg !6945
+  store float %382, float* %47, align 8, !dbg !6945, !tbaa !3269
+  br label %383, !dbg !6946
+
+; <label>:383                                     ; preds = %._crit_edge102, %343
+  %.pre-phi129 = phi double [ %.pre128, %._crit_edge102 ], [ %373, %343 ], !dbg !6916
+  %.pre-phi125 = phi double [ %.pre124, %._crit_edge102 ], [ %361, %343 ], !dbg !6914
+  %.pre-phi121 = phi double [ %.pre120, %._crit_edge102 ], [ %345, %343 ], !dbg !6912
+  %384 = phi float [ 0.000000e+00, %._crit_edge102 ], [ %382, %343 ]
+  %385 = phi float [ %.pre106, %._crit_edge102 ], [ %374, %343 ]
+  %386 = phi float [ 0.000000e+00, %._crit_edge102 ], [ %370, %343 ]
+  %387 = phi float [ %.pre105, %._crit_edge102 ], [ %362, %343 ]
+  %388 = phi float [ 0.000000e+00, %._crit_edge102 ], [ %358, %343 ]
+  %389 = phi %"struct.pov::Finish_Struct"* [ %.pre104, %._crit_edge102 ], [ %352, %343 ]
+  %390 = phi float [ %.pre103, %._crit_edge102 ], [ %346, %343 ]
+  %391 = fpext float %390 to double, !dbg !6907
+  %392 = fmul double %.pre-phi121, %391, !dbg !6947
+  %393 = getelementptr inbounds %"struct.pov::Finish_Struct"* %389, i64 0, i32 16, i64 0, !dbg !6948
+  %394 = load float* %393, align 4, !dbg !6948, !tbaa !3269
+  %395 = fpext float %394 to double, !dbg !6948
+  %396 = fmul double %392, %395, !dbg !6949
+  %397 = load float* getelementptr inbounds (%"struct.pov::Frame_Struct"* @_ZN3pov5FrameE, i64 0, i32 10, i64 0), align 4, !dbg !6950, !tbaa !3269
+  %398 = fpext float %397 to double, !dbg !6950
+  %399 = fmul double %396, %398, !dbg !6951
+  %400 = fpext float %388 to double, !dbg !6952
+  %401 = fadd double %400, %399, !dbg !6952
+  %402 = fptrunc double %401 to float, !dbg !6952
+  %403 = fpext float %387 to double, !dbg !6909
+  %404 = fmul double %.pre-phi125, %403, !dbg !6953
+  %405 = getelementptr inbounds %"struct.pov::Finish_Struct"* %389, i64 0, i32 16, i64 1, !dbg !6954
+  %406 = load float* %405, align 4, !dbg !6954, !tbaa !3269
+  %407 = fpext float %406 to double, !dbg !6954
+  %408 = fmul double %404, %407, !dbg !6955
+  %409 = load float* getelementptr inbounds (%"struct.pov::Frame_Struct"* @_ZN3pov5FrameE, i64 0, i32 10, i64 1), align 4, !dbg !6956, !tbaa !3269
+  %410 = fpext float %409 to double, !dbg !6956
+  %411 = fmul double %408, %410, !dbg !6957
+  %412 = fpext float %386 to double, !dbg !6958
+  %413 = fadd double %412, %411, !dbg !6958
+  %414 = fptrunc double %413 to float, !dbg !6958
+  %415 = fpext float %385 to double, !dbg !6910
+  %416 = fmul double %.pre-phi129, %415, !dbg !6959
+  %417 = getelementptr inbounds %"struct.pov::Finish_Struct"* %389, i64 0, i32 16, i64 2, !dbg !6960
+  %418 = load float* %417, align 4, !dbg !6960, !tbaa !3269
+  %419 = fpext float %418 to double, !dbg !6960
+  %420 = fmul double %416, %419, !dbg !6961
+  %421 = load float* getelementptr inbounds (%"struct.pov::Frame_Struct"* @_ZN3pov5FrameE, i64 0, i32 10, i64 2), align 4, !dbg !6962, !tbaa !3269
+  %422 = fpext float %421 to double, !dbg !6962
+  %423 = fmul double %420, %422, !dbg !6963
+  %424 = fpext float %384 to double, !dbg !6964
+  %425 = fadd double %424, %423, !dbg !6964
+  %426 = fptrunc double %425 to float, !dbg !6964
+  tail call void @llvm.dbg.value(metadata float* %ResCol, i64 0, metadata !1765, metadata !2666), !dbg !6965
+  tail call void @llvm.dbg.value(metadata float* %45, i64 0, metadata !1766, metadata !2666), !dbg !6967
+  %427 = load float* %ResCol, align 4, !dbg !6968, !tbaa !3269
+  %428 = fadd float %402, %427, !dbg !6968
+  store float %428, float* %ResCol, align 4, !dbg !6968, !tbaa !3269
+  %429 = load float* %2, align 4, !dbg !6969, !tbaa !3269
+  %430 = fadd float %414, %429, !dbg !6969
+  store float %430, float* %2, align 4, !dbg !6969, !tbaa !3269
+  %431 = load float* %3, align 4, !dbg !6970, !tbaa !3269
+  %432 = fadd float %426, %431, !dbg !6970
+  store float %432, float* %3, align 4, !dbg !6970, !tbaa !3269
+  tail call void @llvm.dbg.value(metadata float* %45, i64 0, metadata !1535, metadata !2666), !dbg !6971
+  tail call void @llvm.dbg.value(metadata float 0.000000e+00, i64 0, metadata !1536, metadata !2666), !dbg !6973
+  tail call void @llvm.dbg.value(metadata float 0.000000e+00, i64 0, metadata !1537, metadata !2666), !dbg !6974
+  tail call void @llvm.dbg.value(metadata float 0.000000e+00, i64 0, metadata !1538, metadata !2666), !dbg !6975
+  %433 = bitcast [5 x float]* %TmpCol to i8*, !dbg !6976
+  call void @llvm.memset.p0i8.i64(i8* %433, i8 0, i64 20, i32 16, i1 false), !dbg !6977
+  %434 = load %"struct.pov::Object_Struct"** %40, align 8, !dbg !6976, !tbaa !3151
+  %435 = getelementptr inbounds %"struct.pov::Object_Struct"* %434, i64 0, i32 13, !dbg !6978
+  %436 = load i32* %435, align 4, !dbg !6978, !tbaa !3160
+  store i32 %436, i32* getelementptr inbounds (%"struct.pov::photon_options_struct"* @_ZN3pov13photonOptionsE, i64 0, i32 26), align 4, !dbg !6979, !tbaa !6980
+  call void @llvm.lifetime.start(i64 24, i8* %50), !dbg !6609
+  call void @llvm.dbg.value(metadata %"struct.pov::Finish_Struct"* %389, i64 0, metadata !1847, metadata !2666), !dbg !6609
+  call void @llvm.dbg.value(metadata double* %49, i64 0, metadata !1848, metadata !2666), !dbg !6981
+  call void @llvm.dbg.value(metadata %"struct.pov::Ray_Struct"* %Ray, i64 0, metadata !1849, metadata !2666), !dbg !6982
+  call void @llvm.dbg.value(metadata double* %22, i64 0, metadata !1850, metadata !2666), !dbg !6983
+  call void @llvm.dbg.value(metadata float* %36, i64 0, metadata !1851, metadata !2666), !dbg !6984
+  call void @llvm.dbg.value(metadata float* %45, i64 0, metadata !1852, metadata !2666), !dbg !6985
+  call void @llvm.dbg.value(metadata double %294, i64 0, metadata !1853, metadata !2666), !dbg !6986
+  call void @llvm.dbg.value(metadata %"struct.pov::Object_Struct"* %434, i64 0, metadata !1854, metadata !2666), !dbg !6987
+  %437 = getelementptr inbounds %"struct.pov::Finish_Struct"* %389, i64 0, i32 0, !dbg !6988
+  %438 = load float* %437, align 4, !dbg !6988, !tbaa !4818
+  %439 = fcmp oeq float %438, 0.000000e+00, !dbg !6990
+  %440 = getelementptr inbounds %"struct.pov::Finish_Struct"* %389, i64 0, i32 2, !dbg !6991
+  %441 = load float* %440, align 4, !dbg !6991, !tbaa !5070
+  %442 = fcmp oeq float %441, 0.000000e+00, !dbg !6992
+  %or.cond136 = and i1 %439, %442, !dbg !6993
+  br i1 %or.cond136, label %443, label %._crit_edge107, !dbg !6993
+
+; <label>:443                                     ; preds = %383
+  %444 = getelementptr inbounds %"struct.pov::Finish_Struct"* %389, i64 0, i32 4, !dbg !6994
+  %445 = load float* %444, align 4, !dbg !6994, !tbaa !4914
+  %446 = fcmp oeq float %445, 0.000000e+00, !dbg !6995
+  br i1 %446, label %_ZN3povL7DiffuseEPNS_13Finish_StructEPdPNS_10Ray_StructES2_PfS5_dPNS_13Object_StructE.exit, label %._crit_edge107, !dbg !6996
+
+._crit_edge107:                                   ; preds = %383, %443
+  %447 = fcmp une float %441, 0.000000e+00, !dbg !6997
+  br i1 %447, label %448, label %455, !dbg !6999
+
+; <label>:448                                     ; preds = %._crit_edge107
+  %449 = bitcast double* %37 to <2 x double>*, !dbg !7000
+  %450 = load <2 x double>* %449, align 8, !dbg !7000, !tbaa !3114
+  %451 = fsub <2 x double> <double -0.000000e+00, double -0.000000e+00>, %450, !dbg !7002
+  %452 = bitcast [3 x double]* %Local_Normal.i to <2 x double>*, !dbg !7003
+  store <2 x double> %451, <2 x double>* %452, align 16, !dbg !7003, !tbaa !3114
+  %453 = load double* %39, align 8, !dbg !7004, !tbaa !3114
+  %454 = fsub double -0.000000e+00, %453, !dbg !7005
+  store double %454, double* %57, align 16, !dbg !7006, !tbaa !3114
+  br label %455, !dbg !7007
+
+; <label>:455                                     ; preds = %448, %._crit_edge107
+  %456 = and i32 %436, 131072, !dbg !7008
+  %457 = icmp eq i32 %456, 0, !dbg !7008
+  br i1 %457, label %.preheader24, label %.loopexit25, !dbg !7010
+
+.preheader24:                                     ; preds = %455
+  %Light_Source.0.i51 = load %"struct.pov::Light_Source_Struct"** getelementptr inbounds (%"struct.pov::Frame_Struct"* @_ZN3pov5FrameE, i64 0, i32 4), align 8, !dbg !7011
+  %458 = icmp eq %"struct.pov::Light_Source_Struct"* %Light_Source.0.i51, null, !dbg !7014
+  br i1 %458, label %.loopexit25, label %.lr.ph54, !dbg !7016
+
+.lr.ph54:                                         ; preds = %.preheader24, %.lr.ph54
+  %Light_Source.0.i53 = phi %"struct.pov::Light_Source_Struct"* [ %Light_Source.0.i, %.lr.ph54 ], [ %Light_Source.0.i51, %.preheader24 ]
+  %i.0.i52 = phi i32 [ %460, %.lr.ph54 ], [ 0, %.preheader24 ]
+  call fastcc void @_ZN3povL17Diffuse_One_LightEPNS_19Light_Source_StructEiPdPNS_13Finish_StructES2_PNS_10Ray_StructES2_PfS7_dPNS_13Object_StructE(%"struct.pov::Light_Source_Struct"* %Light_Source.0.i53, i32 %i.0.i52, double* %56, %"struct.pov::Finish_Struct"* %389, double* %49, %"struct.pov::Ray_Struct"* %Ray, double* %22, float* %36, float* %45, double %294, %"struct.pov::Object_Struct"* %434) #6, !dbg !7017
+  %459 = getelementptr inbounds %"struct.pov::Light_Source_Struct"* %Light_Source.0.i53, i64 0, i32 26, !dbg !7019
+  %460 = add nuw nsw i32 %i.0.i52, 1, !dbg !7020
+  call void @llvm.dbg.value(metadata i32 %460, i64 0, metadata !1857, metadata !2666), !dbg !7021
+  %Light_Source.0.i = load %"struct.pov::Light_Source_Struct"** %459, align 8, !dbg !7011
+  %461 = icmp eq %"struct.pov::Light_Source_Struct"* %Light_Source.0.i, null, !dbg !7014
+  br i1 %461, label %.loopexit25, label %.lr.ph54, !dbg !7016
+
+.loopexit25:                                      ; preds = %.lr.ph54, %.preheader24, %455
+  %462 = getelementptr inbounds %"struct.pov::Object_Struct"* %434, i64 0, i32 8, !dbg !7022
+  %463 = load %"struct.pov::Light_Source_Struct"** %462, align 8, !dbg !7022, !tbaa !7024
+  %464 = icmp eq %"struct.pov::Light_Source_Struct"* %463, null, !dbg !7025
+  br i1 %464, label %_ZN3povL7DiffuseEPNS_13Finish_StructEPdPNS_10Ray_StructES2_PfS5_dPNS_13Object_StructE.exit, label %.lr.ph56, !dbg !7026
+
+.lr.ph56:                                         ; preds = %.loopexit25, %.lr.ph56
+  %Light_Source.1.i55 = phi %"struct.pov::Light_Source_Struct"* [ %466, %.lr.ph56 ], [ %463, %.loopexit25 ]
+  call fastcc void @_ZN3povL17Diffuse_One_LightEPNS_19Light_Source_StructEiPdPNS_13Finish_StructES2_PNS_10Ray_StructES2_PfS7_dPNS_13Object_StructE(%"struct.pov::Light_Source_Struct"* %Light_Source.1.i55, i32 -1, double* %56, %"struct.pov::Finish_Struct"* %389, double* %49, %"struct.pov::Ray_Struct"* %Ray, double* %22, float* %36, float* %45, double %294, %"struct.pov::Object_Struct"* %434) #6, !dbg !7027
+  %465 = getelementptr inbounds %"struct.pov::Light_Source_Struct"* %Light_Source.1.i55, i64 0, i32 26, !dbg !7032
+  %466 = load %"struct.pov::Light_Source_Struct"** %465, align 8, !dbg !7032, !tbaa !7033
+  call void @llvm.dbg.value(metadata %"struct.pov::Light_Source_Struct"* %466, i64 0, metadata !1855, metadata !2666), !dbg !7034
+  %467 = icmp eq %"struct.pov::Light_Source_Struct"* %466, null, !dbg !7035
+  br i1 %467, label %_ZN3povL7DiffuseEPNS_13Finish_StructEPdPNS_10Ray_StructES2_PfS5_dPNS_13Object_StructE.exit, label %.lr.ph56, !dbg !7036
+
+_ZN3povL7DiffuseEPNS_13Finish_StructEPdPNS_10Ray_StructES2_PfS5_dPNS_13Object_StructE.exit: ; preds = %.lr.ph56, %443, %.loopexit25
+  call void @llvm.lifetime.end(i64 24, i8* %50), !dbg !7037
+  %468 = load float* %45, align 16, !dbg !7038, !tbaa !3269
+  %469 = fmul float %81, %468, !dbg !7038
+  store float %469, float* %45, align 16, !dbg !7038, !tbaa !3269
+  %470 = load float* %46, align 4, !dbg !7039, !tbaa !3269
+  %471 = extractelement <2 x float> %82, i32 0, !dbg !7039
+  %472 = fmul float %471, %470, !dbg !7039
+  store float %472, float* %46, align 4, !dbg !7039, !tbaa !3269
+  %473 = load float* %47, align 8, !dbg !7040, !tbaa !3269
+  %474 = extractelement <2 x float> %82, i32 1, !dbg !7040
+  %475 = fmul float %474, %473, !dbg !7040
+  store float %475, float* %47, align 8, !dbg !7040, !tbaa !3269
+  tail call void @llvm.dbg.value(metadata float* %ResCol, i64 0, metadata !1765, metadata !2666), !dbg !7041
+  tail call void @llvm.dbg.value(metadata float* %45, i64 0, metadata !1766, metadata !2666), !dbg !7043
+  %476 = load float* %ResCol, align 4, !dbg !7044, !tbaa !3269
+  %477 = fadd float %469, %476, !dbg !7044
+  store float %477, float* %ResCol, align 4, !dbg !7044, !tbaa !3269
+  %478 = load float* %2, align 4, !dbg !7045, !tbaa !3269
+  %479 = fadd float %472, %478, !dbg !7045
+  store float %479, float* %2, align 4, !dbg !7045, !tbaa !3269
+  %480 = load float* %3, align 4, !dbg !7046, !tbaa !3269
+  %481 = fadd float %475, %480, !dbg !7046
+  store float %481, float* %3, align 4, !dbg !7046, !tbaa !3269
+  %482 = load %"struct.pov::Object_Struct"** %40, align 8, !dbg !7047, !tbaa !3151
+  %483 = getelementptr inbounds %"struct.pov::Object_Struct"* %482, i64 0, i32 13, !dbg !7047
+  %484 = load i32* %483, align 4, !dbg !7047, !tbaa !3160
+  %485 = and i32 %484, 33554432, !dbg !7047
+  %486 = icmp eq i32 %485, 0, !dbg !7047
+  br i1 %486, label %487, label %689, !dbg !7048
+
+; <label>:487                                     ; preds = %_ZN3povL7DiffuseEPNS_13Finish_StructEPdPNS_10Ray_StructES2_PfS5_dPNS_13Object_StructE.exit
+  %488 = load %"struct.pov::Finish_Struct"** %188, align 8, !dbg !7049, !tbaa !5678
+  call void @llvm.lifetime.start(i64 24, i8* %50), !dbg !6610
+  call void @llvm.lifetime.start(i64 20, i8* %51), !dbg !6610
+  call void @llvm.lifetime.start(i64 20, i8* %52), !dbg !6610
+  call void @llvm.lifetime.start(i64 8, i8* %53), !dbg !6610
+  call void @llvm.dbg.value(metadata %"struct.pov::Finish_Struct"* %488, i64 0, metadata !1900, metadata !2666), !dbg !6610
+  call void @llvm.dbg.value(metadata double* %49, i64 0, metadata !1901, metadata !2666), !dbg !7050
+  call void @llvm.dbg.value(metadata %"struct.pov::Ray_Struct"* %Ray, i64 0, metadata !1902, metadata !2666), !dbg !7051
+  call void @llvm.dbg.value(metadata double* %22, i64 0, metadata !1903, metadata !2666), !dbg !7052
+  call void @llvm.dbg.value(metadata double* %Raw_Normal, i64 0, metadata !1904, metadata !2666), !dbg !7053
+  call void @llvm.dbg.value(metadata float* %36, i64 0, metadata !1905, metadata !2666), !dbg !7054
+  call void @llvm.dbg.value(metadata float* %45, i64 0, metadata !1906, metadata !2666), !dbg !7055
+  call void @llvm.dbg.value(metadata double %294, i64 0, metadata !1907, metadata !2666), !dbg !7056
+  call void @llvm.dbg.value(metadata %"struct.pov::Object_Struct"* %482, i64 0, metadata !1908, metadata !2666), !dbg !7057
+  call void @llvm.lifetime.start(i64 856, i8* %54) #5, !dbg !6611
+  call void @llvm.dbg.declare(metadata [5 x float]* undef, metadata !1914, metadata !2666), !dbg !7058
+  call void @llvm.dbg.value(metadata double 0.000000e+00, i64 0, metadata !1922, metadata !2666), !dbg !7059
+  call void @llvm.dbg.value(metadata double 1.000000e-16, i64 0, metadata !1923, metadata !2666), !dbg !7060
+  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !1924, metadata !2666), !dbg !7061
+  %489 = load i32* getelementptr inbounds (%"struct.pov::photon_options_struct"* @_ZN3pov13photonOptionsE, i64 0, i32 0), align 8, !dbg !7062, !tbaa !7063
+  %490 = icmp eq i32 %489, 0, !dbg !7064
+  %491 = load i32* getelementptr inbounds (%"struct.pov::photon_options_struct"* @_ZN3pov13photonOptionsE, i64 0, i32 14, i32 2), align 4, !dbg !7065
+  %492 = icmp slt i32 %491, 1, !dbg !7066
+  %or.cond.i12 = or i1 %490, %492, !dbg !7067
+  br i1 %or.cond.i12, label %493, label %494, !dbg !7067
+
+; <label>:493                                     ; preds = %487
+  call void @llvm.dbg.value(metadata float* %45, i64 0, metadata !1495, metadata !2666), !dbg !7068
+  call void @llvm.dbg.value(metadata float 0.000000e+00, i64 0, metadata !1496, metadata !2666), !dbg !7070
+  call void @llvm.dbg.value(metadata float 0.000000e+00, i64 0, metadata !1497, metadata !2666), !dbg !7071
+  call void @llvm.dbg.value(metadata float 0.000000e+00, i64 0, metadata !1498, metadata !2666), !dbg !7072
+  call void @llvm.dbg.value(metadata float 0.000000e+00, i64 0, metadata !1499, metadata !2666), !dbg !7073
+  call void @llvm.dbg.value(metadata float 0.000000e+00, i64 0, metadata !1500, metadata !2666), !dbg !7074
+  call void @llvm.memset.p0i8.i64(i8* %55, i8 0, i64 20, i32 16, i1 false), !dbg !7075
+  br label %_ZN3povL13PhotonDiffuseEPNS_13Finish_StructEPdPNS_10Ray_StructES2_S2_PfS5_dPNS_13Object_StructE.exit, !dbg !6612
+
+; <label>:494                                     ; preds = %487
+  %495 = getelementptr inbounds %"struct.pov::Finish_Struct"* %488, i64 0, i32 0, !dbg !7076
+  %496 = load float* %495, align 4, !dbg !7076, !tbaa !4818
+  %497 = fcmp oeq float %496, 0.000000e+00, !dbg !7078
+  %498 = getelementptr inbounds %"struct.pov::Finish_Struct"* %488, i64 0, i32 2, !dbg !7079
+  %499 = load float* %498, align 4, !dbg !7079, !tbaa !5070
+  %500 = fcmp oeq float %499, 0.000000e+00, !dbg !7080
+  %or.cond80.i = and i1 %497, %500, !dbg !7081
+  br i1 %or.cond80.i, label %501, label %._crit_edge68.i, !dbg !7081
+
+; <label>:501                                     ; preds = %494
+  %502 = getelementptr inbounds %"struct.pov::Finish_Struct"* %488, i64 0, i32 4, !dbg !7082
+  %503 = load float* %502, align 4, !dbg !7082, !tbaa !4914
+  %504 = fcmp oeq float %503, 0.000000e+00, !dbg !7083
+  br i1 %504, label %505, label %._crit_edge68.i, !dbg !7084
+
+; <label>:505                                     ; preds = %501
+  call void @llvm.dbg.value(metadata float* %45, i64 0, metadata !1495, metadata !2666), !dbg !7085
+  call void @llvm.dbg.value(metadata float 0.000000e+00, i64 0, metadata !1496, metadata !2666), !dbg !7088
+  call void @llvm.dbg.value(metadata float 0.000000e+00, i64 0, metadata !1497, metadata !2666), !dbg !7089
+  call void @llvm.dbg.value(metadata float 0.000000e+00, i64 0, metadata !1498, metadata !2666), !dbg !7090
+  call void @llvm.dbg.value(metadata float 0.000000e+00, i64 0, metadata !1499, metadata !2666), !dbg !7091
+  call void @llvm.dbg.value(metadata float 0.000000e+00, i64 0, metadata !1500, metadata !2666), !dbg !7092
+  call void @llvm.memset.p0i8.i64(i8* %55, i8 0, i64 20, i32 16, i1 false), !dbg !7093
+  br label %_ZN3povL13PhotonDiffuseEPNS_13Finish_StructEPdPNS_10Ray_StructES2_S2_PfS5_dPNS_13Object_StructE.exit, !dbg !7094
+
+._crit_edge68.i:                                  ; preds = %501, %494
+  call void @llvm.dbg.value(metadata i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 124), i64 0, metadata !1697, metadata !2666), !dbg !7095
+  %506 = load i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 124), align 8, !dbg !7097, !tbaa !2676
+  %507 = add nsw i64 %506, 1, !dbg !7097
+  store i64 %507, i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 124), align 8, !dbg !7097, !tbaa !2676
+  %508 = fcmp une float %499, 0.000000e+00, !dbg !7098
+  br i1 %508, label %509, label %516, !dbg !7099
+
+; <label>:509                                     ; preds = %._crit_edge68.i
+  %510 = bitcast double* %37 to <2 x double>*, !dbg !7100
+  %511 = load <2 x double>* %510, align 8, !dbg !7100, !tbaa !3114
+  %512 = fsub <2 x double> <double -0.000000e+00, double -0.000000e+00>, %511, !dbg !7101
+  %513 = bitcast [3 x double]* %Local_Normal.i to <2 x double>*, !dbg !7102
+  store <2 x double> %512, <2 x double>* %513, align 16, !dbg !7102, !tbaa !3114
+  %514 = load double* %39, align 8, !dbg !7103, !tbaa !3114
+  %515 = fsub double -0.000000e+00, %514, !dbg !7104
+  store double %515, double* %57, align 16, !dbg !7105, !tbaa !3114
+  br label %516, !dbg !7106
+
+; <label>:516                                     ; preds = %509, %._crit_edge68.i
+  call void @llvm.dbg.value(metadata float* %45, i64 0, metadata !1535, metadata !2666), !dbg !7107
+  call void @llvm.dbg.value(metadata float 0.000000e+00, i64 0, metadata !1536, metadata !2666), !dbg !7109
+  call void @llvm.dbg.value(metadata float 0.000000e+00, i64 0, metadata !1537, metadata !2666), !dbg !7110
+  call void @llvm.dbg.value(metadata float 0.000000e+00, i64 0, metadata !1538, metadata !2666), !dbg !7111
+  call void @llvm.dbg.value(metadata float* undef, i64 0, metadata !1535, metadata !2666), !dbg !7112
+  call void @llvm.dbg.value(metadata float 0.000000e+00, i64 0, metadata !1536, metadata !2666), !dbg !7114
+  call void @llvm.dbg.value(metadata float 0.000000e+00, i64 0, metadata !1537, metadata !2666), !dbg !7115
+  call void @llvm.dbg.value(metadata float 0.000000e+00, i64 0, metadata !1538, metadata !2666), !dbg !7116
+  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !1914, metadata !3896), !dbg !7058
+  call void @llvm.dbg.value(metadata i32 -1, i64 0, metadata !1918, metadata !2666), !dbg !7117
+  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !1921, metadata !2666), !dbg !7118
+  call void @llvm.memset.p0i8.i64(i8* %55, i8 0, i64 20, i32 16, i1 false), !dbg !7119
+  %517 = load i32* getelementptr inbounds (%"struct.pov::photon_options_struct"* @_ZN3pov13photonOptionsE, i64 0, i32 9), align 8, !dbg !7120, !tbaa !7121
+  %518 = icmp sgt i32 %517, -1, !dbg !7122
+  %519 = load i32* getelementptr inbounds (%"struct.pov::photon_options_struct"* @_ZN3pov13photonOptionsE, i64 0, i32 14, i32 6), align 8, !dbg !7065
+  %520 = icmp sgt i32 %519, 0, !dbg !7123
+  %or.cond72341.i = and i1 %518, %520, !dbg !7124
+  br i1 %or.cond72341.i, label %.lr.ph29.lr.ph.i, label %.critedge.thread.i, !dbg !7124
+
+.lr.ph29.lr.ph.i:                                 ; preds = %516
+  %521 = load double* getelementptr inbounds (%"struct.pov::photon_options_struct"* @_ZN3pov13photonOptionsE, i64 0, i32 14, i32 3), align 8, !dbg !7125, !tbaa !7126
+  %522 = getelementptr inbounds %"struct.pov::Finish_Struct"* %488, i64 0, i32 4, !dbg !7127
+  %523 = getelementptr inbounds %"struct.pov::Finish_Struct"* %488, i64 0, i32 6, !dbg !7131
+  %.pre69.pre.i = load i32* @_ZN3pov22photonsAlreadyGatheredE, align 4, !dbg !7133, !tbaa !2664
+  br label %.lr.ph29.i, !dbg !7124
+
+.lr.ph29.i:                                       ; preds = %.outer.i, %.lr.ph29.lr.ph.i
+  %.pre69.i = phi i32 [ %.pre69.pre.i, %.lr.ph29.lr.ph.i ], [ 0, %.outer.i ], !dbg !7065
+  %Size.0.ph50.i = phi double [ %521, %.lr.ph29.lr.ph.i ], [ %654, %.outer.i ], !dbg !7065
+  %r.0.ph49.i = phi double [ undef, %.lr.ph29.lr.ph.i ], [ %r.1.i, %.outer.i ], !dbg !7065
+  %expanded.0.ph48.i = phi i32 [ 0, %.lr.ph29.lr.ph.i ], [ %expanded.2.i, %.outer.i ], !dbg !7065
+  %prevDensity.0.ph47.i = phi double [ 1.000000e-16, %.lr.ph29.lr.ph.i ], [ %prevDensity.2.i, %.outer.i ], !dbg !7065
+  %step.0.ph46.i = phi i32 [ 0, %.lr.ph29.lr.ph.i ], [ %655, %.outer.i ], !dbg !7065
+  %n.0.ph45.i = phi i32 [ -1, %.lr.ph29.lr.ph.i ], [ %n.1.i, %.outer.i ], !dbg !7065
+  %.ph944.i = phi i32 [ 0, %.lr.ph29.lr.ph.i ], [ %650, %.outer.i ], !dbg !7065
+  %.ph843.i = phi i32 [ 0, %.lr.ph29.lr.ph.i ], [ %649, %.outer.i ], !dbg !7065
+  %.ph42.i = phi i32 [ 0, %.lr.ph29.lr.ph.i ], [ %648, %.outer.i ], !dbg !7065
+  call void @llvm.dbg.value(metadata float* %58, i64 0, metadata !1535, metadata !2666), !dbg !7134
+  call void @llvm.dbg.value(metadata float 0.000000e+00, i64 0, metadata !1536, metadata !2666), !dbg !7135
+  call void @llvm.dbg.value(metadata float 0.000000e+00, i64 0, metadata !1537, metadata !2666), !dbg !7136
+  call void @llvm.dbg.value(metadata float 0.000000e+00, i64 0, metadata !1538, metadata !2666), !dbg !7137
+  call void @llvm.dbg.value(metadata double 0.000000e+00, i64 0, metadata !1917, metadata !2666), !dbg !7138
+  call void @llvm.memset.p0i8.i64(i8* %52, i8 0, i64 20, i32 16, i1 false), !dbg !7139
+  store double 0.000000e+00, double* %tempr.i, align 8, !dbg !7140, !tbaa !3114
+  %524 = icmp slt i32 %.pre69.i, 1, !dbg !7141
+  br i1 %524, label %526, label %.thread72.i, !dbg !7142
+
+.thread72.i:                                      ; preds = %.lr.ph29.i
+  call void @llvm.dbg.value(metadata i32 %.pre69.i, i64 0, metadata !1919, metadata !2666), !dbg !7143
+  %525 = load i64* bitcast (double* @_ZN3pov11previousRadE to i64*), align 8, !dbg !7144, !tbaa !3114
+  store i64 %525, i64* %69, align 8, !dbg !6636, !tbaa !3114
+  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !1920, metadata !2666), !dbg !7145
+  br label %.lr.ph.i13, !dbg !7146
+
+; <label>:526                                     ; preds = %.lr.ph29.i
+  call void @llvm.dbg.value(metadata double* %tempr.i, i64 0, metadata !1917, metadata !2666), !dbg !7138
+  %527 = call i32 @_ZN3pov13gatherPhotonsEPddS0_S0_iPNS_17photon_map_structE(double* %49, double %Size.0.ph50.i, double* %tempr.i, double* %22, i32 1, %"struct.pov::photon_map_struct"* getelementptr inbounds (%"struct.pov::photon_options_struct"* @_ZN3pov13photonOptionsE, i64 0, i32 14)) #6, !dbg !7147
+  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !1920, metadata !2666), !dbg !7145
+  %528 = icmp sgt i32 %527, 0, !dbg !7149
+  br i1 %528, label %.lr.ph.i13, label %._crit_edge.i15, !dbg !7146
+
+.lr.ph.i13:                                       ; preds = %526, %.thread72.i
+  %tempn.074.i = phi i32 [ %.pre69.i, %.thread72.i ], [ %527, %526 ], !dbg !7065
+  %529 = add i32 %tempn.074.i, -1, !dbg !7146
+  br label %530, !dbg !7146
+
+; <label>:530                                     ; preds = %625, %.lr.ph.i13
+  %indvars.iv.i = phi i64 [ 0, %.lr.ph.i13 ], [ %indvars.iv.next.i, %625 ], !dbg !7065
+  %531 = load %"struct.pov::photon_struct"*** getelementptr inbounds (%"struct.pov::photon_options_struct"* @_ZN3pov13photonOptionsE, i64 0, i32 21), align 8, !dbg !7150, !tbaa !7151
+  %532 = getelementptr inbounds %"struct.pov::photon_struct"** %531, i64 %indvars.iv.i, !dbg !7152
+  %533 = load %"struct.pov::photon_struct"** %532, align 8, !dbg !7152, !tbaa !2657
+  %534 = getelementptr inbounds %"struct.pov::photon_struct"* %533, i64 0, i32 1, i64 0, !dbg !7152
+  call void @_ZN3pov17photonRgbe2colourEPfPh(float* %61, i8* %534) #6, !dbg !7153
+  %535 = load %"struct.pov::photon_struct"*** getelementptr inbounds (%"struct.pov::photon_options_struct"* @_ZN3pov13photonOptionsE, i64 0, i32 21), align 8, !dbg !7154, !tbaa !7151
+  %536 = getelementptr inbounds %"struct.pov::photon_struct"** %535, i64 %indvars.iv.i, !dbg !7155
+  %537 = load %"struct.pov::photon_struct"** %536, align 8, !dbg !7155, !tbaa !2657
+  %538 = getelementptr inbounds %"struct.pov::photon_struct"* %537, i64 0, i32 3, !dbg !7156
+  %539 = load i8* %538, align 1, !dbg !7156, !tbaa !7157
+  %540 = sext i8 %539 to i64, !dbg !7155
+  %541 = add nsw i64 %540, 127, !dbg !7159
+  %542 = getelementptr inbounds %"struct.pov::photon_struct"* %537, i64 0, i32 4, !dbg !7160
+  %543 = load i8* %542, align 1, !dbg !7160, !tbaa !7161
+  %544 = sext i8 %543 to i64, !dbg !7162
+  %545 = add nsw i64 %544, 127, !dbg !7163
+  %546 = load double** getelementptr inbounds (%"struct.pov::photon_options_struct"* @_ZN3pov13photonOptionsE, i64 0, i32 20), align 8, !dbg !7164, !tbaa !7165
+  %547 = getelementptr inbounds double* %546, i64 %541, !dbg !7166
+  %548 = bitcast double* %547 to i64*, !dbg !7166
+  %549 = load i64* %548, align 8, !dbg !7166, !tbaa !3114
+  store i64 %549, i64* %63, align 8, !dbg !6628, !tbaa !3114
+  %550 = load double** getelementptr inbounds (%"struct.pov::photon_options_struct"* @_ZN3pov13photonOptionsE, i64 0, i32 19), align 8, !dbg !7167, !tbaa !7168
+  %551 = getelementptr inbounds double* %550, i64 %541, !dbg !7169
+  %552 = load double* %551, align 8, !dbg !7169, !tbaa !3114
+  %553 = getelementptr inbounds double* %546, i64 %545, !dbg !7170
+  %554 = load double* %553, align 8, !dbg !7170, !tbaa !3114
+  %555 = fmul double %552, %554, !dbg !7171
+  store double %555, double* %65, align 8, !dbg !7172, !tbaa !3114
+  %556 = getelementptr inbounds double* %550, i64 %545, !dbg !7173
+  %557 = load double* %556, align 8, !dbg !7173, !tbaa !3114
+  %558 = fmul double %552, %557, !dbg !7174
+  store double %558, double* %64, align 8, !dbg !7175, !tbaa !3114
+  call void @llvm.dbg.value(metadata double* %64, i64 0, metadata !1938, metadata !2666), !dbg !7176
+  %559 = bitcast %"struct.pov::photon_struct"* %537 to <2 x float>*, !dbg !7177
+  %560 = load <2 x float>* %559, align 4, !dbg !7177, !tbaa !3269
+  %561 = fpext <2 x float> %560 to <2 x double>, !dbg !7177
+  %562 = bitcast i64 %549 to double, !dbg !7065
+  %563 = insertelement <2 x double> undef, double %558, i32 0, !dbg !7178
+  %564 = insertelement <2 x double> %563, double %562, i32 1, !dbg !7178
+  %565 = fsub <2 x double> %561, %564, !dbg !7178
+  %566 = bitcast %"struct.pov::Ray_Struct"* %Light_Source_Ray.i to <2 x double>*, !dbg !7179
+  store <2 x double> %565, <2 x double>* %566, align 16, !dbg !7179, !tbaa !3114
+  %567 = getelementptr inbounds %"struct.pov::photon_struct"* %537, i64 0, i32 0, i64 2, !dbg !7180
+  %568 = load float* %567, align 4, !dbg !7180, !tbaa !3269
+  %569 = fpext float %568 to double, !dbg !7180
+  %570 = fsub double %569, %555, !dbg !7181
+  store double %570, double* %66, align 16, !dbg !7182, !tbaa !3114
+  call void @llvm.dbg.value(metadata double* %Raw_Normal, i64 0, metadata !1358, metadata !2666), !dbg !7183
+  call void @llvm.dbg.value(metadata double* %64, i64 0, metadata !1359, metadata !2666), !dbg !7185
+  %571 = load double* %Raw_Normal, align 8, !dbg !7186, !tbaa !3114
+  %572 = fmul double %558, %571, !dbg !7187
+  %573 = load double* %24, align 8, !dbg !7188, !tbaa !3114
+  %574 = fmul double %562, %573, !dbg !7189
+  %575 = fadd double %572, %574, !dbg !7190
+  %576 = load double* %27, align 8, !dbg !7191, !tbaa !3114
+  %577 = fmul double %555, %576, !dbg !7192
+  %578 = fadd double %575, %577, !dbg !7193
+  call void @llvm.dbg.value(metadata double %578, i64 0, metadata !1357, metadata !2666), !dbg !7194
+  call void @llvm.dbg.value(metadata double %578, i64 0, metadata !1925, metadata !2666), !dbg !7195
+  call void @llvm.dbg.value(metadata double %578, i64 0, metadata !1925, metadata !2666), !dbg !7195
+  call void @llvm.dbg.value(metadata double %578, i64 0, metadata !1925, metadata !2666), !dbg !7195
+  call void @llvm.dbg.value(metadata double %578, i64 0, metadata !1925, metadata !2666), !dbg !7195
+  %579 = fcmp ogt double %578, 1.000000e+00, !dbg !7196
+  br i1 %579, label %.thread.i, label %580, !dbg !7198
+
+; <label>:580                                     ; preds = %530
+  %581 = fcmp olt double %578, 1.000000e-01, !dbg !7199
+  br i1 %581, label %582, label %.thread.i, !dbg !7201
+
+; <label>:582                                     ; preds = %580
+  call void @llvm.dbg.value(metadata double 1.000000e-01, i64 0, metadata !1925, metadata !2666), !dbg !7195
+  call void @llvm.dbg.value(metadata double 1.000000e-01, i64 0, metadata !1357, metadata !2666), !dbg !7194
+  call void @llvm.dbg.value(metadata double 1.000000e-01, i64 0, metadata !1925, metadata !2666), !dbg !7195
+  call void @llvm.dbg.value(metadata double 1.000000e-01, i64 0, metadata !1925, metadata !2666), !dbg !7195
+  call void @llvm.dbg.value(metadata double 1.000000e-01, i64 0, metadata !1925, metadata !2666), !dbg !7195
+  call void @llvm.dbg.value(metadata double 1.000000e-01, i64 0, metadata !1925, metadata !2666), !dbg !7195
+  br label %.thread.i, !dbg !7202
+
+.thread.i:                                        ; preds = %582, %580, %530
+  %583 = phi double [ 1.000000e-01, %582 ], [ %578, %580 ], [ 1.000000e+00, %530 ], !dbg !7195
+  %584 = call double @fabs(double %583) #7, !dbg !7203
+  %585 = fdiv double 1.000000e+00, %584, !dbg !7204
+  call void @llvm.dbg.value(metadata double %585, i64 0, metadata !1925, metadata !2666), !dbg !7195
+  call void @llvm.dbg.value(metadata double %585, i64 0, metadata !1357, metadata !2666), !dbg !7194
+  call void @llvm.dbg.value(metadata double %585, i64 0, metadata !1925, metadata !2666), !dbg !7195
+  call void @llvm.dbg.value(metadata double %585, i64 0, metadata !1925, metadata !2666), !dbg !7195
+  call void @llvm.dbg.value(metadata double %585, i64 0, metadata !1925, metadata !2666), !dbg !7195
+  call void @llvm.dbg.value(metadata double %585, i64 0, metadata !1925, metadata !2666), !dbg !7195
+  %586 = fptrunc double %585 to float, !dbg !7205
+  call void @llvm.dbg.value(metadata float* %61, i64 0, metadata !1415, metadata !2666), !dbg !7206
+  call void @llvm.dbg.value(metadata float %586, i64 0, metadata !1416, metadata !2666), !dbg !7207
+  %587 = load float* %61, align 16, !dbg !7208, !tbaa !3269
+  %588 = fmul float %587, %586, !dbg !7208
+  store float %588, float* %61, align 16, !dbg !7208, !tbaa !3269
+  %589 = load float* %67, align 4, !dbg !7209, !tbaa !3269
+  %590 = fmul float %586, %589, !dbg !7209
+  store float %590, float* %67, align 4, !dbg !7209, !tbaa !3269
+  %591 = load float* %68, align 8, !dbg !7210, !tbaa !3269
+  %592 = fmul float %586, %591, !dbg !7210
+  store float %592, float* %68, align 8, !dbg !7210, !tbaa !3269
+  %593 = load i32* %483, align 4, !dbg !7211, !tbaa !3160
+  %594 = and i32 %593, 16384, !dbg !7213
+  %595 = icmp eq i32 %594, 0, !dbg !7213
+  br i1 %595, label %596, label %606, !dbg !7214
+
+; <label>:596                                     ; preds = %.thread.i
+  call void @llvm.dbg.value(metadata double* %22, i64 0, metadata !1358, metadata !2666), !dbg !7215
+  call void @llvm.dbg.value(metadata double* %64, i64 0, metadata !1359, metadata !2666), !dbg !7218
+  %597 = load double* %22, align 16, !dbg !7219, !tbaa !3114
+  %598 = fmul double %558, %597, !dbg !7220
+  %599 = load double* %25, align 8, !dbg !7221, !tbaa !3114
+  %600 = fmul double %562, %599, !dbg !7222
+  %601 = fadd double %598, %600, !dbg !7223
+  %602 = load double* %29, align 16, !dbg !7224, !tbaa !3114
+  %603 = fmul double %555, %602, !dbg !7225
+  %604 = fadd double %601, %603, !dbg !7226
+  call void @llvm.dbg.value(metadata double %604, i64 0, metadata !1357, metadata !2666), !dbg !7227
+  call void @llvm.dbg.value(metadata double %604, i64 0, metadata !1909, metadata !2666), !dbg !7228
+  call void @llvm.dbg.value(metadata double %604, i64 0, metadata !1909, metadata !2666), !dbg !7228
+  %605 = fcmp olt double %604, 1.000000e-07, !dbg !7229
+  br i1 %605, label %625, label %606, !dbg !7231
+
+; <label>:606                                     ; preds = %596, %.thread.i
+  %607 = load float* %495, align 4, !dbg !7232, !tbaa !4818
+  %608 = fcmp ogt float %607, 0.000000e+00, !dbg !7234
+  br i1 %608, label %609, label %610, !dbg !7235
+
+; <label>:609                                     ; preds = %606
+  call void @llvm.dbg.value(metadata %"struct.pov::Ray_Struct"* %Light_Source_Ray.i, i64 0, metadata !1910, metadata !2666), !dbg !7236
+  call void @_ZN3pov10do_diffuseEPNS_13Finish_StructEPNS_10Ray_StructEPdPfS5_S5_d(%"struct.pov::Finish_Struct"* %488, %"struct.pov::Ray_Struct"* %Light_Source_Ray.i, double* %22, float* %58, float* %61, float* %36, double %294) #6, !dbg !7237
+  br label %610, !dbg !7239
+
+; <label>:610                                     ; preds = %609, %606
+  %611 = load i32* @_ZN3pov21Radiosity_Trace_LevelE, align 4, !dbg !7240, !tbaa !2664
+  %612 = icmp slt i32 %611, 2, !dbg !7241
+  br i1 %612, label %613, label %621, !dbg !7242
+
+; <label>:613                                     ; preds = %610
+  %614 = load float* %522, align 4, !dbg !7127, !tbaa !4914
+  %615 = fcmp ogt float %614, 0.000000e+00, !dbg !7243
+  br i1 %615, label %616, label %617, !dbg !7244
+
+; <label>:616                                     ; preds = %613
+  call void @llvm.dbg.value(metadata %"struct.pov::Ray_Struct"* %Light_Source_Ray.i, i64 0, metadata !1910, metadata !2666), !dbg !7236
+  call void @_ZN3pov8do_phongEPNS_13Finish_StructEPNS_10Ray_StructEPdS4_PfS5_S5_(%"struct.pov::Finish_Struct"* %488, %"struct.pov::Ray_Struct"* %Light_Source_Ray.i, double* %37, double* %22, float* %58, float* %61, float* %36) #6, !dbg !7245
+  br label %617, !dbg !7247
+
+; <label>:617                                     ; preds = %616, %613
+  %618 = load float* %498, align 4, !dbg !7248, !tbaa !5070
+  %619 = fcmp ogt float %618, 0.000000e+00, !dbg !7250
+  br i1 %619, label %620, label %621, !dbg !7251
+
+; <label>:620                                     ; preds = %617
+  call void @llvm.dbg.value(metadata %"struct.pov::Ray_Struct"* %Light_Source_Ray.i, i64 0, metadata !1910, metadata !2666), !dbg !7236
+  call void @_ZN3pov11do_specularEPNS_13Finish_StructEPNS_10Ray_StructEPdS4_PfS5_S5_(%"struct.pov::Finish_Struct"* %488, %"struct.pov::Ray_Struct"* %Light_Source_Ray.i, double* %56, double* %22, float* %58, float* %61, float* %36) #6, !dbg !7252
+  br label %621, !dbg !7254
+
+; <label>:621                                     ; preds = %620, %617, %610
+  %622 = load float* %523, align 4, !dbg !7131, !tbaa !7255
+  %623 = fcmp ogt float %622, 0.000000e+00, !dbg !7256
+  br i1 %623, label %624, label %625, !dbg !7257
+
+; <label>:624                                     ; preds = %621
+  call void @llvm.dbg.value(metadata %"struct.pov::Ray_Struct"* %Light_Source_Ray.i, i64 0, metadata !1910, metadata !2666), !dbg !7236
+  call fastcc void @_ZN3povL7do_iridEPNS_13Finish_StructEPNS_10Ray_StructEPdS4_Pf(%"struct.pov::Finish_Struct"* %488, %"struct.pov::Ray_Struct"* %Light_Source_Ray.i, double* %22, double* %49, float* %58) #6, !dbg !7258
+  br label %625, !dbg !7260
+
+; <label>:625                                     ; preds = %624, %621, %596
+  %indvars.iv.next.i = add nuw nsw i64 %indvars.iv.i, 1, !dbg !7146
+  %lftr.wideiv94 = trunc i64 %indvars.iv.i to i32, !dbg !7146
+  %exitcond95 = icmp eq i32 %lftr.wideiv94, %529, !dbg !7146
+  br i1 %exitcond95, label %._crit_edge.i15, label %530, !dbg !7146
+
+._crit_edge.i15:                                  ; preds = %625, %526
+  %626 = phi i1 [ false, %526 ], [ true, %625 ], !dbg !7065
+  %tempn.073.i = phi i32 [ %527, %526 ], [ %tempn.074.i, %625 ], !dbg !7065
+  %627 = sitofp i32 %tempn.073.i to double, !dbg !7261
+  call void @llvm.dbg.value(metadata double* %tempr.i, i64 0, metadata !1917, metadata !2666), !dbg !7138
+  %628 = load double* %tempr.i, align 8, !dbg !7262, !tbaa !3114
+  %629 = fmul double %628, %628, !dbg !7263
+  %630 = fdiv double %627, %629, !dbg !7264
+  call void @llvm.dbg.value(metadata double %630, i64 0, metadata !1922, metadata !2666), !dbg !7059
+  %631 = fsub double %630, %prevDensity.0.ph47.i, !dbg !7265
+  %632 = fdiv double %631, %prevDensity.0.ph47.i, !dbg !7266
+  %633 = load double* getelementptr inbounds (%"struct.pov::photon_options_struct"* @_ZN3pov13photonOptionsE, i64 0, i32 3), align 8, !dbg !7267, !tbaa !7268
+  %634 = fcmp olt double %632, %633, !dbg !7269
+  %635 = icmp eq i32 %step.0.ph46.i, 0, !dbg !7270
+  %or.cond3.i14 = or i1 %635, %634, !dbg !7271
+  br i1 %or.cond3.i14, label %639, label %636, !dbg !7271
+
+; <label>:636                                     ; preds = %._crit_edge.i15
+  %637 = load i32* getelementptr inbounds (%"struct.pov::photon_options_struct"* @_ZN3pov13photonOptionsE, i64 0, i32 4), align 8, !dbg !7272, !tbaa !7273
+  %638 = icmp slt i32 %tempn.073.i, %637, !dbg !7274
+  %or.cond5.i16 = and i1 %626, %638, !dbg !7275
+  br i1 %or.cond5.i16, label %639, label %647, !dbg !7275
+
+; <label>:639                                     ; preds = %636, %._crit_edge.i15
+  %640 = icmp sgt i32 %step.0.ph46.i, 0, !dbg !7276
+  call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !1924, metadata !2666), !dbg !7061
+  %.expanded.0.i = select i1 %640, i32 1, i32 %expanded.0.ph48.i, !dbg !7278
+  call void @llvm.dbg.value(metadata double %630, i64 0, metadata !1923, metadata !2666), !dbg !7060
+  %641 = fcmp oeq double %630, 0.000000e+00, !dbg !7279
+  call void @llvm.dbg.value(metadata double 1.000000e-16, i64 0, metadata !1923, metadata !2666), !dbg !7060
+  %prevDensity.1.i = select i1 %641, double 1.000000e-16, double %630, !dbg !7281
+  call void @llvm.dbg.value(metadata float* undef, i64 0, metadata !1391, metadata !2666), !dbg !7282
+  call void @llvm.dbg.value(metadata float* %58, i64 0, metadata !1392, metadata !2666), !dbg !7283
+  %642 = load i64* %70, align 16, !dbg !6639
+  %643 = trunc i64 %642 to i32, !dbg !6639
+  call void @llvm.dbg.value(metadata i32 %643, i64 0, metadata !1914, metadata !3896), !dbg !7058
+  %644 = lshr i64 %642, 32, !dbg !7065
+  %645 = trunc i64 %644 to i32, !dbg !7065
+  call void @llvm.dbg.value(metadata i32 %645, i64 0, metadata !1914, metadata !3933), !dbg !7058
+  %646 = load i32* %60, align 8, !dbg !6622, !tbaa !3269
+  call void @llvm.dbg.value(metadata i32 %646, i64 0, metadata !1914, metadata !3940), !dbg !7058
+  call void @llvm.dbg.value(metadata double* %tempr.i, i64 0, metadata !1917, metadata !2666), !dbg !7138
+  call void @llvm.dbg.value(metadata double %628, i64 0, metadata !1916, metadata !2666), !dbg !7284
+  br label %647, !dbg !7285
+
+; <label>:647                                     ; preds = %639, %636
+  %648 = phi i32 [ %646, %639 ], [ %.ph42.i, %636 ], !dbg !7065
+  %649 = phi i32 [ %645, %639 ], [ %.ph843.i, %636 ], !dbg !7065
+  %650 = phi i32 [ %643, %639 ], [ %.ph944.i, %636 ], !dbg !7065
+  %n.1.i = phi i32 [ %tempn.073.i, %639 ], [ %n.0.ph45.i, %636 ], !dbg !7065
+  %prevDensity.2.i = phi double [ %prevDensity.1.i, %639 ], [ %prevDensity.0.ph47.i, %636 ], !dbg !7065
+  %expanded.2.i = phi i32 [ %.expanded.0.i, %639 ], [ %expanded.0.ph48.i, %636 ], !dbg !7065
+  %r.1.i = phi double [ %628, %639 ], [ %r.0.ph49.i, %636 ], !dbg !7065
+  %651 = load i32* @_ZN3pov22photonsAlreadyGatheredE, align 4, !dbg !7286, !tbaa !2664
+  %652 = icmp eq i32 %651, 0, !dbg !7286
+  br i1 %652, label %.outer.i, label %.critedge.i, !dbg !7288
+
+.outer.i:                                         ; preds = %647
+  %653 = load double* getelementptr inbounds (%"struct.pov::photon_options_struct"* @_ZN3pov13photonOptionsE, i64 0, i32 14, i32 5), align 8, !dbg !7289, !tbaa !7291
+  %654 = fadd double %Size.0.ph50.i, %653, !dbg !7292
+  call void @llvm.dbg.value(metadata double %654, i64 0, metadata !1915, metadata !2666), !dbg !7293
+  %655 = add nuw nsw i32 %step.0.ph46.i, 1, !dbg !7294
+  call void @llvm.dbg.value(metadata i32 %655, i64 0, metadata !1921, metadata !2666), !dbg !7118
+  %656 = load i32* getelementptr inbounds (%"struct.pov::photon_options_struct"* @_ZN3pov13photonOptionsE, i64 0, i32 9), align 8, !dbg !7120, !tbaa !7121
+  %657 = icmp slt i32 %n.1.i, %656, !dbg !7122
+  %658 = load i32* getelementptr inbounds (%"struct.pov::photon_options_struct"* @_ZN3pov13photonOptionsE, i64 0, i32 14, i32 6), align 8, !dbg !7065
+  %659 = icmp slt i32 %655, %658, !dbg !7123
+  %or.cond723.i = and i1 %657, %659, !dbg !7124
+  br i1 %or.cond723.i, label %.lr.ph29.i, label %.critedge.i, !dbg !7124
+
+.critedge.i:                                      ; preds = %.outer.i, %647
+  %660 = icmp eq i32 %expanded.2.i, 0, !dbg !7295
+  br i1 %660, label %.critedge.thread.i, label %661, !dbg !7297
+
+; <label>:661                                     ; preds = %.critedge.i
+  call void @llvm.dbg.value(metadata i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 125), i64 0, metadata !1697, metadata !2666), !dbg !7298
+  %662 = load i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 125), align 8, !dbg !7300, !tbaa !2676
+  %663 = add nsw i64 %662, 1, !dbg !7300
+  store i64 %663, i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 125), align 8, !dbg !7300, !tbaa !2676
+  br label %.critedge.thread.i, !dbg !7301
+
+.critedge.thread.i:                               ; preds = %661, %.critedge.i, %516
+  %.lcssa79.i = phi i32 [ %648, %.critedge.i ], [ %648, %661 ], [ 0, %516 ], !dbg !7065
+  %.lcssa1178.i = phi i32 [ %649, %.critedge.i ], [ %649, %661 ], [ 0, %516 ], !dbg !7065
+  %.lcssa1377.i = phi i32 [ %650, %.critedge.i ], [ %650, %661 ], [ 0, %516 ], !dbg !7065
+  %n.0.lcssa76.i = phi i32 [ %n.1.i, %.critedge.i ], [ %n.1.i, %661 ], [ -1, %516 ], !dbg !7065
+  %r.0.lcssa75.i = phi double [ %r.1.i, %.critedge.i ], [ %r.1.i, %661 ], [ undef, %516 ], !dbg !7065
+  %664 = fmul double %r.0.lcssa75.i, 0x400921FB54442D18, !dbg !7302
+  %665 = fmul double %r.0.lcssa75.i, %664, !dbg !7303
+  %666 = fdiv double 1.000000e+00, %665, !dbg !7304
+  %667 = fptrunc double %666 to float, !dbg !7305
+  call void @llvm.dbg.value(metadata float* undef, i64 0, metadata !1415, metadata !2666), !dbg !7306
+  call void @llvm.dbg.value(metadata float %667, i64 0, metadata !1416, metadata !2666), !dbg !7308
+  %668 = bitcast i32 %.lcssa1377.i to float, !dbg !7309
+  %669 = fmul float %668, %667, !dbg !7309
+  %670 = bitcast i32 %.lcssa1178.i to float, !dbg !7310
+  %671 = fmul float %670, %667, !dbg !7310
+  %672 = bitcast i32 %.lcssa79.i to float, !dbg !7311
+  %673 = fmul float %672, %667, !dbg !7311
+  call void @llvm.dbg.value(metadata float* %45, i64 0, metadata !1765, metadata !2666), !dbg !7312
+  call void @llvm.dbg.value(metadata float* undef, i64 0, metadata !1766, metadata !2666), !dbg !7314
+  %674 = fadd float %669, 0.000000e+00, !dbg !7315
+  store float %674, float* %45, align 16, !dbg !7315, !tbaa !3269
+  %675 = fadd float %671, 0.000000e+00, !dbg !7316
+  store float %675, float* %46, align 4, !dbg !7316, !tbaa !3269
+  %676 = fadd float %673, 0.000000e+00, !dbg !7317
+  store float %676, float* %47, align 8, !dbg !7317, !tbaa !3269
+  store double %r.0.lcssa75.i, double* @_ZN3pov11previousRadE, align 8, !dbg !7318, !tbaa !3114
+  store i32 %n.0.lcssa76.i, i32* @_ZN3pov22photonsAlreadyGatheredE, align 4, !dbg !7319, !tbaa !2664
+  %.pre110 = load float* %ResCol, align 4, !dbg !7320, !tbaa !3269
+  %.pre111 = load float* %2, align 4, !dbg !7322, !tbaa !3269
+  %.pre112 = load float* %3, align 4, !dbg !7323, !tbaa !3269
+  br label %_ZN3povL13PhotonDiffuseEPNS_13Finish_StructEPdPNS_10Ray_StructES2_S2_PfS5_dPNS_13Object_StructE.exit, !dbg !7324
+
+_ZN3povL13PhotonDiffuseEPNS_13Finish_StructEPdPNS_10Ray_StructES2_S2_PfS5_dPNS_13Object_StructE.exit: ; preds = %493, %505, %.critedge.thread.i
+  %677 = phi float [ %481, %493 ], [ %481, %505 ], [ %.pre112, %.critedge.thread.i ]
+  %678 = phi float [ %479, %493 ], [ %479, %505 ], [ %.pre111, %.critedge.thread.i ]
+  %679 = phi float [ %477, %493 ], [ %477, %505 ], [ %.pre110, %.critedge.thread.i ]
+  %680 = phi float [ 0.000000e+00, %493 ], [ 0.000000e+00, %505 ], [ %676, %.critedge.thread.i ]
+  %681 = phi float [ 0.000000e+00, %493 ], [ 0.000000e+00, %505 ], [ %675, %.critedge.thread.i ]
+  %682 = phi float [ 0.000000e+00, %493 ], [ 0.000000e+00, %505 ], [ %674, %.critedge.thread.i ]
+  call void @llvm.lifetime.end(i64 856, i8* %54) #5, !dbg !7324
+  call void @llvm.lifetime.end(i64 24, i8* %50), !dbg !7324
+  call void @llvm.lifetime.end(i64 20, i8* %51), !dbg !7324
+  call void @llvm.lifetime.end(i64 20, i8* %52), !dbg !7324
+  call void @llvm.lifetime.end(i64 8, i8* %53), !dbg !7324
+  %683 = fmul float %81, %682, !dbg !7325
+  store float %683, float* %45, align 16, !dbg !7325, !tbaa !3269
+  %684 = fmul float %471, %681, !dbg !7326
+  store float %684, float* %46, align 4, !dbg !7326, !tbaa !3269
+  %685 = fmul float %474, %680, !dbg !7327
+  store float %685, float* %47, align 8, !dbg !7327, !tbaa !3269
+  tail call void @llvm.dbg.value(metadata float* %ResCol, i64 0, metadata !1765, metadata !2666), !dbg !7328
+  tail call void @llvm.dbg.value(metadata float* %45, i64 0, metadata !1766, metadata !2666), !dbg !7329
+  %686 = fadd float %683, %679, !dbg !7320
+  store float %686, float* %ResCol, align 4, !dbg !7320, !tbaa !3269
+  %687 = fadd float %684, %678, !dbg !7322
+  store float %687, float* %2, align 4, !dbg !7322, !tbaa !3269
+  %688 = fadd float %685, %677, !dbg !7323
+  store float %688, float* %3, align 4, !dbg !7323, !tbaa !3269
+  br label %689, !dbg !7330
+
+; <label>:689                                     ; preds = %_ZN3povL7DiffuseEPNS_13Finish_StructEPdPNS_10Ray_StructES2_PfS5_dPNS_13Object_StructE.exit, %_ZN3povL13PhotonDiffuseEPNS_13Finish_StructEPdPNS_10Ray_StructES2_S2_PfS5_dPNS_13Object_StructE.exit, %174
+  %radiosity_done.2 = phi i32 [ %radiosity_done.064, %174 ], [ %radiosity_done.1, %_ZN3povL7DiffuseEPNS_13Finish_StructEPdPNS_10Ray_StructES2_PfS5_dPNS_13Object_StructE.exit ], [ %radiosity_done.1, %_ZN3povL13PhotonDiffuseEPNS_13Finish_StructEPdPNS_10Ray_StructES2_S2_PfS5_dPNS_13Object_StructE.exit ]
+  br i1 %170, label %690, label %731, !dbg !7331
+
+; <label>:690                                     ; preds = %689
+  %691 = load float* %36, align 16, !dbg !7332, !tbaa !3269
+  %692 = load float* %43, align 4, !dbg !7335, !tbaa !3269
+  %693 = fmul float %691, %692, !dbg !7336
+  %694 = load float* %44, align 16, !dbg !7337, !tbaa !3269
+  %695 = fadd float %693, %694, !dbg !7338
+  %696 = fmul float %81, %695, !dbg !7339
+  call void @llvm.dbg.value(metadata float %696, i64 0, metadata !1818, metadata !3896), !dbg !6503
+  call void @llvm.dbg.value(metadata float undef, i64 0, metadata !1818, metadata !3933), !dbg !6503
+  %697 = bitcast float* %41 to <2 x float>*, !dbg !7340
+  %698 = load <2 x float>* %697, align 4, !dbg !7340, !tbaa !3269
+  %699 = insertelement <2 x float> undef, float %692, i32 0, !dbg !7341
+  %700 = insertelement <2 x float> %699, float %692, i32 1, !dbg !7341
+  %701 = fmul <2 x float> %700, %698, !dbg !7341
+  %702 = insertelement <2 x float> undef, float %694, i32 0, !dbg !7342
+  %703 = insertelement <2 x float> %702, float %694, i32 1, !dbg !7342
+  %704 = fadd <2 x float> %701, %703, !dbg !7342
+  %705 = fmul <2 x float> %82, %704, !dbg !7343
+  call void @llvm.dbg.value(metadata float undef, i64 0, metadata !1818, metadata !3940), !dbg !6503
+  %706 = getelementptr inbounds %"struct.pov::Texture_Struct"* %Layer.059, i64 0, i32 14, !dbg !7344
+  %707 = load %"struct.pov::Finish_Struct"** %706, align 8, !dbg !7344, !tbaa !5678
+  %708 = getelementptr inbounds %"struct.pov::Finish_Struct"* %707, i64 0, i32 22, !dbg !7346
+  %709 = load i32* %708, align 4, !dbg !7346, !tbaa !5799
+  %710 = icmp eq i32 %709, 0, !dbg !7347
+  br i1 %710, label %731, label %711, !dbg !7348
+
+; <label>:711                                     ; preds = %690
+  call void @llvm.dbg.value(metadata double 1.000000e+00, i64 0, metadata !2215, metadata !2666), !dbg !7349
+  call void @llvm.dbg.value(metadata double 1.000000e+00, i64 0, metadata !2222, metadata !2666), !dbg !7354
+  call void @llvm.dbg.value(metadata double 1.000000e+00, i64 0, metadata !2218, metadata !2666), !dbg !7355
+  %712 = getelementptr inbounds %"struct.pov::ComTexData_Struct"* %1, i64 0, i32 4, i64 %indvars.iv96, i64 0, !dbg !7356
+  %713 = load float* %712, align 4, !dbg !7356, !tbaa !3269
+  %714 = fpext float %713 to double, !dbg !7356
+  %715 = fsub double 1.000000e+00, %714, !dbg !7357
+  call void @llvm.dbg.value(metadata double %715, i64 0, metadata !2214, metadata !2666), !dbg !7358
+  call void @llvm.dbg.value(metadata double %715, i64 0, metadata !2223, metadata !2666), !dbg !7359
+  call void @llvm.dbg.value(metadata double %715, i64 0, metadata !2219, metadata !2666), !dbg !7360
+  %716 = fcmp olt double %715, 1.000000e+00, !dbg !7361
+  %717 = select i1 %716, double %715, double 1.000000e+00, !dbg !7362
+  %718 = fpext float %696 to double, !dbg !7363
+  %719 = fmul double %718, %717, !dbg !7363
+  %720 = fptrunc double %719 to float, !dbg !7363
+  call void @llvm.dbg.value(metadata float %720, i64 0, metadata !1818, metadata !3896), !dbg !6503
+  call void @llvm.dbg.value(metadata double 1.000000e+00, i64 0, metadata !2215, metadata !2666), !dbg !7364
+  call void @llvm.dbg.value(metadata double 1.000000e+00, i64 0, metadata !2222, metadata !2666), !dbg !7368
+  call void @llvm.dbg.value(metadata double 1.000000e+00, i64 0, metadata !2218, metadata !2666), !dbg !7369
+  %721 = getelementptr inbounds %"struct.pov::ComTexData_Struct"* %1, i64 0, i32 4, i64 %indvars.iv96, i64 1, !dbg !7370
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !2214, metadata !2666), !dbg !7371
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !2223, metadata !2666), !dbg !7372
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !2219, metadata !2666), !dbg !7373
+  call void @llvm.dbg.value(metadata float undef, i64 0, metadata !1818, metadata !3933), !dbg !6503
+  call void @llvm.dbg.value(metadata double 1.000000e+00, i64 0, metadata !2215, metadata !2666), !dbg !7374
+  call void @llvm.dbg.value(metadata double 1.000000e+00, i64 0, metadata !2222, metadata !2666), !dbg !7378
+  call void @llvm.dbg.value(metadata double 1.000000e+00, i64 0, metadata !2218, metadata !2666), !dbg !7379
+  %722 = bitcast float* %721 to <2 x float>*, !dbg !7370
+  %723 = load <2 x float>* %722, align 4, !dbg !7370, !tbaa !3269
+  %724 = fpext <2 x float> %723 to <2 x double>, !dbg !7370
+  %725 = fsub <2 x double> <double 1.000000e+00, double 1.000000e+00>, %724, !dbg !7380
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !2214, metadata !2666), !dbg !7381
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !2223, metadata !2666), !dbg !7382
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !2219, metadata !2666), !dbg !7383
+  %726 = fcmp olt <2 x double> %725, <double 1.000000e+00, double 1.000000e+00>, !dbg !7384
+  %727 = select <2 x i1> %726, <2 x double> %725, <2 x double> <double 1.000000e+00, double 1.000000e+00>, !dbg !7385
+  %728 = fpext <2 x float> %705 to <2 x double>, !dbg !7386
+  %729 = fmul <2 x double> %728, %727, !dbg !7386
+  %730 = fptrunc <2 x double> %729 to <2 x float>, !dbg !7386
+  call void @llvm.dbg.value(metadata float undef, i64 0, metadata !1818, metadata !3940), !dbg !6503
+  br label %731, !dbg !7387
+
+; <label>:731                                     ; preds = %690, %711, %689
+  %732 = phi float [ %696, %690 ], [ %720, %711 ], [ %81, %689 ]
+  %733 = phi <2 x float> [ %705, %690 ], [ %730, %711 ], [ %82, %689 ]
+  call void @llvm.dbg.value(metadata double 1.000000e+00, i64 0, metadata !2215, metadata !2666), !dbg !7388
+  call void @llvm.dbg.value(metadata double 1.000000e+00, i64 0, metadata !2222, metadata !2666), !dbg !7392
+  call void @llvm.dbg.value(metadata double 1.000000e+00, i64 0, metadata !2218, metadata !2666), !dbg !7393
+  %734 = fpext float %732 to double, !dbg !7394
+  %735 = fmul double %734, 2.970000e-01, !dbg !7394
+  %736 = extractelement <2 x float> %733, i32 0, !dbg !7394
+  %737 = fpext float %736 to double, !dbg !7394
+  %738 = fmul double %737, 5.890000e-01, !dbg !7394
+  %739 = fadd double %738, %735, !dbg !7394
+  %740 = extractelement <2 x float> %733, i32 1, !dbg !7394
+  %741 = fpext float %740 to double, !dbg !7394
+  %742 = fmul double %741, 1.140000e-01, !dbg !7394
+  %743 = fadd double %742, %739, !dbg !7394
+  %744 = call double @fabs(double %743) #7, !dbg !7395
+  %fabsf6 = call float @fabsf(float 0.000000e+00) #4, !dbg !7396
+  %745 = fpext float %fabsf6 to double, !dbg !7396
+  %746 = fadd double %744, %745, !dbg !7397
+  call void @llvm.dbg.value(metadata double %746, i64 0, metadata !2214, metadata !2666), !dbg !7398
+  call void @llvm.dbg.value(metadata double %746, i64 0, metadata !2223, metadata !2666), !dbg !7399
+  call void @llvm.dbg.value(metadata double %746, i64 0, metadata !2219, metadata !2666), !dbg !7400
+  %747 = fcmp olt double %746, 1.000000e+00, !dbg !7401
+  %748 = select i1 %747, double %746, double 1.000000e+00, !dbg !7402
+  call void @llvm.dbg.value(metadata double %748, i64 0, metadata !1810, metadata !2666), !dbg !6527
+  %indvars.iv.next97 = add nuw i64 %indvars.iv96, 1, !dbg !6572
+  %749 = getelementptr inbounds %"struct.pov::Texture_Struct"* %Layer.059, i64 0, i32 8, !dbg !7403
+  %750 = bitcast %"struct.pov::Pattern_Struct"** %749 to %"struct.pov::Texture_Struct"**, !dbg !7403
+  %751 = load %"struct.pov::Texture_Struct"** %750, align 8, !dbg !7403, !tbaa !3883
+  call void @llvm.dbg.value(metadata %"struct.pov::Texture_Struct"* %751, i64 0, metadata !1826, metadata !2666), !dbg !6569
+  %752 = icmp ne %"struct.pov::Texture_Struct"* %751, null, !dbg !6570
+  %753 = load double* @_ZN3pov11ADC_BailoutE, align 8
+  %754 = fcmp ogt double %748, %753, !dbg !6571
+  %or.cond8 = and i1 %752, %754, !dbg !6572
+  br i1 %or.cond8, label %74, label %..critedge_crit_edge, !dbg !6572
+
+..critedge_crit_edge:                             ; preds = %731
+  %755 = trunc i64 %indvars.iv.next97 to i32, !dbg !6572
+  br label %.critedge, !dbg !6572
+
+.critedge:                                        ; preds = %..critedge_crit_edge132, %..critedge_crit_edge
+  %.pre-phi134 = phi %"struct.pov::Object_Struct"** [ %.pre133, %..critedge_crit_edge132 ], [ %40, %..critedge_crit_edge ], !dbg !6573
+  %756 = phi double [ undef, %..critedge_crit_edge132 ], [ %160, %..critedge_crit_edge ]
+  %757 = phi double [ undef, %..critedge_crit_edge132 ], [ %161, %..critedge_crit_edge ]
+  %758 = phi double [ undef, %..critedge_crit_edge132 ], [ %162, %..critedge_crit_edge ]
+  %759 = phi double [ undef, %..critedge_crit_edge132 ], [ %163, %..critedge_crit_edge ]
+  %760 = phi double [ undef, %..critedge_crit_edge132 ], [ %164, %..critedge_crit_edge ]
+  %761 = phi double [ undef, %..critedge_crit_edge132 ], [ %165, %..critedge_crit_edge ]
+  %.lcssa37 = phi i1 [ %21, %..critedge_crit_edge132 ], [ %754, %..critedge_crit_edge ]
+  %layer_number.0.lcssa = phi i32 [ 0, %..critedge_crit_edge132 ], [ %755, %..critedge_crit_edge ]
+  %one_colour_found.0.lcssa = phi i32 [ 0, %..critedge_crit_edge132 ], [ %.one_colour_found.0, %..critedge_crit_edge ]
+  %Trans.0.lcssa = phi double [ 1.000000e+00, %..critedge_crit_edge132 ], [ %748, %..critedge_crit_edge ]
+  %.lcssa36 = phi float [ 1.000000e+00, %..critedge_crit_edge132 ], [ %732, %..critedge_crit_edge ]
+  %762 = phi <2 x float> [ <float 1.000000e+00, float 1.000000e+00>, %..critedge_crit_edge132 ], [ %733, %..critedge_crit_edge ]
+  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !1827, metadata !2666), !dbg !7404
+  %763 = load %"struct.pov::Object_Struct"** %.pre-phi134, align 8, !dbg !6573, !tbaa !3151
+  %764 = getelementptr inbounds %"struct.pov::Object_Struct"* %763, i64 0, i32 5, !dbg !7405
+  %765 = load %"struct.pov::Interior_Struct"** %764, align 8, !dbg !7405, !tbaa !3723
+  call void @llvm.dbg.value(metadata %"struct.pov::Interior_Struct"* %765, i64 0, metadata !1822, metadata !2666), !dbg !7406
+  %766 = icmp ne %"struct.pov::Interior_Struct"* %765, null, !dbg !7407
+  %or.cond10 = and i1 %.lcssa37, %766, !dbg !7408
+  br i1 %or.cond10, label %767, label %1173, !dbg !7408
+
+; <label>:767                                     ; preds = %.critedge
+  %768 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 13), align 8, !dbg !7409, !tbaa !3797
+  %769 = and i32 %768, 16, !dbg !7410
+  %770 = icmp eq i32 %769, 0, !dbg !7410
+  br i1 %770, label %1173, label %771, !dbg !7411
+
+; <label>:771                                     ; preds = %767
+  %fabsf = call float @fabsf(float 1.000000e+00) #4, !dbg !7412
+  %772 = fpext float %fabsf to double, !dbg !7412
+  %fabsf2 = call float @fabsf(float %.lcssa36) #4, !dbg !7413
+  %773 = call <2 x float> @llvm.fabs.v2f32(<2 x float> %762), !dbg !7413
+  %774 = extractelement <2 x float> %773, i32 0, !dbg !7414
+  %775 = extractelement <2 x float> %773, i32 1, !dbg !7414
+  %776 = fcmp olt float %774, %775, !dbg !7414
+  %.v = select i1 %776, float %775, float %774, !dbg !7418
+  %777 = fcmp olt float %fabsf2, %.v, !dbg !7422
+  %.v18 = select i1 %777, float %.v, float %fabsf2, !dbg !7413
+  %778 = fpext float %.v18 to double, !dbg !7413
+  %779 = fmul double %772, %778, !dbg !7423
+  call void @llvm.dbg.value(metadata double %779, i64 0, metadata !1807, metadata !2666), !dbg !7424
+  %780 = fmul double %779, %Weight, !dbg !7425
+  call void @llvm.dbg.value(metadata double %780, i64 0, metadata !1808, metadata !2666), !dbg !6716
+  %781 = getelementptr inbounds %"struct.pov::istk_entry"* %Intersect, i64 0, i32 1, i64 0, !dbg !7426
+  %782 = getelementptr inbounds [3 x double]* %TopNormal, i64 0, i64 0, !dbg !7427
+  %783 = getelementptr inbounds [5 x float]* %RfrCol, i64 0, i64 0, !dbg !7428
+  %784 = bitcast [3 x double]* %Local_Normal.i to i8*, !dbg !7429
+  call void @llvm.lifetime.start(i64 24, i8* %784), !dbg !7429
+  %785 = bitcast [5 x float]* %Hue.i to i8*, !dbg !7429
+  call void @llvm.lifetime.start(i64 20, i8* %785), !dbg !7429
+  %786 = bitcast [5 x float]* %Elem.i to i8*, !dbg !7429
+  call void @llvm.lifetime.start(i64 20, i8* %786), !dbg !7429
+  call void @llvm.dbg.value(metadata %"struct.pov::Interior_Struct"* %765, i64 0, metadata !1941, metadata !2666), !dbg !7429
+  call void @llvm.dbg.value(metadata double* %781, i64 0, metadata !1942, metadata !2666), !dbg !7430
+  call void @llvm.dbg.value(metadata %"struct.pov::Ray_Struct"* %Ray, i64 0, metadata !1943, metadata !2666), !dbg !7431
+  call void @llvm.dbg.value(metadata double* %782, i64 0, metadata !1944, metadata !2666), !dbg !7432
+  call void @llvm.dbg.value(metadata double* %Raw_Normal, i64 0, metadata !1945, metadata !2666), !dbg !7433
+  call void @llvm.dbg.value(metadata float* %783, i64 0, metadata !1946, metadata !2666), !dbg !7434
+  call void @llvm.dbg.value(metadata double %780, i64 0, metadata !1947, metadata !2666), !dbg !7435
+  %787 = bitcast %"struct.pov::Ray_Struct"* %NRay.i to i8*, !dbg !7436
+  call void @llvm.lifetime.start(i64 856, i8* %787) #5, !dbg !7436
+  call void @llvm.dbg.declare(metadata [5 x float]* undef, metadata !1956, metadata !2666), !dbg !7437
+  call void @llvm.dbg.value(metadata %"struct.pov::Ray_Struct"* %NRay.i, i64 0, metadata !1954, metadata !2666), !dbg !7438
+  call void @_ZN3pov19Copy_Ray_ContainersEPNS_10Ray_StructES1_(%"struct.pov::Ray_Struct"* %NRay.i, %"struct.pov::Ray_Struct"* %Ray) #6, !dbg !7439
+  call void @llvm.dbg.value(metadata double* %781, i64 0, metadata !1349, metadata !2666), !dbg !7440
+  %788 = bitcast double* %781 to <2 x i64>*, !dbg !7442
+  %789 = load <2 x i64>* %788, align 8, !dbg !7442, !tbaa !3114
+  %790 = bitcast %"struct.pov::Ray_Struct"* %NRay.i to <2 x i64>*, !dbg !7443
+  store <2 x i64> %789, <2 x i64>* %790, align 16, !dbg !7443, !tbaa !3114
+  %791 = getelementptr inbounds %"struct.pov::istk_entry"* %Intersect, i64 0, i32 1, i64 2, !dbg !7444
+  %792 = bitcast double* %791 to i64*, !dbg !7444
+  %793 = load i64* %792, align 8, !dbg !7444, !tbaa !3114
+  %794 = getelementptr inbounds %"struct.pov::Ray_Struct"* %NRay.i, i64 0, i32 0, i64 2, !dbg !7445
+  %795 = bitcast double* %794 to i64*, !dbg !7446
+  store i64 %793, i64* %795, align 16, !dbg !7446, !tbaa !3114
+  %796 = load i32* @_ZN3pov9disp_elemE, align 4, !dbg !7447, !tbaa !2664
+  %797 = icmp eq i32 %796, 0, !dbg !7449
+  br i1 %797, label %798, label %801, !dbg !7450
+
+; <label>:798                                     ; preds = %771
+  %799 = getelementptr inbounds %"struct.pov::Interior_Struct"* %765, i64 0, i32 2, !dbg !7451
+  %800 = load i32* %799, align 4, !dbg !7451, !tbaa !6086
+  store i32 %800, i32* @_ZN3pov11disp_nelemsE, align 4, !dbg !7452, !tbaa !2664
+  br label %801, !dbg !7453
+
+; <label>:801                                     ; preds = %798, %771
+  call void @llvm.dbg.value(metadata double 1.000000e+00, i64 0, metadata !1951, metadata !2666), !dbg !7454
+  %802 = getelementptr inbounds %"struct.pov::Ray_Struct"* %Ray, i64 0, i32 2, !dbg !7455
+  %803 = load i32* %802, align 4, !dbg !7455, !tbaa !3972
+  %804 = icmp eq i32 %803, -1, !dbg !7457
+  call void @llvm.dbg.value(metadata %"struct.pov::Ray_Struct"* %NRay.i, i64 0, metadata !1954, metadata !2666), !dbg !7438
+  br i1 %804, label %805, label %819, !dbg !7458
+
+; <label>:805                                     ; preds = %801
+  call void @_ZN3pov9Ray_EnterEPNS_10Ray_StructEPNS_15Interior_StructE(%"struct.pov::Ray_Struct"* %NRay.i, %"struct.pov::Interior_Struct"* %765) #6, !dbg !7459
+  %806 = load double* getelementptr inbounds (%"struct.pov::Frame_Struct"* @_ZN3pov5FrameE, i64 0, i32 6), align 8, !dbg !7461, !tbaa !6096
+  %807 = getelementptr inbounds %"struct.pov::Interior_Struct"* %765, i64 0, i32 3, !dbg !7462
+  %808 = load float* %807, align 4, !dbg !7462, !tbaa !6098
+  %809 = fpext float %808 to double, !dbg !7463
+  %810 = fdiv double %806, %809, !dbg !7464
+  call void @llvm.dbg.value(metadata double %810, i64 0, metadata !1950, metadata !2666), !dbg !7465
+  %811 = load i32* @_ZN3pov11disp_nelemsE, align 4, !dbg !7466, !tbaa !2664
+  %812 = icmp sgt i32 %811, 1, !dbg !7468
+  br i1 %812, label %813, label %900, !dbg !7469
+
+; <label>:813                                     ; preds = %805
+  %814 = load double* getelementptr inbounds (%"struct.pov::Frame_Struct"* @_ZN3pov5FrameE, i64 0, i32 7), align 8, !dbg !7470, !tbaa !6101
+  %815 = getelementptr inbounds %"struct.pov::Interior_Struct"* %765, i64 0, i32 4, !dbg !7471
+  %816 = load float* %815, align 4, !dbg !7471, !tbaa !6103
+  %817 = fpext float %816 to double, !dbg !7472
+  %818 = fdiv double %814, %817, !dbg !7473
+  call void @llvm.dbg.value(metadata double %818, i64 0, metadata !1951, metadata !2666), !dbg !7454
+  br label %900, !dbg !7474
+
+; <label>:819                                     ; preds = %801
+  %820 = call i32 @_ZN3pov25Interior_In_Ray_ContainerEPNS_10Ray_StructEPNS_15Interior_StructE(%"struct.pov::Ray_Struct"* %NRay.i, %"struct.pov::Interior_Struct"* %765) #6, !dbg !7475
+  call void @llvm.dbg.value(metadata i32 %820, i64 0, metadata !1948, metadata !2666), !dbg !7478
+  %821 = icmp sgt i32 %820, -1, !dbg !7479
+  br i1 %821, label %822, label %870, !dbg !7480
+
+; <label>:822                                     ; preds = %819
+  call void @llvm.dbg.value(metadata %"struct.pov::Ray_Struct"* %NRay.i, i64 0, metadata !1954, metadata !2666), !dbg !7438
+  call void @_ZN3pov8Ray_ExitEPNS_10Ray_StructEi(%"struct.pov::Ray_Struct"* %NRay.i, i32 %820) #6, !dbg !7481
+  %823 = getelementptr inbounds %"struct.pov::Ray_Struct"* %NRay.i, i64 0, i32 2, !dbg !7483
+  %824 = load i32* %823, align 16, !dbg !7483, !tbaa !3972
+  %825 = icmp eq i32 %824, -1, !dbg !7485
+  br i1 %825, label %826, label %840, !dbg !7486
+
+; <label>:826                                     ; preds = %822
+  %827 = getelementptr inbounds %"struct.pov::Interior_Struct"* %765, i64 0, i32 3, !dbg !7487
+  %828 = load float* %827, align 4, !dbg !7487, !tbaa !6098
+  %829 = fpext float %828 to double, !dbg !7489
+  %830 = load double* getelementptr inbounds (%"struct.pov::Frame_Struct"* @_ZN3pov5FrameE, i64 0, i32 6), align 8, !dbg !7490, !tbaa !6096
+  %831 = fdiv double %829, %830, !dbg !7491
+  call void @llvm.dbg.value(metadata double %831, i64 0, metadata !1950, metadata !2666), !dbg !7465
+  %832 = load i32* @_ZN3pov11disp_nelemsE, align 4, !dbg !7492, !tbaa !2664
+  %833 = icmp sgt i32 %832, 1, !dbg !7494
+  br i1 %833, label %834, label %900, !dbg !7495
+
+; <label>:834                                     ; preds = %826
+  %835 = getelementptr inbounds %"struct.pov::Interior_Struct"* %765, i64 0, i32 4, !dbg !7496
+  %836 = load float* %835, align 4, !dbg !7496, !tbaa !6103
+  %837 = fpext float %836 to double, !dbg !7497
+  %838 = load double* getelementptr inbounds (%"struct.pov::Frame_Struct"* @_ZN3pov5FrameE, i64 0, i32 7), align 8, !dbg !7498, !tbaa !6101
+  %839 = fdiv double %837, %838, !dbg !7499
+  call void @llvm.dbg.value(metadata double %839, i64 0, metadata !1951, metadata !2666), !dbg !7454
+  br label %900, !dbg !7500
+
+; <label>:840                                     ; preds = %822
+  %841 = add nsw i32 %824, 1, !dbg !7501
+  %842 = icmp eq i32 %820, %841, !dbg !7503
+  br i1 %842, label %843, label %900, !dbg !7504
+
+; <label>:843                                     ; preds = %840
+  %844 = getelementptr inbounds %"struct.pov::Interior_Struct"* %765, i64 0, i32 3, !dbg !7505
+  %845 = load float* %844, align 4, !dbg !7505, !tbaa !6098
+  %846 = sext i32 %824 to i64, !dbg !7507
+  %847 = getelementptr inbounds %"struct.pov::Ray_Struct"* %NRay.i, i64 0, i32 4, i64 %846, !dbg !7507
+  %848 = load %"struct.pov::Interior_Struct"** %847, align 8, !dbg !7507, !tbaa !2657
+  %849 = getelementptr inbounds %"struct.pov::Interior_Struct"* %848, i64 0, i32 3, !dbg !7508
+  %850 = load float* %849, align 4, !dbg !7508, !tbaa !6098
+  %851 = fdiv float %845, %850, !dbg !7509
+  %852 = fpext float %851 to double, !dbg !7510
+  call void @llvm.dbg.value(metadata double %852, i64 0, metadata !1950, metadata !2666), !dbg !7465
+  %853 = getelementptr inbounds %"struct.pov::Interior_Struct"* %848, i64 0, i32 2, !dbg !7511
+  %854 = load i32* %853, align 4, !dbg !7511, !tbaa !6086
+  %855 = load i32* @_ZN3pov11disp_nelemsE, align 4, !dbg !7513, !tbaa !2664
+  %856 = icmp sgt i32 %854, %855, !dbg !7514
+  %857 = load i32* @_ZN3pov9disp_elemE, align 4, !dbg !7515
+  %858 = icmp eq i32 %857, 0, !dbg !7516
+  %or.cond.i = and i1 %856, %858, !dbg !7517
+  br i1 %or.cond.i, label %859, label %860, !dbg !7517
+
+; <label>:859                                     ; preds = %843
+  store i32 %854, i32* @_ZN3pov11disp_nelemsE, align 4, !dbg !7518, !tbaa !2664
+  br label %860, !dbg !7519
+
+; <label>:860                                     ; preds = %859, %843
+  %861 = phi i32 [ %854, %859 ], [ %855, %843 ], !dbg !7520
+  %862 = icmp sgt i32 %861, 1, !dbg !7522
+  br i1 %862, label %863, label %900, !dbg !7523
+
+; <label>:863                                     ; preds = %860
+  %864 = getelementptr inbounds %"struct.pov::Interior_Struct"* %765, i64 0, i32 4, !dbg !7524
+  %865 = load float* %864, align 4, !dbg !7524, !tbaa !6103
+  %866 = getelementptr inbounds %"struct.pov::Interior_Struct"* %848, i64 0, i32 4, !dbg !7525
+  %867 = load float* %866, align 4, !dbg !7525, !tbaa !6103
+  %868 = fdiv float %865, %867, !dbg !7526
+  %869 = fpext float %868 to double, !dbg !7527
+  call void @llvm.dbg.value(metadata double %869, i64 0, metadata !1951, metadata !2666), !dbg !7454
+  br label %900, !dbg !7528
+
+; <label>:870                                     ; preds = %819
+  %871 = getelementptr inbounds %"struct.pov::Ray_Struct"* %NRay.i, i64 0, i32 2, !dbg !7529
+  %872 = load i32* %871, align 16, !dbg !7529, !tbaa !3972
+  %873 = sext i32 %872 to i64, !dbg !7531
+  %874 = getelementptr inbounds %"struct.pov::Ray_Struct"* %NRay.i, i64 0, i32 4, i64 %873, !dbg !7531
+  %875 = load %"struct.pov::Interior_Struct"** %874, align 8, !dbg !7531, !tbaa !2657
+  %876 = getelementptr inbounds %"struct.pov::Interior_Struct"* %875, i64 0, i32 3, !dbg !7532
+  %877 = load float* %876, align 4, !dbg !7532, !tbaa !6098
+  %878 = getelementptr inbounds %"struct.pov::Interior_Struct"* %765, i64 0, i32 3, !dbg !7533
+  %879 = load float* %878, align 4, !dbg !7533, !tbaa !6098
+  %880 = fdiv float %877, %879, !dbg !7534
+  %881 = fpext float %880 to double, !dbg !7531
+  call void @llvm.dbg.value(metadata double %881, i64 0, metadata !1950, metadata !2666), !dbg !7465
+  %882 = getelementptr inbounds %"struct.pov::Interior_Struct"* %875, i64 0, i32 2, !dbg !7535
+  %883 = load i32* %882, align 4, !dbg !7535, !tbaa !6086
+  %884 = load i32* @_ZN3pov11disp_nelemsE, align 4, !dbg !7537, !tbaa !2664
+  %885 = icmp sgt i32 %883, %884, !dbg !7538
+  %886 = load i32* @_ZN3pov9disp_elemE, align 4, !dbg !7515
+  %887 = icmp eq i32 %886, 0, !dbg !7539
+  %or.cond3.i = and i1 %885, %887, !dbg !7540
+  br i1 %or.cond3.i, label %888, label %889, !dbg !7540
+
+; <label>:888                                     ; preds = %870
+  store i32 %883, i32* @_ZN3pov11disp_nelemsE, align 4, !dbg !7541, !tbaa !2664
+  br label %889, !dbg !7542
+
+; <label>:889                                     ; preds = %888, %870
+  %890 = phi i32 [ %883, %888 ], [ %884, %870 ], !dbg !7543
+  %891 = icmp sgt i32 %890, 1, !dbg !7545
+  br i1 %891, label %892, label %899, !dbg !7546
+
+; <label>:892                                     ; preds = %889
+  %893 = getelementptr inbounds %"struct.pov::Interior_Struct"* %875, i64 0, i32 4, !dbg !7547
+  %894 = load float* %893, align 4, !dbg !7547, !tbaa !6103
+  %895 = getelementptr inbounds %"struct.pov::Interior_Struct"* %765, i64 0, i32 4, !dbg !7548
+  %896 = load float* %895, align 4, !dbg !7548, !tbaa !6103
+  %897 = fdiv float %894, %896, !dbg !7549
+  %898 = fpext float %897 to double, !dbg !7550
+  call void @llvm.dbg.value(metadata double %898, i64 0, metadata !1951, metadata !2666), !dbg !7454
+  br label %899, !dbg !7551
+
+; <label>:899                                     ; preds = %892, %889
+  %disp.0.i = phi double [ %898, %892 ], [ 1.000000e+00, %889 ], !dbg !7515
+  call void @llvm.dbg.value(metadata %"struct.pov::Ray_Struct"* %NRay.i, i64 0, metadata !1954, metadata !2666), !dbg !7438
+  call void @_ZN3pov9Ray_EnterEPNS_10Ray_StructEPNS_15Interior_StructE(%"struct.pov::Ray_Struct"* %NRay.i, %"struct.pov::Interior_Struct"* %765) #6, !dbg !7552
+  br label %900, !dbg !7515
+
+; <label>:900                                     ; preds = %899, %863, %860, %840, %834, %826, %813, %805
+  %ior.0.i = phi double [ %810, %813 ], [ %810, %805 ], [ %831, %834 ], [ %831, %826 ], [ %852, %863 ], [ %852, %860 ], [ %881, %899 ], [ 1.000000e+00, %840 ], !dbg !7515
+  %disp.1.i = phi double [ %818, %813 ], [ 1.000000e+00, %805 ], [ %839, %834 ], [ 1.000000e+00, %826 ], [ %869, %863 ], [ 1.000000e+00, %860 ], [ %disp.0.i, %899 ], [ 1.000000e+00, %840 ], !dbg !7515
+  %901 = fadd double %ior.0.i, -1.000000e+00, !dbg !7553
+  %902 = call double @fabs(double %901) #7, !dbg !7555
+  %903 = fcmp olt double %902, 1.000000e-07, !dbg !7556
+  br i1 %903, label %904, label %926, !dbg !7557
+
+; <label>:904                                     ; preds = %900
+  %905 = fadd double %disp.1.i, -1.000000e+00, !dbg !7558
+  %906 = call double @fabs(double %905) #7, !dbg !7559
+  %907 = fcmp olt double %906, 1.000000e-07, !dbg !7560
+  br i1 %907, label %908, label %926, !dbg !7561
+
+; <label>:908                                     ; preds = %904
+  %909 = getelementptr inbounds %"struct.pov::Ray_Struct"* %NRay.i, i64 0, i32 1, i64 0, !dbg !7562
+  %910 = getelementptr inbounds %"struct.pov::Ray_Struct"* %Ray, i64 0, i32 1, i64 0, !dbg !7564
+  call void @llvm.dbg.value(metadata double* %909, i64 0, metadata !1348, metadata !2666), !dbg !7565
+  call void @llvm.dbg.value(metadata double* %910, i64 0, metadata !1349, metadata !2666), !dbg !7567
+  %911 = bitcast double* %910 to <2 x i64>*, !dbg !7568
+  %912 = load <2 x i64>* %911, align 8, !dbg !7568, !tbaa !3114
+  %913 = bitcast double* %909 to <2 x i64>*, !dbg !7569
+  store <2 x i64> %912, <2 x i64>* %913, align 8, !dbg !7569, !tbaa !3114
+  %914 = getelementptr inbounds %"struct.pov::Ray_Struct"* %Ray, i64 0, i32 1, i64 2, !dbg !7570
+  %915 = bitcast double* %914 to i64*, !dbg !7570
+  %916 = load i64* %915, align 8, !dbg !7570, !tbaa !3114
+  %917 = getelementptr inbounds %"struct.pov::Ray_Struct"* %NRay.i, i64 0, i32 1, i64 2, !dbg !7571
+  %918 = bitcast double* %917 to i64*, !dbg !7572
+  store i64 %916, i64* %918, align 8, !dbg !7572, !tbaa !3114
+  call void @llvm.dbg.value(metadata i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 103), i64 0, metadata !1697, metadata !2666), !dbg !7573
+  %919 = load i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 103), align 8, !dbg !7575, !tbaa !2676
+  %920 = add nsw i64 %919, 1, !dbg !7575
+  store i64 %920, i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 103), align 8, !dbg !7575, !tbaa !2676
+  %921 = load i32* @_ZN3pov11Trace_LevelE, align 4, !dbg !7576, !tbaa !2664
+  %922 = add nsw i32 %921, 1, !dbg !7576
+  store i32 %922, i32* @_ZN3pov11Trace_LevelE, align 4, !dbg !7576, !tbaa !2664
+  call void @llvm.dbg.value(metadata %"struct.pov::Ray_Struct"* %NRay.i, i64 0, metadata !1954, metadata !2666), !dbg !7438
+  %923 = call double @_ZN3pov5TraceEPNS_10Ray_StructEPfd(%"struct.pov::Ray_Struct"* %NRay.i, float* %783, double %780) #6, !dbg !7577
+  %924 = load i32* @_ZN3pov11Trace_LevelE, align 4, !dbg !7578, !tbaa !2664
+  %925 = add nsw i32 %924, -1, !dbg !7578
+  store i32 %925, i32* @_ZN3pov11Trace_LevelE, align 4, !dbg !7578, !tbaa !2664
+  br label %1018, !dbg !7579
+
+; <label>:926                                     ; preds = %904, %900
+  %927 = getelementptr inbounds %"struct.pov::Ray_Struct"* %Ray, i64 0, i32 1, i64 0, !dbg !7580
+  call void @llvm.dbg.value(metadata double* %927, i64 0, metadata !1358, metadata !2666), !dbg !7582
+  call void @llvm.dbg.value(metadata double* %782, i64 0, metadata !1359, metadata !2666), !dbg !7584
+  %928 = load double* %927, align 8, !dbg !7585, !tbaa !3114
+  %929 = fmul double %928, %761, !dbg !7586
+  %930 = getelementptr inbounds %"struct.pov::Ray_Struct"* %Ray, i64 0, i32 1, i64 1, !dbg !7587
+  %931 = load double* %930, align 8, !dbg !7587, !tbaa !3114
+  %932 = fmul double %931, %760, !dbg !7588
+  %933 = fadd double %929, %932, !dbg !7589
+  %934 = getelementptr inbounds %"struct.pov::Ray_Struct"* %Ray, i64 0, i32 1, i64 2, !dbg !7590
+  %935 = load double* %934, align 8, !dbg !7590, !tbaa !3114
+  %936 = fmul double %935, %759, !dbg !7591
+  %937 = fadd double %933, %936, !dbg !7592
+  call void @llvm.dbg.value(metadata double %937, i64 0, metadata !1357, metadata !2666), !dbg !7593
+  call void @llvm.dbg.value(metadata double %937, i64 0, metadata !1949, metadata !2666), !dbg !7594
+  call void @llvm.dbg.value(metadata double %937, i64 0, metadata !1949, metadata !2666), !dbg !7594
+  call void @llvm.dbg.value(metadata double %937, i64 0, metadata !1949, metadata !2666), !dbg !7594
+  call void @llvm.dbg.value(metadata double %937, i64 0, metadata !1949, metadata !2666), !dbg !7594
+  call void @llvm.dbg.value(metadata double %937, i64 0, metadata !1949, metadata !2666), !dbg !7594
+  %938 = fcmp ugt double %937, 0.000000e+00, !dbg !7595
+  br i1 %938, label %941, label %939, !dbg !7597
+
+; <label>:939                                     ; preds = %926
+  call void @llvm.dbg.value(metadata double* %782, i64 0, metadata !1349, metadata !2666), !dbg !7598
+  %940 = fsub double -0.000000e+00, %937, !dbg !7601
+  call void @llvm.dbg.value(metadata double %940, i64 0, metadata !1949, metadata !2666), !dbg !7594
+  call void @llvm.dbg.value(metadata double %940, i64 0, metadata !1357, metadata !2666), !dbg !7593
+  call void @llvm.dbg.value(metadata double %940, i64 0, metadata !1949, metadata !2666), !dbg !7594
+  call void @llvm.dbg.value(metadata double %940, i64 0, metadata !1949, metadata !2666), !dbg !7594
+  call void @llvm.dbg.value(metadata double %940, i64 0, metadata !1949, metadata !2666), !dbg !7594
+  call void @llvm.dbg.value(metadata double %940, i64 0, metadata !1949, metadata !2666), !dbg !7594
+  call void @llvm.dbg.value(metadata double %940, i64 0, metadata !1949, metadata !2666), !dbg !7594
+  br label %945, !dbg !7602
+
+; <label>:941                                     ; preds = %926
+  %942 = fsub double -0.000000e+00, %761, !dbg !7603
+  %943 = fsub double -0.000000e+00, %760, !dbg !7605
+  %944 = fsub double -0.000000e+00, %759, !dbg !7606
+  br label %945, !dbg !7515
+
+; <label>:945                                     ; preds = %941, %939
+  %.sink99 = phi double [ %942, %941 ], [ %761, %939 ]
+  %.sink98 = phi double [ %943, %941 ], [ %760, %939 ]
+  %.sink = phi double [ %944, %941 ], [ %759, %939 ]
+  %946 = phi double [ %937, %941 ], [ %940, %939 ], !dbg !7515
+  %947 = getelementptr inbounds [3 x double]* %Local_Normal.i, i64 0, i64 0, !dbg !7607
+  store double %.sink99, double* %947, align 16
+  %948 = getelementptr inbounds [3 x double]* %Local_Normal.i, i64 0, i64 1, !dbg !7608
+  store double %.sink98, double* %948, align 8
+  %949 = getelementptr inbounds [3 x double]* %Local_Normal.i, i64 0, i64 2, !dbg !7609
+  store double %.sink, double* %949, align 16
+  %950 = load i32* @_ZN3pov9disp_elemE, align 4, !dbg !7610, !tbaa !2664
+  %951 = icmp sgt i32 %950, 0, !dbg !7612
+  %952 = load i32* @_ZN3pov11disp_nelemsE, align 4, !dbg !7515
+  %953 = icmp slt i32 %952, 2, !dbg !7613
+  %or.cond5.i = or i1 %951, %953, !dbg !7614
+  br i1 %or.cond5.i, label %960, label %954, !dbg !7614
+
+; <label>:954                                     ; preds = %945
+  %955 = fadd double %disp.1.i, -1.000000e+00, !dbg !7615
+  %956 = call double @fabs(double %955) #7, !dbg !7616
+  %957 = fcmp olt double %956, 1.000000e-07, !dbg !7617
+  %958 = load i32* @_ZN3pov18firstRadiosityPassE, align 4, !dbg !7515
+  %959 = icmp ne i32 %958, 0, !dbg !7618
+  %or.cond7.i = or i1 %957, %959, !dbg !7619
+  br i1 %or.cond7.i, label %960, label %973, !dbg !7619
+
+; <label>:960                                     ; preds = %954, %945
+  %961 = icmp sgt i32 %952, 1, !dbg !7620
+  %or.cond9.i = and i1 %951, %961, !dbg !7623
+  br i1 %or.cond9.i, label %962, label %971, !dbg !7623
+
+; <label>:962                                     ; preds = %960
+  call void @llvm.dbg.value(metadata double %ior.0.i, i64 0, metadata !1702, metadata !2666) #5, !dbg !7624
+  call void @llvm.dbg.value(metadata double %disp.1.i, i64 0, metadata !1703, metadata !2666) #5, !dbg !7626
+  call void @llvm.dbg.value(metadata i32 %950, i64 0, metadata !1704, metadata !2666) #5, !dbg !7627
+  call void @llvm.dbg.value(metadata i32 %952, i64 0, metadata !1705, metadata !2666) #5, !dbg !7628
+  %963 = add nsw i32 %950, -1, !dbg !7629
+  %964 = sitofp i32 %963 to double, !dbg !7630
+  %965 = add nsw i32 %952, -1, !dbg !7631
+  %966 = sitofp i32 %965 to double, !dbg !7632
+  %967 = fdiv double %964, %966, !dbg !7633
+  %968 = fadd double %967, -5.000000e-01, !dbg !7634
+  %969 = call double @llvm.pow.f64(double %disp.1.i, double %968) #5, !dbg !7635
+  %970 = fmul double %ior.0.i, %969, !dbg !7636
+  call void @llvm.dbg.value(metadata double %970, i64 0, metadata !1950, metadata !2666), !dbg !7465
+  br label %971, !dbg !7637
+
+; <label>:971                                     ; preds = %962, %960
+  %ior.1.i = phi double [ %970, %962 ], [ %ior.0.i, %960 ], !dbg !7515
+  call void @llvm.dbg.value(metadata %"struct.pov::Ray_Struct"* %NRay.i, i64 0, metadata !1954, metadata !2666), !dbg !7438
+  %972 = call fastcc i32 @_ZN3povL12Refract_GutsEPfdPdS1_S1_dPNS_10Ray_StructES3_dS1_(float* %783, double %ior.1.i, double* %781, double* %782, double* %947, double %946, %"struct.pov::Ray_Struct"* %Ray, %"struct.pov::Ray_Struct"* %NRay.i, double %780, double* %Raw_Normal) #6, !dbg !7638
+  br label %1018, !dbg !7639
+
+; <label>:973                                     ; preds = %954
+  %974 = add nsw i32 %952, -1, !dbg !7640
+  %975 = sitofp i32 %974 to double, !dbg !7642
+  %976 = fdiv double 1.000000e+00, %975, !dbg !7643
+  %977 = call double @llvm.pow.f64(double %disp.1.i, double %976), !dbg !7644
+  call void @llvm.dbg.value(metadata double %977, i64 0, metadata !1952, metadata !2666), !dbg !7645
+  call void @llvm.dbg.value(metadata float 0.000000e+00, i64 0, metadata !1956, metadata !3896), !dbg !7437
+  store i32 1, i32* @_ZN3pov9disp_elemE, align 4, !dbg !7646, !tbaa !2664
+  %978 = icmp slt i32 %952, 1, !dbg !7649
+  br i1 %978, label %._crit_edge.i, label %.lr.ph.i, !dbg !7650
+
+.lr.ph.i:                                         ; preds = %973
+  %979 = call double @sqrt(double %disp.1.i) #7, !dbg !7651
+  %980 = fdiv double %ior.0.i, %979, !dbg !7652
+  %981 = getelementptr inbounds [5 x float]* %Elem.i, i64 0, i64 0, !dbg !7653
+  %982 = getelementptr inbounds [5 x float]* %Hue.i, i64 0, i64 0, !dbg !7655
+  %983 = getelementptr inbounds [5 x float]* %Elem.i, i64 0, i64 1, !dbg !7656
+  %984 = getelementptr inbounds [5 x float]* %Hue.i, i64 0, i64 1, !dbg !7657
+  %985 = getelementptr inbounds [5 x float]* %Elem.i, i64 0, i64 2, !dbg !7658
+  %986 = getelementptr inbounds [5 x float]* %Hue.i, i64 0, i64 2, !dbg !7659
+  br label %987, !dbg !7650
+
+; <label>:987                                     ; preds = %987, %.lr.ph.i
+  %Sum.sroa.0.013.i = phi float [ 0.000000e+00, %.lr.ph.i ], [ %994, %987 ], !dbg !7515
+  %Sum.sroa.4.012.i = phi float [ 0.000000e+00, %.lr.ph.i ], [ %998, %987 ], !dbg !7515
+  %Sum.sroa.8.011.i = phi float [ 0.000000e+00, %.lr.ph.i ], [ %1002, %987 ], !dbg !7515
+  %ior.210.i = phi double [ %980, %.lr.ph.i ], [ %1003, %987 ], !dbg !7515
+  call void @llvm.dbg.value(metadata %"struct.pov::Ray_Struct"* %NRay.i, i64 0, metadata !1954, metadata !2666), !dbg !7438
+  %988 = call fastcc i32 @_ZN3povL12Refract_GutsEPfdPdS1_S1_dPNS_10Ray_StructES3_dS1_(float* %981, double %ior.210.i, double* %781, double* %782, double* %947, double %946, %"struct.pov::Ray_Struct"* %Ray, %"struct.pov::Ray_Struct"* %NRay.i, double %780, double* %Raw_Normal) #6, !dbg !7660
+  %989 = load i32* @_ZN3pov9disp_elemE, align 4, !dbg !7661, !tbaa !2664
+  %990 = load i32* @_ZN3pov11disp_nelemsE, align 4, !dbg !7662, !tbaa !2664
+  call fastcc void @_ZN3povL22Dispersion_Element_HueEPfii(float* %982, i32 %989, i32 %990) #6, !dbg !7663
+  %991 = load float* %981, align 16, !dbg !7664, !tbaa !3269
+  %992 = load float* %982, align 16, !dbg !7665, !tbaa !3269
+  %993 = fmul float %991, %992, !dbg !7666
+  %994 = fadd float %Sum.sroa.0.013.i, %993, !dbg !7667
+  call void @llvm.dbg.value(metadata float %994, i64 0, metadata !1956, metadata !3896), !dbg !7437
+  %995 = load float* %983, align 4, !dbg !7656, !tbaa !3269
+  %996 = load float* %984, align 4, !dbg !7657, !tbaa !3269
+  %997 = fmul float %995, %996, !dbg !7668
+  %998 = fadd float %Sum.sroa.4.012.i, %997, !dbg !7669
+  call void @llvm.dbg.value(metadata float %998, i64 0, metadata !1956, metadata !3933), !dbg !7437
+  %999 = load float* %985, align 8, !dbg !7658, !tbaa !3269
+  %1000 = load float* %986, align 8, !dbg !7659, !tbaa !3269
+  %1001 = fmul float %999, %1000, !dbg !7670
+  %1002 = fadd float %Sum.sroa.8.011.i, %1001, !dbg !7671
+  call void @llvm.dbg.value(metadata float %1002, i64 0, metadata !1956, metadata !3940), !dbg !7437
+  %1003 = fmul double %977, %ior.210.i, !dbg !7672
+  call void @llvm.dbg.value(metadata double %1003, i64 0, metadata !1950, metadata !2666), !dbg !7465
+  %1004 = load i32* @_ZN3pov9disp_elemE, align 4, !dbg !7646, !tbaa !2664
+  %1005 = add nsw i32 %1004, 1, !dbg !7646
+  store i32 %1005, i32* @_ZN3pov9disp_elemE, align 4, !dbg !7646, !tbaa !2664
+  %1006 = load i32* @_ZN3pov11disp_nelemsE, align 4, !dbg !7673, !tbaa !2664
+  %1007 = icmp slt i32 %1004, %1006, !dbg !7649
+  br i1 %1007, label %987, label %._crit_edge.i, !dbg !7650
+
+._crit_edge.i:                                    ; preds = %987, %973
+  %1008 = phi i32 [ %952, %973 ], [ %1006, %987 ], !dbg !7515
+  %Sum.sroa.0.0.lcssa.i = phi float [ 0.000000e+00, %973 ], [ %994, %987 ], !dbg !7515
+  %Sum.sroa.4.0.lcssa.i = phi float [ 0.000000e+00, %973 ], [ %998, %987 ], !dbg !7515
+  %Sum.sroa.8.0.lcssa.i = phi float [ 0.000000e+00, %973 ], [ %1002, %987 ], !dbg !7515
+  %1009 = sitofp i32 %1008 to float, !dbg !7674
+  %1010 = fdiv float %Sum.sroa.0.0.lcssa.i, %1009, !dbg !7675
+  %1011 = fmul float %1010, 3.000000e+00, !dbg !7676
+  store float %1011, float* %783, align 16, !dbg !7677, !tbaa !3269
+  %1012 = fdiv float %Sum.sroa.4.0.lcssa.i, %1009, !dbg !7678
+  %1013 = fmul float %1012, 3.000000e+00, !dbg !7679
+  %1014 = getelementptr inbounds [5 x float]* %RfrCol, i64 0, i64 1, !dbg !7680
+  store float %1013, float* %1014, align 4, !dbg !7681, !tbaa !3269
+  %1015 = fdiv float %Sum.sroa.8.0.lcssa.i, %1009, !dbg !7682
+  %1016 = fmul float %1015, 3.000000e+00, !dbg !7683
+  %1017 = getelementptr inbounds [5 x float]* %RfrCol, i64 0, i64 2, !dbg !7684
+  store float %1016, float* %1017, align 8, !dbg !7685, !tbaa !3269
+  store i32 0, i32* @_ZN3pov9disp_elemE, align 4, !dbg !7686, !tbaa !2664
+  store i32 0, i32* @_ZN3pov11disp_nelemsE, align 4, !dbg !7687, !tbaa !2664
+  br label %1018, !dbg !7515
+
+; <label>:1018                                    ; preds = %._crit_edge.i, %971, %908
+  %.0.i = phi i32 [ %972, %971 ], [ 0, %._crit_edge.i ], [ 0, %908 ], !dbg !7515
+  call void @llvm.lifetime.end(i64 856, i8* %787) #5, !dbg !7688
+  call void @llvm.lifetime.end(i64 24, i8* %784), !dbg !7688
+  call void @llvm.lifetime.end(i64 20, i8* %785), !dbg !7688
+  call void @llvm.lifetime.end(i64 20, i8* %786), !dbg !7688
+  call void @llvm.dbg.value(metadata i32 %.0.i, i64 0, metadata !1827, metadata !2666), !dbg !7404
+  store i32 -1, i32* @_ZN3pov22photonsAlreadyGatheredE, align 4, !dbg !7689, !tbaa !2664
+  %1019 = getelementptr inbounds %"struct.pov::Interior_Struct"* %765, i64 0, i32 6, !dbg !7690
+  %1020 = load float* %1019, align 4, !dbg !7690, !tbaa !5422
+  call void @llvm.dbg.value(metadata float %1020, i64 0, metadata !1814, metadata !3940), !dbg !6499
+  %1021 = call i32 @_ZN3pov25Interior_In_Ray_ContainerEPNS_10Ray_StructEPNS_15Interior_StructE(%"struct.pov::Ray_Struct"* %Ray, %"struct.pov::Interior_Struct"* %765) #6, !dbg !7691
+  %1022 = icmp sgt i32 %1021, -1, !dbg !7693
+  br i1 %1022, label %1023, label %1091, !dbg !7694
+
+; <label>:1023                                    ; preds = %1018
+  %1024 = getelementptr inbounds %"struct.pov::Interior_Struct"* %765, i64 0, i32 7, !dbg !7695
+  %1025 = load float* %1024, align 4, !dbg !7695, !tbaa !3911
+  %1026 = fpext float %1025 to double, !dbg !7698
+  %fabsf5 = call float @fabsf(float %1025) #4, !dbg !7699
+  %1027 = fpext float %fabsf5 to double, !dbg !7699
+  %1028 = fcmp ogt double %1027, 1.000000e-07, !dbg !7700
+  br i1 %1028, label %1029, label %1091, !dbg !7701
+
+; <label>:1029                                    ; preds = %1023
+  %1030 = getelementptr inbounds %"struct.pov::Interior_Struct"* %765, i64 0, i32 8, !dbg !7702
+  %1031 = load float* %1030, align 4, !dbg !7702, !tbaa !3906
+  %1032 = fcmp ult float %1031, 1.000000e+03, !dbg !7705
+  %1033 = getelementptr inbounds %"struct.pov::istk_entry"* %Intersect, i64 0, i32 0
+  %1034 = load double* %1033, align 8
+  %1035 = getelementptr inbounds %"struct.pov::Interior_Struct"* %765, i64 0, i32 9, i64 0
+  %1036 = load float* %1035, align 4
+  %1037 = getelementptr inbounds %"struct.pov::Interior_Struct"* %765, i64 0, i32 9, i64 1
+  %1038 = load float* %1037, align 4
+  %1039 = getelementptr inbounds %"struct.pov::Interior_Struct"* %765, i64 0, i32 9, i64 2
+  %1040 = load float* %1039, align 4
+  br i1 %1032, label %1067, label %1041, !dbg !7706
+
+; <label>:1041                                    ; preds = %1029
+  %1042 = fpext float %1036 to double, !dbg !7707
+  %1043 = fsub double 1.000000e+00, %1042, !dbg !7709
+  %1044 = fmul double %1034, %1043, !dbg !7710
+  %1045 = fsub double -0.000000e+00, %1044, !dbg !7710
+  %1046 = fdiv double %1045, %1026, !dbg !7711
+  %1047 = call double @exp(double %1046) #7, !dbg !7712
+  %1048 = fpext float %1020 to double, !dbg !7713
+  %1049 = fmul double %1048, %1047, !dbg !7713
+  %1050 = fptrunc double %1049 to float, !dbg !7713
+  call void @llvm.dbg.value(metadata float %1050, i64 0, metadata !1814, metadata !3896), !dbg !6499
+  %1051 = fpext float %1038 to double, !dbg !7714
+  %1052 = fsub double 1.000000e+00, %1051, !dbg !7715
+  %1053 = fmul double %1034, %1052, !dbg !7716
+  %1054 = fsub double -0.000000e+00, %1053, !dbg !7716
+  %1055 = fdiv double %1054, %1026, !dbg !7717
+  %1056 = call double @exp(double %1055) #7, !dbg !7718
+  %1057 = fmul double %1048, %1056, !dbg !7719
+  %1058 = fptrunc double %1057 to float, !dbg !7719
+  call void @llvm.dbg.value(metadata float %1058, i64 0, metadata !1814, metadata !3933), !dbg !6499
+  %1059 = fpext float %1040 to double, !dbg !7720
+  %1060 = fsub double 1.000000e+00, %1059, !dbg !7721
+  %1061 = fmul double %1034, %1060, !dbg !7722
+  %1062 = fsub double -0.000000e+00, %1061, !dbg !7722
+  %1063 = fdiv double %1062, %1026, !dbg !7723
+  %1064 = call double @exp(double %1063) #7, !dbg !7724
+  %1065 = fmul double %1048, %1064, !dbg !7725
+  %1066 = fptrunc double %1065 to float, !dbg !7725
+  call void @llvm.dbg.value(metadata float %1066, i64 0, metadata !1814, metadata !3940), !dbg !6499
+  br label %1091, !dbg !7726
+
+; <label>:1067                                    ; preds = %1029
+  %1068 = fdiv double %1034, %1026, !dbg !7727
+  %1069 = fpext float %1031 to double, !dbg !7729
+  %1070 = call double @llvm.pow.f64(double %1068, double %1069), !dbg !7730
+  %1071 = fadd double %1070, 1.000000e+00, !dbg !7731
+  call void @llvm.dbg.value(metadata double %1071, i64 0, metadata !1809, metadata !2666), !dbg !6863
+  %1072 = fpext float %1036 to double, !dbg !7732
+  %1073 = fsub double 1.000000e+00, %1072, !dbg !7733
+  %1074 = fdiv double %1073, %1071, !dbg !7734
+  %1075 = fadd double %1072, %1074, !dbg !7735
+  %1076 = fpext float %1020 to double, !dbg !7736
+  %1077 = fmul double %1076, %1075, !dbg !7736
+  %1078 = fptrunc double %1077 to float, !dbg !7736
+  call void @llvm.dbg.value(metadata float %1078, i64 0, metadata !1814, metadata !3896), !dbg !6499
+  %1079 = fpext float %1038 to double, !dbg !7737
+  %1080 = fsub double 1.000000e+00, %1079, !dbg !7738
+  %1081 = fdiv double %1080, %1071, !dbg !7739
+  %1082 = fadd double %1079, %1081, !dbg !7740
+  %1083 = fmul double %1076, %1082, !dbg !7741
+  %1084 = fptrunc double %1083 to float, !dbg !7741
+  call void @llvm.dbg.value(metadata float %1084, i64 0, metadata !1814, metadata !3933), !dbg !6499
+  %1085 = fpext float %1040 to double, !dbg !7742
+  %1086 = fsub double 1.000000e+00, %1085, !dbg !7743
+  %1087 = fdiv double %1086, %1071, !dbg !7744
+  %1088 = fadd double %1085, %1087, !dbg !7745
+  %1089 = fmul double %1076, %1088, !dbg !7746
+  %1090 = fptrunc double %1089 to float, !dbg !7746
+  call void @llvm.dbg.value(metadata float %1090, i64 0, metadata !1814, metadata !3940), !dbg !6499
+  br label %1091
+
+; <label>:1091                                    ; preds = %1023, %1067, %1041, %1018
+  %AttCol.sroa.0.0 = phi float [ %1050, %1041 ], [ %1078, %1067 ], [ %1020, %1023 ], [ %1020, %1018 ]
+  %AttCol.sroa.9.0 = phi float [ %1058, %1041 ], [ %1084, %1067 ], [ %1020, %1023 ], [ %1020, %1018 ]
+  %AttCol.sroa.19.0 = phi float [ %1066, %1041 ], [ %1090, %1067 ], [ %1020, %1023 ], [ %1020, %1018 ]
+  %1092 = icmp eq i32 %.0.i, 0, !dbg !7747
+  br i1 %1092, label %1108, label %1093, !dbg !7749
+
+; <label>:1093                                    ; preds = %1091
+  %1094 = load float* %783, align 16, !dbg !7750, !tbaa !3269
+  %1095 = fmul float %AttCol.sroa.0.0, %1094, !dbg !7752
+  %1096 = load float* %ResCol, align 4, !dbg !7753, !tbaa !3269
+  %1097 = fadd float %1096, %1095, !dbg !7753
+  store float %1097, float* %ResCol, align 4, !dbg !7753, !tbaa !3269
+  %1098 = getelementptr inbounds [5 x float]* %RfrCol, i64 0, i64 1, !dbg !7754
+  %1099 = load float* %1098, align 4, !dbg !7754, !tbaa !3269
+  %1100 = fmul float %AttCol.sroa.9.0, %1099, !dbg !7755
+  %1101 = load float* %2, align 4, !dbg !7756, !tbaa !3269
+  %1102 = fadd float %1101, %1100, !dbg !7756
+  store float %1102, float* %2, align 4, !dbg !7756, !tbaa !3269
+  %1103 = getelementptr inbounds [5 x float]* %RfrCol, i64 0, i64 2, !dbg !7757
+  %1104 = load float* %1103, align 8, !dbg !7757, !tbaa !3269
+  %1105 = fmul float %AttCol.sroa.19.0, %1104, !dbg !7758
+  %1106 = load float* %3, align 4, !dbg !7759, !tbaa !3269
+  %1107 = fadd float %1106, %1105, !dbg !7759
+  store float %1107, float* %3, align 4, !dbg !7759, !tbaa !3269
+  br label %1173, !dbg !7760
+
+; <label>:1108                                    ; preds = %1091
+  %1109 = icmp eq i32 %one_colour_found.0.lcssa, 0, !dbg !7761
+  %1110 = load float* %783, align 16, !dbg !7764, !tbaa !3269
+  %1111 = fmul float %AttCol.sroa.0.0, %1110, !dbg !7766
+  br i1 %1109, label %1147, label %1112, !dbg !7767
+
+; <label>:1112                                    ; preds = %1108
+  %1113 = fadd float %.lcssa36, 0.000000e+00, !dbg !7768
+  %1114 = fmul float %1113, %1111, !dbg !7769
+  %1115 = load float* %ResCol, align 4, !dbg !7770, !tbaa !3269
+  %1116 = fadd float %1114, %1115, !dbg !7770
+  store float %1116, float* %ResCol, align 4, !dbg !7770, !tbaa !3269
+  %1117 = getelementptr inbounds [5 x float]* %RfrCol, i64 0, i64 1, !dbg !7771
+  %1118 = load float* %1117, align 4, !dbg !7771, !tbaa !3269
+  %1119 = fmul float %AttCol.sroa.9.0, %1118, !dbg !7772
+  %1120 = extractelement <2 x float> %762, i32 0, !dbg !7773
+  %1121 = fadd float %1120, 0.000000e+00, !dbg !7773
+  %1122 = fmul float %1121, %1119, !dbg !7774
+  %1123 = load float* %2, align 4, !dbg !7775, !tbaa !3269
+  %1124 = fadd float %1123, %1122, !dbg !7775
+  store float %1124, float* %2, align 4, !dbg !7775, !tbaa !3269
+  %1125 = getelementptr inbounds [5 x float]* %RfrCol, i64 0, i64 2, !dbg !7776
+  %1126 = load float* %1125, align 8, !dbg !7776, !tbaa !3269
+  %1127 = fmul float %AttCol.sroa.19.0, %1126, !dbg !7777
+  %1128 = extractelement <2 x float> %762, i32 1, !dbg !7778
+  %1129 = fadd float %1128, 0.000000e+00, !dbg !7778
+  %1130 = fmul float %1129, %1127, !dbg !7779
+  %1131 = load float* %3, align 4, !dbg !7780, !tbaa !3269
+  %1132 = fadd float %1131, %1130, !dbg !7780
+  store float %1132, float* %3, align 4, !dbg !7780, !tbaa !3269
+  %1133 = fpext float %AttCol.sroa.0.0 to double, !dbg !7781
+  %1134 = fmul double %1133, 2.970000e-01, !dbg !7781
+  %1135 = fpext float %AttCol.sroa.9.0 to double, !dbg !7781
+  %1136 = fmul double %1135, 5.890000e-01, !dbg !7781
+  %1137 = fadd double %1134, %1136, !dbg !7781
+  %1138 = fpext float %AttCol.sroa.19.0 to double, !dbg !7781
+  %1139 = fmul double %1138, 1.140000e-01, !dbg !7781
+  %1140 = fadd double %1137, %1139, !dbg !7781
+  %1141 = getelementptr inbounds [5 x float]* %RfrCol, i64 0, i64 4, !dbg !7782
+  %1142 = load float* %1141, align 16, !dbg !7782, !tbaa !3269
+  %1143 = fpext float %1142 to double, !dbg !7782
+  %1144 = fmul double %1140, %1143, !dbg !7783
+  %1145 = fmul double %Trans.0.lcssa, %1144, !dbg !7784
+  %1146 = fptrunc double %1145 to float, !dbg !7781
+  store float %1146, float* %5, align 4, !dbg !7785, !tbaa !3269
+  br label %1173, !dbg !7786
+
+; <label>:1147                                    ; preds = %1108
+  %1148 = load float* %ResCol, align 4, !dbg !7787, !tbaa !3269
+  %1149 = fadd float %1111, %1148, !dbg !7787
+  store float %1149, float* %ResCol, align 4, !dbg !7787, !tbaa !3269
+  %1150 = getelementptr inbounds [5 x float]* %RfrCol, i64 0, i64 1, !dbg !7789
+  %1151 = load float* %1150, align 4, !dbg !7789, !tbaa !3269
+  %1152 = fmul float %AttCol.sroa.9.0, %1151, !dbg !7790
+  %1153 = load float* %2, align 4, !dbg !7791, !tbaa !3269
+  %1154 = fadd float %1153, %1152, !dbg !7791
+  store float %1154, float* %2, align 4, !dbg !7791, !tbaa !3269
+  %1155 = getelementptr inbounds [5 x float]* %RfrCol, i64 0, i64 2, !dbg !7792
+  %1156 = load float* %1155, align 8, !dbg !7792, !tbaa !3269
+  %1157 = fmul float %AttCol.sroa.19.0, %1156, !dbg !7793
+  %1158 = load float* %3, align 4, !dbg !7794, !tbaa !3269
+  %1159 = fadd float %1158, %1157, !dbg !7794
+  store float %1159, float* %3, align 4, !dbg !7794, !tbaa !3269
+  %1160 = fpext float %AttCol.sroa.0.0 to double, !dbg !7795
+  %1161 = fmul double %1160, 2.970000e-01, !dbg !7795
+  %1162 = fpext float %AttCol.sroa.9.0 to double, !dbg !7795
+  %1163 = fmul double %1162, 5.890000e-01, !dbg !7795
+  %1164 = fadd double %1161, %1163, !dbg !7795
+  %1165 = fpext float %AttCol.sroa.19.0 to double, !dbg !7795
+  %1166 = fmul double %1165, 1.140000e-01, !dbg !7795
+  %1167 = fadd double %1164, %1166, !dbg !7795
+  %1168 = getelementptr inbounds [5 x float]* %RfrCol, i64 0, i64 4, !dbg !7796
+  %1169 = load float* %1168, align 16, !dbg !7796, !tbaa !3269
+  %1170 = fpext float %1169 to double, !dbg !7796
+  %1171 = fmul double %1167, %1170, !dbg !7797
+  %1172 = fptrunc double %1171 to float, !dbg !7795
+  store float %1172, float* %5, align 4, !dbg !7798, !tbaa !3269
+  br label %1173
+
+; <label>:1173                                    ; preds = %767, %1093, %1147, %1112, %.critedge
+  %TIR_occured.0 = phi i32 [ %.0.i, %1093 ], [ 0, %1112 ], [ 0, %1147 ], [ 0, %767 ], [ 0, %.critedge ]
+  %1174 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 13), align 8, !dbg !7799, !tbaa !3797
+  %1175 = and i32 %1174, 32, !dbg !7801
+  %1176 = icmp ne i32 %1175, 0, !dbg !7801
+  %1177 = icmp sgt i32 %layer_number.0.lcssa, 0, !dbg !7802
+  %or.cond137 = and i1 %1176, %1177, !dbg !7806
+  br i1 %or.cond137, label %.lr.ph43, label %.loopexit22, !dbg !7806
+
+.lr.ph43:                                         ; preds = %1173
+  %1178 = icmp eq i32 %TIR_occured.0, 0, !dbg !7807
+  %1179 = getelementptr inbounds %"struct.pov::istk_entry"* %Intersect, i64 0, i32 1, i64 0, !dbg !7810
+  %1180 = getelementptr inbounds [5 x float]* %RflCol, i64 0, i64 0, !dbg !7814
+  %1181 = getelementptr inbounds [5 x float]* %RflCol, i64 0, i64 1, !dbg !7815
+  %1182 = getelementptr inbounds [5 x float]* %RflCol, i64 0, i64 2, !dbg !7818
+  %1183 = add i32 %layer_number.0.lcssa, -1, !dbg !7819
+  br label %1184, !dbg !7819
+
+; <label>:1184                                    ; preds = %1277, %.lr.ph43
+  %indvars.iv88 = phi i64 [ 0, %.lr.ph43 ], [ %indvars.iv.next89, %1277 ]
+  br i1 %1178, label %1203, label %1185, !dbg !7820
+
+; <label>:1185                                    ; preds = %1184
+  %1186 = getelementptr inbounds %"struct.pov::ComTexData_Struct"* %1, i64 0, i32 3, i64 %indvars.iv88, i64 0, !dbg !7821
+  %1187 = load double* %1186, align 8, !dbg !7821, !tbaa !3114
+  %1188 = fsub double %758, %1187, !dbg !7822
+  %1189 = call double @fabs(double %1188) #7, !dbg !7823
+  %1190 = fcmp ogt double %1189, 1.000000e-07, !dbg !7824
+  br i1 %1190, label %1203, label %1191, !dbg !7825
+
+; <label>:1191                                    ; preds = %1185
+  %1192 = getelementptr inbounds %"struct.pov::ComTexData_Struct"* %1, i64 0, i32 3, i64 %indvars.iv88, i64 1, !dbg !7826
+  %1193 = load double* %1192, align 8, !dbg !7826, !tbaa !3114
+  %1194 = fsub double %757, %1193, !dbg !7827
+  %1195 = call double @fabs(double %1194) #7, !dbg !7828
+  %1196 = fcmp ogt double %1195, 1.000000e-07, !dbg !7829
+  br i1 %1196, label %1203, label %1197, !dbg !7830
+
+; <label>:1197                                    ; preds = %1191
+  %1198 = getelementptr inbounds %"struct.pov::ComTexData_Struct"* %1, i64 0, i32 3, i64 %indvars.iv88, i64 2, !dbg !7831
+  %1199 = load double* %1198, align 8, !dbg !7831, !tbaa !3114
+  %1200 = fsub double %756, %1199, !dbg !7832
+  %1201 = call double @fabs(double %1200) #7, !dbg !7833
+  %1202 = fcmp ogt double %1201, 1.000000e-07, !dbg !7834
+  br i1 %1202, label %1203, label %1277, !dbg !7835
+
+; <label>:1203                                    ; preds = %1184, %1197, %1191, %1185
+  %1204 = getelementptr inbounds %"struct.pov::ComTexData_Struct"* %1, i64 0, i32 4, i64 %indvars.iv88, i64 0, !dbg !7836
+  %1205 = load float* %1204, align 4, !dbg !7836, !tbaa !3269
+  %1206 = fcmp une float %1205, 0.000000e+00, !dbg !7837
+  br i1 %1206, label %1215, label %1207, !dbg !7838
+
+; <label>:1207                                    ; preds = %1203
+  %1208 = getelementptr inbounds %"struct.pov::ComTexData_Struct"* %1, i64 0, i32 4, i64 %indvars.iv88, i64 1, !dbg !7839
+  %1209 = load float* %1208, align 4, !dbg !7839, !tbaa !3269
+  %1210 = fcmp une float %1209, 0.000000e+00, !dbg !7840
+  br i1 %1210, label %1215, label %1211, !dbg !7841
+
+; <label>:1211                                    ; preds = %1207
+  %1212 = getelementptr inbounds %"struct.pov::ComTexData_Struct"* %1, i64 0, i32 4, i64 %indvars.iv88, i64 2, !dbg !7842
+  %1213 = load float* %1212, align 4, !dbg !7842, !tbaa !3269
+  %1214 = fcmp une float %1213, 0.000000e+00, !dbg !7843
+  br i1 %1214, label %1215, label %1277, !dbg !7844
+
+; <label>:1215                                    ; preds = %1211, %1207, %1203
+  %1216 = getelementptr inbounds %"struct.pov::ComTexData_Struct"* %1, i64 0, i32 3, i64 %indvars.iv88, i64 0, !dbg !7845
+  %1217 = getelementptr inbounds %"struct.pov::ComTexData_Struct"* %1, i64 0, i32 2, i64 %indvars.iv88, !dbg !7846
+  %1218 = load double* %1217, align 8, !dbg !7846, !tbaa !3114
+  call fastcc void @_ZN3povL7ReflectEPdPNS_10Ray_StructES0_S0_Pfd(double* %1179, %"struct.pov::Ray_Struct"* %Ray, double* %1216, double* %Raw_Normal, float* %1180, double %1218) #6, !dbg !7847
+  store i32 -1, i32* @_ZN3pov22photonsAlreadyGatheredE, align 4, !dbg !7848, !tbaa !2664
+  %1219 = getelementptr inbounds %"struct.pov::ComTexData_Struct"* %1, i64 0, i32 5, i64 %indvars.iv88, !dbg !7849
+  %1220 = load float* %1219, align 4, !dbg !7849, !tbaa !3269
+  %1221 = fcmp une float %1220, 1.000000e+00, !dbg !7850
+  %1222 = load float* %1204, align 4, !dbg !7851, !tbaa !3269
+  br i1 %1221, label %1223, label %1260, !dbg !7852
+
+; <label>:1223                                    ; preds = %1215
+  %1224 = fpext float %1220 to double, !dbg !7849
+  %1225 = fpext float %1222 to double, !dbg !7851
+  %1226 = load float* %1180, align 16, !dbg !7853, !tbaa !3269
+  %1227 = fpext float %1226 to double, !dbg !7853
+  %1228 = call double @llvm.pow.f64(double %1227, double %1224), !dbg !7854
+  %1229 = fmul double %1225, %1228, !dbg !7855
+  %1230 = load float* %ResCol, align 4, !dbg !7856, !tbaa !3269
+  %1231 = fpext float %1230 to double, !dbg !7856
+  %1232 = fadd double %1229, %1231, !dbg !7856
+  %1233 = fptrunc double %1232 to float, !dbg !7856
+  store float %1233, float* %ResCol, align 4, !dbg !7856, !tbaa !3269
+  %1234 = getelementptr inbounds %"struct.pov::ComTexData_Struct"* %1, i64 0, i32 4, i64 %indvars.iv88, i64 1, !dbg !7857
+  %1235 = load float* %1234, align 4, !dbg !7857, !tbaa !3269
+  %1236 = fpext float %1235 to double, !dbg !7857
+  %1237 = load float* %1181, align 4, !dbg !7815, !tbaa !3269
+  %1238 = fpext float %1237 to double, !dbg !7815
+  %1239 = load float* %1219, align 4, !dbg !7858, !tbaa !3269
+  %1240 = fpext float %1239 to double, !dbg !7858
+  %1241 = call double @llvm.pow.f64(double %1238, double %1240), !dbg !7859
+  %1242 = fmul double %1236, %1241, !dbg !7860
+  %1243 = load float* %2, align 4, !dbg !7861, !tbaa !3269
+  %1244 = fpext float %1243 to double, !dbg !7861
+  %1245 = fadd double %1242, %1244, !dbg !7861
+  %1246 = fptrunc double %1245 to float, !dbg !7861
+  store float %1246, float* %2, align 4, !dbg !7861, !tbaa !3269
+  %1247 = getelementptr inbounds %"struct.pov::ComTexData_Struct"* %1, i64 0, i32 4, i64 %indvars.iv88, i64 2, !dbg !7862
+  %1248 = load float* %1247, align 4, !dbg !7862, !tbaa !3269
+  %1249 = fpext float %1248 to double, !dbg !7862
+  %1250 = load float* %1182, align 8, !dbg !7818, !tbaa !3269
+  %1251 = fpext float %1250 to double, !dbg !7818
+  %1252 = load float* %1219, align 4, !dbg !7863, !tbaa !3269
+  %1253 = fpext float %1252 to double, !dbg !7863
+  %1254 = call double @llvm.pow.f64(double %1251, double %1253), !dbg !7864
+  %1255 = fmul double %1249, %1254, !dbg !7865
+  %1256 = load float* %3, align 4, !dbg !7866, !tbaa !3269
+  %1257 = fpext float %1256 to double, !dbg !7866
+  %1258 = fadd double %1255, %1257, !dbg !7866
+  %1259 = fptrunc double %1258 to float, !dbg !7866
+  store float %1259, float* %3, align 4, !dbg !7866, !tbaa !3269
+  br label %1277, !dbg !7867
+
+; <label>:1260                                    ; preds = %1215
+  %1261 = load float* %1180, align 16, !dbg !7868, !tbaa !3269
+  %1262 = fmul float %1222, %1261, !dbg !7870
+  %1263 = load float* %ResCol, align 4, !dbg !7871, !tbaa !3269
+  %1264 = fadd float %1263, %1262, !dbg !7871
+  store float %1264, float* %ResCol, align 4, !dbg !7871, !tbaa !3269
+  %1265 = getelementptr inbounds %"struct.pov::ComTexData_Struct"* %1, i64 0, i32 4, i64 %indvars.iv88, i64 1, !dbg !7872
+  %1266 = load float* %1265, align 4, !dbg !7872, !tbaa !3269
+  %1267 = load float* %1181, align 4, !dbg !7873, !tbaa !3269
+  %1268 = fmul float %1266, %1267, !dbg !7874
+  %1269 = load float* %2, align 4, !dbg !7875, !tbaa !3269
+  %1270 = fadd float %1269, %1268, !dbg !7875
+  store float %1270, float* %2, align 4, !dbg !7875, !tbaa !3269
+  %1271 = getelementptr inbounds %"struct.pov::ComTexData_Struct"* %1, i64 0, i32 4, i64 %indvars.iv88, i64 2, !dbg !7876
+  %1272 = load float* %1271, align 4, !dbg !7876, !tbaa !3269
+  %1273 = load float* %1182, align 8, !dbg !7877, !tbaa !3269
+  %1274 = fmul float %1272, %1273, !dbg !7878
+  %1275 = load float* %3, align 4, !dbg !7879, !tbaa !3269
+  %1276 = fadd float %1275, %1274, !dbg !7879
+  store float %1276, float* %3, align 4, !dbg !7879, !tbaa !3269
+  br label %1277
+
+; <label>:1277                                    ; preds = %1197, %1223, %1260, %1211
+  %indvars.iv.next89 = add nuw nsw i64 %indvars.iv88, 1, !dbg !7819
+  %lftr.wideiv = trunc i64 %indvars.iv88 to i32, !dbg !7819
+  %exitcond = icmp eq i32 %lftr.wideiv, %1183, !dbg !7819
+  br i1 %exitcond, label %..loopexit22_crit_edge, label %1184, !dbg !7819
+
+..loopexit22_crit_edge:                           ; preds = %1277
+  %.pre113.pre = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 13), align 8, !dbg !7880, !tbaa !3797
+  br label %.loopexit22, !dbg !7819
+
+.loopexit22:                                      ; preds = %1173, %..loopexit22_crit_edge
+  %1278 = phi i32 [ %1174, %1173 ], [ %.pre113.pre, %..loopexit22_crit_edge ]
+  %1279 = and i32 %1278, 128, !dbg !7882
+  %1280 = icmp eq i32 %1279, 0, !dbg !7882
+  br i1 %1280, label %.loopexit, label %1281, !dbg !7883
+
+; <label>:1281                                    ; preds = %.loopexit22
+  %1282 = getelementptr inbounds %"struct.pov::Ray_Struct"* %Ray, i64 0, i32 2, !dbg !7884
+  %1283 = load i32* %1282, align 4, !dbg !7884, !tbaa !3972
+  %1284 = icmp sgt i32 %1283, -1, !dbg !7885
+  br i1 %1284, label %.lr.ph41, label %.loopexit, !dbg !7886
+
+; <label>:1285                                    ; preds = %.lr.ph41
+  %indvars.iv.next87 = add nuw i64 %indvars.iv86, 1, !dbg !7887
+  %1286 = sext i32 %1283 to i64, !dbg !7890
+  %1287 = icmp slt i64 %indvars.iv86, %1286, !dbg !7890
+  br i1 %1287, label %.lr.ph41, label %.critedge11, !dbg !7887
+
+.lr.ph41:                                         ; preds = %1281, %1285
+  %indvars.iv86 = phi i64 [ %indvars.iv.next87, %1285 ], [ 0, %1281 ]
+  %1288 = getelementptr inbounds %"struct.pov::Ray_Struct"* %Ray, i64 0, i32 4, i64 %indvars.iv86, !dbg !7892
+  %1289 = load %"struct.pov::Interior_Struct"** %1288, align 8, !dbg !7892, !tbaa !2657
+  %1290 = getelementptr inbounds %"struct.pov::Interior_Struct"* %1289, i64 0, i32 1, !dbg !7895
+  %1291 = load i32* %1290, align 4, !dbg !7895, !tbaa !3985
+  %1292 = icmp eq i32 %1291, 0, !dbg !7892
+  br i1 %1292, label %.loopexit, label %1285, !dbg !7896
+
+.critedge11:                                      ; preds = %1285
+  %1293 = load i64* @_ZN3pov22LightingMediaListIndexE, align 8, !dbg !7897, !tbaa !2676
+  %1294 = add nsw i64 %1293, 1, !dbg !7897
+  store i64 %1294, i64* @_ZN3pov22LightingMediaListIndexE, align 8, !dbg !7897, !tbaa !2676
+  %1295 = load i64* @_ZN3pov17MaxMediaPoolDepthE, align 8, !dbg !7900, !tbaa !2676
+  %1296 = icmp slt i64 %1294, %1295, !dbg !7902
+  br i1 %1296, label %1299, label %1297, !dbg !7903
+
+; <label>:1297                                    ; preds = %.critedge11
+  %1298 = shl nsw i64 %1295, 1, !dbg !7904
+  call void @_ZN3pov22ResizeMediaMallocPoolsEl(i64 %1298) #6, !dbg !7906
+  %.pre114 = load i32* %1282, align 4, !dbg !7907, !tbaa !3972
+  %.pre115 = load i64* @_ZN3pov22LightingMediaListIndexE, align 8, !dbg !7909, !tbaa !2676
+  br label %1299, !dbg !7910
+
+; <label>:1299                                    ; preds = %.critedge11, %1297
+  %1300 = phi i64 [ %1294, %.critedge11 ], [ %.pre115, %1297 ]
+  %1301 = phi i32 [ %1283, %.critedge11 ], [ %.pre114, %1297 ]
+  %1302 = add nsw i32 %1301, 2, !dbg !7911
+  %1303 = sext i32 %1302 to i64, !dbg !7912
+  %1304 = load i64** @_ZN3pov25LightingMediaListPoolSizeE, align 8, !dbg !7913, !tbaa !2657
+  %1305 = getelementptr inbounds i64* %1304, i64 %1300, !dbg !7913
+  %1306 = load i64* %1305, align 8, !dbg !7913, !tbaa !2676
+  %1307 = icmp slt i64 %1303, %1306, !dbg !7914
+  br i1 %1307, label %1330, label %1308, !dbg !7915
+
+; <label>:1308                                    ; preds = %1299
+  %1309 = load %"struct.pov::Media_Struct"**** @_ZN3pov21LightingMediaListPoolE, align 8, !dbg !7916, !tbaa !2657
+  %1310 = getelementptr inbounds %"struct.pov::Media_Struct"*** %1309, i64 %1300, !dbg !7916
+  %1311 = bitcast %"struct.pov::Media_Struct"*** %1310 to i8**, !dbg !7916
+  %1312 = load i8** %1311, align 8, !dbg !7916, !tbaa !2657
+  call void @_ZN3pov8pov_freeEPvPKci(i8* %1312, i8* getelementptr inbounds ([69 x i8]* @.str, i64 0, i64 0), i32 4190) #6, !dbg !7916
+  %1313 = load i64* @_ZN3pov22LightingMediaListIndexE, align 8, !dbg !7916, !tbaa !2676
+  %1314 = load %"struct.pov::Media_Struct"**** @_ZN3pov21LightingMediaListPoolE, align 8, !dbg !7916, !tbaa !2657
+  %1315 = getelementptr inbounds %"struct.pov::Media_Struct"*** %1314, i64 %1313, !dbg !7916
+  store %"struct.pov::Media_Struct"** null, %"struct.pov::Media_Struct"*** %1315, align 8, !dbg !7916, !tbaa !2657
+  %1316 = load i32* %1282, align 4, !dbg !7919, !tbaa !3972
+  %1317 = add nsw i32 %1316, 2, !dbg !7919
+  %1318 = sext i32 %1317 to i64, !dbg !7919
+  %1319 = shl nsw i64 %1318, 3, !dbg !7919
+  %1320 = call i8* @_ZN3pov10pov_mallocEmPKciS1_(i64 %1319, i8* getelementptr inbounds ([69 x i8]* @.str, i64 0, i64 0), i32 4191, i8* getelementptr inbounds ([16 x i8]* @.str3, i64 0, i64 0)) #6, !dbg !7919
+  %1321 = load i64* @_ZN3pov22LightingMediaListIndexE, align 8, !dbg !7920, !tbaa !2676
+  %1322 = load %"struct.pov::Media_Struct"**** @_ZN3pov21LightingMediaListPoolE, align 8, !dbg !7921, !tbaa !2657
+  %1323 = getelementptr inbounds %"struct.pov::Media_Struct"*** %1322, i64 %1321, !dbg !7921
+  %1324 = bitcast %"struct.pov::Media_Struct"*** %1323 to i8**, !dbg !7922
+  store i8* %1320, i8** %1324, align 8, !dbg !7922, !tbaa !2657
+  %1325 = load i32* %1282, align 4, !dbg !7923, !tbaa !3972
+  %1326 = add nsw i32 %1325, 2, !dbg !7924
+  %1327 = sext i32 %1326 to i64, !dbg !7925
+  %1328 = load i64** @_ZN3pov25LightingMediaListPoolSizeE, align 8, !dbg !7926, !tbaa !2657
+  %1329 = getelementptr inbounds i64* %1328, i64 %1321, !dbg !7926
+  store i64 %1327, i64* %1329, align 8, !dbg !7927, !tbaa !2676
+  %.pre116 = load i64* @_ZN3pov22LightingMediaListIndexE, align 8, !dbg !7928, !tbaa !2676
+  br label %1330, !dbg !7929
+
+; <label>:1330                                    ; preds = %1299, %1308
+  %1331 = phi i32 [ %1301, %1299 ], [ %1325, %1308 ]
+  %1332 = phi i64 [ %1300, %1299 ], [ %.pre116, %1308 ]
+  %1333 = load %"struct.pov::Media_Struct"**** @_ZN3pov21LightingMediaListPoolE, align 8, !dbg !7930, !tbaa !2657
+  %1334 = getelementptr inbounds %"struct.pov::Media_Struct"*** %1333, i64 %1332, !dbg !7930
+  %1335 = load %"struct.pov::Media_Struct"*** %1334, align 8, !dbg !7930, !tbaa !2657
+  call void @llvm.dbg.value(metadata %"struct.pov::Media_Struct"** %1335, i64 0, metadata !1824, metadata !2666), !dbg !7931
+  call void @llvm.dbg.value(metadata %"struct.pov::Media_Struct"** %1335, i64 0, metadata !1823, metadata !2666), !dbg !7932
+  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !1800, metadata !2666), !dbg !7933
+  %1336 = icmp slt i32 %1331, 0, !dbg !7934
+  br i1 %1336, label %._crit_edge, label %.lr.ph, !dbg !7937
+
+.lr.ph:                                           ; preds = %1330, %1348
+  %indvars.iv = phi i64 [ %indvars.iv.next, %1348 ], [ 0, %1330 ]
+  %TmpMedia.038 = phi %"struct.pov::Media_Struct"** [ %TmpMedia.1, %1348 ], [ %1335, %1330 ]
+  %1337 = getelementptr inbounds %"struct.pov::Ray_Struct"* %Ray, i64 0, i32 4, i64 %indvars.iv, !dbg !7938
+  %1338 = load %"struct.pov::Interior_Struct"** %1337, align 8, !dbg !7938, !tbaa !2657
+  %1339 = getelementptr inbounds %"struct.pov::Interior_Struct"* %1338, i64 0, i32 1, !dbg !7941
+  %1340 = load i32* %1339, align 4, !dbg !7941, !tbaa !3985
+  %1341 = icmp eq i32 %1340, 0, !dbg !7938
+  br i1 %1341, label %1348, label %1342, !dbg !7942
+
+; <label>:1342                                    ; preds = %.lr.ph
+  %1343 = getelementptr inbounds %"struct.pov::Interior_Struct"* %1338, i64 0, i32 10, !dbg !7943
+  %1344 = load %"struct.pov::Media_Struct"** %1343, align 8, !dbg !7943, !tbaa !4036
+  %1345 = icmp eq %"struct.pov::Media_Struct"* %1344, null, !dbg !7946
+  br i1 %1345, label %1348, label %1346, !dbg !7947
+
+; <label>:1346                                    ; preds = %1342
+  store %"struct.pov::Media_Struct"* %1344, %"struct.pov::Media_Struct"** %TmpMedia.038, align 8, !dbg !7948, !tbaa !2657
+  %1347 = getelementptr inbounds %"struct.pov::Media_Struct"** %TmpMedia.038, i64 1, !dbg !7950
+  call void @llvm.dbg.value(metadata %"struct.pov::Media_Struct"** %1347, i64 0, metadata !1823, metadata !2666), !dbg !7932
+  br label %1348, !dbg !7951
+
+; <label>:1348                                    ; preds = %1342, %.lr.ph, %1346
+  %TmpMedia.1 = phi %"struct.pov::Media_Struct"** [ %1347, %1346 ], [ %TmpMedia.038, %1342 ], [ %TmpMedia.038, %.lr.ph ]
+  %indvars.iv.next = add nuw i64 %indvars.iv, 1, !dbg !7937
+  %1349 = sext i32 %1331 to i64, !dbg !7934
+  %1350 = icmp slt i64 %indvars.iv, %1349, !dbg !7934
+  br i1 %1350, label %.lr.ph, label %._crit_edge, !dbg !7937
+
+._crit_edge:                                      ; preds = %1348, %1330
+  %TmpMedia.0.lcssa = phi %"struct.pov::Media_Struct"** [ %1335, %1330 ], [ %TmpMedia.1, %1348 ]
+  store %"struct.pov::Media_Struct"* null, %"struct.pov::Media_Struct"** %TmpMedia.0.lcssa, align 8, !dbg !7952, !tbaa !2657
+  %1351 = load %"struct.pov::Media_Struct"** %1335, align 8, !dbg !7953, !tbaa !2657
+  %1352 = icmp eq %"struct.pov::Media_Struct"* %1351, null, !dbg !7955
+  br i1 %1352, label %1354, label %1353, !dbg !7956
+
+; <label>:1353                                    ; preds = %._crit_edge
+  call void @_ZN3pov14Simulate_MediaEPPNS_12Media_StructEPNS_10Ray_StructEPNS_10istk_entryEPfi(%"struct.pov::Media_Struct"** %1335, %"struct.pov::Ray_Struct"* %Ray, %"struct.pov::istk_entry"* %Intersect, float* %ResCol, i32 0) #6, !dbg !7957
+  %.pre117 = load i64* @_ZN3pov22LightingMediaListIndexE, align 8, !dbg !7958, !tbaa !2676
+  br label %1354, !dbg !7957
+
+; <label>:1354                                    ; preds = %._crit_edge, %1353
+  %1355 = phi i64 [ %1332, %._crit_edge ], [ %.pre117, %1353 ]
+  store i32 -1, i32* @_ZN3pov22photonsAlreadyGatheredE, align 4, !dbg !7959, !tbaa !2664
+  %1356 = add nsw i64 %1355, -1, !dbg !7958
+  store i64 %1356, i64* @_ZN3pov22LightingMediaListIndexE, align 8, !dbg !7958, !tbaa !2676
+  br label %.loopexit, !dbg !7960
+
+.loopexit:                                        ; preds = %.lr.ph41, %.loopexit22, %1354, %1281
+  call void @_ZN3pov14FreeComTexDataEPNS_17ComTexData_StructE(%"struct.pov::ComTexData_Struct"* %1) #6, !dbg !7961
+  ret void, !dbg !7962
+}

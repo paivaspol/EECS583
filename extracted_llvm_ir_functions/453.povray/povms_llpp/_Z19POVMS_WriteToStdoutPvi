@@ -1,0 +1,66 @@
+define i32 @_Z19POVMS_WriteToStdoutPvi(i8* %p, i32 %l) #0 {
+  tail call void @llvm.dbg.value(metadata i8* %p, i64 0, metadata !868, metadata !1201), !dbg !4375
+  tail call void @llvm.dbg.value(metadata i32 %l, i64 0, metadata !869, metadata !1201), !dbg !4376
+  tail call void @llvm.dbg.value(metadata i8* %p, i64 0, metadata !870, metadata !1201), !dbg !4377
+  %1 = icmp eq i8* %p, null, !dbg !4378
+  br i1 %1, label %22, label %2, !dbg !4380
+
+; <label>:2                                       ; preds = %0
+  %3 = icmp eq i32 %l, 0, !dbg !4381
+  br i1 %3, label %22, label %4, !dbg !4383
+
+; <label>:4                                       ; preds = %2
+  %5 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([4 x i8]* @.str15, i64 0, i64 0), i32 %l) #8, !dbg !4384
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !871, metadata !1201), !dbg !4385
+  %6 = icmp sgt i32 %l, 0, !dbg !4386
+  br i1 %6, label %.lr.ph, label %._crit_edge, !dbg !4388
+
+.lr.ph:                                           ; preds = %4
+  %7 = add i32 %l, -1, !dbg !4388
+  br label %8, !dbg !4388
+
+; <label>:8                                       ; preds = %19, %.lr.ph
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %19 ]
+  %9 = getelementptr inbounds i8* %p, i64 %indvars.iv, !dbg !4389
+  %10 = load i8* %9, align 1, !dbg !4389, !tbaa !1562
+  %11 = zext i8 %10 to i32, !dbg !4389
+  %12 = icmp ult i8 %10, 32, !dbg !4392
+  br i1 %12, label %13, label %switch.early.test
+
+switch.early.test:                                ; preds = %8
+  switch i8 %10, label %17 [
+    i8 62, label %13
+    i8 60, label %13
+    i8 34, label %13
+    i8 92, label %15
+  ], !dbg !4393
+
+; <label>:13                                      ; preds = %switch.early.test, %switch.early.test, %switch.early.test, %8
+  %14 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([7 x i8]* @.str17, i64 0, i64 0), i32 %11) #8, !dbg !4394
+  br label %19, !dbg !4394
+
+; <label>:15                                      ; preds = %switch.early.test
+  %16 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([3 x i8]* @.str18, i64 0, i64 0)) #8, !dbg !4395
+  br label %19, !dbg !4395
+
+; <label>:17                                      ; preds = %switch.early.test
+  %18 = tail call i32 @putchar(i32 %11) #8, !dbg !4397
+  br label %19
+
+; <label>:19                                      ; preds = %13, %17, %15
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !4388
+  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !4388
+  %exitcond = icmp eq i32 %lftr.wideiv, %7, !dbg !4388
+  br i1 %exitcond, label %._crit_edge, label %8, !dbg !4388
+
+._crit_edge:                                      ; preds = %19, %4
+  %putchar = tail call i32 @putchar(i32 10), !dbg !4398
+  %20 = load %struct.__sFILE** @__stdoutp, align 8, !dbg !4399, !tbaa !1210
+  %21 = tail call i32 @fflush(%struct.__sFILE* %20) #8, !dbg !4400
+  tail call void @free(i8* %p) #8, !dbg !4401
+  br label %22, !dbg !4402
+
+; <label>:22                                      ; preds = %2, %0, %._crit_edge
+  %.0 = phi i32 [ 0, %._crit_edge ], [ -1, %0 ], [ 0, %2 ]
+  ret i32 %.0, !dbg !4403
+}

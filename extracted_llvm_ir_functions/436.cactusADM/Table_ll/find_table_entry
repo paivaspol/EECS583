@@ -1,48 +1,54 @@
 define internal fastcc %struct.table_entry* @find_table_entry(%struct.table_header* nocapture readonly %thp, i8* %key, %struct.table_entry** %prev_tep_ptr) #1 {
-  %1 = getelementptr inbounds %struct.table_header* %thp, i64 0, i32 0
-  %tep.03 = load %struct.table_entry** %1, align 8
-  %2 = icmp eq %struct.table_entry* %tep.03, null
-  br i1 %2, label %.loopexit, label %.lr.ph
+  tail call void @llvm.dbg.value(metadata %struct.table_header* %thp, i64 0, metadata !569, metadata !608), !dbg !820
+  tail call void @llvm.dbg.value(metadata i8* %key, i64 0, metadata !570, metadata !608), !dbg !821
+  tail call void @llvm.dbg.value(metadata %struct.table_entry** %prev_tep_ptr, i64 0, metadata !571, metadata !608), !dbg !822
+  tail call void @llvm.dbg.value(metadata i32 %4, i64 0, metadata !572, metadata !608), !dbg !823
+  tail call void @llvm.dbg.value(metadata %struct.table_entry* null, i64 0, metadata !574, metadata !608), !dbg !824
+  %1 = getelementptr inbounds %struct.table_header* %thp, i64 0, i32 0, !dbg !825
+  %tep.03 = load %struct.table_entry** %1, align 8, !dbg !825
+  %2 = icmp eq %struct.table_entry* %tep.03, null, !dbg !826
+  br i1 %2, label %.loopexit, label %.lr.ph, !dbg !829
 
 .lr.ph:                                           ; preds = %0
-  %3 = getelementptr inbounds %struct.table_header* %thp, i64 0, i32 1
-  %4 = load i32* %3, align 4, !tbaa !10
-  %5 = and i32 %4, 1
-  %6 = icmp eq i32 %5, 0
-  br label %7
+  %3 = getelementptr inbounds %struct.table_header* %thp, i64 0, i32 1, !dbg !830
+  %4 = load i32* %3, align 4, !dbg !830, !tbaa !645
+  %5 = and i32 %4, 1, !dbg !831
+  %6 = icmp eq i32 %5, 0, !dbg !831
+  br label %7, !dbg !829
 
 ; <label>:7                                       ; preds = %.lr.ph, %19
   %tep.05 = phi %struct.table_entry* [ %tep.03, %.lr.ph ], [ %tep.0, %19 ]
   %prev_tep.04 = phi %struct.table_entry* [ null, %.lr.ph ], [ %tep.05, %19 ]
-  %8 = getelementptr inbounds %struct.table_entry* %tep.05, i64 0, i32 1
-  %9 = load i8** %8, align 8, !tbaa !14
-  br i1 %6, label %13, label %10
+  %8 = getelementptr inbounds %struct.table_entry* %tep.05, i64 0, i32 1, !dbg !834
+  %9 = load i8** %8, align 8, !dbg !834, !tbaa !703
+  br i1 %6, label %13, label %10, !dbg !835
 
 ; <label>:10                                      ; preds = %7
-  %11 = tail call i32 @Util_StrCmpi(i8* %key, i8* %9) #10
-  %12 = icmp eq i32 %11, 0
-  br i1 %12, label %16, label %19
+  %11 = tail call i32 @Util_StrCmpi(i8* %key, i8* %9) #10, !dbg !836
+  %12 = icmp eq i32 %11, 0, !dbg !837
+  br i1 %12, label %16, label %19, !dbg !838
 
 ; <label>:13                                      ; preds = %7
-  %14 = tail call i32 @strcmp(i8* %key, i8* %9) #10
-  %15 = icmp eq i32 %14, 0
-  br i1 %15, label %16, label %19
+  %14 = tail call i32 @strcmp(i8* %key, i8* %9) #10, !dbg !839
+  %15 = icmp eq i32 %14, 0, !dbg !840
+  br i1 %15, label %16, label %19, !dbg !835
 
 ; <label>:16                                      ; preds = %13, %10
-  %17 = icmp eq %struct.table_entry** %prev_tep_ptr, null
-  br i1 %17, label %.loopexit, label %18
+  %17 = icmp eq %struct.table_entry** %prev_tep_ptr, null, !dbg !841
+  br i1 %17, label %.loopexit, label %18, !dbg !844
 
 ; <label>:18                                      ; preds = %16
-  store %struct.table_entry* %prev_tep.04, %struct.table_entry** %prev_tep_ptr, align 8, !tbaa !6
-  br label %.loopexit
+  store %struct.table_entry* %prev_tep.04, %struct.table_entry** %prev_tep_ptr, align 8, !dbg !845, !tbaa !631
+  br label %.loopexit, !dbg !846
 
 ; <label>:19                                      ; preds = %10, %13
-  %20 = getelementptr inbounds %struct.table_entry* %tep.05, i64 0, i32 0
-  %tep.0 = load %struct.table_entry** %20, align 8
-  %21 = icmp eq %struct.table_entry* %tep.0, null
-  br i1 %21, label %.loopexit, label %7
+  tail call void @llvm.dbg.value(metadata %struct.table_entry* %tep.0, i64 0, metadata !574, metadata !608), !dbg !824
+  %20 = getelementptr inbounds %struct.table_entry* %tep.05, i64 0, i32 0, !dbg !847
+  %tep.0 = load %struct.table_entry** %20, align 8, !dbg !825
+  %21 = icmp eq %struct.table_entry* %tep.0, null, !dbg !826
+  br i1 %21, label %.loopexit, label %7, !dbg !829
 
 .loopexit:                                        ; preds = %19, %0, %18, %16
   %.0 = phi %struct.table_entry* [ %tep.05, %16 ], [ %tep.05, %18 ], [ null, %0 ], [ null, %19 ]
-  ret %struct.table_entry* %.0
+  ret %struct.table_entry* %.0, !dbg !848
 }

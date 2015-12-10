@@ -1,0 +1,157 @@
+define void @_ZN3pov28Start_Tracing_Mosaic_PreviewEii(i32 %StartPixelSize, i32 %EndPixelSize) #0 {
+  %Red = alloca i8, align 1
+  %Green = alloca i8, align 1
+  %Blue = alloca i8, align 1
+  %Alpha = alloca i8, align 1
+  %Colour = alloca [5 x float], align 16
+  %unclippedColour = alloca [5 x float], align 16
+  %grey = alloca double, align 8
+  tail call void @llvm.dbg.value(metadata i32 %StartPixelSize, i64 0, metadata !1074, metadata !2153), !dbg !2636
+  tail call void @llvm.dbg.value(metadata i32 %EndPixelSize, i64 0, metadata !1075, metadata !2153), !dbg !2637
+  tail call void @llvm.dbg.declare(metadata [5 x float]* %Colour, metadata !1087, metadata !2153), !dbg !2638
+  tail call void @llvm.dbg.declare(metadata [5 x float]* %unclippedColour, metadata !1088, metadata !2153), !dbg !2639
+  tail call void @llvm.dbg.value(metadata i32 %StartPixelSize, i64 0, metadata !1083, metadata !2153), !dbg !2640
+  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !1086, metadata !2153), !dbg !2641
+  tail call void @llvm.dbg.value(metadata i32 %StartPixelSize, i64 0, metadata !1084, metadata !2153), !dbg !2642
+  %1 = icmp slt i32 %StartPixelSize, %EndPixelSize, !dbg !2643
+  br i1 %1, label %._crit_edge12, label %.lr.ph11, !dbg !2646
+
+.lr.ph11:                                         ; preds = %0
+  %2 = getelementptr inbounds [5 x float]* %Colour, i64 0, i64 0, !dbg !2647
+  %3 = getelementptr inbounds [5 x float]* %unclippedColour, i64 0, i64 0, !dbg !2657
+  br label %4, !dbg !2646
+
+; <label>:4                                       ; preds = %.lr.ph11, %._crit_edge5
+  %PreviewPass.09 = phi i32 [ 1, %.lr.ph11 ], [ %61, %._crit_edge5 ]
+  %PixelSize.08 = phi i32 [ %StartPixelSize, %.lr.ph11 ], [ %62, %._crit_edge5 ]
+  %PreviewStep.06 = phi i32 [ %StartPixelSize, %.lr.ph11 ], [ %63, %._crit_edge5 ]
+  %5 = load i64* bitcast (i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 24) to i64*), align 8, !dbg !2658
+  %6 = trunc i64 %5 to i32, !dbg !2658
+  store i32 %6, i32* @_ZN3pov19Current_Line_NumberE, align 4, !dbg !2659, !tbaa !2144
+  %7 = lshr i64 %5, 32
+  %8 = trunc i64 %7 to i32
+  %9 = icmp slt i32 %6, %8, !dbg !2660
+  br i1 %9, label %.lr.ph4, label %._crit_edge5, !dbg !2661
+
+.lr.ph4:                                          ; preds = %4
+  %10 = sext i32 %PixelSize.08 to i64, !dbg !2662
+  %11 = icmp sgt i32 %PreviewPass.09, 1, !dbg !2663
+  %12 = shl nsw i32 %PreviewStep.06, 1, !dbg !2665
+  %13 = add i32 %PixelSize.08, -1, !dbg !2668
+  br label %14, !dbg !2661
+
+; <label>:14                                      ; preds = %.lr.ph4, %._crit_edge
+  store i64 %10, i64* @_ZN3pov17MosaicPreviewSizeE, align 8, !dbg !2669, !tbaa !2670
+  %15 = call i32 @_ZN3pov21Send_RenderStatisticsEb(i1 zeroext false) #7, !dbg !2671
+  call void @_ZN3pov12Do_CooperateEi(i32 0) #7, !dbg !2672
+  %16 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 20), align 4, !dbg !2673, !tbaa !2674
+  call void @llvm.dbg.value(metadata i32 %16, i64 0, metadata !1080, metadata !2153), !dbg !2675
+  %17 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 21), align 8, !dbg !2676, !tbaa !2677
+  %18 = icmp slt i32 %16, %17, !dbg !2678
+  br i1 %18, label %.lr.ph, label %._crit_edge, !dbg !2679
+
+.lr.ph:                                           ; preds = %14, %53
+  %x.02 = phi i32 [ %54, %53 ], [ %16, %14 ]
+  call void @_ZN3pov16Check_User_AbortEi(i32 0) #7, !dbg !2680
+  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !1085, metadata !2153), !dbg !2681
+  br i1 %11, label %19, label %.critedge, !dbg !2682
+
+; <label>:19                                      ; preds = %.lr.ph
+  %20 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 20), align 4, !dbg !2683, !tbaa !2674
+  %21 = sub nsw i32 %x.02, %20, !dbg !2684
+  %22 = srem i32 %21, %12, !dbg !2685
+  %23 = icmp eq i32 %22, 0, !dbg !2686
+  br i1 %23, label %24, label %.critedge, !dbg !2687
+
+; <label>:24                                      ; preds = %19
+  %25 = load i32* @_ZN3pov19Current_Line_NumberE, align 4, !dbg !2688, !tbaa !2144
+  %26 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 24), align 8, !dbg !2689, !tbaa !2690
+  %27 = sub nsw i32 %25, %26, !dbg !2691
+  %28 = srem i32 %27, %12, !dbg !2692
+  %29 = icmp eq i32 %28, 0, !dbg !2693
+  call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !1085, metadata !2153), !dbg !2681
+  br i1 %29, label %53, label %.critedge, !dbg !2694
+
+.critedge:                                        ; preds = %.lr.ph, %19, %24
+  %30 = load i32* @_ZN3pov19Current_Line_NumberE, align 4, !dbg !2695, !tbaa !2144
+  call void @_ZN3pov11trace_pixelEiiPfS0_(i32 %x.02, i32 %30, float* %2, float* %3) #7, !dbg !2696
+  call void @llvm.dbg.value(metadata i8* %Red, i64 0, metadata !1076, metadata !2153), !dbg !2697
+  call void @llvm.dbg.value(metadata i8* %Green, i64 0, metadata !1077, metadata !2153), !dbg !2698
+  call void @llvm.dbg.value(metadata i8* %Blue, i64 0, metadata !1078, metadata !2153), !dbg !2699
+  call void @llvm.dbg.value(metadata i8* %Alpha, i64 0, metadata !1079, metadata !2153), !dbg !2700
+  call void @llvm.dbg.value(metadata double* %grey, i64 0, metadata !1089, metadata !2153), !dbg !2701
+  call void @_ZN3pov14extract_colorsEPfPhS1_S1_S1_Pd(float* %2, i8* %Red, i8* %Green, i8* %Blue, i8* %Alpha, double* %grey) #7, !dbg !2702
+  %31 = load i32* @_ZN3pov19Current_Line_NumberE, align 4, !dbg !2703, !tbaa !2144
+  %32 = add i32 %13, %31, !dbg !2704
+  call void @llvm.dbg.value(metadata i32 %32, i64 0, metadata !1516, metadata !2153), !dbg !2705
+  call void @llvm.dbg.value(metadata i32 %32, i64 0, metadata !1508, metadata !2153), !dbg !2709
+  call void @llvm.dbg.value(metadata i32 %32, i64 0, metadata !1500, metadata !2153), !dbg !2710
+  %33 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 25), align 4, !dbg !2711, !tbaa !2712
+  %34 = add nsw i32 %33, -1, !dbg !2713
+  call void @llvm.dbg.value(metadata i32 %34, i64 0, metadata !1515, metadata !2153), !dbg !2714
+  call void @llvm.dbg.value(metadata i32 %34, i64 0, metadata !1509, metadata !2153), !dbg !2715
+  call void @llvm.dbg.value(metadata i32 %34, i64 0, metadata !1501, metadata !2153), !dbg !2716
+  call void @llvm.dbg.value(metadata i32 %43, i64 0, metadata !1082, metadata !2153), !dbg !2717
+  %35 = add i32 %13, %x.02, !dbg !2718
+  call void @llvm.dbg.value(metadata i32 %35, i64 0, metadata !1516, metadata !2153), !dbg !2719
+  call void @llvm.dbg.value(metadata i32 %35, i64 0, metadata !1508, metadata !2153), !dbg !2723
+  call void @llvm.dbg.value(metadata i32 %35, i64 0, metadata !1500, metadata !2153), !dbg !2724
+  %36 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 21), align 8, !dbg !2725, !tbaa !2677
+  %37 = add nsw i32 %36, -1, !dbg !2726
+  call void @llvm.dbg.value(metadata i32 %37, i64 0, metadata !1515, metadata !2153), !dbg !2727
+  call void @llvm.dbg.value(metadata i32 %37, i64 0, metadata !1509, metadata !2153), !dbg !2728
+  call void @llvm.dbg.value(metadata i32 %37, i64 0, metadata !1501, metadata !2153), !dbg !2729
+  call void @llvm.dbg.value(metadata i32 %44, i64 0, metadata !1081, metadata !2153), !dbg !2730
+  %38 = load i32* @_ZN3pov15Display_StartedE, align 4, !dbg !2731, !tbaa !2144
+  %39 = icmp eq i32 %38, 0, !dbg !2731
+  br i1 %39, label %53, label %40, !dbg !2733
+
+; <label>:40                                      ; preds = %.critedge
+  %41 = icmp slt i32 %37, %35, !dbg !2734
+  %42 = icmp slt i32 %34, %32, !dbg !2735
+  %43 = select i1 %42, i32 %34, i32 %32, !dbg !2736
+  %44 = select i1 %41, i32 %37, i32 %35, !dbg !2737
+  call void @llvm.dbg.value(metadata i8* %Red, i64 0, metadata !1076, metadata !2153), !dbg !2697
+  %45 = load i8* %Red, align 1, !dbg !2738, !tbaa !2134
+  %46 = zext i8 %45 to i32, !dbg !2738
+  call void @llvm.dbg.value(metadata i8* %Green, i64 0, metadata !1077, metadata !2153), !dbg !2698
+  %47 = load i8* %Green, align 1, !dbg !2738, !tbaa !2134
+  %48 = zext i8 %47 to i32, !dbg !2738
+  call void @llvm.dbg.value(metadata i8* %Blue, i64 0, metadata !1078, metadata !2153), !dbg !2699
+  %49 = load i8* %Blue, align 1, !dbg !2738, !tbaa !2134
+  %50 = zext i8 %49 to i32, !dbg !2738
+  call void @llvm.dbg.value(metadata i8* %Alpha, i64 0, metadata !1079, metadata !2153), !dbg !2700
+  %51 = load i8* %Alpha, align 1, !dbg !2738, !tbaa !2134
+  %52 = zext i8 %51 to i32, !dbg !2738
+  call void @_ZN3pov25POV_Std_Display_Plot_RectEiiiijjjj(i32 %x.02, i32 %31, i32 %44, i32 %43, i32 %46, i32 %48, i32 %50, i32 %52) #7, !dbg !2738
+  br label %53, !dbg !2740
+
+; <label>:53                                      ; preds = %.critedge, %24, %40
+  %54 = add nsw i32 %x.02, %PreviewStep.06, !dbg !2741
+  call void @llvm.dbg.value(metadata i32 %54, i64 0, metadata !1080, metadata !2153), !dbg !2675
+  %55 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 21), align 8, !dbg !2676, !tbaa !2677
+  %56 = icmp slt i32 %54, %55, !dbg !2678
+  br i1 %56, label %.lr.ph, label %._crit_edge, !dbg !2679
+
+._crit_edge:                                      ; preds = %53, %14
+  %57 = load i32* @_ZN3pov19Current_Line_NumberE, align 4, !dbg !2659, !tbaa !2144
+  %58 = add nsw i32 %57, %PreviewStep.06, !dbg !2659
+  store i32 %58, i32* @_ZN3pov19Current_Line_NumberE, align 4, !dbg !2659, !tbaa !2144
+  %59 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 25), align 4, !dbg !2742, !tbaa !2712
+  %60 = icmp slt i32 %58, %59, !dbg !2660
+  br i1 %60, label %14, label %._crit_edge5, !dbg !2661
+
+._crit_edge5:                                     ; preds = %._crit_edge, %4
+  store i32 0, i32* @_ZN3pov19Current_Line_NumberE, align 4, !dbg !2743, !tbaa !2144
+  %61 = add nuw nsw i32 %PreviewPass.09, 1, !dbg !2744
+  call void @llvm.dbg.value(metadata i32 %61, i64 0, metadata !1086, metadata !2153), !dbg !2641
+  %62 = ashr i32 %PixelSize.08, 1, !dbg !2745
+  call void @llvm.dbg.value(metadata i32 %62, i64 0, metadata !1084, metadata !2153), !dbg !2642
+  %63 = ashr i32 %PreviewStep.06, 1, !dbg !2746
+  call void @llvm.dbg.value(metadata i32 %63, i64 0, metadata !1083, metadata !2153), !dbg !2640
+  %64 = icmp slt i32 %62, %EndPixelSize, !dbg !2643
+  br i1 %64, label %._crit_edge12, label %4, !dbg !2646
+
+._crit_edge12:                                    ; preds = %._crit_edge5, %0
+  ret void, !dbg !2747
+}

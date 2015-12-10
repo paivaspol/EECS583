@@ -1,40 +1,40 @@
 define void @Chv_zero(%struct._Chv* %chv) #0 {
-entry:
-  %cmp = icmp eq %struct._Chv* %chv, null
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata %struct._Chv* %chv, i64 0, metadata !88, metadata !209), !dbg !533
+  %1 = icmp eq %struct._Chv* %chv, null, !dbg !534
+  br i1 %1, label %2, label %5, !dbg !536
 
-if.then:                                          ; preds = %entry
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([42 x i8]* @.str11, i64 0, i64 0), %struct._Chv* null) #4
-  tail call void @exit(i32 -1) #5
-  unreachable
+; <label>:2                                       ; preds = %0
+  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !537, !tbaa !217
+  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([42 x i8]* @.str11, i64 0, i64 0), %struct._Chv* null) #6, !dbg !539
+  tail call void @exit(i32 -1) #7, !dbg !540
+  unreachable, !dbg !540
 
-if.end:                                           ; preds = %entry
-  %type = getelementptr inbounds %struct._Chv* %chv, i64 0, i32 4
-  %1 = load i32* %type, align 4, !tbaa !3
-  switch i32 %1, label %if.else10 [
-    i32 1, label %if.then2
-    i32 2, label %if.then7
-  ]
+; <label>:5                                       ; preds = %0
+  %6 = getelementptr inbounds %struct._Chv* %chv, i64 0, i32 4, !dbg !541
+  %7 = load i32* %6, align 4, !dbg !541, !tbaa !228
+  switch i32 %7, label %14 [
+    i32 1, label %8
+    i32 2, label %11
+  ], !dbg !543
 
-if.then2:                                         ; preds = %if.end
-  %call3 = tail call i32 @Chv_nent(%struct._Chv* %chv) #4
-  %call4 = tail call double* @Chv_entries(%struct._Chv* %chv) #4
-  tail call void @DVzero(i32 %call3, double* %call4) #4
-  br label %if.end14
+; <label>:8                                       ; preds = %5
+  %9 = tail call i32 @Chv_nent(%struct._Chv* %chv) #6, !dbg !544
+  %10 = tail call double* @Chv_entries(%struct._Chv* %chv) #6, !dbg !546
+  tail call void @DVzero(i32 %9, double* %10) #6, !dbg !547
+  br label %17, !dbg !548
 
-if.then7:                                         ; preds = %if.end
-  %call8 = tail call i32 @Chv_nent(%struct._Chv* %chv) #4
-  %call9 = tail call double* @Chv_entries(%struct._Chv* %chv) #4
-  tail call void @ZVzero(i32 %call8, double* %call9) #4
-  br label %if.end14
+; <label>:11                                      ; preds = %5
+  %12 = tail call i32 @Chv_nent(%struct._Chv* %chv) #6, !dbg !549
+  %13 = tail call double* @Chv_entries(%struct._Chv* %chv) #6, !dbg !552
+  tail call void @ZVzero(i32 %12, double* %13) #6, !dbg !553
+  br label %17
 
-if.else10:                                        ; preds = %if.end
-  %2 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call12 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([83 x i8]* @.str12, i64 0, i64 0), %struct._Chv* %chv, i32 %1) #4
-  tail call void @exit(i32 -1) #5
-  unreachable
+; <label>:14                                      ; preds = %5
+  %15 = load %struct.__sFILE** @__stderrp, align 8, !dbg !554, !tbaa !217
+  %16 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %15, i8* getelementptr inbounds ([83 x i8]* @.str12, i64 0, i64 0), %struct._Chv* %chv, i32 %7) #6, !dbg !556
+  tail call void @exit(i32 -1) #7, !dbg !557
+  unreachable, !dbg !557
 
-if.end14:                                         ; preds = %if.then7, %if.then2
-  ret void
+; <label>:17                                      ; preds = %11, %8
+  ret void, !dbg !558
 }

@@ -1,70 +1,75 @@
 define void @write_gms(%struct.__sFILE* nocapture %fp, i32 %natoms, [3 x float]* nocapture readonly %x, [3 x float]* readonly %box) #1 {
-  store i32 0, i32* @n, align 4, !tbaa !2
-  %1 = icmp sgt i32 %natoms, 0
-  br i1 %1, label %.preheader.lr.ph, label %._crit_edge.thread
+  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %fp, i64 0, metadata !86, metadata !111), !dbg !118
+  tail call void @llvm.dbg.value(metadata i32 %natoms, i64 0, metadata !87, metadata !111), !dbg !119
+  tail call void @llvm.dbg.value(metadata [3 x float]* %x, i64 0, metadata !88, metadata !111), !dbg !120
+  tail call void @llvm.dbg.value(metadata [3 x float]* %box, i64 0, metadata !89, metadata !111), !dbg !121
+  store i32 0, i32* @n, align 4, !dbg !122, !tbaa !123
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !90, metadata !111), !dbg !127
+  %1 = icmp sgt i32 %natoms, 0, !dbg !128
+  br i1 %1, label %.preheader.lr.ph, label %._crit_edge.thread, !dbg !131
 
 .preheader.lr.ph:                                 ; preds = %0
-  %2 = add i32 %natoms, -1
-  br label %.preheader
+  %2 = add i32 %natoms, -1, !dbg !131
+  br label %.preheader, !dbg !131
 
 .preheader:                                       ; preds = %14, %.preheader.lr.ph
   %indvars.iv6 = phi i64 [ 0, %.preheader.lr.ph ], [ %indvars.iv.next7, %14 ]
-  br label %3
+  br label %3, !dbg !132
 
 ; <label>:3                                       ; preds = %12, %.preheader
   %indvars.iv = phi i64 [ 0, %.preheader ], [ %indvars.iv.next, %12 ]
-  %4 = getelementptr inbounds [3 x float]* %x, i64 %indvars.iv6, i64 %indvars.iv
-  %5 = load float* %4, align 4, !tbaa !6
-  %6 = fpext float %5 to double
-  %7 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %fp, i8* getelementptr inbounds ([6 x i8]* @.str, i64 0, i64 0), double %6) #4
-  %8 = load i32* @n, align 4, !tbaa !2
-  %9 = add nsw i32 %8, 1
-  store i32 %9, i32* @n, align 4, !tbaa !2
-  %10 = icmp eq i32 %9, 10
-  br i1 %10, label %11, label %12
+  %4 = getelementptr inbounds [3 x float]* %x, i64 %indvars.iv6, i64 %indvars.iv, !dbg !134
+  %5 = load float* %4, align 4, !dbg !134, !tbaa !137
+  %6 = fpext float %5 to double, !dbg !134
+  %7 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %fp, i8* getelementptr inbounds ([6 x i8]* @.str, i64 0, i64 0), double %6) #5, !dbg !139
+  %8 = load i32* @n, align 4, !dbg !140, !tbaa !123
+  %9 = add nsw i32 %8, 1, !dbg !140
+  store i32 %9, i32* @n, align 4, !dbg !140, !tbaa !123
+  %10 = icmp eq i32 %9, 10, !dbg !141
+  br i1 %10, label %11, label %12, !dbg !143
 
 ; <label>:11                                      ; preds = %3
-  %fputc3 = tail call i32 @fputc(i32 10, %struct.__sFILE* %fp)
-  store i32 0, i32* @n, align 4, !tbaa !2
-  br label %12
+  %fputc3 = tail call i32 @fputc(i32 10, %struct.__sFILE* %fp), !dbg !144
+  store i32 0, i32* @n, align 4, !dbg !146, !tbaa !123
+  br label %12, !dbg !147
 
 ; <label>:12                                      ; preds = %3, %11
   %13 = phi i32 [ %9, %3 ], [ 0, %11 ]
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %exitcond = icmp eq i64 %indvars.iv.next, 3
-  br i1 %exitcond, label %14, label %3
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !132
+  %exitcond = icmp eq i64 %indvars.iv.next, 3, !dbg !132
+  br i1 %exitcond, label %14, label %3, !dbg !132
 
 ; <label>:14                                      ; preds = %12
-  %indvars.iv.next7 = add nuw nsw i64 %indvars.iv6, 1
-  %lftr.wideiv = trunc i64 %indvars.iv6 to i32
-  %exitcond8 = icmp eq i32 %lftr.wideiv, %2
-  br i1 %exitcond8, label %._crit_edge, label %.preheader
+  %indvars.iv.next7 = add nuw nsw i64 %indvars.iv6, 1, !dbg !131
+  %lftr.wideiv = trunc i64 %indvars.iv6 to i32, !dbg !131
+  %exitcond8 = icmp eq i32 %lftr.wideiv, %2, !dbg !131
+  br i1 %exitcond8, label %._crit_edge, label %.preheader, !dbg !131
 
 ._crit_edge:                                      ; preds = %14
-  %15 = icmp eq i32 %13, 0
-  br i1 %15, label %._crit_edge.thread, label %16
+  %15 = icmp eq i32 %13, 0, !dbg !148
+  br i1 %15, label %._crit_edge.thread, label %16, !dbg !150
 
 ; <label>:16                                      ; preds = %._crit_edge
-  %fputc = tail call i32 @fputc(i32 10, %struct.__sFILE* %fp)
-  br label %._crit_edge.thread
+  %fputc = tail call i32 @fputc(i32 10, %struct.__sFILE* %fp), !dbg !151
+  br label %._crit_edge.thread, !dbg !151
 
 ._crit_edge.thread:                               ; preds = %0, %._crit_edge, %16
-  %17 = icmp eq [3 x float]* %box, null
-  br i1 %17, label %29, label %18
+  %17 = icmp eq [3 x float]* %box, null, !dbg !152
+  br i1 %17, label %29, label %18, !dbg !154
 
 ; <label>:18                                      ; preds = %._crit_edge.thread
-  %19 = getelementptr inbounds [3 x float]* %box, i64 0, i64 0
-  %20 = load float* %19, align 4, !tbaa !6
-  %21 = fpext float %20 to double
-  %22 = getelementptr inbounds [3 x float]* %box, i64 1, i64 1
-  %23 = load float* %22, align 4, !tbaa !6
-  %24 = fpext float %23 to double
-  %25 = getelementptr inbounds [3 x float]* %box, i64 2, i64 2
-  %26 = load float* %25, align 4, !tbaa !6
-  %27 = fpext float %26 to double
-  %28 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %fp, i8* getelementptr inbounds ([17 x i8]* @.str2, i64 0, i64 0), double %21, double %24, double %27) #4
-  br label %29
+  %19 = getelementptr inbounds [3 x float]* %box, i64 0, i64 0, !dbg !155
+  %20 = load float* %19, align 4, !dbg !155, !tbaa !137
+  %21 = fpext float %20 to double, !dbg !155
+  %22 = getelementptr inbounds [3 x float]* %box, i64 1, i64 1, !dbg !156
+  %23 = load float* %22, align 4, !dbg !156, !tbaa !137
+  %24 = fpext float %23 to double, !dbg !156
+  %25 = getelementptr inbounds [3 x float]* %box, i64 2, i64 2, !dbg !157
+  %26 = load float* %25, align 4, !dbg !157, !tbaa !137
+  %27 = fpext float %26 to double, !dbg !157
+  %28 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %fp, i8* getelementptr inbounds ([17 x i8]* @.str2, i64 0, i64 0), double %21, double %24, double %27) #5, !dbg !158
+  br label %29, !dbg !158
 
 ; <label>:29                                      ; preds = %._crit_edge.thread, %18
-  ret void
+  ret void, !dbg !159
 }

@@ -1,15 +1,20 @@
 define %struct.NALU_t* @GeneratePic_parameter_set_NALU(i32 %PPS_id) #0 {
-entry:
   %rbsp = alloca [64000 x i8], align 16
-  %call = call %struct.NALU_t* (i32, ...)* bitcast (%struct.NALU_t* (...)* @AllocNALU to %struct.NALU_t* (i32, ...)*)(i32 64000) #5
-  %0 = getelementptr inbounds [64000 x i8]* %rbsp, i64 0, i64 0
-  call void @llvm.lifetime.start(i64 64000, i8* %0) #2
-  %idxprom = sext i32 %PPS_id to i64
-  %arrayidx = getelementptr inbounds [256 x %struct.pic_parameter_set_rbsp_t]* @PicParSet, i64 0, i64 %idxprom
-  %call1 = call i32 @GeneratePic_parameter_set_rbsp(%struct.pic_parameter_set_rbsp_t* %arrayidx, i8* %0) #6
-  %call3 = call i32 @RBSPtoNALU(i8* %0, %struct.NALU_t* %call, i32 %call1, i32 8, i32 3, i32 0, i32 1) #5
-  %startcodeprefix_len = getelementptr inbounds %struct.NALU_t* %call, i64 0, i32 0
-  store i32 4, i32* %startcodeprefix_len, align 4, !tbaa !3
-  call void @llvm.lifetime.end(i64 64000, i8* %0) #2
-  ret %struct.NALU_t* %call
+  tail call void @llvm.dbg.value(metadata i32 %PPS_id, i64 0, metadata !195, metadata !699), !dbg !1457
+  %1 = tail call %struct.NALU_t* (i32, ...)* bitcast (%struct.NALU_t* (...)* @AllocNALU to %struct.NALU_t* (i32, ...)*)(i32 64000) #6, !dbg !1458
+  tail call void @llvm.dbg.value(metadata %struct.NALU_t* %1, i64 0, metadata !196, metadata !699), !dbg !1459
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !197, metadata !699), !dbg !1460
+  %2 = getelementptr inbounds [64000 x i8]* %rbsp, i64 0, i64 0, !dbg !1461
+  call void @llvm.lifetime.start(i64 64000, i8* %2) #3, !dbg !1461
+  tail call void @llvm.dbg.declare(metadata [64000 x i8]* %rbsp, metadata !199, metadata !699), !dbg !1462
+  %3 = sext i32 %PPS_id to i64, !dbg !1463
+  %4 = getelementptr inbounds [256 x %struct.pic_parameter_set_rbsp_t]* @PicParSet, i64 0, i64 %3, !dbg !1463
+  %5 = call i32 @GeneratePic_parameter_set_rbsp(%struct.pic_parameter_set_rbsp_t* %4, i8* %2) #7, !dbg !1464
+  call void @llvm.dbg.value(metadata i32 %5, i64 0, metadata !197, metadata !699), !dbg !1460
+  %6 = call i32 @RBSPtoNALU(i8* %2, %struct.NALU_t* %1, i32 %5, i32 8, i32 3, i32 0, i32 1) #6, !dbg !1465
+  call void @llvm.dbg.value(metadata i32 %6, i64 0, metadata !198, metadata !699), !dbg !1466
+  %7 = getelementptr inbounds %struct.NALU_t* %1, i64 0, i32 0, !dbg !1467
+  store i32 4, i32* %7, align 4, !dbg !1468, !tbaa !1240
+  call void @llvm.lifetime.end(i64 64000, i8* %2) #3, !dbg !1469
+  ret %struct.NALU_t* %1, !dbg !1469
 }

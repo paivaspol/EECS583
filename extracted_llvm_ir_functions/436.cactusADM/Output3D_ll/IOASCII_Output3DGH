@@ -1,55 +1,59 @@
 define i32 @IOASCII_Output3DGH(%struct.cGH* %GH) #1 {
-  %1 = tail call i8* @CCTK_GHExtension(%struct.cGH* %GH, i8* getelementptr inbounds ([8 x i8]* @.str, i64 0, i64 0)) #5
-  %2 = bitcast i8* %1 to %struct.IOASCIIGH*
-  tail call fastcc void @CheckSteerableParameters(%struct.IOASCIIGH* %2) #6
-  %3 = getelementptr inbounds i8* %1, i64 8
-  %4 = bitcast i8* %3 to i32*
-  %5 = load i32* %4, align 4, !tbaa !2
-  %6 = icmp slt i32 %5, 1
-  br i1 %6, label %.loopexit, label %.preheader
+  tail call void @llvm.dbg.value(metadata %struct.cGH* %GH, i64 0, metadata !89, metadata !231), !dbg !232
+  %1 = tail call i8* @CCTK_GHExtension(%struct.cGH* %GH, i8* getelementptr inbounds ([8 x i8]* @.str, i64 0, i64 0)) #5, !dbg !233
+  %2 = bitcast i8* %1 to %struct.IOASCIIGH*, !dbg !234
+  tail call void @llvm.dbg.value(metadata %struct.IOASCIIGH* %2, i64 0, metadata !92, metadata !231), !dbg !235
+  tail call fastcc void @CheckSteerableParameters(%struct.IOASCIIGH* %2) #6, !dbg !236
+  %3 = getelementptr inbounds i8* %1, i64 8, !dbg !237
+  %4 = bitcast i8* %3 to i32*, !dbg !237
+  %5 = load i32* %4, align 4, !dbg !237, !tbaa !239
+  %6 = icmp slt i32 %5, 1, !dbg !245
+  br i1 %6, label %.loopexit, label %.preheader, !dbg !246
 
 .preheader:                                       ; preds = %0
-  %7 = tail call i32 @CCTK_NumVars() #5
-  %8 = icmp sgt i32 %7, 0
-  br i1 %8, label %.lr.ph, label %.loopexit
+  %7 = tail call i32 @CCTK_NumVars() #5, !dbg !247
+  %8 = icmp sgt i32 %7, 0, !dbg !250
+  br i1 %8, label %.lr.ph, label %.loopexit, !dbg !251
 
 .lr.ph:                                           ; preds = %.preheader
-  %9 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 1
-  %10 = getelementptr inbounds i8* %1, i64 80
-  %11 = bitcast i8* %10 to i32**
-  br label %12
+  %9 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 1, !dbg !252
+  %10 = getelementptr inbounds i8* %1, i64 80, !dbg !256
+  %11 = bitcast i8* %10 to i32**, !dbg !256
+  br label %12, !dbg !251
 
 ; <label>:12                                      ; preds = %.lr.ph, %25
   %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %25 ]
   %retval.01 = phi i32 [ 0, %.lr.ph ], [ %retval.1, %25 ]
-  %13 = trunc i64 %indvars.iv to i32
-  %14 = tail call i32 @IOASCII_TimeFor3D(%struct.cGH* %GH, i32 %13) #6
-  %15 = icmp eq i32 %14, 0
-  br i1 %15, label %25, label %16
+  %13 = trunc i64 %indvars.iv to i32, !dbg !257
+  %14 = tail call i32 @IOASCII_TimeFor3D(%struct.cGH* %GH, i32 %13) #6, !dbg !257
+  %15 = icmp eq i32 %14, 0, !dbg !257
+  br i1 %15, label %25, label %16, !dbg !259
 
 ; <label>:16                                      ; preds = %12
-  %17 = tail call i8* @CCTK_VarName(i32 %13) #5
-  %18 = tail call i32 @IOASCII_Write3D(%struct.cGH* %GH, i32 %13, i8* %17) #5
-  %19 = icmp eq i32 %18, 0
-  br i1 %19, label %20, label %25
+  %17 = tail call i8* @CCTK_VarName(i32 %13) #5, !dbg !260
+  tail call void @llvm.dbg.value(metadata i8* %17, i64 0, metadata !93, metadata !231), !dbg !261
+  %18 = tail call i32 @IOASCII_Write3D(%struct.cGH* %GH, i32 %13, i8* %17) #5, !dbg !262
+  %19 = icmp eq i32 %18, 0, !dbg !263
+  br i1 %19, label %20, label %25, !dbg !264
 
 ; <label>:20                                      ; preds = %16
-  %21 = load i32* %9, align 4, !tbaa !8
-  %22 = load i32** %11, align 8, !tbaa !11
-  %23 = getelementptr inbounds i32* %22, i64 %indvars.iv
-  store i32 %21, i32* %23, align 4, !tbaa !12
-  %24 = add nsw i32 %retval.01, 1
-  br label %25
+  %21 = load i32* %9, align 4, !dbg !252, !tbaa !265
+  %22 = load i32** %11, align 8, !dbg !256, !tbaa !268
+  %23 = getelementptr inbounds i32* %22, i64 %indvars.iv, !dbg !269
+  store i32 %21, i32* %23, align 4, !dbg !270, !tbaa !271
+  %24 = add nsw i32 %retval.01, 1, !dbg !272
+  tail call void @llvm.dbg.value(metadata i32 %24, i64 0, metadata !91, metadata !231), !dbg !273
+  br label %25, !dbg !274
 
 ; <label>:25                                      ; preds = %12, %16, %20
   %retval.1 = phi i32 [ %24, %20 ], [ %retval.01, %16 ], [ %retval.01, %12 ]
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %26 = tail call i32 @CCTK_NumVars() #5
-  %27 = sext i32 %26 to i64
-  %28 = icmp slt i64 %indvars.iv.next, %27
-  br i1 %28, label %12, label %.loopexit
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !251
+  %26 = tail call i32 @CCTK_NumVars() #5, !dbg !247
+  %27 = sext i32 %26 to i64, !dbg !250
+  %28 = icmp slt i64 %indvars.iv.next, %27, !dbg !250
+  br i1 %28, label %12, label %.loopexit, !dbg !251
 
 .loopexit:                                        ; preds = %25, %.preheader, %0
   %.0 = phi i32 [ 0, %0 ], [ 0, %.preheader ], [ %retval.1, %25 ]
-  ret i32 %.0
+  ret i32 %.0, !dbg !275
 }

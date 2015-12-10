@@ -1,34 +1,36 @@
-define internal fastcc void @set_degenerate(i8 signext %iupac, i8* nocapture %syms) #0 {
-entry:
-  %call = tail call i64 @strlen(i8* %syms) #7
-  %conv = trunc i64 %call to i32
-  %conv1 = sext i8 %iupac to i32
-  %call2 = tail call i8* @strchr(i8* getelementptr inbounds ([25 x i8]* @Alphabet, i64 0, i64 0), i32 %conv1) #7
-  %sub.ptr.lhs.cast = ptrtoint i8* %call2 to i64
-  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, ptrtoint ([25 x i8]* @Alphabet to i64)
-  %arrayidx = getelementptr inbounds [24 x i32]* @DegenCount, i64 0, i64 %sub.ptr.sub
-  store i32 %conv, i32* %arrayidx, align 4, !tbaa !3
-  %0 = load i8* %syms, align 1, !tbaa !1
-  %tobool17 = icmp eq i8 %0, 0
-  br i1 %tobool17, label %while.end, label %while.body
+define internal fastcc void @set_degenerate(i8 signext %iupac, i8* nocapture readonly %syms) #0 {
+  tail call void @llvm.dbg.value(metadata i8 %iupac, i64 0, metadata !161, metadata !167), !dbg !297
+  tail call void @llvm.dbg.value(metadata i8* %syms, i64 0, metadata !162, metadata !167), !dbg !298
+  %1 = tail call i64 @strlen(i8* %syms) #6, !dbg !299
+  %2 = trunc i64 %1 to i32, !dbg !299
+  %3 = sext i8 %iupac to i32, !dbg !300
+  %4 = tail call i8* @strchr(i8* getelementptr inbounds ([25 x i8]* @Alphabet, i64 0, i64 0), i32 %3) #6, !dbg !301
+  %5 = ptrtoint i8* %4 to i64, !dbg !302
+  %6 = sub i64 %5, ptrtoint ([25 x i8]* @Alphabet to i64), !dbg !302
+  %7 = getelementptr inbounds [24 x i32]* @DegenCount, i64 0, i64 %6, !dbg !303
+  store i32 %2, i32* %7, align 4, !dbg !304, !tbaa !224
+  %8 = load i8* %syms, align 1, !dbg !305, !tbaa !255
+  %9 = icmp eq i8 %8, 0, !dbg !306
+  br i1 %9, label %._crit_edge, label %.lr.ph, !dbg !306
 
-while.body:                                       ; preds = %entry, %while.body
-  %1 = phi i8 [ %2, %while.body ], [ %0, %entry ]
-  %syms.addr.018 = phi i8* [ %incdec.ptr, %while.body ], [ %syms, %entry ]
-  %conv3 = sext i8 %1 to i32
-  %call4 = tail call i8* @strchr(i8* getelementptr inbounds ([25 x i8]* @Alphabet, i64 0, i64 0), i32 %conv3) #7
-  %sub.ptr.lhs.cast5 = ptrtoint i8* %call4 to i64
-  %sub.ptr.sub6 = sub i64 %sub.ptr.lhs.cast5, ptrtoint ([25 x i8]* @Alphabet to i64)
-  %call8 = tail call i8* @strchr(i8* getelementptr inbounds ([25 x i8]* @Alphabet, i64 0, i64 0), i32 %conv1) #7
-  %sub.ptr.lhs.cast9 = ptrtoint i8* %call8 to i64
-  %sub.ptr.sub10 = sub i64 %sub.ptr.lhs.cast9, ptrtoint ([25 x i8]* @Alphabet to i64)
-  %arrayidx12 = getelementptr inbounds [24 x [20 x i8]]* @Degenerate, i64 0, i64 %sub.ptr.sub10, i64 %sub.ptr.sub6
-  store i8 1, i8* %arrayidx12, align 1, !tbaa !1
-  %incdec.ptr = getelementptr inbounds i8* %syms.addr.018, i64 1
-  %2 = load i8* %incdec.ptr, align 1, !tbaa !1
-  %tobool = icmp eq i8 %2, 0
-  br i1 %tobool, label %while.end, label %while.body
+.lr.ph:                                           ; preds = %0, %.lr.ph
+  %10 = phi i8 [ %20, %.lr.ph ], [ %8, %0 ]
+  %.01 = phi i8* [ %19, %.lr.ph ], [ %syms, %0 ]
+  %11 = sext i8 %10 to i32, !dbg !307
+  %12 = tail call i8* @strchr(i8* getelementptr inbounds ([25 x i8]* @Alphabet, i64 0, i64 0), i32 %11) #6, !dbg !309
+  %13 = ptrtoint i8* %12 to i64, !dbg !310
+  %14 = sub i64 %13, ptrtoint ([25 x i8]* @Alphabet to i64), !dbg !310
+  %15 = tail call i8* @strchr(i8* getelementptr inbounds ([25 x i8]* @Alphabet, i64 0, i64 0), i32 %3) #6, !dbg !311
+  %16 = ptrtoint i8* %15 to i64, !dbg !312
+  %17 = sub i64 %16, ptrtoint ([25 x i8]* @Alphabet to i64), !dbg !312
+  %18 = getelementptr inbounds [24 x [20 x i8]]* @Degenerate, i64 0, i64 %17, i64 %14, !dbg !313
+  store i8 1, i8* %18, align 1, !dbg !314, !tbaa !255
+  %19 = getelementptr inbounds i8* %.01, i64 1, !dbg !315
+  tail call void @llvm.dbg.value(metadata i8* %19, i64 0, metadata !162, metadata !167), !dbg !298
+  %20 = load i8* %19, align 1, !dbg !305, !tbaa !255
+  %21 = icmp eq i8 %20, 0, !dbg !306
+  br i1 %21, label %._crit_edge, label %.lr.ph, !dbg !306
 
-while.end:                                        ; preds = %while.body, %entry
-  ret void
+._crit_edge:                                      ; preds = %.lr.ph, %0
+  ret void, !dbg !316
 }

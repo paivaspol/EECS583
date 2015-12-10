@@ -1,27 +1,28 @@
 define void @IV_shiftBase(%struct._IV* %iv, i32 %offset) #0 {
-entry:
-  %cmp = icmp eq %struct._IV* %iv, null
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata %struct._IV* %iv, i64 0, metadata !21, metadata !175), !dbg !176
+  tail call void @llvm.dbg.value(metadata i32 %offset, i64 0, metadata !22, metadata !175), !dbg !177
+  %1 = icmp eq %struct._IV* %iv, null, !dbg !178
+  br i1 %1, label %2, label %5, !dbg !180
 
-if.then:                                          ; preds = %entry
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), %struct._IV* null, i32 %offset) #5
-  tail call void @exit(i32 -1) #6
-  unreachable
+; <label>:2                                       ; preds = %0
+  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !181, !tbaa !183
+  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), %struct._IV* null, i32 %offset) #6, !dbg !187
+  tail call void @exit(i32 -1) #7, !dbg !188
+  unreachable, !dbg !188
 
-if.end:                                           ; preds = %entry
-  %vec = getelementptr inbounds %struct._IV* %iv, i64 0, i32 3
-  %1 = load i32** %vec, align 8, !tbaa !0
-  %idx.ext = sext i32 %offset to i64
-  %add.ptr = getelementptr inbounds i32* %1, i64 %idx.ext
-  store i32* %add.ptr, i32** %vec, align 8, !tbaa !0
-  %size = getelementptr inbounds %struct._IV* %iv, i64 0, i32 0
-  %2 = load i32* %size, align 4, !tbaa !3
-  %sub = sub nsw i32 %2, %offset
-  store i32 %sub, i32* %size, align 4, !tbaa !3
-  %maxsize = getelementptr inbounds %struct._IV* %iv, i64 0, i32 1
-  %3 = load i32* %maxsize, align 4, !tbaa !3
-  %sub1 = sub nsw i32 %3, %offset
-  store i32 %sub1, i32* %maxsize, align 4, !tbaa !3
-  ret void
+; <label>:5                                       ; preds = %0
+  %6 = getelementptr inbounds %struct._IV* %iv, i64 0, i32 3, !dbg !189
+  %7 = load i32** %6, align 8, !dbg !190, !tbaa !191
+  %8 = sext i32 %offset to i64, !dbg !190
+  %9 = getelementptr inbounds i32* %7, i64 %8, !dbg !190
+  store i32* %9, i32** %6, align 8, !dbg !190, !tbaa !191
+  %10 = getelementptr inbounds %struct._IV* %iv, i64 0, i32 0, !dbg !194
+  %11 = load i32* %10, align 4, !dbg !195, !tbaa !196
+  %12 = sub nsw i32 %11, %offset, !dbg !195
+  store i32 %12, i32* %10, align 4, !dbg !195, !tbaa !196
+  %13 = getelementptr inbounds %struct._IV* %iv, i64 0, i32 1, !dbg !197
+  %14 = load i32* %13, align 4, !dbg !198, !tbaa !199
+  %15 = sub nsw i32 %14, %offset, !dbg !198
+  store i32 %15, i32* %13, align 4, !dbg !198, !tbaa !199
+  ret void, !dbg !200
 }

@@ -1,62 +1,59 @@
 define void @LBM_initializeSpecialCellsForChannel(double* nocapture %grid) #0 {
-entry:
-  br label %for.cond1.preheader
+  tail call void @llvm.dbg.value(metadata double* %grid, i64 0, metadata !194, metadata !331), !dbg !431
+  tail call void @llvm.dbg.value(metadata i32 -2, i64 0, metadata !197, metadata !331), !dbg !432
+  br label %.preheader9, !dbg !433
 
-for.cond1.preheader:                              ; preds = %for.inc46, %entry
-  %indvars.iv84 = phi i64 [ -2, %entry ], [ %indvars.iv.next85, %for.inc46 ]
-  %0 = mul i64 %indvars.iv84, 10000
-  br label %for.cond4.preheader
+.preheader9:                                      ; preds = %21, %0
+  %indvars.iv16 = phi i64 [ -2, %0 ], [ %indvars.iv.next17, %21 ]
+  %1 = mul i64 %indvars.iv16, 10000, !dbg !434
+  br label %.preheader, !dbg !435
 
-for.cond4.preheader:                              ; preds = %for.inc43, %for.cond1.preheader
-  %indvars.iv78 = phi i64 [ 0, %for.cond1.preheader ], [ %indvars.iv.next79, %for.inc43 ]
-  %1 = mul nsw i64 %indvars.iv78, 100
-  %2 = add i64 %1, %0
-  br label %for.body6
+.preheader:                                       ; preds = %20, %.preheader9
+  %indvars.iv13 = phi i64 [ 0, %.preheader9 ], [ %indvars.iv.next14, %20 ]
+  %2 = trunc i64 %indvars.iv13 to i32, !dbg !436
+  %3 = icmp eq i32 %2, 0, !dbg !436
+  %4 = icmp eq i32 %2, 99, !dbg !437
+  %5 = mul nsw i64 %indvars.iv13, 100, !dbg !434
+  %6 = add nsw i64 %5, %1, !dbg !434
+  br label %7, !dbg !438
 
-for.body6:                                        ; preds = %for.inc, %for.cond4.preheader
-  %indvars.iv = phi i64 [ 0, %for.cond4.preheader ], [ %indvars.iv.next, %for.inc ]
-  %3 = trunc i64 %indvars.iv to i32
-  switch i32 %3, label %lor.lhs.false9 [
-    i32 99, label %if.then
-    i32 0, label %if.then
-  ]
+; <label>:7                                       ; preds = %19, %.preheader
+  %indvars.iv = phi i64 [ 0, %.preheader ], [ %indvars.iv.next, %19 ]
+  %8 = trunc i64 %indvars.iv to i32, !dbg !439
+  %9 = icmp eq i32 %8, 0, !dbg !439
+  %10 = icmp eq i32 %8, 99, !dbg !440
+  %or.cond = or i1 %9, %10, !dbg !441
+  %or.cond4 = or i1 %3, %or.cond, !dbg !441
+  %or.cond6 = or i1 %4, %or.cond4, !dbg !441
+  br i1 %or.cond6, label %11, label %19, !dbg !441
 
-lor.lhs.false9:                                   ; preds = %for.body6
-  %4 = trunc i64 %indvars.iv78 to i32
-  switch i32 %4, label %for.inc [
-    i32 99, label %if.then
-    i32 0, label %if.then
-  ]
+; <label>:11                                      ; preds = %7
+  %12 = add nsw i64 %6, %indvars.iv, !dbg !434
+  %13 = mul nsw i64 %12, 20, !dbg !434
+  %14 = add nsw i64 %13, 19, !dbg !434
+  %15 = getelementptr inbounds double* %grid, i64 %14, !dbg !434
+  %16 = bitcast double* %15 to i32*, !dbg !434
+  tail call void @llvm.dbg.value(metadata i32* %16, i64 0, metadata !198, metadata !331), !dbg !434
+  %17 = load i32* %16, align 4, !dbg !434, !tbaa !385
+  %18 = or i32 %17, 1, !dbg !434
+  store i32 %18, i32* %16, align 4, !dbg !434, !tbaa !385
+  br label %19, !dbg !442
 
-if.then:                                          ; preds = %lor.lhs.false9, %lor.lhs.false9, %for.body6, %for.body6
-  %5 = add i64 %2, %indvars.iv
-  %6 = mul nsw i64 %5, 20
-  %7 = add nsw i64 %6, 19
-  %arrayidx = getelementptr inbounds double* %grid, i64 %7
-  %8 = bitcast double* %arrayidx to i32*
-  %9 = load i32* %8, align 4, !tbaa !4
-  %or = or i32 %9, 1
-  store i32 %or, i32* %8, align 4, !tbaa !4
-  br label %for.inc
+; <label>:19                                      ; preds = %11, %7
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !438
+  %exitcond = icmp eq i64 %indvars.iv.next, 100, !dbg !438
+  br i1 %exitcond, label %20, label %7, !dbg !438
 
-for.inc:                                          ; preds = %if.then, %lor.lhs.false9
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, 100
-  br i1 %exitcond, label %for.inc43, label %for.body6
+; <label>:20                                      ; preds = %19
+  %indvars.iv.next14 = add nuw nsw i64 %indvars.iv13, 1, !dbg !435
+  %exitcond15 = icmp eq i64 %indvars.iv.next14, 100, !dbg !435
+  br i1 %exitcond15, label %21, label %.preheader, !dbg !435
 
-for.inc43:                                        ; preds = %for.inc
-  %indvars.iv.next79 = add i64 %indvars.iv78, 1
-  %lftr.wideiv82 = trunc i64 %indvars.iv.next79 to i32
-  %exitcond83 = icmp eq i32 %lftr.wideiv82, 100
-  br i1 %exitcond83, label %for.inc46, label %for.cond4.preheader
+; <label>:21                                      ; preds = %20
+  %indvars.iv.next17 = add nsw i64 %indvars.iv16, 1, !dbg !433
+  %exitcond18 = icmp eq i64 %indvars.iv.next17, 132, !dbg !433
+  br i1 %exitcond18, label %22, label %.preheader9, !dbg !433
 
-for.inc46:                                        ; preds = %for.inc43
-  %indvars.iv.next85 = add i64 %indvars.iv84, 1
-  %lftr.wideiv87 = trunc i64 %indvars.iv.next85 to i32
-  %exitcond88 = icmp eq i32 %lftr.wideiv87, 132
-  br i1 %exitcond88, label %for.end48, label %for.cond1.preheader
-
-for.end48:                                        ; preds = %for.inc46
-  ret void
+; <label>:22                                      ; preds = %21
+  ret void, !dbg !443
 }

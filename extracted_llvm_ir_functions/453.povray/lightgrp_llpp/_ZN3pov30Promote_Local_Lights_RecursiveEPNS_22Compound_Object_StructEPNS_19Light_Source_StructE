@@ -1,0 +1,55 @@
+define void @_ZN3pov30Promote_Local_Lights_RecursiveEPNS_22Compound_Object_StructEPNS_19Light_Source_StructE(%"struct.pov::Compound_Object_Struct"* nocapture readonly %Object, %"struct.pov::Light_Source_Struct"* %Lights) #2 {
+  tail call void @llvm.dbg.value(metadata %"struct.pov::Compound_Object_Struct"* %Object, i64 0, metadata !827, metadata !1139), !dbg !1194
+  tail call void @llvm.dbg.value(metadata %"struct.pov::Light_Source_Struct"* %Lights, i64 0, metadata !828, metadata !1139), !dbg !1195
+  tail call void @llvm.dbg.value(metadata %"struct.pov::Object_Struct"* null, i64 0, metadata !829, metadata !1139), !dbg !1196
+  %1 = getelementptr inbounds %"struct.pov::Compound_Object_Struct"* %Object, i64 0, i32 14, !dbg !1197
+  %curObject.01 = load %"struct.pov::Object_Struct"** %1, align 8, !dbg !1197
+  %2 = icmp eq %"struct.pov::Object_Struct"* %curObject.01, null, !dbg !1198
+  br i1 %2, label %._crit_edge, label %.lr.ph, !dbg !1199
+
+.lr.ph:                                           ; preds = %0, %19
+  %curObject.02 = phi %"struct.pov::Object_Struct"* [ %curObject.0, %19 ], [ %curObject.01, %0 ]
+  %3 = getelementptr inbounds %"struct.pov::Object_Struct"* %curObject.02, i64 0, i32 8, !dbg !1200
+  %4 = load %"struct.pov::Light_Source_Struct"** %3, align 8, !dbg !1200, !tbaa !1201
+  %5 = icmp eq %"struct.pov::Light_Source_Struct"* %4, null, !dbg !1202
+  br i1 %5, label %12, label %.preheader, !dbg !1203
+
+.preheader:                                       ; preds = %.lr.ph, %.preheader
+  %l.0 = phi %"struct.pov::Light_Source_Struct"* [ %7, %.preheader ], [ %4, %.lr.ph ]
+  %6 = getelementptr inbounds %"struct.pov::Light_Source_Struct"* %l.0, i64 0, i32 26, !dbg !1204
+  %7 = load %"struct.pov::Light_Source_Struct"** %6, align 8, !dbg !1204, !tbaa !1167
+  %8 = icmp ne %"struct.pov::Light_Source_Struct"* %l.0, %Lights, !dbg !1205
+  %not. = icmp ne %"struct.pov::Light_Source_Struct"* %7, null, !dbg !1206
+  %. = and i1 %8, %not., !dbg !1206
+  br i1 %., label %.preheader, label %9, !dbg !1207
+
+; <label>:9                                       ; preds = %.preheader
+  %10 = icmp eq %"struct.pov::Light_Source_Struct"* %l.0, %Lights, !dbg !1208
+  br i1 %10, label %19, label %11, !dbg !1210
+
+; <label>:11                                      ; preds = %9
+  store %"struct.pov::Light_Source_Struct"* %Lights, %"struct.pov::Light_Source_Struct"** %6, align 8, !dbg !1211, !tbaa !1167
+  br label %19, !dbg !1212
+
+; <label>:12                                      ; preds = %.lr.ph
+  %13 = getelementptr inbounds %"struct.pov::Object_Struct"* %curObject.02, i64 0, i32 1, !dbg !1213
+  %14 = load i32* %13, align 4, !dbg !1213, !tbaa !1152
+  %15 = and i32 %14, 4, !dbg !1215
+  %16 = icmp eq i32 %15, 0, !dbg !1216
+  store %"struct.pov::Light_Source_Struct"* %Lights, %"struct.pov::Light_Source_Struct"** %3, align 8, !dbg !1217, !tbaa !1201
+  br i1 %16, label %19, label %17, !dbg !1219
+
+; <label>:17                                      ; preds = %12
+  %18 = bitcast %"struct.pov::Object_Struct"* %curObject.02 to %"struct.pov::Compound_Object_Struct"*, !dbg !1220
+  tail call void @_ZN3pov30Promote_Local_Lights_RecursiveEPNS_22Compound_Object_StructEPNS_19Light_Source_StructE(%"struct.pov::Compound_Object_Struct"* %18, %"struct.pov::Light_Source_Struct"* %Lights) #5, !dbg !1221
+  br label %19, !dbg !1222
+
+; <label>:19                                      ; preds = %9, %12, %11, %17
+  %20 = getelementptr inbounds %"struct.pov::Object_Struct"* %curObject.02, i64 0, i32 2, !dbg !1223
+  %curObject.0 = load %"struct.pov::Object_Struct"** %20, align 8, !dbg !1197
+  %21 = icmp eq %"struct.pov::Object_Struct"* %curObject.0, null, !dbg !1198
+  br i1 %21, label %._crit_edge, label %.lr.ph, !dbg !1199
+
+._crit_edge:                                      ; preds = %19, %0
+  ret void, !dbg !1224
+}

@@ -1,0 +1,42 @@
+define i32 @_ZN8pov_base14ProcessOptions19Parse_INI_Skip_LineEPNS_11ITextStreamE(%"class.pov_base::ProcessOptions"* nocapture readnone %this, %"class.pov_base::ITextStream"* %file) #3 align 2 {
+  tail call void @llvm.dbg.value(metadata %"class.pov_base::ProcessOptions"* %this, i64 0, metadata !706, metadata !1305), !dbg !1597
+  tail call void @llvm.dbg.value(metadata %"class.pov_base::ITextStream"* %file, i64 0, metadata !707, metadata !1305), !dbg !1598
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !708, metadata !1305), !dbg !1599
+  br label %1, !dbg !1600
+
+; <label>:1                                       ; preds = %3, %0
+  %2 = tail call zeroext i1 @_ZN8pov_base11ITextStream3eofEv(%"class.pov_base::ITextStream"* %file) #10, !dbg !1601
+  br i1 %2, label %.loopexit, label %3, !dbg !1600
+
+; <label>:3                                       ; preds = %1
+  %4 = tail call i32 @_ZN8pov_base11ITextStream7getcharEv(%"class.pov_base::ITextStream"* %file) #10, !dbg !1602
+  tail call void @llvm.dbg.value(metadata i32 %4, i64 0, metadata !709, metadata !1305), !dbg !1603
+  switch i32 %4, label %1 [
+    i32 10, label %5
+    i32 13, label %9
+  ], !dbg !1604
+
+; <label>:5                                       ; preds = %3
+  %6 = tail call i32 @_ZN8pov_base11ITextStream7getcharEv(%"class.pov_base::ITextStream"* %file) #10, !dbg !1605
+  tail call void @llvm.dbg.value(metadata i32 %6, i64 0, metadata !711, metadata !1305), !dbg !1606
+  %7 = icmp eq i32 %6, 13, !dbg !1607
+  br i1 %7, label %.loopexit, label %8, !dbg !1609
+
+; <label>:8                                       ; preds = %5
+  tail call void @_ZN8pov_base11ITextStream9ungetcharEi(%"class.pov_base::ITextStream"* %file, i32 %6) #10, !dbg !1610
+  br label %.loopexit, !dbg !1610
+
+; <label>:9                                       ; preds = %3
+  %10 = tail call i32 @_ZN8pov_base11ITextStream7getcharEv(%"class.pov_base::ITextStream"* %file) #10, !dbg !1611
+  tail call void @llvm.dbg.value(metadata i32 %10, i64 0, metadata !714, metadata !1305), !dbg !1612
+  %11 = icmp eq i32 %10, 10, !dbg !1613
+  br i1 %11, label %.loopexit, label %12, !dbg !1615
+
+; <label>:12                                      ; preds = %9
+  tail call void @_ZN8pov_base11ITextStream9ungetcharEi(%"class.pov_base::ITextStream"* %file, i32 %10) #10, !dbg !1616
+  br label %.loopexit, !dbg !1616
+
+.loopexit:                                        ; preds = %1, %12, %9, %8, %5
+  %linecount.0 = phi i32 [ 1, %5 ], [ 1, %8 ], [ 1, %9 ], [ 1, %12 ], [ 0, %1 ]
+  ret i32 %linecount.0, !dbg !1617
+}

@@ -1,33 +1,37 @@
 define void @Tree_init3(%struct._Tree* %tree, i32 %size, i32* %par, i32* %fch, i32* %sib) #0 {
-entry:
-  %cmp = icmp eq %struct._Tree* %tree, null
-  %cmp1 = icmp slt i32 %size, 1
-  %or.cond = or i1 %cmp, %cmp1
-  %cmp3 = icmp eq i32* %par, null
-  %or.cond28 = or i1 %or.cond, %cmp3
-  %cmp5 = icmp eq i32* %fch, null
-  %or.cond29 = or i1 %or.cond28, %cmp5
-  %cmp7 = icmp eq i32* %sib, null
-  %or.cond30 = or i1 %or.cond29, %cmp7
-  br i1 %or.cond30, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata %struct._Tree* %tree, i64 0, metadata !35, metadata !64), !dbg !168
+  tail call void @llvm.dbg.value(metadata i32 %size, i64 0, metadata !36, metadata !64), !dbg !169
+  tail call void @llvm.dbg.value(metadata i32* %par, i64 0, metadata !37, metadata !64), !dbg !170
+  tail call void @llvm.dbg.value(metadata i32* %fch, i64 0, metadata !38, metadata !64), !dbg !171
+  tail call void @llvm.dbg.value(metadata i32* %sib, i64 0, metadata !39, metadata !64), !dbg !172
+  %1 = icmp eq %struct._Tree* %tree, null, !dbg !173
+  %2 = icmp slt i32 %size, 1, !dbg !175
+  %or.cond = or i1 %1, %2, !dbg !176
+  %3 = icmp eq i32* %par, null, !dbg !177
+  %or.cond3 = or i1 %or.cond, %3, !dbg !176
+  %4 = icmp eq i32* %fch, null, !dbg !178
+  %or.cond5 = or i1 %or.cond3, %4, !dbg !176
+  %5 = icmp eq i32* %sib, null, !dbg !179
+  %or.cond7 = or i1 %or.cond5, %5, !dbg !176
+  br i1 %or.cond7, label %6, label %9, !dbg !176
 
-if.then:                                          ; preds = %entry
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([56 x i8]* @.str2, i64 0, i64 0), %struct._Tree* %tree, i32 %size, i32* %par, i32* %fch, i32* %sib) #4
-  tail call void @exit(i32 -1) #5
-  unreachable
+; <label>:6                                       ; preds = %0
+  %7 = load %struct.__sFILE** @__stderrp, align 8, !dbg !180, !tbaa !73
+  %8 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %7, i8* getelementptr inbounds ([56 x i8]* @.str2, i64 0, i64 0), %struct._Tree* %tree, i32 %size, i32* %par, i32* %fch, i32* %sib) #5, !dbg !182
+  tail call void @exit(i32 -1) #6, !dbg !183
+  unreachable, !dbg !183
 
-if.end:                                           ; preds = %entry
-  tail call void @Tree_init1(%struct._Tree* %tree, i32 %size) #6
-  %par8 = getelementptr inbounds %struct._Tree* %tree, i64 0, i32 2
-  %1 = load i32** %par8, align 8, !tbaa !0
-  tail call void @IVcopy(i32 %size, i32* %1, i32* %par) #4
-  %fch9 = getelementptr inbounds %struct._Tree* %tree, i64 0, i32 3
-  %2 = load i32** %fch9, align 8, !tbaa !0
-  tail call void @IVcopy(i32 %size, i32* %2, i32* %fch) #4
-  %sib10 = getelementptr inbounds %struct._Tree* %tree, i64 0, i32 4
-  %3 = load i32** %sib10, align 8, !tbaa !0
-  tail call void @IVcopy(i32 %size, i32* %3, i32* %sib) #4
-  tail call void @Tree_setRoot(%struct._Tree* %tree) #6
-  ret void
+; <label>:9                                       ; preds = %0
+  tail call void @Tree_init1(%struct._Tree* %tree, i32 %size) #7, !dbg !184
+  %10 = getelementptr inbounds %struct._Tree* %tree, i64 0, i32 2, !dbg !185
+  %11 = load i32** %10, align 8, !dbg !185, !tbaa !92
+  tail call void @IVcopy(i32 %size, i32* %11, i32* %par) #5, !dbg !186
+  %12 = getelementptr inbounds %struct._Tree* %tree, i64 0, i32 3, !dbg !187
+  %13 = load i32** %12, align 8, !dbg !187, !tbaa !96
+  tail call void @IVcopy(i32 %size, i32* %13, i32* %fch) #5, !dbg !188
+  %14 = getelementptr inbounds %struct._Tree* %tree, i64 0, i32 4, !dbg !189
+  %15 = load i32** %14, align 8, !dbg !189, !tbaa !100
+  tail call void @IVcopy(i32 %size, i32* %15, i32* %sib) #5, !dbg !190
+  tail call void @Tree_setRoot(%struct._Tree* %tree) #7, !dbg !191
+  ret void, !dbg !192
 }

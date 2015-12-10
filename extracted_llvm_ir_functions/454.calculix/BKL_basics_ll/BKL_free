@@ -1,17 +1,18 @@
 define void @BKL_free(%struct._BKL* %bkl) #0 {
-entry:
-  %cmp = icmp eq %struct._BKL* %bkl, null
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata %struct._BKL* %bkl, i64 0, metadata !94, metadata !103), !dbg !174
+  %1 = icmp eq %struct._BKL* %bkl, null, !dbg !175
+  br i1 %1, label %2, label %5, !dbg !177
 
-if.then:                                          ; preds = %entry
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([42 x i8]* @.str4, i64 0, i64 0), %struct._BKL* null) #5
-  tail call void @exit(i32 -1) #6
-  unreachable
+; <label>:2                                       ; preds = %0
+  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !178, !tbaa !108
+  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([42 x i8]* @.str4, i64 0, i64 0), %struct._BKL* null) #6, !dbg !180
+  tail call void @exit(i32 -1) #7, !dbg !181
+  unreachable, !dbg !181
 
-if.end:                                           ; preds = %entry
-  tail call void @BKL_clearData(%struct._BKL* %bkl) #7
-  %1 = bitcast %struct._BKL* %bkl to i8*
-  tail call void @free(i8* %1) #5
-  ret void
+; <label>:5                                       ; preds = %0
+  tail call void @BKL_clearData(%struct._BKL* %bkl) #8, !dbg !182
+  %6 = bitcast %struct._BKL* %bkl to i8*, !dbg !183
+  tail call void @free(i8* %6) #8, !dbg !183
+  tail call void @llvm.dbg.value(metadata %struct._BKL* null, i64 0, metadata !94, metadata !103), !dbg !174
+  ret void, !dbg !186
 }

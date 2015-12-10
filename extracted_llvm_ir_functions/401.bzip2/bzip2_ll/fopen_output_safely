@@ -1,0 +1,22 @@
+define %struct.__sFILE* @fopen_output_safely(i8* %name, i8* %mode) #0 {
+  tail call void @llvm.dbg.value(metadata i8* %name, i64 0, metadata !91, metadata !524), !dbg !525
+  tail call void @llvm.dbg.value(metadata i8* %mode, i64 0, metadata !92, metadata !524), !dbg !526
+  %1 = tail call i32 (i8*, i32, ...)* @"\01_open"(i8* %name, i32 2561, i32 384) #9, !dbg !527
+  tail call void @llvm.dbg.value(metadata i32 %1, i64 0, metadata !94, metadata !524), !dbg !528
+  %2 = icmp eq i32 %1, -1, !dbg !529
+  br i1 %2, label %8, label %3, !dbg !531
+
+; <label>:3                                       ; preds = %0
+  %4 = tail call %struct.__sFILE* @"\01_fdopen"(i32 %1, i8* %mode) #9, !dbg !532
+  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %4, i64 0, metadata !93, metadata !524), !dbg !533
+  %5 = icmp eq %struct.__sFILE* %4, null, !dbg !534
+  br i1 %5, label %6, label %8, !dbg !536
+
+; <label>:6                                       ; preds = %3
+  %7 = tail call i32 @"\01_close"(i32 %1) #9, !dbg !537
+  br label %8, !dbg !537
+
+; <label>:8                                       ; preds = %3, %6, %0
+  %.0 = phi %struct.__sFILE* [ null, %0 ], [ null, %6 ], [ %4, %3 ]
+  ret %struct.__sFILE* %.0, !dbg !538
+}

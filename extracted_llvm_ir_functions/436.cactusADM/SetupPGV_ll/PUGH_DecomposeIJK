@@ -1,26 +1,32 @@
 define i32 @PUGH_DecomposeIJK(i32 %dim, i32 %ijk, i32* nocapture readonly %nprocs, i32* nocapture %pos) #1 {
-  %1 = icmp sgt i32 %dim, 0
-  br i1 %1, label %.lr.ph, label %._crit_edge
+  tail call void @llvm.dbg.value(metadata i32 %dim, i64 0, metadata !163, metadata !374), !dbg !1590
+  tail call void @llvm.dbg.value(metadata i32 %ijk, i64 0, metadata !164, metadata !374), !dbg !1591
+  tail call void @llvm.dbg.value(metadata i32* %nprocs, i64 0, metadata !165, metadata !374), !dbg !1592
+  tail call void @llvm.dbg.value(metadata i32* %pos, i64 0, metadata !166, metadata !374), !dbg !1593
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !167, metadata !374), !dbg !1594
+  %1 = icmp sgt i32 %dim, 0, !dbg !1595
+  br i1 %1, label %.lr.ph, label %._crit_edge, !dbg !1596
 
 .lr.ph:                                           ; preds = %0
-  %2 = add i32 %dim, -1
-  br label %3
+  %2 = add i32 %dim, -1, !dbg !1596
+  br label %3, !dbg !1596
 
 ; <label>:3                                       ; preds = %3, %.lr.ph
   %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %3 ]
   %.01 = phi i32 [ %ijk, %.lr.ph ], [ %9, %3 ]
-  %4 = getelementptr inbounds i32* %nprocs, i64 %indvars.iv
-  %5 = load i32* %4, align 4, !tbaa !20
-  %6 = srem i32 %.01, %5
-  %7 = getelementptr inbounds i32* %pos, i64 %indvars.iv
-  store i32 %6, i32* %7, align 4, !tbaa !20
-  %8 = load i32* %4, align 4, !tbaa !20
-  %9 = sdiv i32 %.01, %8
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %2
-  br i1 %exitcond, label %._crit_edge, label %3
+  %4 = getelementptr inbounds i32* %nprocs, i64 %indvars.iv, !dbg !1597
+  %5 = load i32* %4, align 4, !dbg !1597, !tbaa !814
+  %6 = srem i32 %.01, %5, !dbg !1598
+  %7 = getelementptr inbounds i32* %pos, i64 %indvars.iv, !dbg !1599
+  store i32 %6, i32* %7, align 4, !dbg !1600, !tbaa !814
+  %8 = load i32* %4, align 4, !dbg !1601, !tbaa !814
+  %9 = sdiv i32 %.01, %8, !dbg !1602
+  tail call void @llvm.dbg.value(metadata i32 %9, i64 0, metadata !164, metadata !374), !dbg !1591
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !1596
+  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !1596
+  %exitcond = icmp eq i32 %lftr.wideiv, %2, !dbg !1596
+  br i1 %exitcond, label %._crit_edge, label %3, !dbg !1596
 
 ._crit_edge:                                      ; preds = %3, %0
-  ret i32 0
+  ret i32 0, !dbg !1603
 }

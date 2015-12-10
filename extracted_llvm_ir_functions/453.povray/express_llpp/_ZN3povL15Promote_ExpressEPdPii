@@ -1,0 +1,51 @@
+define internal fastcc void @_ZN3povL15Promote_ExpressEPdPii(double* nocapture %Express, i32* nocapture %Old_Terms, i32 %New_Terms) #5 {
+  tail call void @llvm.dbg.value(metadata double* %Express, i64 0, metadata !1925, metadata !2727), !dbg !4977
+  tail call void @llvm.dbg.value(metadata i32* %Old_Terms, i64 0, metadata !1926, metadata !2727), !dbg !4978
+  tail call void @llvm.dbg.value(metadata i32 %New_Terms, i64 0, metadata !1927, metadata !2727), !dbg !4979
+  %1 = load i32* %Old_Terms, align 4, !dbg !4980, !tbaa !2730
+  %2 = icmp slt i32 %1, %New_Terms, !dbg !4982
+  br i1 %2, label %3, label %18, !dbg !4983
+
+; <label>:3                                       ; preds = %0
+  %4 = icmp eq i32 %1, 1, !dbg !4984
+  br i1 %4, label %.preheader, label %.loopexit2, !dbg !4986
+
+.preheader:                                       ; preds = %3
+  %5 = icmp sgt i32 %New_Terms, 1, !dbg !4987
+  br i1 %5, label %.lr.ph, label %.loopexit, !dbg !4991
+
+.lr.ph:                                           ; preds = %.preheader
+  %6 = bitcast double* %Express to i64*, !dbg !4992
+  %7 = add i32 %New_Terms, -1, !dbg !4991
+  br label %8, !dbg !4991
+
+; <label>:8                                       ; preds = %8, %.lr.ph
+  %indvars.iv = phi i64 [ 1, %.lr.ph ], [ %indvars.iv.next, %8 ]
+  %9 = load i64* %6, align 8, !dbg !4992, !tbaa !2758
+  %10 = getelementptr inbounds double* %Express, i64 %indvars.iv, !dbg !4994
+  %11 = bitcast double* %10 to i64*, !dbg !4995
+  store i64 %9, i64* %11, align 8, !dbg !4995, !tbaa !2758
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !4991
+  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !4991
+  %exitcond = icmp eq i32 %lftr.wideiv, %7, !dbg !4991
+  br i1 %exitcond, label %.loopexit, label %8, !dbg !4991
+
+.loopexit2:                                       ; preds = %3
+  %12 = sext i32 %1 to i64
+  %13 = add i32 %New_Terms, -1, !dbg !4996
+  %scevgep = getelementptr double* %Express, i64 %12
+  %scevgep10 = bitcast double* %scevgep to i8*
+  %14 = sub i32 %13, %1, !dbg !4996
+  %15 = zext i32 %14 to i64
+  %16 = shl nuw nsw i64 %15, 3, !dbg !4996
+  %17 = add nuw nsw i64 %16, 8, !dbg !4996
+  call void @llvm.memset.p0i8.i64(i8* %scevgep10, i8 0, i64 %17, i32 8, i1 false), !dbg !4999
+  br label %.loopexit
+
+.loopexit:                                        ; preds = %8, %.preheader, %.loopexit2
+  store i32 %New_Terms, i32* %Old_Terms, align 4, !dbg !5002, !tbaa !2730
+  br label %18, !dbg !5003
+
+; <label>:18                                      ; preds = %0, %.loopexit
+  ret void, !dbg !5003
+}

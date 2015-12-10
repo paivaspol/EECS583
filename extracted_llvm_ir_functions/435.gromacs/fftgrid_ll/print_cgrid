@@ -1,103 +1,121 @@
 define <2 x float> @print_cgrid(%struct.__sFILE* %fp, i8* %title, i32 %nx, i32 %ny, i32 %nz, %struct.t_complex*** nocapture readonly %grid) #4 {
-  %1 = icmp ne %struct.__sFILE* %fp, null
-  br i1 %1, label %2, label %.preheader4
+  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %fp, i64 0, metadata !390, metadata !432), !dbg !932
+  tail call void @llvm.dbg.value(metadata i8* %title, i64 0, metadata !391, metadata !432), !dbg !933
+  tail call void @llvm.dbg.value(metadata i32 %nx, i64 0, metadata !392, metadata !432), !dbg !934
+  tail call void @llvm.dbg.value(metadata i32 %ny, i64 0, metadata !393, metadata !432), !dbg !935
+  tail call void @llvm.dbg.value(metadata i32 %nz, i64 0, metadata !394, metadata !432), !dbg !936
+  tail call void @llvm.dbg.value(metadata %struct.t_complex*** %grid, i64 0, metadata !395, metadata !432), !dbg !937
+  tail call void @llvm.dbg.declare(metadata %struct.t_complex* undef, metadata !399, metadata !432), !dbg !938
+  tail call void @llvm.dbg.declare(metadata %struct.t_complex* undef, metadata !400, metadata !432), !dbg !939
+  tail call void @llvm.dbg.value(metadata <2 x float> zeroinitializer, i64 0, metadata !400, metadata !432), !dbg !939
+  %1 = icmp ne %struct.__sFILE* %fp, null, !dbg !940
+  br i1 %1, label %2, label %.preheader4, !dbg !942
 
 ; <label>:2                                       ; preds = %0
-  %3 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %fp, i8* getelementptr inbounds ([46 x i8]* @.str14, i64 0, i64 0), i8* %title) #7
-  br label %.preheader4
+  %3 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %fp, i8* getelementptr inbounds ([46 x i8]* @.str14, i64 0, i64 0), i8* %title) #7, !dbg !943
+  br label %.preheader4, !dbg !943
 
 .preheader4:                                      ; preds = %2, %0
-  %4 = icmp sgt i32 %nx, 0
-  br i1 %4, label %.preheader3.lr.ph, label %._crit_edge13
+  %4 = icmp sgt i32 %nx, 0, !dbg !944
+  br i1 %4, label %.preheader3.lr.ph, label %._crit_edge13, !dbg !947
 
 .preheader3.lr.ph:                                ; preds = %.preheader4
-  %5 = icmp sgt i32 %ny, 0
-  %6 = icmp sgt i32 %nz, 0
-  %7 = add i32 %nz, -1
-  %8 = add i32 %ny, -1
-  %9 = add i32 %nx, -1
-  br label %.preheader3
+  %5 = icmp sgt i32 %ny, 0, !dbg !948
+  %6 = icmp sgt i32 %nz, 0, !dbg !951
+  %7 = add i32 %nz, -1, !dbg !947
+  %8 = add i32 %ny, -1, !dbg !947
+  %9 = add i32 %nx, -1, !dbg !947
+  br label %.preheader3, !dbg !947
 
 .preheader3:                                      ; preds = %._crit_edge9, %.preheader3.lr.ph
   %indvars.iv19 = phi i64 [ 0, %.preheader3.lr.ph ], [ %indvars.iv.next20, %._crit_edge9 ]
   %gtot.sroa.0.011 = phi <2 x float> [ zeroinitializer, %.preheader3.lr.ph ], [ %gtot.sroa.0.1.lcssa, %._crit_edge9 ]
-  br i1 %5, label %.preheader.lr.ph, label %._crit_edge9
+  br i1 %5, label %.preheader.lr.ph, label %._crit_edge9, !dbg !954
 
 .preheader.lr.ph:                                 ; preds = %.preheader3
-  %10 = getelementptr inbounds %struct.t_complex*** %grid, i64 %indvars.iv19
-  br label %.preheader
+  %10 = getelementptr inbounds %struct.t_complex*** %grid, i64 %indvars.iv19, !dbg !955
+  br label %.preheader, !dbg !954
 
 .preheader:                                       ; preds = %._crit_edge, %.preheader.lr.ph
   %indvars.iv15 = phi i64 [ 0, %.preheader.lr.ph ], [ %indvars.iv.next16, %._crit_edge ]
   %gtot.sroa.0.18 = phi <2 x float> [ %gtot.sroa.0.011, %.preheader.lr.ph ], [ %gtot.sroa.0.2.lcssa, %._crit_edge ]
-  br i1 %6, label %.lr.ph, label %._crit_edge
+  br i1 %6, label %.lr.ph, label %._crit_edge, !dbg !957
 
 .lr.ph:                                           ; preds = %.preheader, %30
   %indvars.iv = phi i64 [ %indvars.iv.next, %30 ], [ 0, %.preheader ]
   %gtot.sroa.0.26 = phi <2 x float> [ %36, %30 ], [ %gtot.sroa.0.18, %.preheader ]
-  %11 = load %struct.t_complex*** %10, align 8, !tbaa !32
-  %12 = getelementptr inbounds %struct.t_complex** %11, i64 %indvars.iv15
-  %13 = load %struct.t_complex** %12, align 8, !tbaa !32
-  %14 = getelementptr inbounds %struct.t_complex* %13, i64 %indvars.iv
-  %15 = bitcast %struct.t_complex* %14 to <2 x float>*
-  %16 = load <2 x float>* %15, align 4
-  %17 = extractelement <2 x float> %16, i32 0
-  br i1 %1, label %18, label %._crit_edge23
+  %11 = load %struct.t_complex*** %10, align 8, !dbg !955, !tbaa !723
+  %12 = getelementptr inbounds %struct.t_complex** %11, i64 %indvars.iv15, !dbg !955
+  %13 = load %struct.t_complex** %12, align 8, !dbg !955, !tbaa !723
+  %14 = getelementptr inbounds %struct.t_complex* %13, i64 %indvars.iv, !dbg !955
+  %15 = bitcast %struct.t_complex* %14 to <2 x float>*, !dbg !955
+  %16 = load <2 x float>* %15, align 4, !dbg !955
+  tail call void @llvm.dbg.value(metadata <2 x float> %16, i64 0, metadata !399, metadata !432), !dbg !938
+  %17 = extractelement <2 x float> %16, i32 0, !dbg !958
+  br i1 %1, label %18, label %._crit_edge23, !dbg !960
 
 ._crit_edge23:                                    ; preds = %.lr.ph
-  %.pre27 = extractelement <2 x float> %16, i32 1
-  br label %30
+  %.pre27 = extractelement <2 x float> %16, i32 1, !dbg !961
+  br label %30, !dbg !960
 
 ; <label>:18                                      ; preds = %.lr.ph
-  %19 = fpext float %17 to double
-  %fabsf = tail call float @fabsf(float %17) #9
-  %20 = fpext float %fabsf to double
-  %21 = fcmp ogt double %20, 1.200000e-38
-  %.pre = extractelement <2 x float> %16, i32 1
-  br i1 %21, label %._crit_edge24, label %22
+  %19 = fpext float %17 to double, !dbg !963
+  %fabsf = tail call float @fabsf(float %17) #9, !dbg !964
+  %20 = fpext float %fabsf to double, !dbg !964
+  %21 = fcmp ogt double %20, 1.200000e-38, !dbg !965
+  %.pre = extractelement <2 x float> %16, i32 1, !dbg !966
+  br i1 %21, label %._crit_edge24, label %22, !dbg !967
 
 ; <label>:22                                      ; preds = %18
-  %fabsf2 = tail call float @fabsf(float %.pre) #9
-  %23 = fpext float %fabsf2 to double
-  %24 = fcmp ogt double %23, 1.200000e-38
-  br i1 %24, label %._crit_edge24, label %30
+  %fabsf2 = tail call float @fabsf(float %.pre) #9, !dbg !968
+  %23 = fpext float %fabsf2 to double, !dbg !968
+  %24 = fcmp ogt double %23, 1.200000e-38, !dbg !969
+  br i1 %24, label %._crit_edge24, label %30, !dbg !970
 
 ._crit_edge24:                                    ; preds = %18, %22
-  %25 = fpext float %.pre to double
-  %26 = trunc i64 %indvars.iv to i32
-  %27 = trunc i64 %indvars.iv15 to i32
-  %28 = trunc i64 %indvars.iv19 to i32
-  %29 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %fp, i8* getelementptr inbounds ([39 x i8]* @.str15, i64 0, i64 0), i8* %title, i32 %28, i32 %27, i32 %26, double %19, double %25) #7
-  br label %30
+  %25 = fpext float %.pre to double, !dbg !971
+  %26 = trunc i64 %indvars.iv to i32, !dbg !972
+  %27 = trunc i64 %indvars.iv15 to i32, !dbg !972
+  %28 = trunc i64 %indvars.iv19 to i32, !dbg !972
+  %29 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %fp, i8* getelementptr inbounds ([39 x i8]* @.str15, i64 0, i64 0), i8* %title, i32 %28, i32 %27, i32 %26, double %19, double %25) #7, !dbg !972
+  br label %30, !dbg !972
 
 ; <label>:30                                      ; preds = %._crit_edge23, %._crit_edge24, %22
-  %.pre-phi28 = phi float [ %.pre27, %._crit_edge23 ], [ %.pre, %._crit_edge24 ], [ %.pre, %22 ]
-  %31 = extractelement <2 x float> %gtot.sroa.0.26, i32 0
-  %32 = fadd float %31, %17
-  %33 = extractelement <2 x float> %gtot.sroa.0.26, i32 1
-  %34 = fadd float %33, %.pre-phi28
-  %35 = insertelement <2 x float> undef, float %32, i32 0
-  %36 = insertelement <2 x float> %35, float %34, i32 1
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %7
-  br i1 %exitcond, label %._crit_edge, label %.lr.ph
+  %.pre-phi28 = phi float [ %.pre27, %._crit_edge23 ], [ %.pre, %._crit_edge24 ], [ %.pre, %22 ], !dbg !961
+  tail call void @llvm.dbg.value(metadata <2 x float> %36, i64 0, metadata !423, metadata !432), !dbg !973
+  tail call void @llvm.dbg.value(metadata <2 x float> %16, i64 0, metadata !424, metadata !432), !dbg !974
+  tail call void @llvm.dbg.declare(metadata %struct.t_complex* undef, metadata !423, metadata !432), !dbg !973
+  tail call void @llvm.dbg.declare(metadata %struct.t_complex* undef, metadata !424, metadata !432), !dbg !974
+  tail call void @llvm.dbg.declare(metadata %struct.t_complex* undef, metadata !425, metadata !432), !dbg !975
+  %31 = extractelement <2 x float> %gtot.sroa.0.26, i32 0, !dbg !976
+  %32 = fadd float %31, %17, !dbg !977
+  tail call void @llvm.dbg.value(metadata float %32, i64 0, metadata !425, metadata !978), !dbg !975
+  %33 = extractelement <2 x float> %gtot.sroa.0.26, i32 1, !dbg !979
+  %34 = fadd float %33, %.pre-phi28, !dbg !980
+  tail call void @llvm.dbg.value(metadata float %34, i64 0, metadata !425, metadata !981), !dbg !975
+  %35 = insertelement <2 x float> undef, float %32, i32 0, !dbg !982
+  %36 = insertelement <2 x float> %35, float %34, i32 1, !dbg !982
+  tail call void @llvm.dbg.value(metadata <2 x float> %36, i64 0, metadata !400, metadata !432), !dbg !939
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !957
+  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !957
+  %exitcond = icmp eq i32 %lftr.wideiv, %7, !dbg !957
+  br i1 %exitcond, label %._crit_edge, label %.lr.ph, !dbg !957
 
 ._crit_edge:                                      ; preds = %30, %.preheader
   %gtot.sroa.0.2.lcssa = phi <2 x float> [ %gtot.sroa.0.18, %.preheader ], [ %36, %30 ]
-  %indvars.iv.next16 = add nuw nsw i64 %indvars.iv15, 1
-  %lftr.wideiv17 = trunc i64 %indvars.iv15 to i32
-  %exitcond18 = icmp eq i32 %lftr.wideiv17, %8
-  br i1 %exitcond18, label %._crit_edge9, label %.preheader
+  %indvars.iv.next16 = add nuw nsw i64 %indvars.iv15, 1, !dbg !954
+  %lftr.wideiv17 = trunc i64 %indvars.iv15 to i32, !dbg !954
+  %exitcond18 = icmp eq i32 %lftr.wideiv17, %8, !dbg !954
+  br i1 %exitcond18, label %._crit_edge9, label %.preheader, !dbg !954
 
 ._crit_edge9:                                     ; preds = %._crit_edge, %.preheader3
   %gtot.sroa.0.1.lcssa = phi <2 x float> [ %gtot.sroa.0.011, %.preheader3 ], [ %gtot.sroa.0.2.lcssa, %._crit_edge ]
-  %indvars.iv.next20 = add nuw nsw i64 %indvars.iv19, 1
-  %lftr.wideiv21 = trunc i64 %indvars.iv19 to i32
-  %exitcond22 = icmp eq i32 %lftr.wideiv21, %9
-  br i1 %exitcond22, label %._crit_edge13, label %.preheader3
+  %indvars.iv.next20 = add nuw nsw i64 %indvars.iv19, 1, !dbg !947
+  %lftr.wideiv21 = trunc i64 %indvars.iv19 to i32, !dbg !947
+  %exitcond22 = icmp eq i32 %lftr.wideiv21, %9, !dbg !947
+  br i1 %exitcond22, label %._crit_edge13, label %.preheader3, !dbg !947
 
 ._crit_edge13:                                    ; preds = %._crit_edge9, %.preheader4
   %gtot.sroa.0.0.lcssa = phi <2 x float> [ zeroinitializer, %.preheader4 ], [ %gtot.sroa.0.1.lcssa, %._crit_edge9 ]
-  ret <2 x float> %gtot.sroa.0.0.lcssa
+  ret <2 x float> %gtot.sroa.0.0.lcssa, !dbg !983
 }

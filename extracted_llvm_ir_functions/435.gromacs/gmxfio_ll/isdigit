@@ -1,16 +1,19 @@
-define i32 @isdigit(i32 %_c) #3 {
-  %1 = icmp ugt i32 %_c, 255
-  br i1 %1, label %__isctype.exit, label %2
+define i32 @isdigit(i32 %_c) #4 {
+  tail call void @llvm.dbg.value(metadata i32 %_c, i64 0, metadata !192, metadata !602), !dbg !655
+  tail call void @llvm.dbg.value(metadata i32 %_c, i64 0, metadata !170, metadata !602), !dbg !656
+  tail call void @llvm.dbg.value(metadata i64 1024, i64 0, metadata !171, metadata !602), !dbg !658
+  %1 = icmp ugt i32 %_c, 255, !dbg !659
+  br i1 %1, label %__isctype.exit, label %2, !dbg !659
 
 ; <label>:2                                       ; preds = %0
-  %3 = sext i32 %_c to i64
-  %4 = getelementptr inbounds %struct._RuneLocale* @_DefaultRuneLocale, i64 0, i32 5, i64 %3
-  %5 = load i32* %4, align 4, !tbaa !2
-  %6 = lshr i32 %5, 10
-  %.lobit = and i32 %6, 1
-  br label %__isctype.exit
+  %3 = sext i32 %_c to i64, !dbg !660
+  %4 = getelementptr inbounds %struct._RuneLocale* @_DefaultRuneLocale, i64 0, i32 5, i64 %3, !dbg !660
+  %5 = load i32* %4, align 4, !dbg !660, !tbaa !610
+  %6 = lshr i32 %5, 10, !dbg !661
+  %.lobit = and i32 %6, 1, !dbg !661
+  br label %__isctype.exit, !dbg !662
 
 __isctype.exit:                                   ; preds = %0, %2
-  %7 = phi i32 [ %.lobit, %2 ], [ 0, %0 ]
-  ret i32 %7
+  %7 = phi i32 [ %.lobit, %2 ], [ 0, %0 ], !dbg !662
+  ret i32 %7, !dbg !663
 }

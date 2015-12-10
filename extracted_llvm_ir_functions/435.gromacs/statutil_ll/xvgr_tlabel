@@ -1,54 +1,56 @@
-define i8* @xvgr_tlabel() #1 {
-  %1 = load i8** getelementptr inbounds ([10 x i8*]* @timestr, i64 0, i64 1), align 8, !tbaa !19
-  %2 = icmp eq i8* %1, null
-  br i1 %2, label %nenum.exit7, label %.lr.ph.i
+define i8* @xvgr_tlabel() #2 {
+  tail call void @llvm.dbg.value(metadata i8** getelementptr inbounds ([10 x i8*]* @timestr, i64 0, i64 0), i64 0, metadata !688, metadata !852), !dbg !1265
+  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !689, metadata !852), !dbg !1267
+  %1 = load i8** getelementptr inbounds ([10 x i8*]* @timestr, i64 0, i64 1), align 8, !dbg !1268, !tbaa !1132
+  %2 = icmp eq i8* %1, null, !dbg !1268
+  br i1 %2, label %nenum.exit7, label %.lr.ph.i, !dbg !1269
 
 .lr.ph.i:                                         ; preds = %0
-  %3 = load i8** getelementptr inbounds ([10 x i8*]* @timestr, i64 0, i64 0), align 16, !tbaa !19
-  br label %4
+  %3 = load i8** getelementptr inbounds ([10 x i8*]* @timestr, i64 0, i64 0), align 16, !dbg !1270, !tbaa !1132
+  br label %4, !dbg !1269
 
 ; <label>:4                                       ; preds = %7, %.lr.ph.i
-  %indvars.iv.i = phi i64 [ 1, %.lr.ph.i ], [ %indvars.iv.next.i, %7 ]
-  %5 = phi i8* [ %1, %.lr.ph.i ], [ %9, %7 ]
-  %6 = icmp eq i8* %3, %5
-  br i1 %6, label %nenum.exit, label %7
+  %indvars.iv.i = phi i64 [ 1, %.lr.ph.i ], [ %indvars.iv.next.i, %7 ], !dbg !1271
+  %5 = phi i8* [ %1, %.lr.ph.i ], [ %9, %7 ], !dbg !1271
+  %6 = icmp eq i8* %3, %5, !dbg !1272
+  br i1 %6, label %nenum.exit, label %7, !dbg !1273
 
 ; <label>:7                                       ; preds = %4
-  %indvars.iv.next.i = add nuw nsw i64 %indvars.iv.i, 1
-  %8 = getelementptr inbounds [10 x i8*]* @timestr, i64 0, i64 %indvars.iv.next.i
-  %9 = load i8** %8, align 8, !tbaa !19
-  %10 = icmp eq i8* %9, null
-  br i1 %10, label %nenum.exit, label %4
+  %indvars.iv.next.i = add nuw nsw i64 %indvars.iv.i, 1, !dbg !1269
+  %8 = getelementptr inbounds [10 x i8*]* @timestr, i64 0, i64 %indvars.iv.next.i, !dbg !1268
+  %9 = load i8** %8, align 8, !dbg !1268, !tbaa !1132
+  %10 = icmp eq i8* %9, null, !dbg !1268
+  br i1 %10, label %nenum.exit, label %4, !dbg !1269
 
 nenum.exit:                                       ; preds = %4, %7
   %indvars.iv.i.sink = phi i64 [ %indvars.iv.next.i, %7 ], [ %indvars.iv.i, %4 ]
-  %11 = trunc i64 %indvars.iv.i.sink to i32
-  %12 = icmp eq i32 %11, 0
-  br i1 %12, label %22, label %.lr.ph.i1
+  %11 = trunc i64 %indvars.iv.i.sink to i32, !dbg !1273
+  %12 = icmp eq i32 %11, 0, !dbg !1271
+  br i1 %12, label %22, label %.lr.ph.i1, !dbg !1271
 
 .lr.ph.i1:                                        ; preds = %nenum.exit, %15
-  %indvars.iv.i2 = phi i64 [ %indvars.iv.next.i3, %15 ], [ 1, %nenum.exit ]
-  %13 = phi i8* [ %17, %15 ], [ %1, %nenum.exit ]
-  %14 = icmp eq i8* %3, %13
-  br i1 %14, label %nenum.exit7, label %15
+  %indvars.iv.i2 = phi i64 [ %indvars.iv.next.i3, %15 ], [ 1, %nenum.exit ], !dbg !1271
+  %13 = phi i8* [ %17, %15 ], [ %1, %nenum.exit ], !dbg !1271
+  %14 = icmp eq i8* %3, %13, !dbg !1274
+  br i1 %14, label %nenum.exit7, label %15, !dbg !1276
 
 ; <label>:15                                      ; preds = %.lr.ph.i1
-  %indvars.iv.next.i3 = add nuw nsw i64 %indvars.iv.i2, 1
-  %16 = getelementptr inbounds [10 x i8*]* @timestr, i64 0, i64 %indvars.iv.next.i3
-  %17 = load i8** %16, align 8, !tbaa !19
-  %18 = icmp eq i8* %17, null
-  br i1 %18, label %nenum.exit7, label %.lr.ph.i1
+  %indvars.iv.next.i3 = add nuw nsw i64 %indvars.iv.i2, 1, !dbg !1277
+  %16 = getelementptr inbounds [10 x i8*]* @timestr, i64 0, i64 %indvars.iv.next.i3, !dbg !1278
+  %17 = load i8** %16, align 8, !dbg !1278, !tbaa !1132
+  %18 = icmp eq i8* %17, null, !dbg !1278
+  br i1 %18, label %nenum.exit7, label %.lr.ph.i1, !dbg !1277
 
 nenum.exit7:                                      ; preds = %15, %.lr.ph.i1, %0
-  %i.0.lcssa.i6 = phi i64 [ 1, %0 ], [ %indvars.iv.i2, %.lr.ph.i1 ], [ %indvars.iv.next.i3, %15 ]
-  %sext = shl i64 %i.0.lcssa.i6, 32
-  %19 = ashr exact i64 %sext, 32
-  %20 = getelementptr inbounds [10 x i8*]* @xvgrtimestr, i64 0, i64 %19
-  %21 = load i8** %20, align 8, !tbaa !19
-  br label %22
+  %i.0.lcssa.i6 = phi i64 [ 1, %0 ], [ %indvars.iv.i2, %.lr.ph.i1 ], [ %indvars.iv.next.i3, %15 ], !dbg !1271
+  %sext = shl i64 %i.0.lcssa.i6, 32, !dbg !1271
+  %19 = ashr exact i64 %sext, 32, !dbg !1271
+  %20 = getelementptr inbounds [10 x i8*]* @xvgrtimestr, i64 0, i64 %19, !dbg !1271
+  %21 = load i8** %20, align 8, !dbg !1271, !tbaa !1132
+  br label %22, !dbg !1271
 
 ; <label>:22                                      ; preds = %nenum.exit, %nenum.exit7
-  %23 = phi i8* [ %21, %nenum.exit7 ], [ getelementptr inbounds ([3 x i8]* @.str4, i64 0, i64 0), %nenum.exit ]
-  %24 = tail call i32 (i8*, i32, i64, i8*, ...)* @__sprintf_chk(i8* getelementptr inbounds ([20 x i8]* @xvgr_tlabel.label, i64 0, i64 0), i32 0, i64 20, i8* getelementptr inbounds ([10 x i8]* @.str3, i64 0, i64 0), i8* %23) #12
-  ret i8* getelementptr inbounds ([20 x i8]* @xvgr_tlabel.label, i64 0, i64 0)
+  %23 = phi i8* [ %21, %nenum.exit7 ], [ getelementptr inbounds ([3 x i8]* @.str4, i64 0, i64 0), %nenum.exit ], !dbg !1271
+  %24 = tail call i32 (i8*, i32, i64, i8*, ...)* @__sprintf_chk(i8* getelementptr inbounds ([20 x i8]* @xvgr_tlabel.label, i64 0, i64 0), i32 0, i64 20, i8* getelementptr inbounds ([10 x i8]* @.str3, i64 0, i64 0), i8* %23) #12, !dbg !1271
+  ret i8* getelementptr inbounds ([20 x i8]* @xvgr_tlabel.label, i64 0, i64 0), !dbg !1279
 }

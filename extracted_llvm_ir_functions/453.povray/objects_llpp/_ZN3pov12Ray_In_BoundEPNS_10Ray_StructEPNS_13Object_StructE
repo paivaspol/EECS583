@@ -1,0 +1,44 @@
+define zeroext i1 @_ZN3pov12Ray_In_BoundEPNS_10Ray_StructEPNS_13Object_StructE(%"struct.pov::Ray_Struct"* %Ray, %"struct.pov::Object_Struct"* %Bounding_Object) #0 {
+  %Local = alloca %"struct.pov::istk_entry", align 8
+  tail call void @llvm.dbg.value(metadata %"struct.pov::Ray_Struct"* %Ray, i64 0, metadata !927, metadata !1323), !dbg !1398
+  tail call void @llvm.dbg.value(metadata %"struct.pov::Object_Struct"* %Bounding_Object, i64 0, metadata !928, metadata !1323), !dbg !1399
+  %1 = bitcast %"struct.pov::istk_entry"* %Local to i8*, !dbg !1400
+  call void @llvm.lifetime.start(i64 200, i8* %1) #1, !dbg !1400
+  tail call void @llvm.dbg.value(metadata %"struct.pov::Object_Struct"* %Bounding_Object, i64 0, metadata !929, metadata !1323), !dbg !1401
+  %2 = icmp eq %"struct.pov::Object_Struct"* %Bounding_Object, null, !dbg !1402
+  br i1 %2, label %._crit_edge, label %.lr.ph, !dbg !1405
+
+.lr.ph:                                           ; preds = %0
+  %3 = getelementptr inbounds %"struct.pov::Ray_Struct"* %Ray, i64 0, i32 0, i64 0, !dbg !1406
+  br label %4, !dbg !1405
+
+; <label>:4                                       ; preds = %.lr.ph, %10
+  %Bound.01 = phi %"struct.pov::Object_Struct"* [ %Bounding_Object, %.lr.ph ], [ %14, %10 ]
+  tail call void @llvm.dbg.value(metadata i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 88), i64 0, metadata !1014, metadata !1323), !dbg !1411
+  %5 = load i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 88), align 8, !dbg !1413, !tbaa !1414
+  %6 = add nsw i64 %5, 1, !dbg !1413
+  store i64 %6, i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 88), align 8, !dbg !1413, !tbaa !1414
+  tail call void @llvm.dbg.value(metadata %"struct.pov::istk_entry"* %Local, i64 0, metadata !930, metadata !1323), !dbg !1416
+  %7 = call zeroext i1 @_ZN3pov12IntersectionEPNS_10istk_entryEPNS_13Object_StructEPNS_10Ray_StructE(%"struct.pov::istk_entry"* %Local, %"struct.pov::Object_Struct"* %Bound.01, %"struct.pov::Ray_Struct"* %Ray) #5, !dbg !1417
+  br i1 %7, label %10, label %8, !dbg !1418
+
+; <label>:8                                       ; preds = %4
+  %9 = tail call zeroext i1 @_ZN3pov13Inside_ObjectEPdPNS_13Object_StructE(double* %3, %"struct.pov::Object_Struct"* %Bound.01) #5, !dbg !1419
+  br i1 %9, label %10, label %._crit_edge, !dbg !1420
+
+; <label>:10                                      ; preds = %8, %4
+  tail call void @llvm.dbg.value(metadata i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 89), i64 0, metadata !1014, metadata !1323), !dbg !1421
+  %11 = load i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 89), align 8, !dbg !1423, !tbaa !1414
+  %12 = add nsw i64 %11, 1, !dbg !1423
+  store i64 %12, i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 89), align 8, !dbg !1423, !tbaa !1414
+  %13 = getelementptr inbounds %"struct.pov::Object_Struct"* %Bound.01, i64 0, i32 2, !dbg !1424
+  %14 = load %"struct.pov::Object_Struct"** %13, align 8, !dbg !1424, !tbaa !1425
+  tail call void @llvm.dbg.value(metadata %"struct.pov::Object_Struct"* %14, i64 0, metadata !929, metadata !1323), !dbg !1401
+  %15 = icmp eq %"struct.pov::Object_Struct"* %14, null, !dbg !1402
+  br i1 %15, label %._crit_edge, label %4, !dbg !1405
+
+._crit_edge:                                      ; preds = %8, %10, %0
+  %.0 = phi i1 [ true, %0 ], [ false, %8 ], [ true, %10 ]
+  call void @llvm.lifetime.end(i64 200, i8* %1) #1, !dbg !1426
+  ret i1 %.0, !dbg !1426
+}

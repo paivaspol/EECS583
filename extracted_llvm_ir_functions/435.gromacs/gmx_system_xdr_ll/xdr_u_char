@@ -1,19 +1,24 @@
 define i32 @xdr_u_char(%struct.XDR* %xdrs, i8* nocapture %cp) #0 {
   %u = alloca i32, align 4
-  %1 = load i8* %cp, align 1, !tbaa !17
-  %2 = zext i8 %1 to i32
-  store i32 %2, i32* %u, align 4, !tbaa !8
-  %3 = call i32 @xdr_u_int(%struct.XDR* %xdrs, i32* %u) #7
-  %4 = icmp eq i32 %3, 0
-  br i1 %4, label %8, label %5
+  tail call void @llvm.dbg.value(metadata %struct.XDR* %xdrs, i64 0, metadata !200, metadata !360), !dbg !516
+  tail call void @llvm.dbg.value(metadata i8* %cp, i64 0, metadata !201, metadata !360), !dbg !517
+  %1 = load i8* %cp, align 1, !dbg !518, !tbaa !505
+  %2 = zext i8 %1 to i32, !dbg !519
+  tail call void @llvm.dbg.value(metadata i32 %2, i64 0, metadata !202, metadata !360), !dbg !520
+  store i32 %2, i32* %u, align 4, !dbg !521, !tbaa !382
+  tail call void @llvm.dbg.value(metadata i32* %u, i64 0, metadata !202, metadata !360), !dbg !520
+  %3 = call i32 @xdr_u_int(%struct.XDR* %xdrs, i32* %u) #8, !dbg !522
+  %4 = icmp eq i32 %3, 0, !dbg !522
+  br i1 %4, label %8, label %5, !dbg !524
 
 ; <label>:5                                       ; preds = %0
-  %6 = load i32* %u, align 4, !tbaa !8
-  %7 = trunc i32 %6 to i8
-  store i8 %7, i8* %cp, align 1, !tbaa !17
-  br label %8
+  tail call void @llvm.dbg.value(metadata i32* %u, i64 0, metadata !202, metadata !360), !dbg !520
+  %6 = load i32* %u, align 4, !dbg !525, !tbaa !382
+  %7 = trunc i32 %6 to i8, !dbg !525
+  store i8 %7, i8* %cp, align 1, !dbg !526, !tbaa !505
+  br label %8, !dbg !527
 
 ; <label>:8                                       ; preds = %0, %5
   %.0 = phi i32 [ 1, %5 ], [ 0, %0 ]
-  ret i32 %.0
+  ret i32 %.0, !dbg !528
 }

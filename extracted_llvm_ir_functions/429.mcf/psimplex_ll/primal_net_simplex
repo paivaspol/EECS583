@@ -1,122 +1,163 @@
 define i64 @primal_net_simplex(%struct.network* %net) #0 {
-while.body.lr.ph:
+.critedge:
   %delta = alloca i64, align 8
   %xchange = alloca i64, align 8
   %w = alloca %struct.node*, align 8
   %red_cost_of_bea = alloca i64, align 8
-  %arcs1 = getelementptr inbounds %struct.network* %net, i64 0, i32 23
-  %0 = load %struct.arc** %arcs1, align 8, !tbaa !0
-  %stop_arcs2 = getelementptr inbounds %struct.network* %net, i64 0, i32 24
-  %1 = load %struct.arc** %stop_arcs2, align 8, !tbaa !0
-  %m3 = getelementptr inbounds %struct.network* %net, i64 0, i32 5
-  %2 = load i64* %m3, align 8, !tbaa !3
-  %iterations4 = getelementptr inbounds %struct.network* %net, i64 0, i32 27
-  %bound_exchanges5 = getelementptr inbounds %struct.network* %net, i64 0, i32 28
-  %checksum6 = getelementptr inbounds %struct.network* %net, i64 0, i32 29
-  %feas_tol = getelementptr inbounds %struct.network* %net, i64 0, i32 16
-  br label %while.body
+  tail call void @llvm.dbg.value(metadata %struct.network* %net, i64 0, metadata !83, metadata !114), !dbg !115
+  tail call void @llvm.dbg.value(metadata i64 0, i64 0, metadata !86, metadata !114), !dbg !116
+  %0 = getelementptr inbounds %struct.network* %net, i64 0, i32 23, !dbg !117
+  %1 = load %struct.arc** %0, align 8, !dbg !117, !tbaa !118
+  tail call void @llvm.dbg.value(metadata %struct.arc* %1, i64 0, metadata !100, metadata !114), !dbg !125
+  %2 = getelementptr inbounds %struct.network* %net, i64 0, i32 24, !dbg !126
+  %3 = load %struct.arc** %2, align 8, !dbg !126, !tbaa !127
+  tail call void @llvm.dbg.value(metadata %struct.arc* %3, i64 0, metadata !101, metadata !114), !dbg !128
+  %4 = getelementptr inbounds %struct.network* %net, i64 0, i32 5, !dbg !129
+  %5 = load i64* %4, align 8, !dbg !129, !tbaa !130
+  tail call void @llvm.dbg.value(metadata i64 %5, i64 0, metadata !103, metadata !114), !dbg !131
+  %6 = getelementptr inbounds %struct.network* %net, i64 0, i32 27, !dbg !132
+  tail call void @llvm.dbg.value(metadata i64* %6, i64 0, metadata !106, metadata !114), !dbg !133
+  %7 = getelementptr inbounds %struct.network* %net, i64 0, i32 28, !dbg !134
+  tail call void @llvm.dbg.value(metadata i64* %7, i64 0, metadata !108, metadata !114), !dbg !135
+  %8 = getelementptr inbounds %struct.network* %net, i64 0, i32 29, !dbg !136
+  tail call void @llvm.dbg.value(metadata i64* %8, i64 0, metadata !109, metadata !114), !dbg !137
+  call void @llvm.dbg.value(metadata i64* %red_cost_of_bea, i64 0, metadata !105, metadata !114), !dbg !138
+  %9 = call %struct.arc* @primal_bea_mpp(i64 %5, %struct.arc* %1, %struct.arc* %3, i64* %red_cost_of_bea) #3, !dbg !139
+  call void @llvm.dbg.value(metadata %struct.arc* %9, i64 0, metadata !96, metadata !114), !dbg !142
+  %10 = icmp eq %struct.arc* %9, null, !dbg !143
+  br i1 %10, label %.critedge2._crit_edge, label %.lr.ph, !dbg !144
 
-while.body:                                       ; preds = %if.else24, %if.then13, %if.then52, %if.then22, %while.body.lr.ph
-  %call = call %struct.arc* @primal_bea_mpp(i64 %2, %struct.arc* %0, %struct.arc* %1, i64* %red_cost_of_bea) #2
-  %tobool7 = icmp eq %struct.arc* %call, null
-  br i1 %tobool7, label %while.end, label %if.then
+.lr.ph:                                           ; preds = %.critedge
+  %11 = getelementptr inbounds %struct.network* %net, i64 0, i32 16, !dbg !145
+  br label %12, !dbg !144
 
-if.then:                                          ; preds = %while.body
-  %3 = load i64* %iterations4, align 8, !tbaa !3
-  %inc = add nsw i64 %3, 1
-  store i64 %inc, i64* %iterations4, align 8, !tbaa !3
-  %4 = load i64* %red_cost_of_bea, align 8, !tbaa !3
-  %cmp = icmp sgt i64 %4, 0
-  br i1 %cmp, label %if.then8, label %if.else
+; <label>:12                                      ; preds = %.lr.ph, %.critedge2.backedge
+  %13 = phi %struct.arc* [ %9, %.lr.ph ], [ %66, %.critedge2.backedge ]
+  %14 = load i64* %6, align 8, !dbg !149, !tbaa !150
+  %15 = add nsw i64 %14, 1, !dbg !149
+  store i64 %15, i64* %6, align 8, !dbg !149, !tbaa !150
+  call void @llvm.dbg.value(metadata i64* %red_cost_of_bea, i64 0, metadata !105, metadata !114), !dbg !138
+  %16 = load i64* %red_cost_of_bea, align 8, !dbg !151, !tbaa !150
+  %17 = icmp sgt i64 %16, 0, !dbg !153
+  br i1 %17, label %18, label %21, !dbg !154
 
-if.then8:                                         ; preds = %if.then
-  %head = getelementptr inbounds %struct.arc* %call, i64 0, i32 2
-  %tail = getelementptr inbounds %struct.arc* %call, i64 0, i32 1
-  br label %if.end
+; <label>:18                                      ; preds = %12
+  %19 = getelementptr inbounds %struct.arc* %13, i64 0, i32 2, !dbg !155
+  %20 = getelementptr inbounds %struct.arc* %13, i64 0, i32 1, !dbg !157
+  br label %24, !dbg !158
 
-if.else:                                          ; preds = %if.then
-  %tail9 = getelementptr inbounds %struct.arc* %call, i64 0, i32 1
-  %head10 = getelementptr inbounds %struct.arc* %call, i64 0, i32 2
-  br label %if.end
+; <label>:21                                      ; preds = %12
+  %22 = getelementptr inbounds %struct.arc* %13, i64 0, i32 1, !dbg !159
+  %23 = getelementptr inbounds %struct.arc* %13, i64 0, i32 2, !dbg !161
+  br label %24
 
-if.end:                                           ; preds = %if.else, %if.then8
-  %jplus.0.in = phi %struct.node** [ %tail, %if.then8 ], [ %head10, %if.else ]
-  %iplus.0.in = phi %struct.node** [ %head, %if.then8 ], [ %tail9, %if.else ]
-  %iplus.0 = load %struct.node** %iplus.0.in, align 8
-  %jplus.0 = load %struct.node** %jplus.0.in, align 8
-  store i64 1, i64* %delta, align 8, !tbaa !3
-  %call11 = call %struct.node* @primal_iminus(i64* %delta, i64* %xchange, %struct.node* %iplus.0, %struct.node* %jplus.0, %struct.node** %w) #2
-  %tobool12 = icmp eq %struct.node* %call11, null
-  br i1 %tobool12, label %if.then13, label %if.else24
+; <label>:24                                      ; preds = %21, %18
+  %jplus.0.in = phi %struct.node** [ %20, %18 ], [ %23, %21 ]
+  %iplus.0.in = phi %struct.node** [ %19, %18 ], [ %22, %21 ]
+  %iplus.0 = load %struct.node** %iplus.0.in, align 8, !dbg !155
+  %jplus.0 = load %struct.node** %jplus.0.in, align 8, !dbg !157
+  call void @llvm.dbg.value(metadata i64 1, i64 0, metadata !84, metadata !114), !dbg !162
+  store i64 1, i64* %delta, align 8, !dbg !163, !tbaa !150
+  call void @llvm.dbg.value(metadata i64* %delta, i64 0, metadata !84, metadata !114), !dbg !162
+  call void @llvm.dbg.value(metadata i64* %xchange, i64 0, metadata !87, metadata !114), !dbg !164
+  call void @llvm.dbg.value(metadata %struct.node** %w, i64 0, metadata !95, metadata !114), !dbg !165
+  %25 = call %struct.node* @primal_iminus(i64* %delta, i64* %xchange, %struct.node* %iplus.0, %struct.node* %jplus.0, %struct.node** %w) #3, !dbg !166
+  call void @llvm.dbg.value(metadata %struct.node* %25, i64 0, metadata !93, metadata !114), !dbg !167
+  %26 = icmp eq %struct.node* %25, null, !dbg !168
+  br i1 %26, label %27, label %36, !dbg !169
 
-if.then13:                                        ; preds = %if.end
-  %5 = load i64* %bound_exchanges5, align 8, !tbaa !3
-  %inc14 = add nsw i64 %5, 1
-  store i64 %inc14, i64* %bound_exchanges5, align 8, !tbaa !3
-  %ident = getelementptr inbounds %struct.arc* %call, i64 0, i32 3
-  %6 = load i32* %ident, align 4, !tbaa !4
-  %cmp15 = icmp eq i32 %6, 2
-  %. = select i1 %cmp15, i32 1, i32 2
-  store i32 %., i32* %ident, align 4, !tbaa !4
-  %7 = load i64* %delta, align 8, !tbaa !3
-  %tobool21 = icmp eq i64 %7, 0
-  br i1 %tobool21, label %while.body, label %if.then22
+; <label>:27                                      ; preds = %24
+  %28 = load i64* %7, align 8, !dbg !170, !tbaa !150
+  %29 = add nsw i64 %28, 1, !dbg !170
+  store i64 %29, i64* %7, align 8, !dbg !170, !tbaa !150
+  %30 = getelementptr inbounds %struct.arc* %13, i64 0, i32 3, !dbg !172
+  %31 = load i32* %30, align 4, !dbg !172, !tbaa !174
+  %32 = icmp eq i32 %31, 2, !dbg !177
+  %. = select i1 %32, i32 1, i32 2, !dbg !178
+  store i32 %., i32* %30, align 4, !dbg !179, !tbaa !174
+  call void @llvm.dbg.value(metadata i64* %delta, i64 0, metadata !84, metadata !114), !dbg !162
+  %33 = load i64* %delta, align 8, !dbg !180, !tbaa !150
+  %34 = icmp eq i64 %33, 0, !dbg !180
+  br i1 %34, label %.critedge2.backedge, label %.critedge4, !dbg !182
 
-if.then22:                                        ; preds = %if.then13
-  %8 = load %struct.node** %w, align 8, !tbaa !0
-  call void @primal_update_flow(%struct.node* %iplus.0, %struct.node* %jplus.0, %struct.node* %8) #2
-  br label %while.body
+.critedge4:                                       ; preds = %27
+  call void @llvm.dbg.value(metadata %struct.node** %w, i64 0, metadata !95, metadata !114), !dbg !165
+  %35 = load %struct.node** %w, align 8, !dbg !183, !tbaa !184
+  call void @primal_update_flow(%struct.node* %iplus.0, %struct.node* %jplus.0, %struct.node* %35) #3, !dbg !185
+  br label %.critedge2.backedge
 
-if.else24:                                        ; preds = %if.end
-  %9 = load i64* %xchange, align 8, !tbaa !3
-  %tobool25 = icmp eq i64 %9, 0
-  %jplus.0.iplus.0 = select i1 %tobool25, %struct.node* %jplus.0, %struct.node* %iplus.0
-  %iplus.0.jplus.0 = select i1 %tobool25, %struct.node* %iplus.0, %struct.node* %jplus.0
-  %pred = getelementptr inbounds %struct.node* %call11, i64 0, i32 3
-  %10 = load %struct.node** %pred, align 8, !tbaa !0
-  %basic_arc = getelementptr inbounds %struct.node* %call11, i64 0, i32 6
-  %11 = load %struct.arc** %basic_arc, align 8, !tbaa !0
-  %orientation = getelementptr inbounds %struct.node* %call11, i64 0, i32 1
-  %12 = load i32* %orientation, align 4, !tbaa !4
-  %conv = sext i32 %12 to i64
-  %cmp28 = icmp eq i64 %9, %conv
-  %new_set.0 = select i1 %cmp28, i32 2, i32 1
-  %13 = load i64* %red_cost_of_bea, align 8, !tbaa !3
-  %cmp33 = icmp sgt i64 %13, 0
-  %14 = load i64* %delta, align 8, !tbaa !3
-  %sub = sub nsw i64 1, %14
-  %new_flow.0 = select i1 %cmp33, i64 %sub, i64 %14
-  %tail38 = getelementptr inbounds %struct.arc* %call, i64 0, i32 1
-  %15 = load %struct.node** %tail38, align 8, !tbaa !0
-  %cmp39 = icmp eq %struct.node* %15, %iplus.0.jplus.0
-  %.92 = zext i1 %cmp39 to i64
-  %conv46 = zext i1 %tobool25 to i64
-  %16 = load %struct.node** %w, align 8, !tbaa !0
-  %17 = load i64* %feas_tol, align 8, !tbaa !3
-  call void @update_tree(i64 %conv46, i64 %.92, i64 %14, i64 %new_flow.0, %struct.node* %iplus.0.jplus.0, %struct.node* %jplus.0.iplus.0, %struct.node* %call11, %struct.node* %10, %struct.node* %16, %struct.arc* %call, i64 %13, i64 %17) #2
-  %ident47 = getelementptr inbounds %struct.arc* %call, i64 0, i32 3
-  store i32 0, i32* %ident47, align 4, !tbaa !4
-  %ident49 = getelementptr inbounds %struct.arc* %11, i64 0, i32 3
-  store i32 %new_set.0, i32* %ident49, align 4, !tbaa !4
-  %18 = load i64* %iterations4, align 8, !tbaa !3
-  %sub50 = add nsw i64 %18, -1
-  %rem = srem i64 %sub50, 200
-  %tobool51 = icmp eq i64 %rem, 0
-  br i1 %tobool51, label %if.then52, label %while.body
+; <label>:36                                      ; preds = %24
+  call void @llvm.dbg.value(metadata i64* %xchange, i64 0, metadata !87, metadata !114), !dbg !164
+  %37 = load i64* %xchange, align 8, !dbg !186, !tbaa !150
+  %38 = icmp eq i64 %37, 0, !dbg !186
+  call void @llvm.dbg.value(metadata %struct.node* %jplus.0, i64 0, metadata !102, metadata !114), !dbg !188
+  call void @llvm.dbg.value(metadata %struct.node* %iplus.0, i64 0, metadata !92, metadata !114), !dbg !189
+  call void @llvm.dbg.value(metadata %struct.node* %jplus.0, i64 0, metadata !89, metadata !114), !dbg !190
+  %jplus.0.iplus.0 = select i1 %38, %struct.node* %jplus.0, %struct.node* %iplus.0, !dbg !191
+  %iplus.0.jplus.0 = select i1 %38, %struct.node* %iplus.0, %struct.node* %jplus.0, !dbg !191
+  %39 = getelementptr inbounds %struct.node* %25, i64 0, i32 3, !dbg !192
+  %40 = load %struct.node** %39, align 8, !dbg !192, !tbaa !193
+  call void @llvm.dbg.value(metadata %struct.node* %40, i64 0, metadata !94, metadata !114), !dbg !195
+  %41 = getelementptr inbounds %struct.node* %25, i64 0, i32 6, !dbg !196
+  %42 = load %struct.arc** %41, align 8, !dbg !196, !tbaa !197
+  call void @llvm.dbg.value(metadata %struct.arc* %42, i64 0, metadata !99, metadata !114), !dbg !198
+  call void @llvm.dbg.value(metadata i64* %xchange, i64 0, metadata !87, metadata !114), !dbg !164
+  %43 = getelementptr inbounds %struct.node* %25, i64 0, i32 1, !dbg !199
+  %44 = load i32* %43, align 4, !dbg !199, !tbaa !201
+  %45 = sext i32 %44 to i64, !dbg !202
+  %46 = icmp eq i64 %37, %45, !dbg !203
+  call void @llvm.dbg.value(metadata i64 2, i64 0, metadata !104, metadata !114), !dbg !204
+  %new_set.0 = select i1 %46, i32 2, i32 1, !dbg !205
+  call void @llvm.dbg.value(metadata i64* %red_cost_of_bea, i64 0, metadata !105, metadata !114), !dbg !138
+  %47 = load i64* %red_cost_of_bea, align 8, !dbg !206, !tbaa !150
+  %48 = icmp sgt i64 %47, 0, !dbg !208
+  call void @llvm.dbg.value(metadata i64* %delta, i64 0, metadata !84, metadata !114), !dbg !162
+  %49 = load i64* %delta, align 8, !dbg !209, !tbaa !150
+  %50 = sub nsw i64 1, %49, !dbg !210
+  call void @llvm.dbg.value(metadata i64 %50, i64 0, metadata !85, metadata !114), !dbg !211
+  %new_flow.0 = select i1 %48, i64 %50, i64 %49, !dbg !212
+  %51 = getelementptr inbounds %struct.arc* %13, i64 0, i32 1, !dbg !213
+  %52 = load %struct.node** %51, align 8, !dbg !213, !tbaa !215
+  %53 = icmp eq %struct.node* %52, %iplus.0.jplus.0, !dbg !216
+  %.1 = zext i1 %53 to i64, !dbg !217
+  call void @llvm.dbg.value(metadata i64* %xchange, i64 0, metadata !87, metadata !114), !dbg !164
+  %54 = zext i1 %38 to i64, !dbg !218
+  call void @llvm.dbg.value(metadata i64* %delta, i64 0, metadata !84, metadata !114), !dbg !162
+  call void @llvm.dbg.value(metadata %struct.node** %w, i64 0, metadata !95, metadata !114), !dbg !165
+  %55 = load %struct.node** %w, align 8, !dbg !219, !tbaa !184
+  call void @llvm.dbg.value(metadata i64* %red_cost_of_bea, i64 0, metadata !105, metadata !114), !dbg !138
+  %56 = load i64* %11, align 8, !dbg !145, !tbaa !220
+  call void @update_tree(i64 %54, i64 %.1, i64 %49, i64 %new_flow.0, %struct.node* %iplus.0.jplus.0, %struct.node* %jplus.0.iplus.0, %struct.node* %25, %struct.node* %40, %struct.node* %55, %struct.arc* %13, i64 %47, i64 %56) #3, !dbg !221
+  %57 = getelementptr inbounds %struct.arc* %13, i64 0, i32 3, !dbg !222
+  store i32 0, i32* %57, align 4, !dbg !223, !tbaa !174
+  %58 = getelementptr inbounds %struct.arc* %42, i64 0, i32 3, !dbg !224
+  store i32 %new_set.0, i32* %58, align 4, !dbg !225, !tbaa !174
+  %59 = load i64* %6, align 8, !dbg !226, !tbaa !150
+  %60 = add nsw i64 %59, -1, !dbg !228
+  %61 = srem i64 %60, 200, !dbg !229
+  %62 = icmp eq i64 %61, 0, !dbg !229
+  br i1 %62, label %.critedge3, label %.critedge2.backedge, !dbg !230
 
-if.then52:                                        ; preds = %if.else24
-  %call53 = call i64 @refresh_potential(%struct.network* %net) #2
-  %19 = load i64* %checksum6, align 8, !tbaa !3
-  %add = add nsw i64 %19, %call53
-  store i64 %add, i64* %checksum6, align 8, !tbaa !3
-  br label %while.body
+.critedge3:                                       ; preds = %36
+  %63 = call i64 @refresh_potential(%struct.network* %net) #3, !dbg !231
+  %64 = load i64* %8, align 8, !dbg !233, !tbaa !150
+  %65 = add nsw i64 %64, %63, !dbg !233
+  store i64 %65, i64* %8, align 8, !dbg !233, !tbaa !150
+  br label %.critedge2.backedge
 
-while.end:                                        ; preds = %while.body
-  %call58 = call i64 @refresh_potential(%struct.network* %net) #2
-  %20 = load i64* %checksum6, align 8, !tbaa !3
-  %add59 = add nsw i64 %20, %call58
-  store i64 %add59, i64* %checksum6, align 8, !tbaa !3
-  %call60 = call i64 @primal_feasible(%struct.network* %net) #2
-  %call61 = call i64 @dual_feasible(%struct.network* %net) #2
-  ret i64 0
+.critedge2.backedge:                              ; preds = %.critedge3, %.critedge4, %36, %27
+  call void @llvm.dbg.value(metadata i64* %red_cost_of_bea, i64 0, metadata !105, metadata !114), !dbg !138
+  %66 = call %struct.arc* @primal_bea_mpp(i64 %5, %struct.arc* %1, %struct.arc* %3, i64* %red_cost_of_bea) #3, !dbg !139
+  call void @llvm.dbg.value(metadata %struct.arc* %66, i64 0, metadata !96, metadata !114), !dbg !142
+  %67 = icmp eq %struct.arc* %66, null, !dbg !143
+  br i1 %67, label %.critedge2._crit_edge, label %12, !dbg !144
+
+.critedge2._crit_edge:                            ; preds = %.critedge2.backedge, %.critedge
+  %68 = call i64 @refresh_potential(%struct.network* %net) #3, !dbg !234
+  %69 = load i64* %8, align 8, !dbg !235, !tbaa !150
+  %70 = add nsw i64 %69, %68, !dbg !235
+  store i64 %70, i64* %8, align 8, !dbg !235, !tbaa !150
+  %71 = call i64 @primal_feasible(%struct.network* %net) #3, !dbg !236
+  %72 = call i64 @dual_feasible(%struct.network* %net) #3, !dbg !237
+  ret i64 0, !dbg !238
 }

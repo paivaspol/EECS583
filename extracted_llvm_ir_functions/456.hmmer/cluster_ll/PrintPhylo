@@ -1,74 +1,79 @@
-define void @PrintPhylo(%struct._IO_FILE* nocapture %fp, %struct.aliinfo_s* nocapture %ainfo, %struct.phylo_s* nocapture %tree, i32 %N) #0 {
-entry:
-  %sub = add i32 %N, -1
-  %cmp119 = icmp sgt i32 %sub, 0
-  br i1 %cmp119, label %for.body.lr.ph, label %for.end
+define void @PrintPhylo(%struct.__sFILE* nocapture %fp, %struct.aliinfo_s* nocapture readonly %ainfo, %struct.phylo_s* nocapture readonly %tree, i32 %N) #0 {
+  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %fp, i64 0, metadata !210, metadata !220), !dbg !659
+  tail call void @llvm.dbg.value(metadata %struct.aliinfo_s* %ainfo, i64 0, metadata !211, metadata !220), !dbg !660
+  tail call void @llvm.dbg.value(metadata %struct.phylo_s* %tree, i64 0, metadata !212, metadata !220), !dbg !661
+  tail call void @llvm.dbg.value(metadata i32 %N, i64 0, metadata !213, metadata !220), !dbg !662
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !214, metadata !220), !dbg !663
+  %1 = icmp sgt i32 %N, 1, !dbg !664
+  br i1 %1, label %.lr.ph, label %._crit_edge, !dbg !667
 
-for.body.lr.ph:                                   ; preds = %entry
-  %sqinfo = getelementptr inbounds %struct.aliinfo_s* %ainfo, i64 0, i32 6
-  br label %for.body
+.lr.ph:                                           ; preds = %0
+  %2 = add nsw i32 %N, -1, !dbg !668
+  %3 = getelementptr inbounds %struct.aliinfo_s* %ainfo, i64 0, i32 6, !dbg !669
+  %4 = sext i32 %2 to i64, !dbg !667
+  br label %5, !dbg !667
 
-for.body:                                         ; preds = %cond.end62, %for.body.lr.ph
-  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %cond.end62 ]
-  %idx.0120 = phi i32 [ 0, %for.body.lr.ph ], [ %inc, %cond.end62 ]
-  %add = add nsw i32 %idx.0120, %N
-  %0 = trunc i64 %indvars.iv to i32
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([28 x i8]* @.str8, i64 0, i64 0), i32 %0, i32 %add) #4
-  %parent = getelementptr inbounds %struct.phylo_s* %tree, i64 %indvars.iv, i32 0
-  %1 = load i32* %parent, align 4, !tbaa !4
-  %sub1 = sub nsw i32 %1, %N
-  %call5 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([23 x i8]* @.str9, i64 0, i64 0), i32 %sub1, i32 %1) #4
-  %left = getelementptr inbounds %struct.phylo_s* %tree, i64 %indvars.iv, i32 1
-  %2 = load i32* %left, align 4, !tbaa !4
-  %cmp8 = icmp slt i32 %2, %N
-  %sub12 = select i1 %cmp8, i32 %N, i32 0
-  %sub12. = sub nsw i32 %2, %sub12
-  br i1 %cmp8, label %cond.true20, label %cond.end27
+; <label>:5                                       ; preds = %.lr.ph, %35
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %35 ]
+  %idx.02 = phi i32 [ 0, %.lr.ph ], [ %48, %35 ]
+  %6 = add nsw i32 %idx.02, %N, !dbg !671
+  %7 = trunc i64 %indvars.iv to i32, !dbg !672
+  %8 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %fp, i8* getelementptr inbounds ([28 x i8]* @.str8, i64 0, i64 0), i32 %7, i32 %6) #5, !dbg !672
+  %9 = getelementptr inbounds %struct.phylo_s* %tree, i64 %indvars.iv, i32 0, !dbg !673
+  %10 = load i32* %9, align 4, !dbg !673, !tbaa !308
+  %11 = sub nsw i32 %10, %N, !dbg !674
+  %12 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %fp, i8* getelementptr inbounds ([23 x i8]* @.str9, i64 0, i64 0), i32 %11, i32 %10) #5, !dbg !675
+  %13 = getelementptr inbounds %struct.phylo_s* %tree, i64 %indvars.iv, i32 1, !dbg !676
+  %14 = load i32* %13, align 4, !dbg !676, !tbaa !293
+  %15 = icmp slt i32 %14, %N, !dbg !677
+  %16 = select i1 %15, i32 %N, i32 0, !dbg !678
+  %. = sub nsw i32 %14, %16, !dbg !678
+  br i1 %15, label %17, label %21, !dbg !679
 
-cond.true20:                                      ; preds = %for.body
-  %idxprom24 = sext i32 %2 to i64
-  %3 = load %struct.seqinfo_s** %sqinfo, align 8, !tbaa !0
-  %arraydecay = getelementptr inbounds %struct.seqinfo_s* %3, i64 %idxprom24, i32 1, i64 0
-  br label %cond.end27
+; <label>:17                                      ; preds = %5
+  %18 = sext i32 %14 to i64, !dbg !680
+  %19 = load %struct.seqinfo_s** %3, align 8, !dbg !669, !tbaa !609
+  %20 = getelementptr inbounds %struct.seqinfo_s* %19, i64 %18, i32 1, i64 0, !dbg !680
+  br label %21, !dbg !679
 
-cond.end27:                                       ; preds = %for.body, %cond.true20
-  %cond28 = phi i8* [ %arraydecay, %cond.true20 ], [ getelementptr inbounds ([9 x i8]* @.str11, i64 0, i64 0), %for.body ]
-  %lblen = getelementptr inbounds %struct.phylo_s* %tree, i64 %indvars.iv, i32 4
-  %4 = load float* %lblen, align 4, !tbaa !3
-  %conv = fpext float %4 to double
-  %call31 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([21 x i8]* @.str10, i64 0, i64 0), i32 %sub12., i8* %cond28, double %conv) #4
-  %right = getelementptr inbounds %struct.phylo_s* %tree, i64 %indvars.iv, i32 2
-  %5 = load i32* %right, align 4, !tbaa !4
-  %cmp34 = icmp slt i32 %5, %N
-  %sub40 = select i1 %cmp34, i32 %N, i32 0
-  %sub40. = sub nsw i32 %5, %sub40
-  br i1 %cmp34, label %cond.true52, label %cond.end62
+; <label>:21                                      ; preds = %5, %17
+  %22 = phi i8* [ %20, %17 ], [ getelementptr inbounds ([9 x i8]* @.str11, i64 0, i64 0), %5 ], !dbg !679
+  %23 = getelementptr inbounds %struct.phylo_s* %tree, i64 %indvars.iv, i32 4, !dbg !681
+  %24 = load float* %23, align 4, !dbg !681, !tbaa !328
+  %25 = fpext float %24 to double, !dbg !682
+  %26 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %fp, i8* getelementptr inbounds ([21 x i8]* @.str10, i64 0, i64 0), i32 %., i8* %22, double %25) #5, !dbg !683
+  %27 = getelementptr inbounds %struct.phylo_s* %tree, i64 %indvars.iv, i32 2, !dbg !684
+  %28 = load i32* %27, align 4, !dbg !684, !tbaa !298
+  %29 = icmp slt i32 %28, %N, !dbg !685
+  %30 = select i1 %29, i32 %N, i32 0, !dbg !686
+  %.1 = sub nsw i32 %28, %30, !dbg !686
+  br i1 %29, label %31, label %35, !dbg !687
 
-cond.true52:                                      ; preds = %cond.end27
-  %idxprom56 = sext i32 %5 to i64
-  %6 = load %struct.seqinfo_s** %sqinfo, align 8, !tbaa !0
-  %arraydecay60 = getelementptr inbounds %struct.seqinfo_s* %6, i64 %idxprom56, i32 1, i64 0
-  br label %cond.end62
+; <label>:31                                      ; preds = %21
+  %32 = sext i32 %28 to i64, !dbg !688
+  %33 = load %struct.seqinfo_s** %3, align 8, !dbg !689, !tbaa !609
+  %34 = getelementptr inbounds %struct.seqinfo_s* %33, i64 %32, i32 1, i64 0, !dbg !688
+  br label %35, !dbg !687
 
-cond.end62:                                       ; preds = %cond.end27, %cond.true52
-  %cond63 = phi i8* [ %arraydecay60, %cond.true52 ], [ getelementptr inbounds ([9 x i8]* @.str11, i64 0, i64 0), %cond.end27 ]
-  %rblen = getelementptr inbounds %struct.phylo_s* %tree, i64 %indvars.iv, i32 5
-  %7 = load float* %rblen, align 4, !tbaa !3
-  %conv66 = fpext float %7 to double
-  %call67 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([22 x i8]* @.str12, i64 0, i64 0), i32 %sub40., i8* %cond63, double %conv66) #4
-  %diff = getelementptr inbounds %struct.phylo_s* %tree, i64 %indvars.iv, i32 3
-  %8 = load float* %diff, align 4, !tbaa !3
-  %conv70 = fpext float %8 to double
-  %call71 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([14 x i8]* @.str13, i64 0, i64 0), double %conv70) #4
-  %incnum = getelementptr inbounds %struct.phylo_s* %tree, i64 %indvars.iv, i32 7
-  %9 = load i32* %incnum, align 4, !tbaa !4
-  %call74 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([19 x i8]* @.str14, i64 0, i64 0), i32 %9) #4
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %inc = add nsw i32 %idx.0120, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %sub
-  br i1 %exitcond, label %for.end, label %for.body
+; <label>:35                                      ; preds = %21, %31
+  %36 = phi i8* [ %34, %31 ], [ getelementptr inbounds ([9 x i8]* @.str11, i64 0, i64 0), %21 ], !dbg !687
+  %37 = getelementptr inbounds %struct.phylo_s* %tree, i64 %indvars.iv, i32 5, !dbg !690
+  %38 = load float* %37, align 4, !dbg !690, !tbaa !325
+  %39 = fpext float %38 to double, !dbg !691
+  %40 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %fp, i8* getelementptr inbounds ([22 x i8]* @.str12, i64 0, i64 0), i32 %.1, i8* %36, double %39) #5, !dbg !692
+  %41 = getelementptr inbounds %struct.phylo_s* %tree, i64 %indvars.iv, i32 3, !dbg !693
+  %42 = load float* %41, align 4, !dbg !693, !tbaa !320
+  %43 = fpext float %42 to double, !dbg !694
+  %44 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %fp, i8* getelementptr inbounds ([14 x i8]* @.str13, i64 0, i64 0), double %43) #5, !dbg !695
+  %45 = getelementptr inbounds %struct.phylo_s* %tree, i64 %indvars.iv, i32 7, !dbg !696
+  %46 = load i32* %45, align 4, !dbg !696, !tbaa !350
+  %47 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %fp, i8* getelementptr inbounds ([19 x i8]* @.str14, i64 0, i64 0), i32 %46) #5, !dbg !697
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !667
+  %48 = add nuw nsw i32 %idx.02, 1, !dbg !698
+  tail call void @llvm.dbg.value(metadata i32 %48, i64 0, metadata !214, metadata !220), !dbg !663
+  %49 = icmp slt i64 %indvars.iv.next, %4, !dbg !664
+  br i1 %49, label %5, label %._crit_edge, !dbg !667
 
-for.end:                                          ; preds = %cond.end62, %entry
-  ret void
+._crit_edge:                                      ; preds = %35, %0
+  ret void, !dbg !699
 }

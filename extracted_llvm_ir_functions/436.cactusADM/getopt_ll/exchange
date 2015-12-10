@@ -1,101 +1,106 @@
 define internal fastcc void @exchange(i8** nocapture %argv) #0 {
-  %1 = load i32* @first_nonopt, align 4, !tbaa !6
-  %2 = load i32* @last_nonopt, align 4, !tbaa !6
-  %3 = load i32* @optind, align 4, !tbaa !6
-  %4 = icmp sgt i32 %3, %2
-  %5 = icmp sgt i32 %2, %1
-  %or.cond714 = and i1 %4, %5
-  br i1 %or.cond714, label %.lr.ph10.lr.ph, label %.critedge
+  tail call void @llvm.dbg.value(metadata i8** %argv, i64 0, metadata !79, metadata !114), !dbg !679
+  %1 = load i32* @first_nonopt, align 4, !dbg !680, !tbaa !128
+  tail call void @llvm.dbg.value(metadata i32 %1, i64 0, metadata !80, metadata !114), !dbg !681
+  %2 = load i32* @last_nonopt, align 4, !dbg !682, !tbaa !128
+  tail call void @llvm.dbg.value(metadata i32 %2, i64 0, metadata !81, metadata !114), !dbg !683
+  %3 = load i32* @optind, align 4, !dbg !684, !tbaa !128
+  tail call void @llvm.dbg.value(metadata i32 %3, i64 0, metadata !82, metadata !114), !dbg !685
+  %4 = icmp sgt i32 %3, %2, !dbg !686
+  %5 = icmp sgt i32 %2, %1, !dbg !687
+  %or.cond714 = and i1 %4, %5, !dbg !688
+  br i1 %or.cond714, label %.lr.ph10.lr.ph, label %.critedge, !dbg !688
 
 .lr.ph10.lr.ph:                                   ; preds = %0
-  %6 = sext i32 %2 to i64
-  %7 = xor i32 %2, -1
-  br label %.lr.ph10
+  %6 = sext i32 %2 to i64, !dbg !688
+  %7 = xor i32 %2, -1, !dbg !688
+  br label %.lr.ph10, !dbg !688
 
 .lr.ph10:                                         ; preds = %.lr.ph10.lr.ph, %.outer
   %bottom.0.ph16 = phi i32 [ %1, %.lr.ph10.lr.ph ], [ %18, %.outer ]
   %top.0.ph15 = phi i32 [ %3, %.lr.ph10.lr.ph ], [ %21, %.outer ]
-  %8 = sub nsw i32 %top.0.ph15, %2
-  %9 = icmp sgt i32 %8, 0
-  %10 = add i32 %top.0.ph15, %7
+  %8 = sub nsw i32 %top.0.ph15, %2, !dbg !689
+  %9 = icmp sgt i32 %8, 0, !dbg !690
+  %10 = add i32 %top.0.ph15, %7, !dbg !688
   %11 = sext i32 %bottom.0.ph16 to i64
-  %12 = sub i32 %top.0.ph15, %2
+  %12 = sub i32 %top.0.ph15, %2, !dbg !688
   %13 = sext i32 %12 to i64
-  %14 = sext i32 %8 to i64
-  br label %15
+  %14 = sext i32 %8 to i64, !dbg !688
+  br label %15, !dbg !688
 
 ; <label>:15                                      ; preds = %.lr.ph10, %._crit_edge
   %indvars.iv22 = phi i64 [ %11, %.lr.ph10 ], [ %indvars.iv.next23, %._crit_edge ]
-  %16 = sub nsw i64 %6, %indvars.iv22
-  %17 = icmp sgt i64 %14, %16
-  br i1 %17, label %.preheader, label %.preheader4
+  %16 = sub nsw i64 %6, %indvars.iv22, !dbg !693
+  %17 = icmp sgt i64 %14, %16, !dbg !694
+  br i1 %17, label %.preheader, label %.preheader4, !dbg !695
 
 .preheader4:                                      ; preds = %15
-  br i1 %9, label %.lr.ph, label %._crit_edge
+  br i1 %9, label %.lr.ph, label %._crit_edge, !dbg !696
 
 .preheader:                                       ; preds = %15
-  %18 = trunc i64 %indvars.iv22 to i32
-  %19 = trunc i64 %16 to i32
-  %20 = icmp sgt i32 %19, 0
-  %21 = sub i32 %top.0.ph15, %19
-  br i1 %20, label %.lr.ph12, label %.outer
+  %18 = trunc i64 %indvars.iv22 to i32, !dbg !697
+  %19 = trunc i64 %16 to i32, !dbg !697
+  %20 = icmp sgt i32 %19, 0, !dbg !697
+  %21 = sub i32 %top.0.ph15, %19, !dbg !700
+  br i1 %20, label %.lr.ph12, label %.outer, !dbg !702
 
 .lr.ph12:                                         ; preds = %.preheader
-  %sext = shl i64 %indvars.iv22, 32
-  %22 = ashr exact i64 %sext, 32
-  %23 = sext i32 %21 to i64
-  %24 = add i32 %19, -1
-  br label %25
+  %sext = shl i64 %indvars.iv22, 32, !dbg !702
+  %22 = ashr exact i64 %sext, 32, !dbg !702
+  %23 = sext i32 %21 to i64, !dbg !702
+  %24 = add i32 %19, -1, !dbg !702
+  br label %25, !dbg !702
 
 ; <label>:25                                      ; preds = %25, %.lr.ph12
   %indvars.iv24 = phi i64 [ 0, %.lr.ph12 ], [ %indvars.iv.next25, %25 ]
-  %26 = add nsw i64 %indvars.iv24, %22
-  %27 = getelementptr inbounds i8** %argv, i64 %26
-  %28 = bitcast i8** %27 to i64*
-  %29 = load i64* %28, align 8, !tbaa !2
-  %30 = add nsw i64 %23, %indvars.iv24
-  %31 = getelementptr inbounds i8** %argv, i64 %30
-  %32 = bitcast i8** %31 to i64*
-  %33 = load i64* %32, align 8, !tbaa !2
-  store i64 %33, i64* %28, align 8, !tbaa !2
-  store i64 %29, i64* %32, align 8, !tbaa !2
-  %indvars.iv.next25 = add nuw nsw i64 %indvars.iv24, 1
-  %lftr.wideiv26 = trunc i64 %indvars.iv24 to i32
-  %exitcond27 = icmp eq i32 %lftr.wideiv26, %24
-  br i1 %exitcond27, label %.outer, label %25
+  %26 = add nsw i64 %indvars.iv24, %22, !dbg !703
+  %27 = getelementptr inbounds i8** %argv, i64 %26, !dbg !704
+  %28 = bitcast i8** %27 to i64*, !dbg !704
+  %29 = load i64* %28, align 8, !dbg !704, !tbaa !122
+  %30 = add nsw i64 %23, %indvars.iv24, !dbg !705
+  %31 = getelementptr inbounds i8** %argv, i64 %30, !dbg !706
+  %32 = bitcast i8** %31 to i64*, !dbg !706
+  %33 = load i64* %32, align 8, !dbg !706, !tbaa !122
+  store i64 %33, i64* %28, align 8, !dbg !707, !tbaa !122
+  store i64 %29, i64* %32, align 8, !dbg !708, !tbaa !122
+  %indvars.iv.next25 = add nuw nsw i64 %indvars.iv24, 1, !dbg !702
+  %lftr.wideiv26 = trunc i64 %indvars.iv24 to i32, !dbg !702
+  %exitcond27 = icmp eq i32 %lftr.wideiv26, %24, !dbg !702
+  br i1 %exitcond27, label %.outer, label %25, !dbg !702
 
 .outer:                                           ; preds = %25, %.preheader
-  %34 = icmp sgt i32 %21, %2
-  %35 = icmp sgt i32 %2, %18
-  %or.cond7 = and i1 %34, %35
-  br i1 %or.cond7, label %.lr.ph10, label %.critedge
+  tail call void @llvm.dbg.value(metadata i32 %21, i64 0, metadata !82, metadata !114), !dbg !685
+  %34 = icmp sgt i32 %21, %2, !dbg !686
+  %35 = icmp sgt i32 %2, %18, !dbg !687
+  %or.cond7 = and i1 %34, %35, !dbg !688
+  br i1 %or.cond7, label %.lr.ph10, label %.critedge, !dbg !688
 
 .lr.ph:                                           ; preds = %.preheader4, %.lr.ph
   %indvars.iv = phi i64 [ %indvars.iv.next, %.lr.ph ], [ 0, %.preheader4 ]
-  %36 = add nsw i64 %indvars.iv, %indvars.iv22
-  %37 = getelementptr inbounds i8** %argv, i64 %36
-  %38 = bitcast i8** %37 to i64*
-  %39 = load i64* %38, align 8, !tbaa !2
-  %40 = add nsw i64 %indvars.iv, %6
-  %41 = getelementptr inbounds i8** %argv, i64 %40
-  %42 = bitcast i8** %41 to i64*
-  %43 = load i64* %42, align 8, !tbaa !2
-  store i64 %43, i64* %38, align 8, !tbaa !2
-  store i64 %39, i64* %42, align 8, !tbaa !2
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %10
-  br i1 %exitcond, label %._crit_edge, label %.lr.ph
+  %36 = add nsw i64 %indvars.iv, %indvars.iv22, !dbg !709
+  %37 = getelementptr inbounds i8** %argv, i64 %36, !dbg !711
+  %38 = bitcast i8** %37 to i64*, !dbg !711
+  %39 = load i64* %38, align 8, !dbg !711, !tbaa !122
+  %40 = add nsw i64 %indvars.iv, %6, !dbg !712
+  %41 = getelementptr inbounds i8** %argv, i64 %40, !dbg !713
+  %42 = bitcast i8** %41 to i64*, !dbg !713
+  %43 = load i64* %42, align 8, !dbg !713, !tbaa !122
+  store i64 %43, i64* %38, align 8, !dbg !714, !tbaa !122
+  store i64 %39, i64* %42, align 8, !dbg !715, !tbaa !122
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !696
+  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !696
+  %exitcond = icmp eq i32 %lftr.wideiv, %10, !dbg !696
+  br i1 %exitcond, label %._crit_edge, label %.lr.ph, !dbg !696
 
 ._crit_edge:                                      ; preds = %.lr.ph, %.preheader4
-  %indvars.iv.next23 = add i64 %indvars.iv22, %13
-  %44 = icmp sgt i64 %6, %indvars.iv.next23
-  br i1 %44, label %15, label %.critedge
+  %indvars.iv.next23 = add i64 %indvars.iv22, %13, !dbg !688
+  %44 = icmp sgt i64 %6, %indvars.iv.next23, !dbg !687
+  br i1 %44, label %15, label %.critedge, !dbg !688
 
 .critedge:                                        ; preds = %.outer, %._crit_edge, %0
-  %45 = sub i32 %3, %2
-  %46 = add nsw i32 %45, %1
-  store i32 %46, i32* @first_nonopt, align 4, !tbaa !6
-  store i32 %3, i32* @last_nonopt, align 4, !tbaa !6
-  ret void
+  %45 = sub i32 %3, %2, !dbg !716
+  %46 = add nsw i32 %45, %1, !dbg !717
+  store i32 %46, i32* @first_nonopt, align 4, !dbg !717, !tbaa !128
+  store i32 %3, i32* @last_nonopt, align 4, !dbg !718, !tbaa !128
+  ret void, !dbg !719
 }

@@ -1,71 +1,79 @@
 define void @levrun_linfo_intra(i32 %level, i32 %run, i32* nocapture %len, i32* nocapture %info) #0 {
-entry:
-  %cmp = icmp eq i32 %level, 0
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata i32 %level, i64 0, metadata !204, metadata !814), !dbg !1128
+  tail call void @llvm.dbg.value(metadata i32 %run, i64 0, metadata !205, metadata !814), !dbg !1129
+  tail call void @llvm.dbg.value(metadata i32* %len, i64 0, metadata !206, metadata !814), !dbg !1130
+  tail call void @llvm.dbg.value(metadata i32* %info, i64 0, metadata !207, metadata !814), !dbg !1131
+  %1 = icmp eq i32 %level, 0, !dbg !1132
+  br i1 %1, label %2, label %3, !dbg !1134
 
-if.then:                                          ; preds = %entry
-  store i32 1, i32* %len, align 4, !tbaa !0
-  br label %return
+; <label>:2                                       ; preds = %0
+  store i32 1, i32* %len, align 4, !dbg !1135, !tbaa !863
+  br label %35, !dbg !1137
 
-if.end:                                           ; preds = %entry
-  %cmp1 = icmp slt i32 %level, 1
-  %. = zext i1 %cmp1 to i32
-  %ispos = icmp sgt i32 %level, -1
-  %neg = sub i32 0, %level
-  %0 = select i1 %ispos, i32 %level, i32 %neg
-  %idxprom = sext i32 %run to i64
-  %arrayidx = getelementptr inbounds [8 x i8]* @levrun_linfo_intra.LEVRUN, i64 0, i64 %idxprom
-  %1 = load i8* %arrayidx, align 1, !tbaa !1
-  %conv = zext i8 %1 to i32
-  %cmp4 = icmp sgt i32 %0, %conv
-  br i1 %cmp4, label %if.else12, label %if.then6
+; <label>:3                                       ; preds = %0
+  %4 = icmp slt i32 %level, 1, !dbg !1138
+  %. = zext i1 %4 to i32, !dbg !1140
+  %ispos = icmp sgt i32 %level, -1, !dbg !1141
+  %neg = sub i32 0, %level, !dbg !1141
+  %5 = select i1 %ispos, i32 %level, i32 %neg, !dbg !1141
+  tail call void @llvm.dbg.value(metadata i32 %5, i64 0, metadata !208, metadata !814), !dbg !1142
+  %6 = sext i32 %run to i64, !dbg !1143
+  %7 = getelementptr inbounds [8 x i8]* @levrun_linfo_intra.LEVRUN, i64 0, i64 %6, !dbg !1143
+  %8 = load i8* %7, align 1, !dbg !1143, !tbaa !1021
+  %9 = zext i8 %8 to i32, !dbg !1143
+  %10 = icmp sgt i32 %5, %9, !dbg !1145
+  br i1 %10, label %18, label %11, !dbg !1146
 
-if.then6:                                         ; preds = %if.end
-  %sub = add nsw i32 %0, -1
-  %idxprom8 = sext i32 %sub to i64
-  %arrayidx10 = getelementptr inbounds [9 x [5 x i8]]* @levrun_linfo_intra.NTAB, i64 0, i64 %idxprom8, i64 %idxprom
-  %2 = load i8* %arrayidx10, align 1, !tbaa !1
-  %conv11 = zext i8 %2 to i32
-  %add = add nsw i32 %conv11, 1
-  br label %if.end20
+; <label>:11                                      ; preds = %3
+  %12 = add nsw i32 %5, -1, !dbg !1147
+  %13 = sext i32 %12 to i64, !dbg !1149
+  %14 = getelementptr inbounds [9 x [5 x i8]]* @levrun_linfo_intra.NTAB, i64 0, i64 %13, i64 %6, !dbg !1149
+  %15 = load i8* %14, align 1, !dbg !1149, !tbaa !1021
+  %16 = zext i8 %15 to i32, !dbg !1149
+  %17 = add nuw nsw i32 %16, 1, !dbg !1150
+  tail call void @llvm.dbg.value(metadata i32 %17, i64 0, metadata !210, metadata !814), !dbg !1151
+  br label %24, !dbg !1152
 
-if.else12:                                        ; preds = %if.end
-  %sub16 = sub nsw i32 %0, %conv
-  %mul = shl i32 %sub16, 4
-  %mul18 = shl i32 %run, 1
-  %add17 = add i32 %mul18, 16
-  %add19 = add i32 %add17, %mul
-  br label %if.end20
+; <label>:18                                      ; preds = %3
+  %19 = sub nsw i32 %5, %9, !dbg !1153
+  %20 = shl i32 %19, 4, !dbg !1155
+  %21 = shl i32 %run, 1, !dbg !1156
+  %22 = add i32 %21, 16, !dbg !1157
+  %23 = add i32 %22, %20, !dbg !1158
+  tail call void @llvm.dbg.value(metadata i32 %23, i64 0, metadata !210, metadata !814), !dbg !1151
+  br label %24
 
-if.end20:                                         ; preds = %if.else12, %if.then6
-  %n.0 = phi i32 [ %add, %if.then6 ], [ %add19, %if.else12 ]
-  br label %land.rhs
+; <label>:24                                      ; preds = %18, %11
+  %n.0 = phi i32 [ %17, %11 ], [ %23, %18 ]
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !209, metadata !814), !dbg !1159
+  %nn.0.in.off2 = add i32 %n.0, 1, !dbg !1160
+  %25 = icmp ugt i32 %nn.0.in.off2, 2, !dbg !1160
+  br i1 %25, label %.lr.ph, label %.critedge, !dbg !1163
 
-for.cond:                                         ; preds = %land.rhs
-  %nn.050 = sdiv i32 %nn.050.in, 2
-  %cmp21 = icmp slt i32 %inc, 16
-  br i1 %cmp21, label %land.rhs, label %for.end
+.lr.ph:                                           ; preds = %24, %.lr.ph
+  %nn.0.in4 = phi i32 [ %nn.0, %.lr.ph ], [ %n.0, %24 ]
+  %i.03 = phi i32 [ %26, %.lr.ph ], [ 0, %24 ]
+  %nn.0 = sdiv i32 %nn.0.in4, 2, !dbg !1164
+  %26 = add nuw nsw i32 %i.03, 1, !dbg !1165
+  tail call void @llvm.dbg.value(metadata i32 %26, i64 0, metadata !209, metadata !814), !dbg !1159
+  %27 = icmp slt i32 %26, 16, !dbg !1166
+  %nn.0.in.off = add nsw i32 %nn.0, 1, !dbg !1160
+  %28 = icmp ugt i32 %nn.0.in.off, 2, !dbg !1160
+  %or.cond = and i1 %27, %28, !dbg !1163
+  br i1 %or.cond, label %.lr.ph, label %.critedge, !dbg !1163
 
-land.rhs:                                         ; preds = %if.end20, %for.cond
-  %nn.050.in = phi i32 [ %n.0, %if.end20 ], [ %nn.050, %for.cond ]
-  %i.048 = phi i32 [ 0, %if.end20 ], [ %inc, %for.cond ]
-  %nn.0.in.off = add i32 %nn.050.in, 1
-  %3 = icmp ugt i32 %nn.0.in.off, 2
-  %inc = add nsw i32 %i.048, 1
-  br i1 %3, label %for.cond, label %for.end
+.critedge:                                        ; preds = %.lr.ph, %24
+  %i.0.lcssa = phi i32 [ 0, %24 ], [ %26, %.lr.ph ]
+  %29 = shl nsw i32 %i.0.lcssa, 1, !dbg !1167
+  %30 = or i32 %29, 1, !dbg !1168
+  store i32 %30, i32* %len, align 4, !dbg !1169, !tbaa !863
+  %31 = tail call double @ldexp(double 1.000000e+00, i32 %i.0.lcssa) #1, !dbg !1170
+  %32 = fptosi double %31 to i32, !dbg !1171
+  %33 = add i32 %n.0, %., !dbg !1172
+  %34 = sub i32 %33, %32, !dbg !1173
+  store i32 %34, i32* %info, align 4, !dbg !1174, !tbaa !863
+  br label %35, !dbg !1175
 
-for.end:                                          ; preds = %for.cond, %land.rhs
-  %i.0.lcssa = phi i32 [ %inc, %for.cond ], [ %i.048, %land.rhs ]
-  %mul26 = shl nsw i32 %i.0.lcssa, 1
-  %add2746 = or i32 %mul26, 1
-  store i32 %add2746, i32* %len, align 4, !tbaa !0
-  %4 = tail call double @ldexp(double 1.000000e+00, i32 %i.0.lcssa) #1
-  %conv30 = fptosi double %4 to i32
-  %sub31 = add i32 %n.0, %.
-  %add32 = sub i32 %sub31, %conv30
-  store i32 %add32, i32* %info, align 4, !tbaa !0
-  br label %return
-
-return:                                           ; preds = %for.end, %if.then
-  ret void
+; <label>:35                                      ; preds = %.critedge, %2
+  ret void, !dbg !1175
 }

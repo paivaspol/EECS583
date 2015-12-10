@@ -1,46 +1,52 @@
 define i32 @lookup_symtab(%struct.t_symtab* nocapture readonly %symtab, i8** %name) #1 {
-  %1 = getelementptr inbounds %struct.t_symtab* %symtab, i64 0, i32 1
-  %symbuf.02 = load %struct.symbuf** %1, align 8
-  %2 = icmp eq %struct.symbuf* %symbuf.02, null
-  br i1 %2, label %._crit_edge, label %.lr.ph
+  tail call void @llvm.dbg.value(metadata %struct.t_symtab* %symtab, i64 0, metadata !35, metadata !172), !dbg !179
+  tail call void @llvm.dbg.value(metadata i8** %name, i64 0, metadata !36, metadata !172), !dbg !180
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !37, metadata !172), !dbg !181
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !38, metadata !172), !dbg !182
+  %1 = getelementptr inbounds %struct.t_symtab* %symtab, i64 0, i32 1, !dbg !183
+  %symbuf.02 = load %struct.symbuf** %1, align 8, !dbg !183
+  %2 = icmp eq %struct.symbuf* %symbuf.02, null, !dbg !184
+  br i1 %2, label %._crit_edge, label %.lr.ph, !dbg !185
 
 .lr.ph:                                           ; preds = %0
-  %3 = ptrtoint i8** %name to i64
-  br label %4
+  %3 = ptrtoint i8** %name to i64, !dbg !186
+  br label %4, !dbg !185
 
 ; <label>:4                                       ; preds = %.lr.ph, %._crit_edge7
   %symbuf.04 = phi %struct.symbuf* [ %symbuf.02, %.lr.ph ], [ %symbuf.0, %._crit_edge7 ]
   %base.03 = phi i32 [ 0, %.lr.ph ], [ %17, %._crit_edge7 ]
-  %5 = getelementptr inbounds %struct.symbuf* %symbuf.04, i64 0, i32 1
-  %6 = load i8*** %5, align 8, !tbaa !2
-  %7 = ptrtoint i8** %6 to i64
-  %8 = sub i64 %3, %7
-  %9 = lshr exact i64 %8, 3
-  %10 = trunc i64 %9 to i32
-  %11 = icmp sgt i32 %10, -1
-  %12 = getelementptr inbounds %struct.symbuf* %symbuf.04, i64 0, i32 0
-  %13 = load i32* %12, align 4, !tbaa !8
-  %14 = icmp slt i32 %10, %13
-  %or.cond = and i1 %11, %14
-  br i1 %or.cond, label %15, label %._crit_edge7
+  %5 = getelementptr inbounds %struct.symbuf* %symbuf.04, i64 0, i32 1, !dbg !188
+  %6 = load i8*** %5, align 8, !dbg !188, !tbaa !189
+  %7 = ptrtoint i8** %6 to i64, !dbg !186
+  %8 = sub i64 %3, %7, !dbg !186
+  %9 = lshr exact i64 %8, 3, !dbg !186
+  %10 = trunc i64 %9 to i32, !dbg !195
+  tail call void @llvm.dbg.value(metadata i32 %10, i64 0, metadata !38, metadata !172), !dbg !182
+  %11 = icmp sgt i32 %10, -1, !dbg !196
+  %12 = getelementptr inbounds %struct.symbuf* %symbuf.04, i64 0, i32 0, !dbg !198
+  %13 = load i32* %12, align 4, !dbg !198, !tbaa !199
+  %14 = icmp slt i32 %10, %13, !dbg !200
+  %or.cond = and i1 %11, %14, !dbg !201
+  br i1 %or.cond, label %15, label %._crit_edge7, !dbg !201
 
 ; <label>:15                                      ; preds = %4
-  %16 = add nsw i32 %10, %base.03
-  br label %21
+  %16 = add nsw i32 %10, %base.03, !dbg !202
+  br label %21, !dbg !203
 
 ._crit_edge7:                                     ; preds = %4
-  %17 = add nsw i32 %13, %base.03
-  %18 = getelementptr inbounds %struct.symbuf* %symbuf.04, i64 0, i32 2
-  %symbuf.0 = load %struct.symbuf** %18, align 8
-  %19 = icmp eq %struct.symbuf* %symbuf.0, null
-  br i1 %19, label %._crit_edge, label %4
+  %17 = add nsw i32 %13, %base.03, !dbg !204
+  tail call void @llvm.dbg.value(metadata i32 %17, i64 0, metadata !37, metadata !172), !dbg !181
+  %18 = getelementptr inbounds %struct.symbuf* %symbuf.04, i64 0, i32 2, !dbg !206
+  %symbuf.0 = load %struct.symbuf** %18, align 8, !dbg !183
+  %19 = icmp eq %struct.symbuf* %symbuf.0, null, !dbg !184
+  br i1 %19, label %._crit_edge, label %4, !dbg !185
 
 ._crit_edge:                                      ; preds = %._crit_edge7, %0
-  %20 = load i8** %name, align 8, !tbaa !9
-  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([29 x i8]* @.str, i64 0, i64 0), i8* %20) #6
-  br label %21
+  %20 = load i8** %name, align 8, !dbg !207, !tbaa !208
+  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([29 x i8]* @.str, i64 0, i64 0), i8* %20) #7, !dbg !209
+  br label %21, !dbg !210
 
 ; <label>:21                                      ; preds = %._crit_edge, %15
   %.0 = phi i32 [ %16, %15 ], [ -1, %._crit_edge ]
-  ret i32 %.0
+  ret i32 %.0, !dbg !211
 }

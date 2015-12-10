@@ -1,30 +1,33 @@
 define void @sum_bin(%struct.t_bin* nocapture readonly %b, %struct.t_commrec* %cr) #3 {
-  %1 = getelementptr inbounds %struct.t_bin* %b, i64 0, i32 0
-  %2 = load i32* %1, align 4, !tbaa !14
-  %3 = getelementptr inbounds %struct.t_bin* %b, i64 0, i32 1
-  %4 = load i32* %3, align 4, !tbaa !16
-  %5 = icmp slt i32 %2, %4
-  %6 = getelementptr inbounds %struct.t_bin* %b, i64 0, i32 2
-  br i1 %5, label %.lr.ph, label %._crit_edge
+  tail call void @llvm.dbg.value(metadata %struct.t_bin* %b, i64 0, metadata !144, metadata !171), !dbg !297
+  tail call void @llvm.dbg.value(metadata %struct.t_commrec* %cr, i64 0, metadata !145, metadata !171), !dbg !298
+  %1 = getelementptr inbounds %struct.t_bin* %b, i64 0, i32 0, !dbg !299
+  %2 = load i32* %1, align 4, !dbg !299, !tbaa !216
+  tail call void @llvm.dbg.value(metadata i32 %2, i64 0, metadata !146, metadata !171), !dbg !301
+  %3 = getelementptr inbounds %struct.t_bin* %b, i64 0, i32 1, !dbg !302
+  %4 = load i32* %3, align 4, !dbg !302, !tbaa !227
+  %5 = icmp slt i32 %2, %4, !dbg !304
+  %6 = getelementptr inbounds %struct.t_bin* %b, i64 0, i32 2, !dbg !305
+  br i1 %5, label %.lr.ph, label %._crit_edge, !dbg !306
 
 .lr.ph:                                           ; preds = %0
-  %7 = load double** %6, align 8, !tbaa !17
+  %7 = load double** %6, align 8, !dbg !305, !tbaa !231
   %8 = sext i32 %2 to i64
   %scevgep = getelementptr double* %7, i64 %8
   %scevgep2 = bitcast double* %scevgep to i8*
-  %9 = add i32 %2, 1
+  %9 = add i32 %2, 1, !dbg !306
   %10 = icmp sgt i32 %4, %9
   %smax = select i1 %10, i32 %4, i32 %9
-  %11 = add i32 %smax, -1
-  %12 = sub i32 %11, %2
+  %11 = add i32 %smax, -1, !dbg !306
+  %12 = sub i32 %11, %2, !dbg !306
   %13 = zext i32 %12 to i64
-  %14 = shl nuw nsw i64 %13, 3
-  %15 = add nuw nsw i64 %14, 8
-  call void @llvm.memset.p0i8.i64(i8* %scevgep2, i8 0, i64 %15, i32 8, i1 false)
-  br label %._crit_edge
+  %14 = shl nuw nsw i64 %13, 3, !dbg !306
+  %15 = add nuw nsw i64 %14, 8, !dbg !306
+  call void @llvm.memset.p0i8.i64(i8* %scevgep2, i8 0, i64 %15, i32 8, i1 false), !dbg !307
+  br label %._crit_edge, !dbg !306
 
 ._crit_edge:                                      ; preds = %0, %.lr.ph
-  %16 = load double** %6, align 8, !tbaa !17
-  tail call void @gmx_sumd(i32 %4, double* %16, %struct.t_commrec* %cr) #5
-  ret void
+  %16 = load double** %6, align 8, !dbg !308, !tbaa !231
+  tail call void @gmx_sumd(i32 %4, double* %16, %struct.t_commrec* %cr) #6, !dbg !309
+  ret void, !dbg !310
 }

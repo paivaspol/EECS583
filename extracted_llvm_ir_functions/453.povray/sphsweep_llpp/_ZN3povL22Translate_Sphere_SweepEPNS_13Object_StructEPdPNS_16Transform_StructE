@@ -1,0 +1,61 @@
+define internal void @_ZN3povL22Translate_Sphere_SweepEPNS_13Object_StructEPdPNS_16Transform_StructE(%"struct.pov::Object_Struct"* %Object, double* nocapture readonly %Vector, %"struct.pov::Transform_Struct"* %Trans) #3 {
+  tail call void @llvm.dbg.value(metadata %"struct.pov::Object_Struct"* %Object, i64 0, metadata !1227, metadata !1705), !dbg !4583
+  tail call void @llvm.dbg.value(metadata double* %Vector, i64 0, metadata !1228, metadata !1705), !dbg !4584
+  tail call void @llvm.dbg.value(metadata %"struct.pov::Transform_Struct"* %Trans, i64 0, metadata !1229, metadata !1705), !dbg !4585
+  %1 = bitcast %"struct.pov::Object_Struct"* %Object to %"struct.pov::Sphere_Sweep_Struct"*, !dbg !4586
+  tail call void @llvm.dbg.value(metadata %"struct.pov::Sphere_Sweep_Struct"* %1, i64 0, metadata !1230, metadata !1705), !dbg !4587
+  %2 = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 0, i32 10, !dbg !4588
+  %3 = load %"struct.pov::Transform_Struct"** %2, align 8, !dbg !4588, !tbaa !3156
+  %4 = icmp eq %"struct.pov::Transform_Struct"* %3, null, !dbg !4590
+  br i1 %4, label %.preheader, label %28, !dbg !4591
+
+.preheader:                                       ; preds = %0
+  %5 = getelementptr inbounds %"struct.pov::Sphere_Sweep_Struct"* %1, i64 0, i32 15, !dbg !4592
+  %6 = load i32* %5, align 4, !dbg !4592, !tbaa !3131
+  %7 = icmp sgt i32 %6, 0, !dbg !4596
+  br i1 %7, label %.lr.ph, label %._crit_edge, !dbg !4597
+
+.lr.ph:                                           ; preds = %.preheader
+  %8 = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 1, i32 1, !dbg !4598
+  %9 = bitcast i32* %8 to %"struct.pov::Sphere_Sweep_Sphere_Struct"**, !dbg !4598
+  %10 = load %"struct.pov::Sphere_Sweep_Sphere_Struct"** %9, align 8, !dbg !4598, !tbaa !3137
+  %11 = getelementptr inbounds double* %Vector, i64 1, !dbg !4599
+  %12 = getelementptr inbounds double* %Vector, i64 2, !dbg !4601
+  %13 = sext i32 %6 to i64, !dbg !4597
+  br label %14, !dbg !4597
+
+; <label>:14                                      ; preds = %.lr.ph, %14
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %14 ]
+  %15 = getelementptr inbounds %"struct.pov::Sphere_Sweep_Sphere_Struct"* %10, i64 %indvars.iv, i32 0, i64 0, !dbg !4602
+  tail call void @llvm.dbg.value(metadata double* %15, i64 0, metadata !1279, metadata !1705), !dbg !4603
+  tail call void @llvm.dbg.value(metadata double* %Vector, i64 0, metadata !1280, metadata !1705), !dbg !4604
+  %16 = load double* %Vector, align 8, !dbg !4605, !tbaa !1727
+  %17 = load double* %15, align 8, !dbg !4606, !tbaa !1727
+  %18 = fadd double %16, %17, !dbg !4606
+  store double %18, double* %15, align 8, !dbg !4606, !tbaa !1727
+  %19 = load double* %11, align 8, !dbg !4599, !tbaa !1727
+  %20 = getelementptr inbounds %"struct.pov::Sphere_Sweep_Sphere_Struct"* %10, i64 %indvars.iv, i32 0, i64 1, !dbg !4607
+  %21 = load double* %20, align 8, !dbg !4608, !tbaa !1727
+  %22 = fadd double %19, %21, !dbg !4608
+  store double %22, double* %20, align 8, !dbg !4608, !tbaa !1727
+  %23 = load double* %12, align 8, !dbg !4601, !tbaa !1727
+  %24 = getelementptr inbounds %"struct.pov::Sphere_Sweep_Sphere_Struct"* %10, i64 %indvars.iv, i32 0, i64 2, !dbg !4609
+  %25 = load double* %24, align 8, !dbg !4610, !tbaa !1727
+  %26 = fadd double %23, %25, !dbg !4610
+  store double %26, double* %24, align 8, !dbg !4610, !tbaa !1727
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !4597
+  %27 = icmp slt i64 %indvars.iv.next, %13, !dbg !4596
+  br i1 %27, label %14, label %._crit_edge, !dbg !4597
+
+._crit_edge:                                      ; preds = %14, %.preheader
+  tail call void @_ZN3pov20Compute_Sphere_SweepEPNS_19Sphere_Sweep_StructE(%"struct.pov::Sphere_Sweep_Struct"* %1) #8, !dbg !4611
+  tail call void @_ZN3pov25Compute_Sphere_Sweep_BBoxEPNS_19Sphere_Sweep_StructE(%"struct.pov::Sphere_Sweep_Struct"* %1) #8, !dbg !4612
+  br label %29, !dbg !4613
+
+; <label>:28                                      ; preds = %0
+  tail call void @_ZN3pov22Transform_Sphere_SweepEPNS_13Object_StructEPNS_16Transform_StructE(%"struct.pov::Object_Struct"* %Object, %"struct.pov::Transform_Struct"* %Trans) #8, !dbg !4614
+  br label %29
+
+; <label>:29                                      ; preds = %28, %._crit_edge
+  ret void, !dbg !4615
+}

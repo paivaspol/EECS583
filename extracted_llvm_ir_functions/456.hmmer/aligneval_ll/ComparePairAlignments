@@ -1,5 +1,4 @@
-define float @ComparePairAlignments(i8* nocapture %known1, i8* nocapture %known2, i8* nocapture %calc1, i8* nocapture %calc2) #0 {
-entry:
+define float @ComparePairAlignments(i8* nocapture readonly %known1, i8* nocapture readonly %known2, i8* nocapture readonly %calc1, i8* nocapture readonly %calc2) #0 {
   %klist1 = alloca i32*, align 8
   %klist2 = alloca i32*, align 8
   %tlist1 = alloca i32*, align 8
@@ -7,25 +6,49 @@ entry:
   %len1 = alloca i32, align 4
   %len2 = alloca i32, align 4
   %score = alloca float, align 4
-  call fastcc void @make_alilist(i8* %calc1, i8* %calc2, i32** %tlist1, i32* %len1) #7
-  call fastcc void @make_alilist(i8* %calc2, i8* %calc1, i32** %tlist2, i32* %len2) #7
-  call fastcc void @make_alilist(i8* %known1, i8* %known2, i32** %klist1, i32* %len1) #7
-  call fastcc void @make_alilist(i8* %known2, i8* %known1, i32** %klist2, i32* %len2) #7
-  %0 = load i32** %klist1, align 8, !tbaa !0
-  %1 = load i32** %klist2, align 8, !tbaa !0
-  %2 = load i32** %tlist1, align 8, !tbaa !0
-  %3 = load i32** %tlist2, align 8, !tbaa !0
-  %4 = load i32* %len1, align 4, !tbaa !3
-  %5 = load i32* %len2, align 4, !tbaa !3
-  call fastcc void @compare_lists(i32* %0, i32* %1, i32* %2, i32* %3, i32 %4, i32 %5, float* %score) #7
-  %6 = bitcast i32* %0 to i8*
-  call void @free(i8* %6) #8
+  tail call void @llvm.dbg.value(metadata i8* %known1, i64 0, metadata !14, metadata !176), !dbg !177
+  tail call void @llvm.dbg.value(metadata i8* %known2, i64 0, metadata !15, metadata !176), !dbg !178
+  tail call void @llvm.dbg.value(metadata i8* %calc1, i64 0, metadata !16, metadata !176), !dbg !179
+  tail call void @llvm.dbg.value(metadata i8* %calc2, i64 0, metadata !17, metadata !176), !dbg !180
+  tail call void @llvm.dbg.value(metadata i32** %tlist1, i64 0, metadata !20, metadata !176), !dbg !181
+  tail call void @llvm.dbg.value(metadata i32* %len1, i64 0, metadata !22, metadata !176), !dbg !182
+  call fastcc void @make_alilist(i8* %calc1, i8* %calc2, i32** %tlist1, i32* %len1) #7, !dbg !183
+  tail call void @llvm.dbg.value(metadata i32** %tlist2, i64 0, metadata !21, metadata !176), !dbg !185
+  tail call void @llvm.dbg.value(metadata i32* %len2, i64 0, metadata !23, metadata !176), !dbg !186
+  call fastcc void @make_alilist(i8* %calc2, i8* %calc1, i32** %tlist2, i32* %len2) #7, !dbg !187
+  tail call void @llvm.dbg.value(metadata i32** %klist1, i64 0, metadata !18, metadata !176), !dbg !189
+  tail call void @llvm.dbg.value(metadata i32* %len1, i64 0, metadata !22, metadata !176), !dbg !182
+  call fastcc void @make_alilist(i8* %known1, i8* %known2, i32** %klist1, i32* %len1) #7, !dbg !190
+  tail call void @llvm.dbg.value(metadata i32** %klist2, i64 0, metadata !19, metadata !176), !dbg !192
+  tail call void @llvm.dbg.value(metadata i32* %len2, i64 0, metadata !23, metadata !176), !dbg !186
+  call fastcc void @make_alilist(i8* %known2, i8* %known1, i32** %klist2, i32* %len2) #7, !dbg !193
+  tail call void @llvm.dbg.value(metadata i32** %klist1, i64 0, metadata !18, metadata !176), !dbg !189
+  %1 = load i32** %klist1, align 8, !dbg !195, !tbaa !197
+  tail call void @llvm.dbg.value(metadata i32** %klist2, i64 0, metadata !19, metadata !176), !dbg !192
+  %2 = load i32** %klist2, align 8, !dbg !201, !tbaa !197
+  tail call void @llvm.dbg.value(metadata i32** %tlist1, i64 0, metadata !20, metadata !176), !dbg !181
+  %3 = load i32** %tlist1, align 8, !dbg !202, !tbaa !197
+  tail call void @llvm.dbg.value(metadata i32** %tlist2, i64 0, metadata !21, metadata !176), !dbg !185
+  %4 = load i32** %tlist2, align 8, !dbg !203, !tbaa !197
+  tail call void @llvm.dbg.value(metadata i32* %len1, i64 0, metadata !22, metadata !176), !dbg !182
+  %5 = load i32* %len1, align 4, !dbg !204, !tbaa !205
+  tail call void @llvm.dbg.value(metadata i32* %len2, i64 0, metadata !23, metadata !176), !dbg !186
+  %6 = load i32* %len2, align 4, !dbg !207, !tbaa !205
+  tail call void @llvm.dbg.value(metadata float* %score, i64 0, metadata !24, metadata !176), !dbg !208
+  call fastcc void @compare_lists(i32* %1, i32* %2, i32* %3, i32* %4, i32 %5, i32 %6, float* %score) #7, !dbg !209
+  tail call void @llvm.dbg.value(metadata i32** %klist1, i64 0, metadata !18, metadata !176), !dbg !189
   %7 = bitcast i32* %1 to i8*
-  call void @free(i8* %7) #8
+  tail call void @free(i8* %7) #7, !dbg !210
+  tail call void @llvm.dbg.value(metadata i32** %klist2, i64 0, metadata !19, metadata !176), !dbg !192
   %8 = bitcast i32* %2 to i8*
-  call void @free(i8* %8) #8
+  tail call void @free(i8* %8) #7, !dbg !211
+  tail call void @llvm.dbg.value(metadata i32** %tlist1, i64 0, metadata !20, metadata !176), !dbg !181
   %9 = bitcast i32* %3 to i8*
-  call void @free(i8* %9) #8
-  %10 = load float* %score, align 4, !tbaa !4
-  ret float %10
+  tail call void @free(i8* %9) #7, !dbg !212
+  tail call void @llvm.dbg.value(metadata i32** %tlist2, i64 0, metadata !21, metadata !176), !dbg !185
+  %10 = bitcast i32* %4 to i8*
+  tail call void @free(i8* %10) #7, !dbg !213
+  tail call void @llvm.dbg.value(metadata float* %score, i64 0, metadata !24, metadata !176), !dbg !208
+  %11 = load float* %score, align 4, !dbg !214, !tbaa !215
+  ret float %11, !dbg !217
 }

@@ -1,73 +1,88 @@
-define void @A2_writeForMatlab(%struct._A2* %mtx, i8* %mtxname, %struct._IO_FILE* %fp) #0 {
-entry:
+define void @A2_writeForMatlab(%struct._A2* %mtx, i8* %mtxname, %struct.__sFILE* %fp) #0 {
   %value = alloca double, align 8
   %imag = alloca double, align 8
   %real = alloca double, align 8
-  %cmp = icmp eq %struct._A2* %mtx, null
-  %cmp1 = icmp eq i8* %mtxname, null
-  %or.cond = or i1 %cmp, %cmp1
-  %cmp3 = icmp eq %struct._IO_FILE* %fp, null
-  %or.cond47 = or i1 %or.cond, %cmp3
-  br i1 %or.cond47, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata %struct._A2* %mtx, i64 0, metadata !150, metadata !177), !dbg !706
+  tail call void @llvm.dbg.value(metadata i8* %mtxname, i64 0, metadata !151, metadata !177), !dbg !707
+  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %fp, i64 0, metadata !152, metadata !177), !dbg !708
+  %1 = icmp eq %struct._A2* %mtx, null, !dbg !709
+  %2 = icmp eq i8* %mtxname, null, !dbg !711
+  %or.cond = or i1 %1, %2, !dbg !712
+  %3 = icmp eq %struct.__sFILE* %fp, null, !dbg !713
+  %or.cond3 = or i1 %or.cond, %3, !dbg !712
+  br i1 %or.cond3, label %4, label %7, !dbg !712
 
-if.then:                                          ; preds = %entry
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([57 x i8]* @.str29, i64 0, i64 0), %struct._A2* %mtx, i8* %mtxname, %struct._IO_FILE* %fp) #5
-  call void @exit(i32 -1) #8
-  unreachable
+; <label>:4                                       ; preds = %0
+  %5 = load %struct.__sFILE** @__stderrp, align 8, !dbg !714, !tbaa !187
+  %6 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %5, i8* getelementptr inbounds ([57 x i8]* @.str29, i64 0, i64 0), %struct._A2* %mtx, i8* %mtxname, %struct.__sFILE* %fp) #7, !dbg !716
+  tail call void @exit(i32 -1) #9, !dbg !717
+  unreachable, !dbg !717
 
-if.end:                                           ; preds = %entry
-  %call4 = call i32 @A2_nrow(%struct._A2* %mtx) #5
-  %call5 = call i32 @A2_ncol(%struct._A2* %mtx) #5
-  %cmp650 = icmp sgt i32 %call4, 0
-  br i1 %cmp650, label %for.cond7.preheader.lr.ph, label %for.end24
+; <label>:7                                       ; preds = %0
+  %8 = tail call i32 @A2_nrow(%struct._A2* %mtx) #7, !dbg !718
+  tail call void @llvm.dbg.value(metadata i32 %8, i64 0, metadata !156, metadata !177), !dbg !719
+  %9 = tail call i32 @A2_ncol(%struct._A2* %mtx) #7, !dbg !720
+  tail call void @llvm.dbg.value(metadata i32 %9, i64 0, metadata !155, metadata !177), !dbg !721
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !153, metadata !177), !dbg !722
+  %10 = icmp sgt i32 %8, 0, !dbg !723
+  br i1 %10, label %.preheader.lr.ph, label %._crit_edge6, !dbg !724
 
-for.cond7.preheader.lr.ph:                        ; preds = %if.end
-  %cmp848 = icmp sgt i32 %call5, 0
-  %type = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 0
-  br label %for.cond7.preheader
+.preheader.lr.ph:                                 ; preds = %7
+  %11 = icmp sgt i32 %9, 0, !dbg !725
+  %12 = getelementptr inbounds %struct._A2* %mtx, i64 0, i32 0, !dbg !726
+  %13 = add i32 %9, -1, !dbg !724
+  %14 = add i32 %8, -1, !dbg !724
+  br label %.preheader, !dbg !724
 
-for.cond7.preheader:                              ; preds = %for.inc22, %for.cond7.preheader.lr.ph
-  %irow.051 = phi i32 [ 0, %for.cond7.preheader.lr.ph ], [ %add, %for.inc22 ]
-  %add = add nsw i32 %irow.051, 1
-  br i1 %cmp848, label %for.body9, label %for.inc22
+.preheader:                                       ; preds = %._crit_edge, %.preheader.lr.ph
+  %irow.05 = phi i32 [ 0, %.preheader.lr.ph ], [ %15, %._crit_edge ]
+  %15 = add nuw nsw i32 %irow.05, 1, !dbg !727
+  br i1 %11, label %.lr.ph, label %._crit_edge, !dbg !728
 
-for.body9:                                        ; preds = %for.cond7.preheader, %for.inc
-  %jcol.049 = phi i32 [ %inc.pre-phi, %for.inc ], [ 0, %for.cond7.preheader ]
-  %1 = load i32* %type, align 4, !tbaa !3
-  switch i32 %1, label %for.body9.for.inc_crit_edge [
-    i32 1, label %if.then11
-    i32 2, label %if.then16
-  ]
+.lr.ph:                                           ; preds = %.preheader, %26
+  %jcol.04 = phi i32 [ %.pre-phi, %26 ], [ 0, %.preheader ]
+  %16 = load i32* %12, align 4, !dbg !726, !tbaa !295
+  switch i32 %16, label %._crit_edge8 [
+    i32 1, label %17
+    i32 2, label %21
+  ], !dbg !729
 
-for.body9.for.inc_crit_edge:                      ; preds = %for.body9
-  %inc.pre = add nsw i32 %jcol.049, 1
-  br label %for.inc
+._crit_edge8:                                     ; preds = %.lr.ph
+  %.pre = add nuw nsw i32 %jcol.04, 1, !dbg !730
+  br label %26, !dbg !729
 
-if.then11:                                        ; preds = %for.body9
-  call void @A2_realEntry(%struct._A2* %mtx, i32 %irow.051, i32 %jcol.049, double* %value) #5
-  %add12 = add nsw i32 %jcol.049, 1
-  %2 = load double* %value, align 8, !tbaa !4
-  %call13 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([24 x i8]* @.str30, i64 0, i64 0), i8* %mtxname, i32 %add, i32 %add12, double %2) #5
-  br label %for.inc
+; <label>:17                                      ; preds = %.lr.ph
+  call void @llvm.dbg.value(metadata double* %value, i64 0, metadata !157, metadata !177), !dbg !731
+  call void @A2_realEntry(%struct._A2* %mtx, i32 %irow.05, i32 %jcol.04, double* %value) #7, !dbg !732
+  %18 = add nuw nsw i32 %jcol.04, 1, !dbg !733
+  call void @llvm.dbg.value(metadata double* %value, i64 0, metadata !157, metadata !177), !dbg !731
+  %19 = load double* %value, align 8, !dbg !734, !tbaa !635
+  %20 = call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %fp, i8* getelementptr inbounds ([24 x i8]* @.str30, i64 0, i64 0), i8* %mtxname, i32 %15, i32 %18, double %19) #7, !dbg !735
+  br label %26, !dbg !736
 
-if.then16:                                        ; preds = %for.body9
-  call void @A2_complexEntry(%struct._A2* %mtx, i32 %irow.051, i32 %jcol.049, double* %real, double* %imag) #5
-  %add18 = add nsw i32 %jcol.049, 1
-  %3 = load double* %real, align 8, !tbaa !4
-  %4 = load double* %imag, align 8, !tbaa !4
-  %call19 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([36 x i8]* @.str31, i64 0, i64 0), i8* %mtxname, i32 %add, i32 %add18, double %3, double %4) #5
-  br label %for.inc
+; <label>:21                                      ; preds = %.lr.ph
+  call void @llvm.dbg.value(metadata double* %imag, i64 0, metadata !166, metadata !177), !dbg !737
+  call void @llvm.dbg.value(metadata double* %real, i64 0, metadata !169, metadata !177), !dbg !738
+  call void @A2_complexEntry(%struct._A2* %mtx, i32 %irow.05, i32 %jcol.04, double* %real, double* %imag) #7, !dbg !739
+  %22 = add nuw nsw i32 %jcol.04, 1, !dbg !740
+  call void @llvm.dbg.value(metadata double* %real, i64 0, metadata !169, metadata !177), !dbg !738
+  %23 = load double* %real, align 8, !dbg !741, !tbaa !635
+  call void @llvm.dbg.value(metadata double* %imag, i64 0, metadata !166, metadata !177), !dbg !737
+  %24 = load double* %imag, align 8, !dbg !742, !tbaa !635
+  %25 = call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %fp, i8* getelementptr inbounds ([36 x i8]* @.str31, i64 0, i64 0), i8* %mtxname, i32 %15, i32 %22, double %23, double %24) #7, !dbg !743
+  br label %26, !dbg !744
 
-for.inc:                                          ; preds = %for.body9.for.inc_crit_edge, %if.then11, %if.then16
-  %inc.pre-phi = phi i32 [ %inc.pre, %for.body9.for.inc_crit_edge ], [ %add12, %if.then11 ], [ %add18, %if.then16 ]
-  %exitcond = icmp eq i32 %inc.pre-phi, %call5
-  br i1 %exitcond, label %for.inc22, label %for.body9
+; <label>:26                                      ; preds = %._crit_edge8, %17, %21
+  %.pre-phi = phi i32 [ %.pre, %._crit_edge8 ], [ %18, %17 ], [ %22, %21 ], !dbg !730
+  call void @llvm.dbg.value(metadata i32 %.pre-phi, i64 0, metadata !154, metadata !177), !dbg !745
+  %exitcond = icmp eq i32 %jcol.04, %13, !dbg !728
+  br i1 %exitcond, label %._crit_edge, label %.lr.ph, !dbg !728
 
-for.inc22:                                        ; preds = %for.cond7.preheader, %for.inc
-  %exitcond52 = icmp eq i32 %add, %call4
-  br i1 %exitcond52, label %for.end24, label %for.cond7.preheader
+._crit_edge:                                      ; preds = %26, %.preheader
+  call void @llvm.dbg.value(metadata i32 %15, i64 0, metadata !153, metadata !177), !dbg !722
+  %exitcond7 = icmp eq i32 %irow.05, %14, !dbg !724
+  br i1 %exitcond7, label %._crit_edge6, label %.preheader, !dbg !724
 
-for.end24:                                        ; preds = %for.inc22, %if.end
-  ret void
+._crit_edge6:                                     ; preds = %._crit_edge, %7
+  ret void, !dbg !746
 }

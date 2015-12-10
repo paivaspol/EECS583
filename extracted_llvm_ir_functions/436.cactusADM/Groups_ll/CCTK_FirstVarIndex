@@ -1,21 +1,23 @@
 define i32 @CCTK_FirstVarIndex(i8* %groupname) #2 {
-  %1 = tail call i32 @CCTK_GroupIndex(i8* %groupname) #9
-  %2 = icmp sgt i32 %1, -1
-  %3 = load i32* @n_groups, align 4
-  %4 = icmp sgt i32 %3, %1
-  %or.cond.i = and i1 %2, %4
-  br i1 %or.cond.i, label %5, label %CCTK_FirstVarIndexI.exit
+  tail call void @llvm.dbg.value(metadata i8* %groupname, i64 0, metadata !236, metadata !483), !dbg !968
+  %1 = tail call i32 @CCTK_GroupIndex(i8* %groupname) #9, !dbg !969
+  tail call void @llvm.dbg.value(metadata i32 %1, i64 0, metadata !229, metadata !483), !dbg !970
+  %2 = icmp sgt i32 %1, -1, !dbg !972
+  %3 = load i32* @n_groups, align 4, !dbg !973
+  %4 = icmp sgt i32 %3, %1, !dbg !974
+  %or.cond.i = and i1 %2, %4, !dbg !975
+  br i1 %or.cond.i, label %5, label %CCTK_FirstVarIndexI.exit, !dbg !975
 
 ; <label>:5                                       ; preds = %0
-  %6 = sext i32 %1 to i64
-  %7 = load %struct.cGroupDefinition** @groups, align 8, !tbaa !2
-  %8 = getelementptr inbounds %struct.cGroupDefinition* %7, i64 %6, i32 14
-  %9 = load %struct.cVariableDefinition** %8, align 8, !tbaa !12
-  %10 = getelementptr inbounds %struct.cVariableDefinition* %9, i64 0, i32 1
-  %11 = load i32* %10, align 4, !tbaa !15
-  br label %CCTK_FirstVarIndexI.exit
+  %6 = sext i32 %1 to i64, !dbg !976
+  %7 = load %struct.cGroupDefinition** @groups, align 8, !dbg !976, !tbaa !487
+  %8 = getelementptr inbounds %struct.cGroupDefinition* %7, i64 %6, i32 14, !dbg !977
+  %9 = load %struct.cVariableDefinition** %8, align 8, !dbg !977, !tbaa !601
+  %10 = getelementptr inbounds %struct.cVariableDefinition* %9, i64 0, i32 1, !dbg !978
+  %11 = load i32* %10, align 4, !dbg !978, !tbaa !610
+  br label %CCTK_FirstVarIndexI.exit, !dbg !979
 
 CCTK_FirstVarIndexI.exit:                         ; preds = %0, %5
-  %12 = phi i32 [ %11, %5 ], [ -1, %0 ]
-  ret i32 %12
+  %12 = phi i32 [ %11, %5 ], [ -1, %0 ], !dbg !979
+  ret i32 %12, !dbg !980
 }

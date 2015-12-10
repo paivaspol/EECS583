@@ -1,17 +1,25 @@
 define i32 @BndRobinGN(%struct.cGH* %GH, i32* readonly %stencil, double %finf, i32 %npow, i8* %gname) #1 {
-  %1 = tail call i32 @CCTK_GroupIndex(i8* %gname) #6
-  %2 = icmp sgt i32 %1, -1
-  br i1 %2, label %3, label %5
+  tail call void @llvm.dbg.value(metadata %struct.cGH* %GH, i64 0, metadata !98, metadata !557), !dbg !1242
+  tail call void @llvm.dbg.value(metadata i32* %stencil, i64 0, metadata !99, metadata !557), !dbg !1243
+  tail call void @llvm.dbg.value(metadata double %finf, i64 0, metadata !100, metadata !557), !dbg !1244
+  tail call void @llvm.dbg.value(metadata i32 %npow, i64 0, metadata !101, metadata !557), !dbg !1245
+  tail call void @llvm.dbg.value(metadata i8* %gname, i64 0, metadata !102, metadata !557), !dbg !1246
+  %1 = tail call i32 @CCTK_GroupIndex(i8* %gname) #7, !dbg !1247
+  tail call void @llvm.dbg.value(metadata i32 %1, i64 0, metadata !103, metadata !557), !dbg !1248
+  %2 = icmp sgt i32 %1, -1, !dbg !1249
+  br i1 %2, label %3, label %5, !dbg !1251
 
 ; <label>:3                                       ; preds = %0
-  %4 = tail call i32 @BndRobinGI(%struct.cGH* %GH, i32* %stencil, double %finf, i32 %npow, i32 %1) #7
-  br label %7
+  %4 = tail call i32 @BndRobinGI(%struct.cGH* %GH, i32* %stencil, double %finf, i32 %npow, i32 %1) #8, !dbg !1252
+  tail call void @llvm.dbg.value(metadata i32 %4, i64 0, metadata !104, metadata !557), !dbg !1254
+  br label %7, !dbg !1255
 
 ; <label>:5                                       ; preds = %0
-  %6 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 2, i32 216, i8* getelementptr inbounds ([84 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([38 x i8]* @.str3, i64 0, i64 0), i8* %gname) #6
+  %6 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 2, i32 216, i8* getelementptr inbounds ([84 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([38 x i8]* @.str3, i64 0, i64 0), i8* %gname) #7, !dbg !1256
+  tail call void @llvm.dbg.value(metadata i32 -1, i64 0, metadata !104, metadata !557), !dbg !1254
   br label %7
 
 ; <label>:7                                       ; preds = %5, %3
   %retval.0 = phi i32 [ %4, %3 ], [ -1, %5 ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !1258
 }

@@ -1,24 +1,32 @@
-define i32 @GCGMultchecksum(i8** nocapture %seqs, i32 %nseq) #0 {
-entry:
-  %cmp8 = icmp sgt i32 %nseq, 0
-  br i1 %cmp8, label %for.body, label %for.end
+define i32 @GCGMultchecksum(i8** nocapture readonly %seqs, i32 %nseq) #0 {
+  tail call void @llvm.dbg.value(metadata i8** %seqs, i64 0, metadata !371, metadata !624), !dbg !2306
+  tail call void @llvm.dbg.value(metadata i32 %nseq, i64 0, metadata !372, metadata !624), !dbg !2307
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !373, metadata !624), !dbg !2308
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !374, metadata !624), !dbg !2309
+  %1 = icmp sgt i32 %nseq, 0, !dbg !2310
+  br i1 %1, label %.lr.ph, label %._crit_edge, !dbg !2313
 
-for.body:                                         ; preds = %entry, %for.body
-  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %entry ]
-  %chk.09 = phi i32 [ %rem, %for.body ], [ 0, %entry ]
-  %arrayidx = getelementptr inbounds i8** %seqs, i64 %indvars.iv
-  %0 = load i8** %arrayidx, align 8, !tbaa !3
-  %call = tail call i64 @strlen(i8* %0) #9
-  %conv = trunc i64 %call to i32
-  %call3 = tail call i32 @GCGchecksum(i8* %0, i32 %conv) #7
-  %add = add nsw i32 %call3, %chk.09
-  %rem = srem i32 %add, 10000
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %nseq
-  br i1 %exitcond, label %for.end, label %for.body
+.lr.ph:                                           ; preds = %0
+  %2 = add i32 %nseq, -1, !dbg !2313
+  br label %3, !dbg !2313
 
-for.end:                                          ; preds = %for.body, %entry
-  %chk.0.lcssa = phi i32 [ 0, %entry ], [ %rem, %for.body ]
-  ret i32 %chk.0.lcssa
+; <label>:3                                       ; preds = %3, %.lr.ph
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %3 ]
+  %chk.01 = phi i32 [ 0, %.lr.ph ], [ %10, %3 ]
+  %4 = getelementptr inbounds i8** %seqs, i64 %indvars.iv, !dbg !2314
+  %5 = load i8** %4, align 8, !dbg !2314, !tbaa !669
+  %6 = tail call i64 @strlen(i8* %5) #8, !dbg !2315
+  %7 = trunc i64 %6 to i32, !dbg !2315
+  %8 = tail call i32 @GCGchecksum(i8* %5, i32 %7) #7, !dbg !2316
+  %9 = add nsw i32 %8, %chk.01, !dbg !2317
+  %10 = srem i32 %9, 10000, !dbg !2318
+  tail call void @llvm.dbg.value(metadata i32 %10, i64 0, metadata !373, metadata !624), !dbg !2308
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !2313
+  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !2313
+  %exitcond = icmp eq i32 %lftr.wideiv, %2, !dbg !2313
+  br i1 %exitcond, label %._crit_edge, label %3, !dbg !2313
+
+._crit_edge:                                      ; preds = %3, %0
+  %chk.0.lcssa = phi i32 [ 0, %0 ], [ %10, %3 ]
+  ret i32 %chk.0.lcssa, !dbg !2319
 }

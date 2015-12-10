@@ -1,26 +1,28 @@
 define i32 @CCTKi_ScheduleGroupStorage(i8* %group) #1 {
-  %1 = load i8** bitcast (i32** @scheduled_storage_groups to i8**), align 8, !tbaa !13
-  %2 = load i32* @n_scheduled_storage_groups, align 4, !tbaa !38
-  %3 = add nsw i32 %2, 1
-  %4 = sext i32 %3 to i64
-  %5 = shl nsw i64 %4, 2
-  %6 = tail call i8* @realloc(i8* %1, i64 %5) #8
-  %7 = icmp eq i8* %6, null
-  br i1 %7, label %.critedge, label %8
+  tail call void @llvm.dbg.value(metadata i8* %group, i64 0, metadata !222, metadata !498), !dbg !870
+  %1 = load i8** bitcast (i32** @scheduled_storage_groups to i8**), align 8, !dbg !871, !tbaa !593
+  %2 = load i32* @n_scheduled_storage_groups, align 4, !dbg !872, !tbaa !873
+  %3 = add nsw i32 %2, 1, !dbg !874
+  %4 = sext i32 %3 to i64, !dbg !875
+  %5 = shl nsw i64 %4, 2, !dbg !876
+  %6 = tail call i8* @realloc(i8* %1, i64 %5) #8, !dbg !877
+  tail call void @llvm.dbg.value(metadata i32* %9, i64 0, metadata !223, metadata !498), !dbg !878
+  %7 = icmp eq i8* %6, null, !dbg !879
+  br i1 %7, label %.critedge, label %8, !dbg !881
 
 ; <label>:8                                       ; preds = %0
-  %9 = bitcast i8* %6 to i32*
-  %10 = tail call i32 @CCTK_GroupIndex(i8* %group) #8
-  %11 = load i32* @n_scheduled_storage_groups, align 4, !tbaa !38
-  %12 = add nsw i32 %11, 1
-  store i32 %12, i32* @n_scheduled_storage_groups, align 4, !tbaa !38
-  %13 = sext i32 %11 to i64
-  %14 = getelementptr inbounds i32* %9, i64 %13
-  store i32 %10, i32* %14, align 4, !tbaa !38
-  store i8* %6, i8** bitcast (i32** @scheduled_storage_groups to i8**), align 8, !tbaa !13
-  br label %.critedge
+  %9 = bitcast i8* %6 to i32*, !dbg !882
+  %10 = tail call i32 @CCTK_GroupIndex(i8* %group) #8, !dbg !883
+  %11 = load i32* @n_scheduled_storage_groups, align 4, !dbg !885, !tbaa !873
+  %12 = add nsw i32 %11, 1, !dbg !885
+  store i32 %12, i32* @n_scheduled_storage_groups, align 4, !dbg !885, !tbaa !873
+  %13 = sext i32 %11 to i64, !dbg !886
+  %14 = getelementptr inbounds i32* %9, i64 %13, !dbg !886
+  store i32 %10, i32* %14, align 4, !dbg !887, !tbaa !873
+  store i8* %6, i8** bitcast (i32** @scheduled_storage_groups to i8**), align 8, !dbg !888, !tbaa !593
+  br label %.critedge, !dbg !889
 
 .critedge:                                        ; preds = %0, %8
-  %15 = phi i32 [ %10, %8 ], [ -1, %0 ]
-  ret i32 %15
+  %15 = phi i32 [ %10, %8 ], [ -1, %0 ], !dbg !889
+  ret i32 %15, !dbg !890
 }

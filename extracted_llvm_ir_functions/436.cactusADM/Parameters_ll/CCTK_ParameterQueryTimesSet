@@ -1,20 +1,26 @@
 define i32 @CCTK_ParameterQueryTimesSet(i8* %name, i8* %thorn) #1 {
-  %1 = tail call fastcc %struct.PARAM* @ParameterFind(i8* %name, i8* %thorn, i32 5) #8
-  %2 = icmp eq %struct.PARAM* %1, null
-  br i1 %2, label %CCTK_ParameterData.exit.thread, label %CCTK_ParameterData.exit
+  tail call void @llvm.dbg.value(metadata i8* %name, i64 0, metadata !155, metadata !369), !dbg !1065
+  tail call void @llvm.dbg.value(metadata i8* %thorn, i64 0, metadata !156, metadata !369), !dbg !1066
+  tail call void @llvm.dbg.value(metadata i8* %name, i64 0, metadata !221, metadata !369) #3, !dbg !1067
+  tail call void @llvm.dbg.value(metadata i8* %thorn, i64 0, metadata !222, metadata !369) #3, !dbg !1069
+  %1 = tail call fastcc %struct.PARAM* @ParameterFind(i8* %name, i8* %thorn, i32 5) #8, !dbg !1070
+  tail call void @llvm.dbg.value(metadata %struct.PARAM* %1, i64 0, metadata !223, metadata !369) #3, !dbg !1071
+  %2 = icmp eq %struct.PARAM* %1, null, !dbg !1072
+  br i1 %2, label %CCTK_ParameterData.exit.thread, label %CCTK_ParameterData.exit, !dbg !1072
 
 CCTK_ParameterData.exit:                          ; preds = %0
-  %3 = getelementptr inbounds %struct.PARAM* %1, i64 0, i32 0
-  %4 = load %struct.PARAM_PROPS** %3, align 8, !tbaa !2
-  %5 = icmp eq %struct.PARAM_PROPS* %4, null
-  br i1 %5, label %CCTK_ParameterData.exit.thread, label %6
+  %3 = getelementptr inbounds %struct.PARAM* %1, i64 0, i32 0, !dbg !1073
+  %4 = load %struct.PARAM_PROPS** %3, align 8, !dbg !1073, !tbaa !406
+  tail call void @llvm.dbg.value(metadata %struct.PARAM_PROPS* %4, i64 0, metadata !157, metadata !369), !dbg !1074
+  %5 = icmp eq %struct.PARAM_PROPS* %4, null, !dbg !1075
+  br i1 %5, label %CCTK_ParameterData.exit.thread, label %6, !dbg !1075
 
 ; <label>:6                                       ; preds = %CCTK_ParameterData.exit
-  %7 = getelementptr inbounds %struct.PARAM_PROPS* %4, i64 0, i32 7
-  %8 = load i32* %7, align 4, !tbaa !17
-  br label %CCTK_ParameterData.exit.thread
+  %7 = getelementptr inbounds %struct.PARAM_PROPS* %4, i64 0, i32 7, !dbg !1076
+  %8 = load i32* %7, align 4, !dbg !1076, !tbaa !471
+  br label %CCTK_ParameterData.exit.thread, !dbg !1075
 
 CCTK_ParameterData.exit.thread:                   ; preds = %0, %CCTK_ParameterData.exit, %6
-  %9 = phi i32 [ %8, %6 ], [ -1, %CCTK_ParameterData.exit ], [ -1, %0 ]
-  ret i32 %9
+  %9 = phi i32 [ %8, %6 ], [ -1, %CCTK_ParameterData.exit ], [ -1, %0 ], !dbg !1075
+  ret i32 %9, !dbg !1077
 }

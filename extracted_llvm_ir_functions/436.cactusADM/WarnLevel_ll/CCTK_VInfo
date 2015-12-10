@@ -1,16 +1,19 @@
 define i32 @CCTK_VInfo(i8* %thorn, i8* nocapture readonly %format, ...) #1 {
   %ap = alloca [1 x %struct.__va_list_tag], align 16
-  %1 = getelementptr inbounds [1 x %struct.__va_list_tag]* %ap, i64 0, i64 0
-  %2 = bitcast [1 x %struct.__va_list_tag]* %ap to i8*
-  call void @llvm.va_start(i8* %2)
-  %3 = load %struct.__sFILE** @__stdoutp, align 8, !tbaa !2
-  %4 = call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([12 x i8]* @.str1, i64 0, i64 0), i8* %thorn) #8
-  %5 = load %struct.__sFILE** @__stdoutp, align 8, !tbaa !2
-  %6 = call i32 @vfprintf(%struct.__sFILE* %5, i8* %format, %struct.__va_list_tag* %1) #8
-  %7 = load %struct.__sFILE** @__stdoutp, align 8, !tbaa !2
-  %fputc = call i32 @fputc(i32 10, %struct.__sFILE* %7)
-  %8 = load %struct.__sFILE** @__stdoutp, align 8, !tbaa !2
-  %9 = call i32 @fflush(%struct.__sFILE* %8) #8
-  call void @llvm.va_end(i8* %2)
-  ret i32 0
+  tail call void @llvm.dbg.value(metadata i8* %thorn, i64 0, metadata !36, metadata !220), !dbg !225
+  tail call void @llvm.dbg.value(metadata i8* %format, i64 0, metadata !37, metadata !220), !dbg !226
+  tail call void @llvm.dbg.declare(metadata [1 x %struct.__va_list_tag]* %ap, metadata !38, metadata !220), !dbg !227
+  %1 = getelementptr inbounds [1 x %struct.__va_list_tag]* %ap, i64 0, i64 0, !dbg !228
+  %2 = bitcast [1 x %struct.__va_list_tag]* %ap to i8*, !dbg !228
+  call void @llvm.va_start(i8* %2), !dbg !228
+  %3 = load %struct.__sFILE** @__stdoutp, align 8, !dbg !229, !tbaa !230
+  %4 = call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([12 x i8]* @.str1, i64 0, i64 0), i8* %thorn) #9, !dbg !234
+  %5 = load %struct.__sFILE** @__stdoutp, align 8, !dbg !235, !tbaa !230
+  %6 = call i32 @vfprintf(%struct.__sFILE* %5, i8* %format, %struct.__va_list_tag* %1) #9, !dbg !236
+  %7 = load %struct.__sFILE** @__stdoutp, align 8, !dbg !237, !tbaa !230
+  %fputc = call i32 @fputc(i32 10, %struct.__sFILE* %7), !dbg !238
+  %8 = load %struct.__sFILE** @__stdoutp, align 8, !dbg !239, !tbaa !230
+  %9 = call i32 @fflush(%struct.__sFILE* %8) #9, !dbg !240
+  call void @llvm.va_end(i8* %2), !dbg !241
+  ret i32 0, !dbg !242
 }

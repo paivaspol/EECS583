@@ -1,35 +1,43 @@
 define void @se_linfo(i32 %se, i32 %dummy, i32* nocapture %len, i32* nocapture %info) #0 {
-entry:
-  %cmp = icmp slt i32 %se, 1
-  %. = zext i1 %cmp to i32
-  %ispos = icmp sgt i32 %se, -1
-  %neg = sub i32 0, %se
-  %0 = select i1 %ispos, i32 %se, i32 %neg
-  %shl = shl i32 %0, 1
-  br label %land.rhs
+  tail call void @llvm.dbg.value(metadata i32 %se, i64 0, metadata !160, metadata !814), !dbg !922
+  tail call void @llvm.dbg.value(metadata i32 %dummy, i64 0, metadata !161, metadata !814), !dbg !923
+  tail call void @llvm.dbg.value(metadata i32* %len, i64 0, metadata !162, metadata !814), !dbg !924
+  tail call void @llvm.dbg.value(metadata i32* %info, i64 0, metadata !163, metadata !814), !dbg !925
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !166, metadata !814), !dbg !926
+  %1 = icmp slt i32 %se, 1, !dbg !927
+  %. = zext i1 %1 to i32, !dbg !929
+  tail call void @llvm.dbg.value(metadata i32 %., i64 0, metadata !166, metadata !814), !dbg !926
+  %ispos = icmp sgt i32 %se, -1, !dbg !930
+  %neg = sub i32 0, %se, !dbg !930
+  %2 = select i1 %ispos, i32 %se, i32 %neg, !dbg !930
+  %3 = shl i32 %2, 1, !dbg !931
+  tail call void @llvm.dbg.value(metadata i32 %3, i64 0, metadata !165, metadata !814), !dbg !932
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !164, metadata !814), !dbg !933
+  %nn.0.in.off2 = or i32 %3, 1, !dbg !934
+  %4 = icmp ugt i32 %nn.0.in.off2, 2, !dbg !934
+  br i1 %4, label %.lr.ph, label %.critedge, !dbg !937
 
-for.cond:                                         ; preds = %land.rhs
-  %nn.017 = sdiv i32 %nn.017.in, 2
-  %cmp1 = icmp slt i32 %inc, 16
-  br i1 %cmp1, label %land.rhs, label %for.end
+.lr.ph:                                           ; preds = %0, %.lr.ph
+  %nn.0.in4 = phi i32 [ %nn.0, %.lr.ph ], [ %3, %0 ]
+  %i.03 = phi i32 [ %5, %.lr.ph ], [ 0, %0 ]
+  %nn.0 = sdiv i32 %nn.0.in4, 2, !dbg !938
+  %5 = add nuw nsw i32 %i.03, 1, !dbg !939
+  tail call void @llvm.dbg.value(metadata i32 %5, i64 0, metadata !164, metadata !814), !dbg !933
+  %6 = icmp slt i32 %5, 16, !dbg !940
+  %nn.0.in.off = add nsw i32 %nn.0, 1, !dbg !934
+  %7 = icmp ugt i32 %nn.0.in.off, 2, !dbg !934
+  %or.cond = and i1 %6, %7, !dbg !937
+  br i1 %or.cond, label %.lr.ph, label %.critedge, !dbg !937
 
-land.rhs:                                         ; preds = %entry, %for.cond
-  %nn.017.in = phi i32 [ %shl, %entry ], [ %nn.017, %for.cond ]
-  %i.015 = phi i32 [ 0, %entry ], [ %inc, %for.cond ]
-  %nn.0.in.off = add i32 %nn.017.in, 1
-  %1 = icmp ugt i32 %nn.0.in.off, 2
-  %inc = add nsw i32 %i.015, 1
-  br i1 %1, label %for.cond, label %for.end
-
-for.end:                                          ; preds = %for.cond, %land.rhs
-  %i.0.lcssa = phi i32 [ %inc, %for.cond ], [ %i.015, %land.rhs ]
-  %mul = shl nsw i32 %i.0.lcssa, 1
-  %add13 = or i32 %mul, 1
-  store i32 %add13, i32* %len, align 4, !tbaa !0
-  %2 = tail call double @ldexp(double 1.000000e+00, i32 %i.0.lcssa) #1
-  %conv5 = fptosi double %2 to i32
-  %sub = or i32 %shl, %.
-  %add6 = sub i32 %sub, %conv5
-  store i32 %add6, i32* %info, align 4, !tbaa !0
-  ret void
+.critedge:                                        ; preds = %.lr.ph, %0
+  %i.0.lcssa = phi i32 [ 0, %0 ], [ %5, %.lr.ph ]
+  %8 = shl nsw i32 %i.0.lcssa, 1, !dbg !941
+  %9 = or i32 %8, 1, !dbg !942
+  store i32 %9, i32* %len, align 4, !dbg !943, !tbaa !863
+  %10 = tail call double @ldexp(double 1.000000e+00, i32 %i.0.lcssa) #1, !dbg !944
+  %11 = fptosi double %10 to i32, !dbg !945
+  %12 = or i32 %3, %., !dbg !946
+  %13 = sub i32 %12, %11, !dbg !947
+  store i32 %13, i32* %info, align 4, !dbg !948, !tbaa !863
+  ret void, !dbg !949
 }

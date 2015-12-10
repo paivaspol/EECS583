@@ -1,22 +1,26 @@
 define internal void @SetOutputFlag(i32 %vindex, i8* %optstring, i8* nocapture %arg) #1 {
-  %1 = tail call fastcc i32 @CheckOutputVar(i32 %vindex) #6
-  %2 = icmp eq i32 %1, 0
-  br i1 %2, label %3, label %6
+  tail call void @llvm.dbg.value(metadata i32 %vindex, i64 0, metadata !198, metadata !231), !dbg !449
+  tail call void @llvm.dbg.value(metadata i8* %optstring, i64 0, metadata !199, metadata !231), !dbg !450
+  tail call void @llvm.dbg.value(metadata i8* %arg, i64 0, metadata !200, metadata !231), !dbg !451
+  tail call void @llvm.dbg.value(metadata i8* %arg, i64 0, metadata !201, metadata !231), !dbg !452
+  %1 = tail call fastcc i32 @CheckOutputVar(i32 %vindex) #6, !dbg !453
+  %2 = icmp eq i32 %1, 0, !dbg !455
+  br i1 %2, label %3, label %6, !dbg !456
 
 ; <label>:3                                       ; preds = %0
-  %4 = sext i32 %vindex to i64
-  %5 = getelementptr inbounds i8* %arg, i64 %4
-  store i8 1, i8* %5, align 1, !tbaa !21
-  br label %6
+  %4 = sext i32 %vindex to i64, !dbg !457
+  %5 = getelementptr inbounds i8* %arg, i64 %4, !dbg !457
+  store i8 1, i8* %5, align 1, !dbg !459, !tbaa !336
+  br label %6, !dbg !460
 
 ; <label>:6                                       ; preds = %3, %0
-  %7 = icmp eq i8* %optstring, null
-  br i1 %7, label %10, label %8
+  %7 = icmp eq i8* %optstring, null, !dbg !461
+  br i1 %7, label %10, label %8, !dbg !463
 
 ; <label>:8                                       ; preds = %6
-  %9 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 5, i32 421, i8* getelementptr inbounds ([78 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([8 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([46 x i8]* @.str10, i64 0, i64 0), i8* %optstring) #5
-  br label %10
+  %9 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 5, i32 421, i8* getelementptr inbounds ([78 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([8 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([46 x i8]* @.str10, i64 0, i64 0), i8* %optstring) #5, !dbg !464
+  br label %10, !dbg !466
 
 ; <label>:10                                      ; preds = %6, %8
-  ret void
+  ret void, !dbg !467
 }

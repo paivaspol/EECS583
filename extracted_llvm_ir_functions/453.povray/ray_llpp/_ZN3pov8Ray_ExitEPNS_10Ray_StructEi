@@ -1,0 +1,41 @@
+define void @_ZN3pov8Ray_ExitEPNS_10Ray_StructEi(%"struct.pov::Ray_Struct"* nocapture %Ray, i32 %nr) #1 {
+  tail call void @llvm.dbg.value(metadata %"struct.pov::Ray_Struct"* %Ray, i64 0, metadata !790, metadata !1095), !dbg !1146
+  tail call void @llvm.dbg.value(metadata i32 %nr, i64 0, metadata !791, metadata !1095), !dbg !1147
+  tail call void @llvm.dbg.value(metadata i32 %nr, i64 0, metadata !792, metadata !1095), !dbg !1148
+  %1 = getelementptr inbounds %"struct.pov::Ray_Struct"* %Ray, i64 0, i32 2, !dbg !1149
+  %2 = load i32* %1, align 4, !dbg !1149, !tbaa !1100
+  %3 = icmp sgt i32 %2, %nr, !dbg !1152
+  br i1 %3, label %.lr.ph, label %._crit_edge, !dbg !1153
+
+.lr.ph:                                           ; preds = %0
+  %4 = sext i32 %nr to i64
+  br label %5, !dbg !1153
+
+; <label>:5                                       ; preds = %.lr.ph, %5
+  %indvars.iv = phi i64 [ %4, %.lr.ph ], [ %indvars.iv.next, %5 ]
+  %indvars.iv.next = add nsw i64 %indvars.iv, 1, !dbg !1153
+  %6 = getelementptr inbounds %"struct.pov::Ray_Struct"* %Ray, i64 0, i32 4, i64 %indvars.iv.next, !dbg !1154
+  %7 = bitcast %"struct.pov::Interior_Struct"** %6 to i64*, !dbg !1154
+  %8 = load i64* %7, align 8, !dbg !1154, !tbaa !1127
+  %9 = getelementptr inbounds %"struct.pov::Ray_Struct"* %Ray, i64 0, i32 4, i64 %indvars.iv, !dbg !1156
+  %10 = bitcast %"struct.pov::Interior_Struct"** %9 to i64*, !dbg !1157
+  store i64 %8, i64* %10, align 8, !dbg !1157, !tbaa !1127
+  %11 = load i32* %1, align 4, !dbg !1149, !tbaa !1100
+  %12 = sext i32 %11 to i64, !dbg !1152
+  %13 = icmp slt i64 %indvars.iv.next, %12, !dbg !1152
+  br i1 %13, label %5, label %._crit_edge, !dbg !1153
+
+._crit_edge:                                      ; preds = %5, %0
+  %.lcssa1 = phi i32 [ %2, %0 ], [ %11, %5 ]
+  %14 = add nsw i32 %.lcssa1, -1, !dbg !1158
+  store i32 %14, i32* %1, align 4, !dbg !1158, !tbaa !1100
+  %15 = icmp slt i32 %.lcssa1, 0, !dbg !1160
+  br i1 %15, label %16, label %18, !dbg !1161
+
+; <label>:16                                      ; preds = %._crit_edge
+  %17 = tail call i32 (i8*, ...)* @_ZN3pov5ErrorEPKcz(i8* getelementptr inbounds ([33 x i8]* @.str2, i64 0, i64 0)) #5, !dbg !1162
+  br label %18, !dbg !1164
+
+; <label>:18                                      ; preds = %16, %._crit_edge
+  ret void, !dbg !1165
+}

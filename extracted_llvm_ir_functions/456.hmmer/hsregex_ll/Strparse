@@ -1,96 +1,94 @@
 define i32 @Strparse(i8* %rexp, i8* %s, i32 %ntok) #0 {
-entry:
-  %cmp = icmp sgt i32 %ntok, 9
-  br i1 %cmp, label %if.then, label %for.cond.preheader
+  tail call void @llvm.dbg.value(metadata i8* %rexp, i64 0, metadata !37, metadata !274), !dbg !275
+  tail call void @llvm.dbg.value(metadata i8* %s, i64 0, metadata !38, metadata !274), !dbg !276
+  tail call void @llvm.dbg.value(metadata i32 %ntok, i64 0, metadata !39, metadata !274), !dbg !277
+  %1 = icmp sgt i32 %ntok, 9, !dbg !278
+  br i1 %1, label %.preheader2.thread, label %.preheader2, !dbg !280
 
-if.then:                                          ; preds = %entry
-  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([31 x i8]* @.str, i64 0, i64 0), i32 9) #9
-  br label %for.cond.preheader
+.preheader2.thread:                               ; preds = %0
+  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([31 x i8]* @.str, i64 0, i64 0), i32 9) #8, !dbg !281
+  br label %.lr.ph5, !dbg !282
 
-for.cond.preheader:                               ; preds = %if.then, %entry
-  %cmp179 = icmp slt i32 %ntok, 0
-  br i1 %cmp179, label %for.end, label %for.body.lr.ph
+.preheader2:                                      ; preds = %0
+  %2 = icmp slt i32 %ntok, 0, !dbg !284
+  br i1 %2, label %._crit_edge, label %.lr.ph5, !dbg !282
 
-for.body.lr.ph:                                   ; preds = %for.cond.preheader
-  %0 = add i32 %ntok, 1
-  br label %for.body
+.lr.ph5:                                          ; preds = %.preheader2, %.preheader2.thread, %7
+  %indvars.iv6 = phi i64 [ %indvars.iv.next7, %7 ], [ 0, %.preheader2.thread ], [ 0, %.preheader2 ]
+  %3 = getelementptr inbounds [10 x i8*]* @sqd_parse, i64 0, i64 %indvars.iv6, !dbg !286
+  %4 = load i8** %3, align 8, !dbg !286, !tbaa !288
+  %5 = icmp eq i8* %4, null, !dbg !292
+  br i1 %5, label %7, label %6, !dbg !293
 
-for.body:                                         ; preds = %for.inc, %for.body.lr.ph
-  %indvars.iv81 = phi i64 [ %indvars.iv.next82, %for.inc ], [ 0, %for.body.lr.ph ]
-  %arrayidx = getelementptr inbounds [10 x i8*]* @sqd_parse, i64 0, i64 %indvars.iv81
-  %1 = load i8** %arrayidx, align 8, !tbaa !0
-  %cmp2 = icmp eq i8* %1, null
-  br i1 %cmp2, label %for.inc, label %if.then3
+; <label>:6                                       ; preds = %.lr.ph5
+  tail call void @free(i8* %4) #9, !dbg !294
+  store i8* null, i8** %3, align 8, !dbg !296, !tbaa !288
+  br label %7, !dbg !297
 
-if.then3:                                         ; preds = %for.body
-  tail call void @free(i8* %1) #9
-  store i8* null, i8** %arrayidx, align 8, !tbaa !0
-  br label %for.inc
+; <label>:7                                       ; preds = %.lr.ph5, %6
+  %indvars.iv.next7 = add nuw nsw i64 %indvars.iv6, 1, !dbg !282
+  %lftr.wideiv8 = trunc i64 %indvars.iv6 to i32, !dbg !282
+  %exitcond9 = icmp eq i32 %lftr.wideiv8, %ntok, !dbg !282
+  br i1 %exitcond9, label %._crit_edge, label %.lr.ph5, !dbg !282
 
-for.inc:                                          ; preds = %for.body, %if.then3
-  %indvars.iv.next82 = add i64 %indvars.iv81, 1
-  %lftr.wideiv83 = trunc i64 %indvars.iv.next82 to i32
-  %exitcond84 = icmp eq i32 %lftr.wideiv83, %0
-  br i1 %exitcond84, label %for.end, label %for.body
+._crit_edge:                                      ; preds = %7, %.preheader2
+  %8 = phi i1 [ true, %.preheader2 ], [ false, %7 ]
+  %9 = tail call %struct.sqd_regexp* @sqd_regcomp(i8* %rexp) #9, !dbg !298
+  tail call void @llvm.dbg.value(metadata %struct.sqd_regexp* %9, i64 0, metadata !40, metadata !274), !dbg !300
+  %10 = icmp eq %struct.sqd_regexp* %9, null, !dbg !301
+  br i1 %10, label %11, label %12, !dbg !302
 
-for.end:                                          ; preds = %for.inc, %for.cond.preheader
-  %call = tail call %struct.sqd_regexp* @sqd_regcomp(i8* %rexp) #10
-  %cmp9 = icmp eq %struct.sqd_regexp* %call, null
-  br i1 %cmp9, label %if.then10, label %if.end11
+; <label>:11                                      ; preds = %._crit_edge
+  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([27 x i8]* @.str1, i64 0, i64 0)) #8, !dbg !303
+  br label %12, !dbg !303
 
-if.then10:                                        ; preds = %for.end
-  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([27 x i8]* @.str1, i64 0, i64 0)) #9
-  br label %if.end11
+; <label>:12                                      ; preds = %11, %._crit_edge
+  %13 = tail call i32 @sqd_regexec(%struct.sqd_regexp* %9, i8* %s) #9, !dbg !304
+  tail call void @llvm.dbg.value(metadata i32 %13, i64 0, metadata !41, metadata !274), !dbg !305
+  %.not = icmp ne i32 %13, 1, !dbg !306
+  %brmerge = or i1 %.not, %8, !dbg !306
+  br i1 %brmerge, label %.loopexit, label %.lr.ph, !dbg !306
 
-if.end11:                                         ; preds = %if.then10, %for.end
-  %call12 = tail call i32 @sqd_regexec(%struct.sqd_regexp* %call, i8* %s) #10
-  %cmp13.not = icmp ne i32 %call12, 1
-  %brmerge = or i1 %cmp13.not, %cmp179
-  br i1 %brmerge, label %if.end50, label %for.body17.lr.ph
+.lr.ph:                                           ; preds = %12, %35
+  %indvars.iv = phi i64 [ %indvars.iv.next, %35 ], [ 0, %12 ]
+  %14 = getelementptr inbounds %struct.sqd_regexp* %9, i64 0, i32 0, i64 %indvars.iv, !dbg !307
+  %15 = load i8** %14, align 8, !dbg !307, !tbaa !288
+  %16 = icmp eq i8* %15, null, !dbg !312
+  br i1 %16, label %35, label %17, !dbg !313
 
-for.body17.lr.ph:                                 ; preds = %if.end11
-  %2 = add i32 %ntok, 1
-  br label %for.body17
+; <label>:17                                      ; preds = %.lr.ph
+  %18 = getelementptr inbounds %struct.sqd_regexp* %9, i64 0, i32 1, i64 %indvars.iv, !dbg !314
+  %19 = load i8** %18, align 8, !dbg !314, !tbaa !288
+  %20 = icmp eq i8* %19, null, !dbg !315
+  br i1 %20, label %35, label %21, !dbg !316
 
-for.body17:                                       ; preds = %for.inc47, %for.body17.lr.ph
-  %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc47 ], [ 0, %for.body17.lr.ph ]
-  %arrayidx19 = getelementptr inbounds %struct.sqd_regexp* %call, i64 0, i32 0, i64 %indvars.iv
-  %3 = load i8** %arrayidx19, align 8, !tbaa !0
-  %cmp20 = icmp eq i8* %3, null
-  br i1 %cmp20, label %for.inc47, label %land.lhs.true
+; <label>:21                                      ; preds = %17
+  %22 = ptrtoint i8* %19 to i64, !dbg !317
+  %23 = ptrtoint i8* %15 to i64, !dbg !317
+  %24 = sub i64 %22, %23, !dbg !317
+  %25 = shl i64 %24, 32, !dbg !319
+  %sext = add i64 %25, 4294967296, !dbg !319
+  %26 = ashr exact i64 %sext, 32, !dbg !319
+  %27 = tail call i8* @sre_malloc(i8* getelementptr inbounds ([65 x i8]* @.str2, i64 0, i64 0), i32 124, i64 %26) #8, !dbg !319
+  %28 = getelementptr inbounds [10 x i8*]* @sqd_parse, i64 0, i64 %indvars.iv, !dbg !320
+  store i8* %27, i8** %28, align 8, !dbg !321, !tbaa !288
+  %29 = load i8** %14, align 8, !dbg !322, !tbaa !288
+  %30 = ashr exact i64 %25, 32, !dbg !322
+  %31 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %27, i1 false), !dbg !322
+  %32 = tail call i8* @__strncpy_chk(i8* %27, i8* %29, i64 %30, i64 %31) #8, !dbg !322
+  %33 = load i8** %28, align 8, !dbg !323, !tbaa !288
+  %34 = getelementptr inbounds i8* %33, i64 %30, !dbg !323
+  store i8 0, i8* %34, align 1, !dbg !324, !tbaa !325
+  br label %35, !dbg !326
 
-land.lhs.true:                                    ; preds = %for.body17
-  %arrayidx22 = getelementptr inbounds %struct.sqd_regexp* %call, i64 0, i32 1, i64 %indvars.iv
-  %4 = load i8** %arrayidx22, align 8, !tbaa !0
-  %cmp23 = icmp eq i8* %4, null
-  br i1 %cmp23, label %for.inc47, label %if.then24
+; <label>:35                                      ; preds = %17, %.lr.ph, %21
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !327
+  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !327
+  %exitcond = icmp eq i32 %lftr.wideiv, %ntok, !dbg !327
+  br i1 %exitcond, label %.loopexit, label %.lr.ph, !dbg !327
 
-if.then24:                                        ; preds = %land.lhs.true
-  %sub.ptr.lhs.cast = ptrtoint i8* %4 to i64
-  %sub.ptr.rhs.cast = ptrtoint i8* %3 to i64
-  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
-  %add = shl i64 %sub.ptr.sub, 32
-  %sext = add i64 %add, 4294967296
-  %conv31 = ashr exact i64 %sext, 32
-  %call32 = tail call i8* @sre_malloc(i8* getelementptr inbounds ([53 x i8]* @.str2, i64 0, i64 0), i32 124, i64 %conv31) #9
-  %arrayidx34 = getelementptr inbounds [10 x i8*]* @sqd_parse, i64 0, i64 %indvars.iv
-  store i8* %call32, i8** %arrayidx34, align 8, !tbaa !0
-  %5 = load i8** %arrayidx19, align 8, !tbaa !0
-  %conv40 = ashr exact i64 %add, 32
-  %call41 = tail call i8* @strncpy(i8* %call32, i8* %5, i64 %conv40) #9
-  %6 = load i8** %arrayidx34, align 8, !tbaa !0
-  %arrayidx45 = getelementptr inbounds i8* %6, i64 %conv40
-  store i8 0, i8* %arrayidx45, align 1, !tbaa !1
-  br label %for.inc47
-
-for.inc47:                                        ; preds = %land.lhs.true, %for.body17, %if.then24
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %2
-  br i1 %exitcond, label %if.end50, label %for.body17
-
-if.end50:                                         ; preds = %if.end11, %for.inc47
-  %7 = bitcast %struct.sqd_regexp* %call to i8*
-  tail call void @free(i8* %7) #9
-  ret i32 %call12
+.loopexit:                                        ; preds = %35, %12
+  %36 = bitcast %struct.sqd_regexp* %9 to i8*, !dbg !328
+  tail call void @free(i8* %36) #9, !dbg !329
+  ret i32 %13, !dbg !330
 }

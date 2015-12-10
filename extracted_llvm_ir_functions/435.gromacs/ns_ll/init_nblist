@@ -1,61 +1,70 @@
-define internal fastcc void @init_nblist(%struct.t_nblist* nocapture %nl_sr, %struct.t_nblist* nocapture %nl_lr, i32 %maxsr, i32 %maxlr, i32 %solvent, i32 %il_code) #3 {
-  %1 = load %struct.__sFILE** @debug, align 8, !tbaa !23
-  %2 = icmp eq %struct.__sFILE* %1, null
-  br i1 %2, label %.preheader, label %3
+define internal fastcc void @init_nblist(%struct.t_nblist* nocapture %nl_sr, %struct.t_nblist* nocapture %nl_lr, i32 %maxsr, i32 %maxlr, i32 %solvent, i32 %il_code) #4 {
+  tail call void @llvm.dbg.value(metadata %struct.t_nblist* %nl_sr, i64 0, metadata !888, metadata !1411), !dbg !1765
+  tail call void @llvm.dbg.value(metadata %struct.t_nblist* %nl_lr, i64 0, metadata !889, metadata !1411), !dbg !1766
+  tail call void @llvm.dbg.value(metadata i32 %maxsr, i64 0, metadata !890, metadata !1411), !dbg !1767
+  tail call void @llvm.dbg.value(metadata i32 %maxlr, i64 0, metadata !891, metadata !1411), !dbg !1768
+  tail call void @llvm.dbg.value(metadata i32 %solvent, i64 0, metadata !892, metadata !1411), !dbg !1769
+  tail call void @llvm.dbg.value(metadata i32 %il_code, i64 0, metadata !893, metadata !1411), !dbg !1770
+  %1 = load %struct.__sFILE** @debug, align 8, !dbg !1771, !tbaa !1551
+  %2 = icmp eq %struct.__sFILE* %1, null, !dbg !1771
+  br i1 %2, label %.preheader, label %3, !dbg !1773
 
 ; <label>:3                                       ; preds = %0
-  %4 = icmp ugt i32 %solvent, 3
-  br i1 %4, label %9, label %5
+  %4 = icmp ugt i32 %solvent, 3, !dbg !1774
+  br i1 %4, label %9, label %5, !dbg !1774
 
 ; <label>:5                                       ; preds = %3
-  %6 = sext i32 %solvent to i64
-  %7 = getelementptr inbounds [5 x i8*]* @esolv_names, i64 0, i64 %6
-  %8 = load i8** %7, align 8, !tbaa !23
-  br label %9
+  %6 = sext i32 %solvent to i64, !dbg !1774
+  %7 = getelementptr inbounds [5 x i8*]* @esolv_names, i64 0, i64 %6, !dbg !1774
+  %8 = load i8** %7, align 8, !dbg !1774, !tbaa !1551
+  br label %9, !dbg !1774
 
 ; <label>:9                                       ; preds = %3, %5
-  %10 = phi i8* [ %8, %5 ], [ getelementptr inbounds ([10 x i8]* @.str21, i64 0, i64 0), %3 ]
-  %11 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %1, i8* getelementptr inbounds ([65 x i8]* @.str20, i64 0, i64 0), i32 %il_code, i8* %10, i32 %maxsr, i32 %maxlr) #8
-  br label %.preheader
+  %10 = phi i8* [ %8, %5 ], [ getelementptr inbounds ([10 x i8]* @.str21, i64 0, i64 0), %3 ], !dbg !1774
+  %11 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %1, i8* getelementptr inbounds ([65 x i8]* @.str20, i64 0, i64 0), i32 %il_code, i8* %10, i32 %maxsr, i32 %maxlr) #9, !dbg !1775
+  br label %.preheader, !dbg !1775
 
 .preheader:                                       ; preds = %9, %0, %.preheader
   %i.02 = phi i32 [ %31, %.preheader ], [ 0, %0 ], [ 0, %9 ]
-  %12 = icmp eq i32 %i.02, 0
-  %13 = select i1 %12, %struct.t_nblist* %nl_sr, %struct.t_nblist* %nl_lr
-  %14 = select i1 %12, i32 %maxsr, i32 %maxlr
-  %15 = getelementptr inbounds %struct.t_nblist* %13, i64 0, i32 0
-  store i32 %il_code, i32* %15, align 4, !tbaa !34
-  %16 = shl nsw i32 %14, 2
-  %17 = getelementptr inbounds %struct.t_nblist* %13, i64 0, i32 2
-  store i32 %16, i32* %17, align 4, !tbaa !35
-  %18 = getelementptr inbounds %struct.t_nblist* %13, i64 0, i32 4
-  store i32 0, i32* %18, align 4, !tbaa !36
-  %19 = getelementptr inbounds %struct.t_nblist* %13, i64 0, i32 5
-  store i32 0, i32* %19, align 4, !tbaa !37
-  %20 = getelementptr inbounds %struct.t_nblist* %13, i64 0, i32 1
-  store i32 0, i32* %20, align 4, !tbaa !18
-  %21 = getelementptr inbounds %struct.t_nblist* %13, i64 0, i32 3
-  store i32 0, i32* %21, align 4, !tbaa !38
-  %22 = getelementptr inbounds %struct.t_nblist* %13, i64 0, i32 7
-  %23 = getelementptr inbounds %struct.t_nblist* %13, i64 0, i32 8
-  %24 = getelementptr inbounds %struct.t_nblist* %13, i64 0, i32 10
-  %25 = getelementptr inbounds %struct.t_nblist* %13, i64 0, i32 12
-  store i32* null, i32** %25, align 8, !tbaa !39
-  %26 = getelementptr inbounds %struct.t_nblist* %13, i64 0, i32 6
-  %27 = bitcast i32** %22 to i8*
-  call void @llvm.memset.p0i8.i64(i8* %27, i8 0, i64 32, i32 8, i1 false)
-  store i32 %solvent, i32* %26, align 4, !tbaa !40
-  tail call fastcc void @reallocate_nblist(%struct.t_nblist* %13) #9
-  %28 = load i32** %24, align 8, !tbaa !41
-  store i32 0, i32* %28, align 4, !tbaa !17
-  %29 = getelementptr inbounds i32* %28, i64 1
-  store i32 0, i32* %29, align 4, !tbaa !17
-  %30 = load i32** %23, align 8, !tbaa !42
-  store i32 -1, i32* %30, align 4, !tbaa !17
-  %31 = add nuw nsw i32 %i.02, 1
-  %exitcond = icmp eq i32 %31, 2
-  br i1 %exitcond, label %32, label %.preheader
+  %12 = icmp eq i32 %i.02, 0, !dbg !1776
+  %13 = select i1 %12, %struct.t_nblist* %nl_sr, %struct.t_nblist* %nl_lr, !dbg !1780
+  tail call void @llvm.dbg.value(metadata %struct.t_nblist* %13, i64 0, metadata !894, metadata !1411), !dbg !1781
+  %14 = select i1 %12, i32 %maxsr, i32 %maxlr, !dbg !1782
+  tail call void @llvm.dbg.value(metadata i32 %14, i64 0, metadata !895, metadata !1411), !dbg !1783
+  %15 = getelementptr inbounds %struct.t_nblist* %13, i64 0, i32 0, !dbg !1784
+  store i32 %il_code, i32* %15, align 4, !dbg !1785, !tbaa !1786
+  %16 = shl nsw i32 %14, 2, !dbg !1787
+  %17 = getelementptr inbounds %struct.t_nblist* %13, i64 0, i32 2, !dbg !1788
+  store i32 %16, i32* %17, align 4, !dbg !1789, !tbaa !1790
+  %18 = getelementptr inbounds %struct.t_nblist* %13, i64 0, i32 4, !dbg !1791
+  store i32 0, i32* %18, align 4, !dbg !1792, !tbaa !1793
+  %19 = getelementptr inbounds %struct.t_nblist* %13, i64 0, i32 5, !dbg !1794
+  store i32 0, i32* %19, align 4, !dbg !1795, !tbaa !1796
+  %20 = getelementptr inbounds %struct.t_nblist* %13, i64 0, i32 1, !dbg !1797
+  store i32 0, i32* %20, align 4, !dbg !1798, !tbaa !1487
+  %21 = getelementptr inbounds %struct.t_nblist* %13, i64 0, i32 3, !dbg !1799
+  store i32 0, i32* %21, align 4, !dbg !1800, !tbaa !1801
+  %22 = getelementptr inbounds %struct.t_nblist* %13, i64 0, i32 7, !dbg !1802
+  %23 = getelementptr inbounds %struct.t_nblist* %13, i64 0, i32 8, !dbg !1803
+  %24 = getelementptr inbounds %struct.t_nblist* %13, i64 0, i32 10, !dbg !1804
+  %25 = getelementptr inbounds %struct.t_nblist* %13, i64 0, i32 12, !dbg !1805
+  store i32* null, i32** %25, align 8, !dbg !1806, !tbaa !1807
+  %26 = getelementptr inbounds %struct.t_nblist* %13, i64 0, i32 6, !dbg !1808
+  %27 = bitcast i32** %22 to i8*, !dbg !1809
+  call void @llvm.memset.p0i8.i64(i8* %27, i8 0, i64 32, i32 8, i1 false), !dbg !1810
+  store i32 %solvent, i32* %26, align 4, !dbg !1809, !tbaa !1811
+  tail call fastcc void @reallocate_nblist(%struct.t_nblist* %13) #10, !dbg !1812
+  %28 = load i32** %24, align 8, !dbg !1813, !tbaa !1814
+  store i32 0, i32* %28, align 4, !dbg !1815, !tbaa !1473
+  %29 = getelementptr inbounds i32* %28, i64 1, !dbg !1816
+  store i32 0, i32* %29, align 4, !dbg !1817, !tbaa !1473
+  %30 = load i32** %23, align 8, !dbg !1818, !tbaa !1819
+  store i32 -1, i32* %30, align 4, !dbg !1820, !tbaa !1473
+  %31 = add nuw nsw i32 %i.02, 1, !dbg !1821
+  tail call void @llvm.dbg.value(metadata i32 %31, i64 0, metadata !896, metadata !1411), !dbg !1822
+  %exitcond = icmp eq i32 %31, 2, !dbg !1823
+  br i1 %exitcond, label %32, label %.preheader, !dbg !1823
 
 ; <label>:32                                      ; preds = %.preheader
-  ret void
+  ret void, !dbg !1824
 }

@@ -1,32 +1,33 @@
 define i32 @symbol2vlc(%struct.syntaxelement* nocapture %sym) #0 {
-entry:
-  %len = getelementptr inbounds %struct.syntaxelement* %sym, i64 0, i32 3
-  %0 = load i32* %len, align 4, !tbaa !0
-  %bitpattern = getelementptr inbounds %struct.syntaxelement* %sym, i64 0, i32 5
-  store i32 0, i32* %bitpattern, align 4, !tbaa !0
-  %cmp10 = icmp sgt i32 %0, 0
-  br i1 %cmp10, label %while.body.lr.ph, label %while.end
+  tail call void @llvm.dbg.value(metadata %struct.syntaxelement* %sym, i64 0, metadata !253, metadata !814), !dbg !1282
+  %1 = getelementptr inbounds %struct.syntaxelement* %sym, i64 0, i32 3, !dbg !1283
+  %2 = load i32* %1, align 4, !dbg !1283, !tbaa !880
+  tail call void @llvm.dbg.value(metadata i32 %2, i64 0, metadata !254, metadata !814), !dbg !1284
+  %3 = getelementptr inbounds %struct.syntaxelement* %sym, i64 0, i32 5, !dbg !1285
+  store i32 0, i32* %3, align 4, !dbg !1286, !tbaa !891
+  %4 = icmp sgt i32 %2, 0, !dbg !1288
+  br i1 %4, label %.lr.ph, label %14, !dbg !1289
 
-while.body.lr.ph:                                 ; preds = %entry
-  %inf = getelementptr inbounds %struct.syntaxelement* %sym, i64 0, i32 4
-  %1 = load i32* %inf, align 4, !tbaa !0
-  br label %while.body
+.lr.ph:                                           ; preds = %0
+  %5 = getelementptr inbounds %struct.syntaxelement* %sym, i64 0, i32 4, !dbg !1290
+  %6 = load i32* %5, align 4, !dbg !1290, !tbaa !885
+  br label %7, !dbg !1289
 
-while.body:                                       ; preds = %while.body.lr.ph, %while.body
-  %dec12.in = phi i32 [ %0, %while.body.lr.ph ], [ %dec12, %while.body ]
-  %storemerge11 = phi i32 [ 0, %while.body.lr.ph ], [ %or, %while.body ]
-  %dec12 = add nsw i32 %dec12.in, -1
-  %shl = shl i32 %storemerge11, 1
-  %shr8 = lshr i32 %1, %dec12
-  %and = and i32 %shr8, 1
-  %or = or i32 %and, %shl
-  %cmp = icmp sgt i32 %dec12, 0
-  br i1 %cmp, label %while.body, label %while.cond.while.end_crit_edge
+; <label>:7                                       ; preds = %.lr.ph, %7
+  %.in = phi i32 [ %2, %.lr.ph ], [ %8, %7 ]
+  %storemerge1 = phi i32 [ 0, %.lr.ph ], [ %12, %7 ]
+  %8 = add nsw i32 %.in, -1, !dbg !1291
+  %9 = shl i32 %storemerge1, 1, !dbg !1292
+  %10 = lshr i32 %6, %8, !dbg !1293
+  %11 = and i32 %10, 1, !dbg !1294
+  %12 = or i32 %11, %9, !dbg !1286
+  %13 = icmp sgt i32 %.in, 1, !dbg !1288
+  br i1 %13, label %7, label %._crit_edge, !dbg !1289
 
-while.cond.while.end_crit_edge:                   ; preds = %while.body
-  store i32 %or, i32* %bitpattern, align 4, !tbaa !0
-  br label %while.end
+._crit_edge:                                      ; preds = %7
+  store i32 %12, i32* %3, align 4, !dbg !1286, !tbaa !891
+  br label %14, !dbg !1289
 
-while.end:                                        ; preds = %while.cond.while.end_crit_edge, %entry
-  ret i32 0
+; <label>:14                                      ; preds = %._crit_edge, %0
+  ret i32 0, !dbg !1295
 }

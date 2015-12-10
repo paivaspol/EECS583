@@ -1,72 +1,82 @@
 define i32 @CCTK_GroupIndex(i8* %fullgroupname) #2 {
   %impname = alloca i8*, align 8
   %groupname = alloca i8*, align 8
-  store i8* null, i8** %groupname, align 8, !tbaa !2
-  store i8* null, i8** %impname, align 8, !tbaa !2
-  %1 = call i32 @CCTK_DecomposeName(i8* %fullgroupname, i8** %impname, i8** %groupname) #9
-  %2 = icmp eq i32 %1, 0
-  br i1 %2, label %.preheader, label %26
+  tail call void @llvm.dbg.value(metadata i8* %fullgroupname, i64 0, metadata !67, metadata !483), !dbg !484
+  tail call void @llvm.dbg.value(metadata i8* null, i64 0, metadata !71, metadata !483), !dbg !485
+  store i8* null, i8** %groupname, align 8, !dbg !486, !tbaa !487
+  tail call void @llvm.dbg.value(metadata i8* null, i64 0, metadata !70, metadata !483), !dbg !491
+  store i8* null, i8** %impname, align 8, !dbg !492, !tbaa !487
+  tail call void @llvm.dbg.value(metadata i8** %impname, i64 0, metadata !70, metadata !483), !dbg !491
+  tail call void @llvm.dbg.value(metadata i8** %groupname, i64 0, metadata !71, metadata !483), !dbg !485
+  %1 = call i32 @CCTK_DecomposeName(i8* %fullgroupname, i8** %impname, i8** %groupname) #9, !dbg !493
+  call void @llvm.dbg.value(metadata i32 %1, i64 0, metadata !69, metadata !483), !dbg !494
+  %2 = icmp eq i32 %1, 0, !dbg !495
+  br i1 %2, label %.preheader, label %26, !dbg !497
 
 .preheader:                                       ; preds = %0
-  %3 = load i32* @n_groups, align 4, !tbaa !6
-  %4 = icmp sgt i32 %3, 0
-  br i1 %4, label %.lr.ph, label %.thread
+  %3 = load i32* @n_groups, align 4, !dbg !498, !tbaa !502
+  %4 = icmp sgt i32 %3, 0, !dbg !504
+  br i1 %4, label %.lr.ph, label %.thread, !dbg !505
 
 .lr.ph:                                           ; preds = %.preheader, %18
   %indvars.iv = phi i64 [ %indvars.iv.next, %18 ], [ 0, %.preheader ]
-  %5 = load i8** %impname, align 8, !tbaa !2
-  %6 = load %struct.cGroupDefinition** @groups, align 8, !tbaa !2
-  %7 = getelementptr inbounds %struct.cGroupDefinition* %6, i64 %indvars.iv, i32 1
-  %8 = load i8** %7, align 8, !tbaa !8
-  %9 = call i32 @CCTK_Equals(i8* %5, i8* %8) #10
-  %10 = icmp eq i32 %9, 0
-  br i1 %10, label %18, label %11
+  call void @llvm.dbg.value(metadata i8** %impname, i64 0, metadata !70, metadata !483), !dbg !491
+  %5 = load i8** %impname, align 8, !dbg !506, !tbaa !487
+  %6 = load %struct.cGroupDefinition** @groups, align 8, !dbg !509, !tbaa !487
+  %7 = getelementptr inbounds %struct.cGroupDefinition* %6, i64 %indvars.iv, i32 1, !dbg !510
+  %8 = load i8** %7, align 8, !dbg !510, !tbaa !511
+  %9 = call i32 @CCTK_Equals(i8* %5, i8* %8) #10, !dbg !513
+  %10 = icmp eq i32 %9, 0, !dbg !513
+  br i1 %10, label %18, label %11, !dbg !514
 
 ; <label>:11                                      ; preds = %.lr.ph
-  %12 = load i8** %groupname, align 8, !tbaa !2
-  %13 = load %struct.cGroupDefinition** @groups, align 8, !tbaa !2
-  %14 = getelementptr inbounds %struct.cGroupDefinition* %13, i64 %indvars.iv, i32 2
-  %15 = load i8** %14, align 8, !tbaa !10
-  %16 = call i32 @CCTK_Equals(i8* %12, i8* %15) #10
-  %17 = icmp eq i32 %16, 0
-  br i1 %17, label %18, label %22
+  call void @llvm.dbg.value(metadata i8** %groupname, i64 0, metadata !71, metadata !483), !dbg !485
+  %12 = load i8** %groupname, align 8, !dbg !515, !tbaa !487
+  %13 = load %struct.cGroupDefinition** @groups, align 8, !dbg !516, !tbaa !487
+  %14 = getelementptr inbounds %struct.cGroupDefinition* %13, i64 %indvars.iv, i32 2, !dbg !517
+  %15 = load i8** %14, align 8, !dbg !517, !tbaa !518
+  %16 = call i32 @CCTK_Equals(i8* %12, i8* %15) #10, !dbg !519
+  %17 = icmp eq i32 %16, 0, !dbg !519
+  br i1 %17, label %18, label %22, !dbg !520
 
 ; <label>:18                                      ; preds = %11, %.lr.ph
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %19 = load i32* @n_groups, align 4, !tbaa !6
-  %20 = sext i32 %19 to i64
-  %21 = icmp slt i64 %indvars.iv.next, %20
-  br i1 %21, label %.lr.ph, label %.thread
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !505
+  %19 = load i32* @n_groups, align 4, !dbg !498, !tbaa !502
+  %20 = sext i32 %19 to i64, !dbg !504
+  %21 = icmp slt i64 %indvars.iv.next, %20, !dbg !504
+  br i1 %21, label %.lr.ph, label %.thread, !dbg !505
 
 ; <label>:22                                      ; preds = %11
-  %23 = trunc i64 %indvars.iv to i32
-  %24 = icmp slt i32 %23, 0
-  br i1 %24, label %.thread, label %26
+  %23 = trunc i64 %indvars.iv to i32, !dbg !521
+  %24 = icmp slt i32 %23, 0, !dbg !521
+  br i1 %24, label %.thread, label %26, !dbg !523
 
 .thread:                                          ; preds = %18, %.preheader, %22
   %retval.01 = phi i32 [ %23, %22 ], [ -1, %.preheader ], [ -1, %18 ]
-  %25 = call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 6, i32 252, i8* getelementptr inbounds ([75 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([43 x i8]* @.str2, i64 0, i64 0), i8* %fullgroupname) #10
-  br label %26
+  %25 = call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 6, i32 252, i8* getelementptr inbounds ([75 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([43 x i8]* @.str2, i64 0, i64 0), i8* %fullgroupname) #10, !dbg !524
+  br label %26, !dbg !526
 
 ; <label>:26                                      ; preds = %0, %22, %.thread
   %retval.1 = phi i32 [ %1, %0 ], [ %retval.01, %.thread ], [ %23, %22 ]
-  %27 = load i8** %impname, align 8, !tbaa !2
-  %28 = icmp eq i8* %27, null
-  br i1 %28, label %30, label %29
+  call void @llvm.dbg.value(metadata i8** %impname, i64 0, metadata !70, metadata !483), !dbg !491
+  %27 = load i8** %impname, align 8, !dbg !527, !tbaa !487
+  %28 = icmp eq i8* %27, null, !dbg !527
+  br i1 %28, label %30, label %29, !dbg !529
 
 ; <label>:29                                      ; preds = %26
-  call void @free(i8* %27) #9
-  br label %30
+  call void @free(i8* %27) #9, !dbg !530
+  br label %30, !dbg !532
 
 ; <label>:30                                      ; preds = %26, %29
-  %31 = load i8** %groupname, align 8, !tbaa !2
-  %32 = icmp eq i8* %31, null
-  br i1 %32, label %34, label %33
+  call void @llvm.dbg.value(metadata i8** %groupname, i64 0, metadata !71, metadata !483), !dbg !485
+  %31 = load i8** %groupname, align 8, !dbg !533, !tbaa !487
+  %32 = icmp eq i8* %31, null, !dbg !533
+  br i1 %32, label %34, label %33, !dbg !535
 
 ; <label>:33                                      ; preds = %30
-  call void @free(i8* %31) #9
-  br label %34
+  call void @free(i8* %31) #9, !dbg !536
+  br label %34, !dbg !538
 
 ; <label>:34                                      ; preds = %30, %33
-  ret i32 %retval.1
+  ret i32 %retval.1, !dbg !539
 }

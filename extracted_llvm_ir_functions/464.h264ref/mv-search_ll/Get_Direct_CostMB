@@ -1,63 +1,75 @@
 define i32 @Get_Direct_CostMB(double %lambda) #0 {
-entry:
   %cost8x8 = alloca i32, align 4
-  store i32 0, i32* %cost8x8, align 4, !tbaa !3
-  br label %for.body
+  tail call void @llvm.dbg.value(metadata double %lambda, i64 0, metadata !812, metadata !1466), !dbg !6684
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !814, metadata !1466), !dbg !6685
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !815, metadata !1466), !dbg !6686
+  store i32 0, i32* %cost8x8, align 4, !dbg !6686, !tbaa !1657
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !813, metadata !1466), !dbg !6687
+  br label %3, !dbg !6688
 
-for.cond:                                         ; preds = %for.body
-  %cmp = icmp slt i32 %inc, 4
-  br i1 %cmp, label %for.body, label %for.end
+; <label>:1                                       ; preds = %3
+  %2 = icmp slt i32 %9, 4, !dbg !6690
+  br i1 %2, label %3, label %10, !dbg !6688
 
-for.body:                                         ; preds = %entry, %for.cond
-  %cost.019 = phi i32 [ 0, %entry ], [ %add, %for.cond ]
-  %i.018 = phi i32 [ 0, %entry ], [ %inc, %for.cond ]
-  %call = call i32 @Get_Direct_Cost8x8(i32 %i.018, i32* %cost8x8) #8
-  %add = add nsw i32 %call, %cost.019
-  %cmp1 = icmp eq i32 %add, 2147483647
-  %0 = load i32* %cost8x8, align 4, !tbaa !3
-  %cmp2 = icmp eq i32 %0, 2147483647
-  %or.cond = or i1 %cmp1, %cmp2
-  %inc = add nsw i32 %i.018, 1
-  br i1 %or.cond, label %return, label %for.cond
+; <label>:3                                       ; preds = %0, %1
+  %cost.04 = phi i32 [ 0, %0 ], [ %5, %1 ]
+  %i.03 = phi i32 [ 0, %0 ], [ %9, %1 ]
+  tail call void @llvm.dbg.value(metadata i32* %cost8x8, i64 0, metadata !815, metadata !1466), !dbg !6686
+  %4 = call i32 @Get_Direct_Cost8x8(i32 %i.03, i32* %cost8x8) #9, !dbg !6692
+  %5 = add nsw i32 %4, %cost.04, !dbg !6694
+  tail call void @llvm.dbg.value(metadata i32 %5, i64 0, metadata !814, metadata !1466), !dbg !6685
+  %6 = icmp eq i32 %5, 2147483647, !dbg !6695
+  tail call void @llvm.dbg.value(metadata i32* %cost8x8, i64 0, metadata !815, metadata !1466), !dbg !6686
+  %7 = load i32* %cost8x8, align 4
+  %8 = icmp eq i32 %7, 2147483647, !dbg !6697
+  %or.cond = or i1 %6, %8, !dbg !6698
+  %9 = add nuw nsw i32 %i.03, 1, !dbg !6699
+  tail call void @llvm.dbg.value(metadata i32 %9, i64 0, metadata !813, metadata !1466), !dbg !6687
+  br i1 %or.cond, label %.loopexit, label %1, !dbg !6698
 
-for.end:                                          ; preds = %for.cond
-  %1 = load %struct.InputParameters** @input, align 8, !tbaa !0
-  %AllowTransform8x8 = getelementptr inbounds %struct.InputParameters* %1, i64 0, i32 123
-  %2 = load i32* %AllowTransform8x8, align 4, !tbaa !3
-  switch i32 %2, label %return [
-    i32 1, label %sw.bb
-    i32 2, label %sw.bb10
-  ]
+; <label>:10                                      ; preds = %1
+  %11 = load %struct.InputParameters** @input, align 8, !dbg !6700, !tbaa !1457
+  %12 = getelementptr inbounds %struct.InputParameters* %11, i64 0, i32 123, !dbg !6701
+  %13 = load i32* %12, align 4, !dbg !6701, !tbaa !3712
+  switch i32 %13, label %.loopexit [
+    i32 1, label %14
+    i32 2, label %29
+  ], !dbg !6702
 
-sw.bb:                                            ; preds = %for.end
-  %cmp3 = icmp slt i32 %0, %add
-  br i1 %cmp3, label %if.then8, label %lor.lhs.false4
+; <label>:14                                      ; preds = %10
+  tail call void @llvm.dbg.value(metadata i32* %cost8x8, i64 0, metadata !815, metadata !1466), !dbg !6686
+  %15 = icmp slt i32 %7, %5, !dbg !6703
+  br i1 %15, label %28, label %16, !dbg !6706
 
-lor.lhs.false4:                                   ; preds = %sw.bb
-  %InterSearch8x4 = getelementptr inbounds %struct.InputParameters* %1, i64 0, i32 66
-  %3 = load i32* %InterSearch8x4, align 4, !tbaa !3
-  %tobool = icmp eq i32 %3, 0
-  br i1 %tobool, label %if.then8, label %land.lhs.true
+; <label>:16                                      ; preds = %14
+  %17 = getelementptr inbounds %struct.InputParameters* %11, i64 0, i32 66, !dbg !6707
+  %18 = load i32* %17, align 4, !dbg !6707, !tbaa !6708
+  %19 = icmp eq i32 %18, 0, !dbg !6709
+  br i1 %19, label %28, label %20, !dbg !6710
 
-land.lhs.true:                                    ; preds = %lor.lhs.false4
-  %InterSearch4x8 = getelementptr inbounds %struct.InputParameters* %1, i64 0, i32 67
-  %4 = load i32* %InterSearch4x8, align 4, !tbaa !3
-  %tobool5 = icmp eq i32 %4, 0
-  br i1 %tobool5, label %if.then8, label %land.lhs.true6
+; <label>:20                                      ; preds = %16
+  %21 = getelementptr inbounds %struct.InputParameters* %11, i64 0, i32 67, !dbg !6711
+  %22 = load i32* %21, align 4, !dbg !6711, !tbaa !6712
+  %23 = icmp eq i32 %22, 0, !dbg !6713
+  br i1 %23, label %28, label %24, !dbg !6714
 
-land.lhs.true6:                                   ; preds = %land.lhs.true
-  %InterSearch4x4 = getelementptr inbounds %struct.InputParameters* %1, i64 0, i32 68
-  %5 = load i32* %InterSearch4x4, align 4, !tbaa !3
-  %tobool7 = icmp eq i32 %5, 0
-  br i1 %tobool7, label %if.then8, label %return
+; <label>:24                                      ; preds = %20
+  %25 = getelementptr inbounds %struct.InputParameters* %11, i64 0, i32 68, !dbg !6715
+  %26 = load i32* %25, align 4, !dbg !6715, !tbaa !6716
+  %27 = icmp eq i32 %26, 0, !dbg !6717
+  br i1 %27, label %28, label %.loopexit, !dbg !6718
 
-if.then8:                                         ; preds = %land.lhs.true6, %land.lhs.true, %lor.lhs.false4, %sw.bb
-  br label %return
+; <label>:28                                      ; preds = %24, %20, %16, %14
+  tail call void @llvm.dbg.value(metadata i32* %cost8x8, i64 0, metadata !815, metadata !1466), !dbg !6686
+  tail call void @llvm.dbg.value(metadata i32 %7, i64 0, metadata !814, metadata !1466), !dbg !6685
+  br label %.loopexit, !dbg !6719
 
-sw.bb10:                                          ; preds = %for.end
-  br label %return
+; <label>:29                                      ; preds = %10
+  tail call void @llvm.dbg.value(metadata i32* %cost8x8, i64 0, metadata !815, metadata !1466), !dbg !6686
+  tail call void @llvm.dbg.value(metadata i32 %7, i64 0, metadata !814, metadata !1466), !dbg !6685
+  br label %.loopexit, !dbg !6721
 
-return:                                           ; preds = %for.body, %sw.bb10, %if.then8, %for.end, %land.lhs.true6
-  %retval.0 = phi i32 [ %add, %for.end ], [ %0, %sw.bb10 ], [ %0, %if.then8 ], [ %add, %land.lhs.true6 ], [ %add, %for.body ]
-  ret i32 %retval.0
+.loopexit:                                        ; preds = %3, %29, %28, %10, %24
+  %.0 = phi i32 [ %5, %10 ], [ %7, %29 ], [ %7, %28 ], [ %5, %24 ], [ %5, %3 ]
+  ret i32 %.0, !dbg !6722
 }

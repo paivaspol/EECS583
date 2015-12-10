@@ -1,0 +1,42 @@
+define void @_ZN6soplex7DVector5reDimEi(%"class.soplex::DVector"* nocapture %this, i32 %newdim) #0 align 2 {
+  tail call void @llvm.dbg.value(metadata %"class.soplex::DVector"* %this, i64 0, metadata !2063, metadata !3194), !dbg !3488
+  tail call void @llvm.dbg.value(metadata i32 %newdim, i64 0, metadata !2064, metadata !3194), !dbg !3489
+  %1 = getelementptr inbounds %"class.soplex::DVector"* %this, i64 0, i32 1, !dbg !3490
+  %2 = load i32* %1, align 4, !dbg !3490, !tbaa !3437
+  %3 = icmp slt i32 %2, %newdim, !dbg !3492
+  br i1 %3, label %4, label %10, !dbg !3493
+
+; <label>:4                                       ; preds = %0
+  %5 = sitofp i32 %newdim to double, !dbg !3494
+  %6 = sitofp i32 %2 to double, !dbg !3495
+  %7 = fmul double %6, 2.000000e-01, !dbg !3496
+  %8 = fadd double %5, %7, !dbg !3497
+  %9 = fptosi double %8 to i32, !dbg !3494
+  tail call void @_ZN6soplex7DVector6reSizeEi(%"class.soplex::DVector"* %this, i32 %9) #8, !dbg !3498
+  br label %10, !dbg !3498
+
+; <label>:10                                      ; preds = %4, %0
+  %11 = getelementptr inbounds %"class.soplex::DVector"* %this, i64 0, i32 0, i32 0, !dbg !3499
+  %12 = load i32* %11, align 4, !dbg !3499, !tbaa !3202
+  tail call void @llvm.dbg.value(metadata i32 %12, i64 0, metadata !2065, metadata !3194), !dbg !3500
+  %13 = icmp slt i32 %12, %newdim, !dbg !3501
+  br i1 %13, label %.lr.ph, label %22, !dbg !3503
+
+.lr.ph:                                           ; preds = %10
+  %14 = getelementptr inbounds %"class.soplex::DVector"* %this, i64 0, i32 2, !dbg !3504
+  %15 = load double** %14, align 8, !dbg !3504, !tbaa !3505
+  %16 = sext i32 %12 to i64
+  %17 = add i32 %newdim, -1, !dbg !3503
+  %scevgep = getelementptr double* %15, i64 %16
+  %scevgep2 = bitcast double* %scevgep to i8*
+  %18 = sub i32 %17, %12, !dbg !3503
+  %19 = zext i32 %18 to i64
+  %20 = shl nuw nsw i64 %19, 3, !dbg !3503
+  %21 = add nuw nsw i64 %20, 8, !dbg !3503
+  call void @llvm.memset.p0i8.i64(i8* %scevgep2, i8 0, i64 %21, i32 8, i1 false), !dbg !3506
+  br label %22, !dbg !3503
+
+; <label>:22                                      ; preds = %.lr.ph, %10
+  store i32 %newdim, i32* %11, align 4, !dbg !3507, !tbaa !3202
+  ret void, !dbg !3508
+}

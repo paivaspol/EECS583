@@ -1,0 +1,25 @@
+define zeroext i1 @_ZN6wayobj5ismapEii(%class.wayobj* nocapture readonly %this, i32 %x, i32 %y) #0 align 2 {
+  tail call void @llvm.dbg.value(metadata %class.wayobj* %this, i64 0, metadata !267, metadata !383), !dbg !384
+  tail call void @llvm.dbg.value(metadata i32 %x, i64 0, metadata !269, metadata !383), !dbg !385
+  tail call void @llvm.dbg.value(metadata i32 %y, i64 0, metadata !270, metadata !383), !dbg !386
+  %1 = icmp slt i32 %x, 1, !dbg !387
+  %2 = icmp slt i32 %y, 1, !dbg !389
+  %or.cond = or i1 %1, %2, !dbg !391
+  br i1 %or.cond, label %10, label %3, !dbg !391
+
+; <label>:3                                       ; preds = %0
+  %4 = getelementptr inbounds %class.wayobj* %this, i64 0, i32 5, !dbg !392
+  %5 = load i32* %4, align 4, !dbg !392, !tbaa !394
+  %6 = icmp slt i32 %5, %x, !dbg !406
+  br i1 %6, label %10, label %7, !dbg !407
+
+; <label>:7                                       ; preds = %3
+  %8 = getelementptr inbounds %class.wayobj* %this, i64 0, i32 6, !dbg !408
+  %9 = load i32* %8, align 4, !dbg !408, !tbaa !410
+  %not. = icmp sge i32 %9, %y, !dbg !411
+  br label %10, !dbg !411
+
+; <label>:10                                      ; preds = %7, %3, %0
+  %.0 = phi i1 [ false, %0 ], [ false, %3 ], [ %not., %7 ]
+  ret i1 %.0, !dbg !412
+}

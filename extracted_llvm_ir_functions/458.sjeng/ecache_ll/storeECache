@@ -1,16 +1,17 @@
 define void @storeECache(i32 %score) #0 {
-entry:
-  %0 = load i32* @hash, align 4, !tbaa !0
-  %1 = load i32* @ECacheSize, align 4, !tbaa !0
-  %rem = urem i32 %0, %1
-  %idxprom = sext i32 %rem to i64
-  %2 = load %struct.ECacheType** @ECache, align 8, !tbaa !3
-  %stored_hash = getelementptr inbounds %struct.ECacheType* %2, i64 %idxprom, i32 0
-  store i32 %0, i32* %stored_hash, align 4, !tbaa !0
-  %3 = load i32* @hold_hash, align 4, !tbaa !0
-  %hold_hash = getelementptr inbounds %struct.ECacheType* %2, i64 %idxprom, i32 1
-  store i32 %3, i32* %hold_hash, align 4, !tbaa !0
-  %score5 = getelementptr inbounds %struct.ECacheType* %2, i64 %idxprom, i32 2
-  store i32 %score, i32* %score5, align 4, !tbaa !0
-  ret void
+  tail call void @llvm.dbg.value(metadata i32 %score, i64 0, metadata !19, metadata !42), !dbg !43
+  %1 = load i32* @hash, align 4, !dbg !44, !tbaa !45
+  %2 = load i32* @ECacheSize, align 4, !dbg !49, !tbaa !45
+  %3 = urem i32 %1, %2, !dbg !50
+  tail call void @llvm.dbg.value(metadata i32 %3, i64 0, metadata !20, metadata !42), !dbg !51
+  %4 = sext i32 %3 to i64, !dbg !52
+  %5 = load %struct.ECacheType** @ECache, align 8, !dbg !52, !tbaa !53
+  %6 = getelementptr inbounds %struct.ECacheType* %5, i64 %4, i32 0, !dbg !55
+  store i32 %1, i32* %6, align 4, !dbg !56, !tbaa !57
+  %7 = load i32* @hold_hash, align 4, !dbg !59, !tbaa !45
+  %8 = getelementptr inbounds %struct.ECacheType* %5, i64 %4, i32 1, !dbg !60
+  store i32 %7, i32* %8, align 4, !dbg !61, !tbaa !62
+  %9 = getelementptr inbounds %struct.ECacheType* %5, i64 %4, i32 2, !dbg !63
+  store i32 %score, i32* %9, align 4, !dbg !64, !tbaa !65
+  ret void, !dbg !66
 }

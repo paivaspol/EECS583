@@ -1,46 +1,59 @@
 define %struct.dpmatrix_s* @AllocPlan7Matrix(i32 %rows, i32 %M, i32*** %xmx, i32*** %mmx, i32*** %imx, i32*** %dmx) #0 {
-entry:
-  %sub = add nsw i32 %rows, -1
-  %call = tail call %struct.dpmatrix_s* @CreatePlan7Matrix(i32 %sub, i32 %M, i32 0, i32 0) #6
-  %cmp = icmp eq i32*** %xmx, null
-  br i1 %cmp, label %if.end, label %if.then
+  tail call void @llvm.dbg.value(metadata i32 %rows, i64 0, metadata !79, metadata !560), !dbg !774
+  tail call void @llvm.dbg.value(metadata i32 %M, i64 0, metadata !80, metadata !560), !dbg !775
+  tail call void @llvm.dbg.value(metadata i32*** %xmx, i64 0, metadata !81, metadata !560), !dbg !776
+  tail call void @llvm.dbg.value(metadata i32*** %mmx, i64 0, metadata !82, metadata !560), !dbg !777
+  tail call void @llvm.dbg.value(metadata i32*** %imx, i64 0, metadata !83, metadata !560), !dbg !778
+  tail call void @llvm.dbg.value(metadata i32*** %dmx, i64 0, metadata !84, metadata !560), !dbg !779
+  %1 = add nsw i32 %rows, -1, !dbg !780
+  %2 = tail call %struct.dpmatrix_s* @CreatePlan7Matrix(i32 %1, i32 %M, i32 0, i32 0) #8, !dbg !781
+  tail call void @llvm.dbg.value(metadata %struct.dpmatrix_s* %2, i64 0, metadata !85, metadata !560), !dbg !782
+  %3 = icmp eq i32*** %xmx, null, !dbg !783
+  br i1 %3, label %8, label %4, !dbg !785
 
-if.then:                                          ; preds = %entry
-  %xmx1 = getelementptr inbounds %struct.dpmatrix_s* %call, i64 0, i32 0
-  %0 = load i32*** %xmx1, align 8, !tbaa !0
-  store i32** %0, i32*** %xmx, align 8, !tbaa !0
-  br label %if.end
+; <label>:4                                       ; preds = %0
+  %5 = bitcast %struct.dpmatrix_s* %2 to i64*, !dbg !786
+  %6 = load i64* %5, align 8, !dbg !786, !tbaa !571
+  %7 = bitcast i32*** %xmx to i64*, !dbg !787
+  store i64 %6, i64* %7, align 8, !dbg !787, !tbaa !608
+  br label %8, !dbg !788
 
-if.end:                                           ; preds = %entry, %if.then
-  %cmp2 = icmp eq i32*** %mmx, null
-  br i1 %cmp2, label %if.end5, label %if.then3
+; <label>:8                                       ; preds = %0, %4
+  %9 = icmp eq i32*** %mmx, null, !dbg !789
+  br i1 %9, label %15, label %10, !dbg !791
 
-if.then3:                                         ; preds = %if.end
-  %mmx4 = getelementptr inbounds %struct.dpmatrix_s* %call, i64 0, i32 1
-  %1 = load i32*** %mmx4, align 8, !tbaa !0
-  store i32** %1, i32*** %mmx, align 8, !tbaa !0
-  br label %if.end5
+; <label>:10                                      ; preds = %8
+  %11 = getelementptr inbounds %struct.dpmatrix_s* %2, i64 0, i32 1, !dbg !792
+  %12 = bitcast i32*** %11 to i64*, !dbg !792
+  %13 = load i64* %12, align 8, !dbg !792, !tbaa !580
+  %14 = bitcast i32*** %mmx to i64*, !dbg !793
+  store i64 %13, i64* %14, align 8, !dbg !793, !tbaa !608
+  br label %15, !dbg !794
 
-if.end5:                                          ; preds = %if.end, %if.then3
-  %cmp6 = icmp eq i32*** %imx, null
-  br i1 %cmp6, label %if.end9, label %if.then7
+; <label>:15                                      ; preds = %8, %10
+  %16 = icmp eq i32*** %imx, null, !dbg !795
+  br i1 %16, label %22, label %17, !dbg !797
 
-if.then7:                                         ; preds = %if.end5
-  %imx8 = getelementptr inbounds %struct.dpmatrix_s* %call, i64 0, i32 2
-  %2 = load i32*** %imx8, align 8, !tbaa !0
-  store i32** %2, i32*** %imx, align 8, !tbaa !0
-  br label %if.end9
+; <label>:17                                      ; preds = %15
+  %18 = getelementptr inbounds %struct.dpmatrix_s* %2, i64 0, i32 2, !dbg !798
+  %19 = bitcast i32*** %18 to i64*, !dbg !798
+  %20 = load i64* %19, align 8, !dbg !798, !tbaa !584
+  %21 = bitcast i32*** %imx to i64*, !dbg !799
+  store i64 %20, i64* %21, align 8, !dbg !799, !tbaa !608
+  br label %22, !dbg !800
 
-if.end9:                                          ; preds = %if.end5, %if.then7
-  %cmp10 = icmp eq i32*** %dmx, null
-  br i1 %cmp10, label %if.end13, label %if.then11
+; <label>:22                                      ; preds = %15, %17
+  %23 = icmp eq i32*** %dmx, null, !dbg !801
+  br i1 %23, label %29, label %24, !dbg !803
 
-if.then11:                                        ; preds = %if.end9
-  %dmx12 = getelementptr inbounds %struct.dpmatrix_s* %call, i64 0, i32 3
-  %3 = load i32*** %dmx12, align 8, !tbaa !0
-  store i32** %3, i32*** %dmx, align 8, !tbaa !0
-  br label %if.end13
+; <label>:24                                      ; preds = %22
+  %25 = getelementptr inbounds %struct.dpmatrix_s* %2, i64 0, i32 3, !dbg !804
+  %26 = bitcast i32*** %25 to i64*, !dbg !804
+  %27 = load i64* %26, align 8, !dbg !804, !tbaa !588
+  %28 = bitcast i32*** %dmx to i64*, !dbg !805
+  store i64 %27, i64* %28, align 8, !dbg !805, !tbaa !608
+  br label %29, !dbg !806
 
-if.end13:                                         ; preds = %if.end9, %if.then11
-  ret %struct.dpmatrix_s* %call
+; <label>:29                                      ; preds = %22, %24
+  ret %struct.dpmatrix_s* %2, !dbg !807
 }

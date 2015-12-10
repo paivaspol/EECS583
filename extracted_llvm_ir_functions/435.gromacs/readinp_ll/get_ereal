@@ -1,32 +1,38 @@
-define float @get_ereal(i32* nocapture %ninp, %struct.t_inpfile** %inp, i8* %name, float %def) #1 {
+define float @get_ereal(i32* nocapture %ninp, %struct.t_inpfile** %inp, i8* %name, float %def) #2 {
   %buf = alloca [32 x i8], align 16
-  %1 = tail call fastcc i32 @get_einp(i32* %ninp, %struct.t_inpfile** %inp, i8* %name) #8
-  %2 = icmp eq i32 %1, -1
-  br i1 %2, label %3, label %13
+  tail call void @llvm.dbg.value(metadata i32* %ninp, i64 0, metadata !140, metadata !209), !dbg !459
+  tail call void @llvm.dbg.value(metadata %struct.t_inpfile** %inp, i64 0, metadata !141, metadata !209), !dbg !460
+  tail call void @llvm.dbg.value(metadata i8* %name, i64 0, metadata !142, metadata !209), !dbg !461
+  tail call void @llvm.dbg.value(metadata float %def, i64 0, metadata !143, metadata !209), !dbg !462
+  tail call void @llvm.dbg.declare(metadata [32 x i8]* %buf, metadata !144, metadata !209), !dbg !463
+  %1 = tail call fastcc i32 @get_einp(i32* %ninp, %struct.t_inpfile** %inp, i8* %name) #9, !dbg !464
+  tail call void @llvm.dbg.value(metadata i32 %1, i64 0, metadata !145, metadata !209), !dbg !465
+  %2 = icmp eq i32 %1, -1, !dbg !466
+  br i1 %2, label %3, label %13, !dbg !468
 
 ; <label>:3                                       ; preds = %0
-  %4 = getelementptr inbounds [32 x i8]* %buf, i64 0, i64 0
-  %5 = fpext float %def to double
-  %6 = call i32 (i8*, i32, i64, i8*, ...)* @__sprintf_chk(i8* %4, i32 0, i64 32, i8* getelementptr inbounds ([3 x i8]* @.str13, i64 0, i64 0), double %5) #7
-  %7 = call i8* @strdup(i8* %4) #7
-  %8 = load i32* %ninp, align 4, !tbaa !6
-  %9 = add nsw i32 %8, -1
-  %10 = sext i32 %9 to i64
-  %11 = load %struct.t_inpfile** %inp, align 8, !tbaa !2
-  %12 = getelementptr inbounds %struct.t_inpfile* %11, i64 %10, i32 3
-  store i8* %7, i8** %12, align 8, !tbaa !13
-  br label %20
+  %4 = getelementptr inbounds [32 x i8]* %buf, i64 0, i64 0, !dbg !469
+  %5 = fpext float %def to double, !dbg !469
+  %6 = call i32 (i8*, i32, i64, i8*, ...)* @__sprintf_chk(i8* %4, i32 0, i64 32, i8* getelementptr inbounds ([3 x i8]* @.str13, i64 0, i64 0), double %5) #8, !dbg !469
+  %7 = call i8* @strdup(i8* %4) #8, !dbg !471
+  %8 = load i32* %ninp, align 4, !dbg !472, !tbaa !232
+  %9 = add nsw i32 %8, -1, !dbg !473
+  %10 = sext i32 %9 to i64, !dbg !474
+  %11 = load %struct.t_inpfile** %inp, align 8, !dbg !475, !tbaa !225
+  %12 = getelementptr inbounds %struct.t_inpfile* %11, i64 %10, i32 3, !dbg !476
+  store i8* %7, i8** %12, align 8, !dbg !477, !tbaa !326
+  br label %20, !dbg !478
 
 ; <label>:13                                      ; preds = %0
-  %14 = sext i32 %1 to i64
-  %15 = load %struct.t_inpfile** %inp, align 8, !tbaa !2
-  %16 = getelementptr inbounds %struct.t_inpfile* %15, i64 %14, i32 3
-  %17 = load i8** %16, align 8, !tbaa !13
-  %18 = tail call double @atof(i8* %17) #7
-  %19 = fptrunc double %18 to float
-  br label %20
+  %14 = sext i32 %1 to i64, !dbg !479
+  %15 = load %struct.t_inpfile** %inp, align 8, !dbg !480, !tbaa !225
+  %16 = getelementptr inbounds %struct.t_inpfile* %15, i64 %14, i32 3, !dbg !481
+  %17 = load i8** %16, align 8, !dbg !481, !tbaa !326
+  %18 = tail call double @atof(i8* %17) #8, !dbg !482
+  %19 = fptrunc double %18 to float, !dbg !482
+  br label %20, !dbg !483
 
 ; <label>:20                                      ; preds = %13, %3
   %.0 = phi float [ %def, %3 ], [ %19, %13 ]
-  ret float %.0
+  ret float %.0, !dbg !484
 }

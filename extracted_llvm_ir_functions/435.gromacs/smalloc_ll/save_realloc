@@ -1,32 +1,40 @@
 define i8* @save_realloc(i8* %name, i8* %file, i32 %line, i8* %ptr, i32 %size) #1 {
-  %1 = icmp eq i32 %size, 0
-  br i1 %1, label %14, label %2
+  tail call void @llvm.dbg.value(metadata i8* %name, i64 0, metadata !44, metadata !74), !dbg !123
+  tail call void @llvm.dbg.value(metadata i8* %file, i64 0, metadata !45, metadata !74), !dbg !124
+  tail call void @llvm.dbg.value(metadata i32 %line, i64 0, metadata !46, metadata !74), !dbg !125
+  tail call void @llvm.dbg.value(metadata i8* %ptr, i64 0, metadata !47, metadata !74), !dbg !126
+  tail call void @llvm.dbg.value(metadata i32 %size, i64 0, metadata !48, metadata !74), !dbg !127
+  tail call void @llvm.dbg.value(metadata i8* null, i64 0, metadata !49, metadata !74), !dbg !128
+  %1 = icmp eq i32 %size, 0, !dbg !129
+  br i1 %1, label %14, label %2, !dbg !131
 
 ; <label>:2                                       ; preds = %0
-  %3 = icmp eq i8* %ptr, null
-  %4 = zext i32 %size to i64
-  br i1 %3, label %5, label %7
+  %3 = icmp eq i8* %ptr, null, !dbg !132
+  %4 = zext i32 %size to i64, !dbg !135
+  br i1 %3, label %5, label %7, !dbg !136
 
 ; <label>:5                                       ; preds = %2
-  %6 = tail call i8* @malloc(i64 %4) #6
-  br label %9
+  %6 = tail call i8* @malloc(i64 %4) #6, !dbg !137
+  tail call void @llvm.dbg.value(metadata i8* %6, i64 0, metadata !49, metadata !74), !dbg !128
+  br label %9, !dbg !138
 
 ; <label>:7                                       ; preds = %2
-  %8 = tail call i8* @realloc(i8* %ptr, i64 %4) #6
+  %8 = tail call i8* @realloc(i8* %ptr, i64 %4) #6, !dbg !139
+  tail call void @llvm.dbg.value(metadata i8* %8, i64 0, metadata !49, metadata !74), !dbg !128
   br label %9
 
 ; <label>:9                                       ; preds = %7, %5
   %p.0 = phi i8* [ %6, %5 ], [ %8, %7 ]
-  %10 = icmp eq i8* %p.0, null
-  br i1 %10, label %11, label %14
+  %10 = icmp eq i8* %p.0, null, !dbg !140
+  br i1 %10, label %11, label %14, !dbg !142
 
 ; <label>:11                                      ; preds = %9
-  %12 = tail call i32* @__error() #6
-  %13 = load i32* %12, align 4, !tbaa !2
-  tail call void (i32, i8*, ...)* @fatal_error(i32 %13, i8* getelementptr inbounds ([54 x i8]* @.str2, i64 0, i64 0), i8* %name, i32 %size, i8* %file, i32 %line, i8* %name, i8* %ptr) #6
-  br label %14
+  %12 = tail call i32* @__error() #6, !dbg !143
+  %13 = load i32* %12, align 4, !dbg !143, !tbaa !96
+  tail call void (i32, i8*, ...)* @fatal_error(i32 %13, i8* getelementptr inbounds ([54 x i8]* @.str2, i64 0, i64 0), i8* %name, i32 %size, i8* %file, i32 %line, i8* %name, i8* %ptr) #6, !dbg !144
+  br label %14, !dbg !144
 
 ; <label>:14                                      ; preds = %0, %9, %11
   %p.1 = phi i8* [ null, %11 ], [ %p.0, %9 ], [ null, %0 ]
-  ret i8* %p.1
+  ret i8* %p.1, !dbg !145
 }

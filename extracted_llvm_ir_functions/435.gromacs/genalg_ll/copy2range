@@ -1,62 +1,66 @@
 define internal fastcc void @copy2range(i32 %D, float* nocapture %c, %struct.t_range* nocapture %r) #1 {
-  %1 = icmp sgt i32 %D, 0
-  br i1 %1, label %.preheader1.lr.ph, label %._crit_edge8
+  tail call void @llvm.dbg.value(metadata i32 %D, i64 0, metadata !171, metadata !193), !dbg !718
+  tail call void @llvm.dbg.value(metadata float* %c, i64 0, metadata !172, metadata !193), !dbg !719
+  tail call void @llvm.dbg.value(metadata %struct.t_range* %r, i64 0, metadata !173, metadata !193), !dbg !720
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !174, metadata !193), !dbg !721
+  %1 = icmp sgt i32 %D, 0, !dbg !722
+  br i1 %1, label %.preheader1.lr.ph, label %._crit_edge8, !dbg !725
 
 .preheader1.lr.ph:                                ; preds = %0
-  %2 = add i32 %D, -1
-  br label %.preheader1
+  %2 = add i32 %D, -1, !dbg !725
+  br label %.preheader1, !dbg !725
 
 .preheader1:                                      ; preds = %._crit_edge, %.preheader1.lr.ph
   %indvars.iv = phi i64 [ 0, %.preheader1.lr.ph ], [ %indvars.iv.next, %._crit_edge ]
-  %3 = getelementptr inbounds float* %c, i64 %indvars.iv
-  %4 = load float* %3, align 4, !tbaa !27
-  %5 = getelementptr inbounds %struct.t_range* %r, i64 %indvars.iv, i32 3
-  %6 = load float* %5, align 4, !tbaa !29
-  %7 = fcmp olt float %4, %6
-  br i1 %7, label %.lr.ph, label %.preheader
+  %3 = getelementptr inbounds float* %c, i64 %indvars.iv, !dbg !726
+  %4 = load float* %3, align 4, !dbg !726, !tbaa !303
+  %5 = getelementptr inbounds %struct.t_range* %r, i64 %indvars.iv, i32 3, !dbg !728
+  %6 = load float* %5, align 4, !dbg !728, !tbaa !729
+  %7 = fcmp olt float %4, %6, !dbg !731
+  br i1 %7, label %.lr.ph, label %.preheader, !dbg !732
 
 .lr.ph:                                           ; preds = %.preheader1
-  %8 = getelementptr inbounds %struct.t_range* %r, i64 %indvars.iv, i32 5
-  br label %14
+  %8 = getelementptr inbounds %struct.t_range* %r, i64 %indvars.iv, i32 5, !dbg !733
+  br label %14, !dbg !732
 
 .preheader:                                       ; preds = %14, %.preheader1
   %9 = phi float [ %4, %.preheader1 ], [ %17, %14 ]
-  %10 = getelementptr inbounds %struct.t_range* %r, i64 %indvars.iv, i32 4
-  %11 = load float* %10, align 4, !tbaa !31
-  %12 = fcmp ogt float %9, %11
-  br i1 %12, label %.lr.ph5, label %._crit_edge
+  %10 = getelementptr inbounds %struct.t_range* %r, i64 %indvars.iv, i32 4, !dbg !734
+  %11 = load float* %10, align 4, !dbg !734, !tbaa !735
+  %12 = fcmp ogt float %9, %11, !dbg !736
+  br i1 %12, label %.lr.ph5, label %._crit_edge, !dbg !737
 
 .lr.ph5:                                          ; preds = %.preheader
-  %13 = getelementptr inbounds %struct.t_range* %r, i64 %indvars.iv, i32 5
-  br label %20
+  %13 = getelementptr inbounds %struct.t_range* %r, i64 %indvars.iv, i32 5, !dbg !738
+  br label %20, !dbg !737
 
 ; <label>:14                                      ; preds = %.lr.ph, %14
   %15 = phi float [ %4, %.lr.ph ], [ %17, %14 ]
-  %16 = load float* %8, align 4, !tbaa !32
-  %17 = fadd float %15, %16
-  store float %17, float* %3, align 4, !tbaa !27
-  %18 = load float* %5, align 4, !tbaa !29
-  %19 = fcmp olt float %17, %18
-  br i1 %19, label %14, label %.preheader
+  %16 = load float* %8, align 4, !dbg !733, !tbaa !739
+  %17 = fadd float %15, %16, !dbg !740
+  store float %17, float* %3, align 4, !dbg !740, !tbaa !303
+  %18 = load float* %5, align 4, !dbg !728, !tbaa !729
+  %19 = fcmp olt float %17, %18, !dbg !731
+  br i1 %19, label %14, label %.preheader, !dbg !732
 
 ; <label>:20                                      ; preds = %.lr.ph5, %20
   %21 = phi float [ %9, %.lr.ph5 ], [ %23, %20 ]
-  %22 = load float* %13, align 4, !tbaa !32
-  %23 = fsub float %21, %22
-  store float %23, float* %3, align 4, !tbaa !27
-  %24 = load float* %10, align 4, !tbaa !31
-  %25 = fcmp ogt float %23, %24
-  br i1 %25, label %20, label %._crit_edge
+  %22 = load float* %13, align 4, !dbg !738, !tbaa !739
+  %23 = fsub float %21, %22, !dbg !741
+  store float %23, float* %3, align 4, !dbg !741, !tbaa !303
+  %24 = load float* %10, align 4, !dbg !734, !tbaa !735
+  %25 = fcmp ogt float %23, %24, !dbg !736
+  br i1 %25, label %20, label %._crit_edge, !dbg !737
 
 ._crit_edge:                                      ; preds = %20, %.preheader
   %.lcssa3 = phi float [ %9, %.preheader ], [ %23, %20 ]
-  %26 = getelementptr inbounds %struct.t_range* %r, i64 %indvars.iv, i32 6
-  store float %.lcssa3, float* %26, align 4, !tbaa !33
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %2
-  br i1 %exitcond, label %._crit_edge8, label %.preheader1
+  %26 = getelementptr inbounds %struct.t_range* %r, i64 %indvars.iv, i32 6, !dbg !742
+  store float %.lcssa3, float* %26, align 4, !dbg !743, !tbaa !744
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !725
+  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !725
+  %exitcond = icmp eq i32 %lftr.wideiv, %2, !dbg !725
+  br i1 %exitcond, label %._crit_edge8, label %.preheader1, !dbg !725
 
 ._crit_edge8:                                     ; preds = %._crit_edge, %0
-  ret void
+  ret void, !dbg !745
 }

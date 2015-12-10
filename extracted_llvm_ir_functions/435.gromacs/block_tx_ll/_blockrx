@@ -1,54 +1,64 @@
 define void @_blockrx(i32 %src, i32 %nelem, i32 %size, i8* %data) #3 {
   %len = alloca i32, align 4
-  %1 = icmp eq i8* %data, null
-  %2 = icmp sgt i32 %size, 0
-  %or.cond = and i1 %2, %1
-  br i1 %or.cond, label %3, label %.preheader
+  tail call void @llvm.dbg.value(metadata i32 %src, i64 0, metadata !93, metadata !130), !dbg !197
+  tail call void @llvm.dbg.value(metadata i32 %nelem, i64 0, metadata !94, metadata !130), !dbg !198
+  tail call void @llvm.dbg.value(metadata i32 %size, i64 0, metadata !95, metadata !130), !dbg !199
+  tail call void @llvm.dbg.value(metadata i8* %data, i64 0, metadata !96, metadata !130), !dbg !200
+  tail call void @llvm.dbg.value(metadata i8* %data, i64 0, metadata !99, metadata !130), !dbg !201
+  %1 = icmp eq i8* %data, null, !dbg !202
+  %2 = icmp sgt i32 %size, 0, !dbg !204
+  %or.cond = and i1 %2, %1, !dbg !205
+  br i1 %or.cond, label %3, label %.preheader, !dbg !205
 
 ; <label>:3                                       ; preds = %0
-  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([29 x i8]* @.str1, i64 0, i64 0), i32 %size) #4
-  br label %.preheader
+  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([29 x i8]* @.str1, i64 0, i64 0), i32 %size) #5, !dbg !206
+  br label %.preheader, !dbg !206
 
 .preheader:                                       ; preds = %3, %0
-  %4 = icmp sgt i32 %nelem, 0
-  br i1 %4, label %.lr.ph, label %._crit_edge
+  %4 = icmp sgt i32 %nelem, 0, !dbg !207
+  br i1 %4, label %.lr.ph, label %._crit_edge, !dbg !210
 
 .lr.ph:                                           ; preds = %.preheader
-  %5 = bitcast i32* %len to i8*
-  %6 = add i32 %nelem, -1
-  br label %7
+  %5 = bitcast i32* %len to i8*, !dbg !211
+  %6 = add i32 %nelem, -1, !dbg !210
+  br label %7, !dbg !210
 
 ; <label>:7                                       ; preds = %15, %.lr.ph
   %buf.03 = phi i8* [ %data, %.lr.ph ], [ %18, %15 ]
   %i.02 = phi i32 [ 0, %.lr.ph ], [ %19, %15 ]
-  call void @gmx_rxs(i32 %src, i8* %5, i32 4) #4
-  %8 = load i32* %len, align 4, !tbaa !14
-  %9 = icmp eq i32 %8, %size
-  br i1 %9, label %11, label %10
+  call void @gmx_rxs(i32 %src, i8* %5, i32 4) #5, !dbg !213
+  call void @llvm.dbg.value(metadata i32* %len, i64 0, metadata !98, metadata !130), !dbg !214
+  %8 = load i32* %len, align 4, !dbg !215, !tbaa !172
+  %9 = icmp eq i32 %8, %size, !dbg !217
+  br i1 %9, label %11, label %10, !dbg !218
 
 ; <label>:10                                      ; preds = %7
-  call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([34 x i8]* @.str2, i64 0, i64 0), i32 0, i32 %size, i32 %8, i32 0) #4
-  %.pr = load i32* %len, align 4, !tbaa !14
-  br label %11
+  call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([34 x i8]* @.str2, i64 0, i64 0), i32 0, i32 %size, i32 %8, i32 0) #5, !dbg !219
+  %.pr = load i32* %len, align 4, !dbg !220, !tbaa !172
+  br label %11, !dbg !219
 
 ; <label>:11                                      ; preds = %7, %10
   %12 = phi i32 [ %size, %7 ], [ %.pr, %10 ]
-  %13 = icmp sgt i32 %12, 0
-  br i1 %13, label %14, label %15
+  call void @llvm.dbg.value(metadata i32* %len, i64 0, metadata !98, metadata !130), !dbg !214
+  %13 = icmp sgt i32 %12, 0, !dbg !222
+  br i1 %13, label %14, label %15, !dbg !223
 
 ; <label>:14                                      ; preds = %11
-  call void @gmx_rxs(i32 %src, i8* %buf.03, i32 %12) #4
-  %.pre = load i32* %len, align 4, !tbaa !14
-  br label %15
+  call void @gmx_rxs(i32 %src, i8* %buf.03, i32 %12) #5, !dbg !224
+  %.pre = load i32* %len, align 4, !dbg !225, !tbaa !172
+  br label %15, !dbg !224
 
 ; <label>:15                                      ; preds = %14, %11
   %16 = phi i32 [ %.pre, %14 ], [ %12, %11 ]
-  %17 = sext i32 %16 to i64
-  %18 = getelementptr inbounds i8* %buf.03, i64 %17
-  %19 = add nuw nsw i32 %i.02, 1
-  %exitcond = icmp eq i32 %i.02, %6
-  br i1 %exitcond, label %._crit_edge, label %7
+  call void @llvm.dbg.value(metadata i32* %len, i64 0, metadata !98, metadata !130), !dbg !214
+  %17 = sext i32 %16 to i64, !dbg !226
+  %18 = getelementptr inbounds i8* %buf.03, i64 %17, !dbg !226
+  call void @llvm.dbg.value(metadata i8* %18, i64 0, metadata !99, metadata !130), !dbg !201
+  %19 = add nuw nsw i32 %i.02, 1, !dbg !227
+  call void @llvm.dbg.value(metadata i32 %19, i64 0, metadata !97, metadata !130), !dbg !228
+  %exitcond = icmp eq i32 %i.02, %6, !dbg !210
+  br i1 %exitcond, label %._crit_edge, label %7, !dbg !210
 
 ._crit_edge:                                      ; preds = %15, %.preheader
-  ret void
+  ret void, !dbg !229
 }

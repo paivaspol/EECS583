@@ -1,15 +1,16 @@
-define internal fastcc float @ascii2prob(i8* nocapture %s, float %null) #0 {
-entry:
-  %0 = load i8* %s, align 1, !tbaa !1
-  %cmp = icmp eq i8 %0, 42
-  br i1 %cmp, label %cond.end, label %cond.false
+define internal fastcc float @ascii2prob(i8* nocapture readonly %s, float %null) #0 {
+  tail call void @llvm.dbg.value(metadata i8* %s, i64 0, metadata !276, metadata !464), !dbg !3240
+  tail call void @llvm.dbg.value(metadata float %null, i64 0, metadata !277, metadata !464), !dbg !3241
+  %1 = load i8* %s, align 1, !dbg !3242, !tbaa !705
+  %2 = icmp eq i8 %1, 42, !dbg !3243
+  br i1 %2, label %6, label %3, !dbg !3244
 
-cond.false:                                       ; preds = %entry
-  %call = tail call i32 @atoi(i8* %s) #7
-  %call2 = tail call float @Score2Prob(i32 %call, float %null) #6
-  br label %cond.end
+; <label>:3                                       ; preds = %0
+  %4 = tail call i32 @atoi(i8* %s) #6, !dbg !3245
+  %5 = tail call float @Score2Prob(i32 %4, float %null) #6, !dbg !3246
+  br label %6, !dbg !3244
 
-cond.end:                                         ; preds = %entry, %cond.false
-  %cond = phi float [ %call2, %cond.false ], [ 0.000000e+00, %entry ]
-  ret float %cond
+; <label>:6                                       ; preds = %0, %3
+  %7 = phi float [ %5, %3 ], [ 0.000000e+00, %0 ]
+  ret float %7, !dbg !3247
 }

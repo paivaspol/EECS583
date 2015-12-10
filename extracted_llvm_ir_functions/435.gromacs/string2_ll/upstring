@@ -1,24 +1,27 @@
 define void @upstring(i8* nocapture %str) #3 {
-  %1 = tail call i64 @strlen(i8* %str) #10
-  %2 = trunc i64 %1 to i32
-  %3 = icmp sgt i32 %2, 0
-  br i1 %3, label %.lr.ph, label %._crit_edge
+  tail call void @llvm.dbg.value(metadata i8* %str, i64 0, metadata !194, metadata !281), !dbg !490
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !195, metadata !281), !dbg !491
+  %1 = tail call i64 @strlen(i8* %str) #10, !dbg !492
+  %2 = trunc i64 %1 to i32, !dbg !495
+  %3 = icmp sgt i32 %2, 0, !dbg !496
+  br i1 %3, label %.lr.ph, label %._crit_edge, !dbg !497
 
 .lr.ph:                                           ; preds = %0, %.lr.ph
   %indvars.iv = phi i64 [ %indvars.iv.next, %.lr.ph ], [ 0, %0 ]
-  %4 = getelementptr inbounds i8* %str, i64 %indvars.iv
-  %5 = load i8* %4, align 1, !tbaa !13
-  %6 = sext i8 %5 to i32
-  %7 = tail call i32 @__toupper(i32 %6) #10
-  %8 = trunc i32 %7 to i8
-  store i8 %8, i8* %4, align 1, !tbaa !13
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %9 = tail call i64 @strlen(i8* %str) #10
-  %sext = shl i64 %9, 32
-  %10 = ashr exact i64 %sext, 32
-  %11 = icmp slt i64 %indvars.iv.next, %10
-  br i1 %11, label %.lr.ph, label %._crit_edge
+  %4 = getelementptr inbounds i8* %str, i64 %indvars.iv, !dbg !498
+  %5 = load i8* %4, align 1, !dbg !498, !tbaa !309
+  %6 = sext i8 %5 to i32, !dbg !498
+  tail call void @llvm.dbg.value(metadata i32 %6, i64 0, metadata !146, metadata !281) #9, !dbg !499
+  %7 = tail call i32 @__toupper(i32 %6) #10, !dbg !501
+  %8 = trunc i32 %7 to i8, !dbg !502
+  store i8 %8, i8* %4, align 1, !dbg !503, !tbaa !309
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !497
+  %9 = tail call i64 @strlen(i8* %str) #10, !dbg !492
+  %sext = shl i64 %9, 32, !dbg !496
+  %10 = ashr exact i64 %sext, 32, !dbg !496
+  %11 = icmp slt i64 %indvars.iv.next, %10, !dbg !496
+  br i1 %11, label %.lr.ph, label %._crit_edge, !dbg !497
 
 ._crit_edge:                                      ; preds = %.lr.ph, %0
-  ret void
+  ret void, !dbg !504
 }

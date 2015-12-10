@@ -1,29 +1,33 @@
-define float @shiftfunction(float %r1, float %rc, float %R) #4 {
-  %1 = fcmp ugt float %R, %r1
-  br i1 %1, label %2, label %17
+define float @shiftfunction(float %r1, float %rc, float %R) #5 {
+  tail call void @llvm.dbg.value(metadata float %r1, i64 0, metadata !226, metadata !655), !dbg !910
+  tail call void @llvm.dbg.value(metadata float %rc, i64 0, metadata !227, metadata !655), !dbg !911
+  tail call void @llvm.dbg.value(metadata float %R, i64 0, metadata !228, metadata !655), !dbg !912
+  %1 = fcmp ugt float %R, %r1, !dbg !913
+  br i1 %1, label %2, label %17, !dbg !915
 
 ; <label>:2                                       ; preds = %0
-  %3 = fcmp ult float %R, %rc
-  br i1 %3, label %7, label %4
+  %3 = fcmp ult float %R, %rc, !dbg !916
+  br i1 %3, label %7, label %4, !dbg !918
 
 ; <label>:4                                       ; preds = %2
-  %5 = fmul float %R, %R
-  %6 = fdiv float -1.000000e+00, %5
-  br label %17
+  %5 = fmul float %R, %R, !dbg !919
+  %6 = fdiv float -1.000000e+00, %5, !dbg !920
+  br label %17, !dbg !921
 
 ; <label>:7                                       ; preds = %2
-  %8 = fsub float %R, %r1
-  %9 = load float* @A, align 4, !tbaa !2
-  %10 = fmul float %8, %9
-  %11 = fmul float %8, %10
-  %12 = load float* @B, align 4, !tbaa !2
-  %13 = fmul float %8, %12
-  %14 = fmul float %8, %13
-  %15 = fmul float %8, %14
-  %16 = fadd float %11, %15
-  br label %17
+  %8 = fsub float %R, %r1, !dbg !922
+  tail call void @llvm.dbg.value(metadata float %8, i64 0, metadata !229, metadata !655), !dbg !923
+  %9 = load float* @A, align 4, !dbg !924, !tbaa !679
+  %10 = fmul float %8, %9, !dbg !925
+  %11 = fmul float %8, %10, !dbg !926
+  %12 = load float* @B, align 4, !dbg !927, !tbaa !679
+  %13 = fmul float %8, %12, !dbg !928
+  %14 = fmul float %8, %13, !dbg !929
+  %15 = fmul float %8, %14, !dbg !930
+  %16 = fadd float %11, %15, !dbg !931
+  br label %17, !dbg !932
 
 ; <label>:17                                      ; preds = %0, %7, %4
   %.0 = phi float [ %6, %4 ], [ %16, %7 ], [ 0.000000e+00, %0 ]
-  ret float %.0
+  ret float %.0, !dbg !933
 }

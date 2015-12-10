@@ -1,606 +1,670 @@
 define void @CheckBadFlow(i32 %reset) #0 {
-entry:
   %hismoves = alloca [512 x %struct.move_s], align 16
   %ourmoves = alloca [512 x %struct.move_s], align 16
-  %0 = bitcast [512 x %struct.move_s]* %hismoves to i8*
-  call void @llvm.lifetime.start(i64 12288, i8* %0) #1
-  %1 = bitcast [512 x %struct.move_s]* %ourmoves to i8*
-  call void @llvm.lifetime.start(i64 12288, i8* %1) #1
-  %tobool = icmp eq i32 %reset, 0
-  br i1 %tobool, label %if.end, label %if.then
-
-if.then:                                          ; preds = %entry
-  store i32 0, i32* @CheckBadFlow.pawnmated, align 4, !tbaa !2
-  store i32 0, i32* @CheckBadFlow.knightmated, align 4, !tbaa !2
-  store i32 0, i32* @CheckBadFlow.bishopmated, align 4, !tbaa !2
-  store i32 0, i32* @CheckBadFlow.rookmated, align 4, !tbaa !2
-  store i32 0, i32* @CheckBadFlow.queenmated, align 4, !tbaa !2
-  br label %cleanup
-
-if.end:                                           ; preds = %entry
-  %call = call i32 @in_check() #8
-  %2 = load i32* @white_to_move, align 4, !tbaa !2
-  %tobool1 = icmp ne i32 %2, 0
-  %cond = select i1 %tobool1, i32 1, i32 2
-  %idxprom488 = zext i32 %cond to i64
-  %3 = zext i1 %tobool1 to i32
-  %lnot.ext = xor i32 %3, 1
-  %idxprom3489 = zext i32 %lnot.ext to i64
-  %arrayidx4 = getelementptr inbounds [2 x [16 x i32]]* @holding, i64 0, i64 %idxprom3489, i64 %idxprom488
-  %4 = load i32* %arrayidx4, align 4, !tbaa !2
-  %tobool5 = icmp eq i32 %4, 0
-  br i1 %tobool5, label %if.then6, label %if.end44
-
-if.then6:                                         ; preds = %if.end
-  call void @DropaddHolding(i32 %cond, i32 %lnot.ext) #8
-  %arrayidx12 = getelementptr inbounds [512 x %struct.move_s]* %hismoves, i64 0, i64 0
-  call void @gen(%struct.move_s* %arrayidx12) #8
-  %5 = load i32* @numb_moves, align 4, !tbaa !2
-  %cmp563 = icmp sgt i32 %5, 0
-  br i1 %cmp563, label %for.body.lr.ph, label %for.end38
-
-for.body.lr.ph:                                   ; preds = %if.then6
-  %arrayidx20 = getelementptr inbounds [512 x %struct.move_s]* %ourmoves, i64 0, i64 0
-  br label %for.body
-
-for.body:                                         ; preds = %for.body.lr.ph, %if.end34
-  %i.0564 = phi i32 [ 0, %for.body.lr.ph ], [ %inc37, %if.end34 ]
-  call void @make(%struct.move_s* %arrayidx12, i32 %i.0564) #8
-  %call16 = call i32 @check_legal(%struct.move_s* %arrayidx12, i32 %i.0564, i32 %call) #8
-  %tobool17 = icmp eq i32 %call16, 0
-  br i1 %tobool17, label %if.end34, label %if.then18
-
-if.then18:                                        ; preds = %for.body
-  %call19 = call i32 @in_check() #8
-  call void @gen(%struct.move_s* %arrayidx20) #8
-  %6 = load i32* @numb_moves, align 4, !tbaa !2
-  %cmp22558 = icmp slt i32 %6, 1
-  br i1 %cmp22558, label %if.end34, label %for.body26
-
-for.body26:                                       ; preds = %if.then18, %for.body26
-  %pawnmates.1561 = phi i32 [ %pawnmates.1., %for.body26 ], [ 3, %if.then18 ]
-  %j.0560 = phi i32 [ %inc, %for.body26 ], [ 0, %if.then18 ]
-  call void @make(%struct.move_s* %arrayidx20, i32 %j.0560) #8
-  %call29 = call i32 @check_legal(%struct.move_s* %arrayidx20, i32 %j.0560, i32 %call19) #8
-  %tobool30 = icmp eq i32 %call29, 0
-  %pawnmates.1. = select i1 %tobool30, i32 %pawnmates.1561, i32 0
-  call void @unmake(%struct.move_s* %arrayidx20, i32 %j.0560) #8
-  %inc = add nsw i32 %j.0560, 1
-  %cmp22 = icmp sge i32 %inc, %6
-  %cmp24 = icmp eq i32 %pawnmates.1., 0
-  %or.cond513 = or i1 %cmp22, %cmp24
-  br i1 %or.cond513, label %if.end34, label %for.body26
-
-if.end34:                                         ; preds = %if.then18, %for.body26, %for.body
-  %pawnmates.3 = phi i32 [ 0, %for.body ], [ 3, %if.then18 ], [ %pawnmates.1., %for.body26 ]
-  call void @unmake(%struct.move_s* %arrayidx12, i32 %i.0564) #8
-  %inc37 = add nsw i32 %i.0564, 1
-  %cmp = icmp slt i32 %inc37, %5
-  %cmp13 = icmp eq i32 %pawnmates.3, 0
-  %or.cond = and i1 %cmp, %cmp13
-  br i1 %or.cond, label %for.body, label %for.end38
-
-for.end38:                                        ; preds = %if.end34, %if.then6
-  %pawnmates.0.lcssa = phi i32 [ 0, %if.then6 ], [ %pawnmates.3, %if.end34 ]
-  %7 = load i32* @white_to_move, align 4, !tbaa !2
-  %tobool39 = icmp ne i32 %7, 0
-  %cond40 = select i1 %tobool39, i32 1, i32 2
-  %8 = zext i1 %tobool39 to i32
-  %lnot.ext43 = xor i32 %8, 1
-  call void @DropremoveHolding(i32 %cond40, i32 %lnot.ext43) #8
-  %.pre = load i32* @white_to_move, align 4, !tbaa !2
-  br label %if.end44
-
-if.end44:                                         ; preds = %if.end, %for.end38
-  %9 = phi i32 [ %2, %if.end ], [ %.pre, %for.end38 ]
-  %pawnmates.4 = phi i32 [ 0, %if.end ], [ %pawnmates.0.lcssa, %for.end38 ]
-  %tobool45 = icmp ne i32 %9, 0
-  %cond46 = select i1 %tobool45, i32 3, i32 4
-  %idxprom47490 = zext i32 %cond46 to i64
-  %10 = zext i1 %tobool45 to i32
-  %lnot.ext50 = xor i32 %10, 1
-  %idxprom51491 = zext i32 %lnot.ext50 to i64
-  %arrayidx53 = getelementptr inbounds [2 x [16 x i32]]* @holding, i64 0, i64 %idxprom51491, i64 %idxprom47490
-  %11 = load i32* %arrayidx53, align 4, !tbaa !2
-  %tobool54 = icmp eq i32 %11, 0
-  br i1 %tobool54, label %if.then55, label %if.end101
-
-if.then55:                                        ; preds = %if.end44
-  call void @DropaddHolding(i32 %cond46, i32 %lnot.ext50) #8
-  %arrayidx61 = getelementptr inbounds [512 x %struct.move_s]* %hismoves, i64 0, i64 0
-  call void @gen(%struct.move_s* %arrayidx61) #8
-  %12 = load i32* @numb_moves, align 4, !tbaa !2
-  %cmp63554 = icmp sgt i32 %12, 0
-  br i1 %cmp63554, label %for.body67.lr.ph, label %for.end95
-
-for.body67.lr.ph:                                 ; preds = %if.then55
-  %arrayidx74 = getelementptr inbounds [512 x %struct.move_s]* %ourmoves, i64 0, i64 0
-  br label %for.body67
-
-for.body67:                                       ; preds = %for.body67.lr.ph, %if.end91
-  %i.1555 = phi i32 [ 0, %for.body67.lr.ph ], [ %inc94, %if.end91 ]
-  call void @make(%struct.move_s* %arrayidx61, i32 %i.1555) #8
-  %call70 = call i32 @check_legal(%struct.move_s* %arrayidx61, i32 %i.1555, i32 %call) #8
-  %tobool71 = icmp eq i32 %call70, 0
-  br i1 %tobool71, label %if.end91, label %if.then72
-
-if.then72:                                        ; preds = %for.body67
-  %call73 = call i32 @in_check() #8
-  call void @gen(%struct.move_s* %arrayidx74) #8
-  %13 = load i32* @numb_moves, align 4, !tbaa !2
-  %cmp76549 = icmp slt i32 %13, 1
-  br i1 %cmp76549, label %if.end91, label %for.body80
-
-for.body80:                                       ; preds = %if.then72, %for.body80
-  %knightmates.1552 = phi i32 [ %knightmates.1., %for.body80 ], [ 3, %if.then72 ]
-  %j.1551 = phi i32 [ %inc89, %for.body80 ], [ 0, %if.then72 ]
-  call void @make(%struct.move_s* %arrayidx74, i32 %j.1551) #8
-  %call83 = call i32 @check_legal(%struct.move_s* %arrayidx74, i32 %j.1551, i32 %call73) #8
-  %tobool84 = icmp eq i32 %call83, 0
-  %knightmates.1. = select i1 %tobool84, i32 %knightmates.1552, i32 0
-  call void @unmake(%struct.move_s* %arrayidx74, i32 %j.1551) #8
-  %inc89 = add nsw i32 %j.1551, 1
-  %cmp76 = icmp sge i32 %inc89, %13
-  %cmp78 = icmp eq i32 %knightmates.1., 0
-  %or.cond515 = or i1 %cmp76, %cmp78
-  br i1 %or.cond515, label %if.end91, label %for.body80
-
-if.end91:                                         ; preds = %if.then72, %for.body80, %for.body67
-  %knightmates.3 = phi i32 [ 0, %for.body67 ], [ 3, %if.then72 ], [ %knightmates.1., %for.body80 ]
-  call void @unmake(%struct.move_s* %arrayidx61, i32 %i.1555) #8
-  %inc94 = add nsw i32 %i.1555, 1
-  %cmp63 = icmp slt i32 %inc94, %12
-  %cmp65 = icmp eq i32 %knightmates.3, 0
-  %or.cond514 = and i1 %cmp63, %cmp65
-  br i1 %or.cond514, label %for.body67, label %for.end95
-
-for.end95:                                        ; preds = %if.end91, %if.then55
-  %knightmates.0.lcssa = phi i32 [ 0, %if.then55 ], [ %knightmates.3, %if.end91 ]
-  %14 = load i32* @white_to_move, align 4, !tbaa !2
-  %tobool96 = icmp ne i32 %14, 0
-  %cond97 = select i1 %tobool96, i32 3, i32 4
-  %15 = zext i1 %tobool96 to i32
-  %lnot.ext100 = xor i32 %15, 1
-  call void @DropremoveHolding(i32 %cond97, i32 %lnot.ext100) #8
-  %.pre567 = load i32* @white_to_move, align 4, !tbaa !2
-  br label %if.end101
-
-if.end101:                                        ; preds = %if.end44, %for.end95
-  %16 = phi i32 [ %9, %if.end44 ], [ %.pre567, %for.end95 ]
-  %knightmates.4 = phi i32 [ 0, %if.end44 ], [ %knightmates.0.lcssa, %for.end95 ]
-  %tobool102 = icmp ne i32 %16, 0
-  %cond103 = select i1 %tobool102, i32 11, i32 12
-  %idxprom104492 = zext i32 %cond103 to i64
-  %17 = zext i1 %tobool102 to i32
-  %lnot.ext107 = xor i32 %17, 1
-  %idxprom108493 = zext i32 %lnot.ext107 to i64
-  %arrayidx110 = getelementptr inbounds [2 x [16 x i32]]* @holding, i64 0, i64 %idxprom108493, i64 %idxprom104492
-  %18 = load i32* %arrayidx110, align 4, !tbaa !2
-  %tobool111 = icmp eq i32 %18, 0
-  br i1 %tobool111, label %if.then112, label %if.end158
-
-if.then112:                                       ; preds = %if.end101
-  call void @DropaddHolding(i32 %cond103, i32 %lnot.ext107) #8
-  %arrayidx118 = getelementptr inbounds [512 x %struct.move_s]* %hismoves, i64 0, i64 0
-  call void @gen(%struct.move_s* %arrayidx118) #8
-  %19 = load i32* @numb_moves, align 4, !tbaa !2
-  %cmp120545 = icmp sgt i32 %19, 0
-  br i1 %cmp120545, label %for.body124.lr.ph, label %for.end152
-
-for.body124.lr.ph:                                ; preds = %if.then112
-  %arrayidx131 = getelementptr inbounds [512 x %struct.move_s]* %ourmoves, i64 0, i64 0
-  br label %for.body124
-
-for.body124:                                      ; preds = %for.body124.lr.ph, %if.end148
-  %i.2546 = phi i32 [ 0, %for.body124.lr.ph ], [ %inc151, %if.end148 ]
-  call void @make(%struct.move_s* %arrayidx118, i32 %i.2546) #8
-  %call127 = call i32 @check_legal(%struct.move_s* %arrayidx118, i32 %i.2546, i32 %call) #8
-  %tobool128 = icmp eq i32 %call127, 0
-  br i1 %tobool128, label %if.end148, label %if.then129
-
-if.then129:                                       ; preds = %for.body124
-  %call130 = call i32 @in_check() #8
-  call void @gen(%struct.move_s* %arrayidx131) #8
-  %20 = load i32* @numb_moves, align 4, !tbaa !2
-  %cmp133540 = icmp slt i32 %20, 1
-  br i1 %cmp133540, label %if.end148, label %for.body137
-
-for.body137:                                      ; preds = %if.then129, %for.body137
-  %bishopmates.1543 = phi i32 [ %bishopmates.1., %for.body137 ], [ 3, %if.then129 ]
-  %j.2542 = phi i32 [ %inc146, %for.body137 ], [ 0, %if.then129 ]
-  call void @make(%struct.move_s* %arrayidx131, i32 %j.2542) #8
-  %call140 = call i32 @check_legal(%struct.move_s* %arrayidx131, i32 %j.2542, i32 %call130) #8
-  %tobool141 = icmp eq i32 %call140, 0
-  %bishopmates.1. = select i1 %tobool141, i32 %bishopmates.1543, i32 0
-  call void @unmake(%struct.move_s* %arrayidx131, i32 %j.2542) #8
-  %inc146 = add nsw i32 %j.2542, 1
-  %cmp133 = icmp sge i32 %inc146, %20
-  %cmp135 = icmp eq i32 %bishopmates.1., 0
-  %or.cond517 = or i1 %cmp133, %cmp135
-  br i1 %or.cond517, label %if.end148, label %for.body137
-
-if.end148:                                        ; preds = %if.then129, %for.body137, %for.body124
-  %bishopmates.3 = phi i32 [ 0, %for.body124 ], [ 3, %if.then129 ], [ %bishopmates.1., %for.body137 ]
-  call void @unmake(%struct.move_s* %arrayidx118, i32 %i.2546) #8
-  %inc151 = add nsw i32 %i.2546, 1
-  %cmp120 = icmp slt i32 %inc151, %19
-  %cmp122 = icmp eq i32 %bishopmates.3, 0
-  %or.cond516 = and i1 %cmp120, %cmp122
-  br i1 %or.cond516, label %for.body124, label %for.end152
-
-for.end152:                                       ; preds = %if.end148, %if.then112
-  %bishopmates.0.lcssa = phi i32 [ 0, %if.then112 ], [ %bishopmates.3, %if.end148 ]
-  %21 = load i32* @white_to_move, align 4, !tbaa !2
-  %tobool153 = icmp ne i32 %21, 0
-  %cond154 = select i1 %tobool153, i32 11, i32 12
-  %22 = zext i1 %tobool153 to i32
-  %lnot.ext157 = xor i32 %22, 1
-  call void @DropremoveHolding(i32 %cond154, i32 %lnot.ext157) #8
-  %.pre568 = load i32* @white_to_move, align 4, !tbaa !2
-  br label %if.end158
-
-if.end158:                                        ; preds = %if.end101, %for.end152
-  %23 = phi i32 [ %16, %if.end101 ], [ %.pre568, %for.end152 ]
-  %bishopmates.4 = phi i32 [ 0, %if.end101 ], [ %bishopmates.0.lcssa, %for.end152 ]
-  %tobool159 = icmp ne i32 %23, 0
-  %cond160 = select i1 %tobool159, i32 7, i32 8
-  %idxprom161494 = zext i32 %cond160 to i64
-  %24 = zext i1 %tobool159 to i32
-  %lnot.ext164 = xor i32 %24, 1
-  %idxprom165495 = zext i32 %lnot.ext164 to i64
-  %arrayidx167 = getelementptr inbounds [2 x [16 x i32]]* @holding, i64 0, i64 %idxprom165495, i64 %idxprom161494
-  %25 = load i32* %arrayidx167, align 4, !tbaa !2
-  %tobool168 = icmp eq i32 %25, 0
-  br i1 %tobool168, label %if.then169, label %if.end215
-
-if.then169:                                       ; preds = %if.end158
-  call void @DropaddHolding(i32 %cond160, i32 %lnot.ext164) #8
-  %arrayidx175 = getelementptr inbounds [512 x %struct.move_s]* %hismoves, i64 0, i64 0
-  call void @gen(%struct.move_s* %arrayidx175) #8
-  %26 = load i32* @numb_moves, align 4, !tbaa !2
-  %cmp177536 = icmp sgt i32 %26, 0
-  br i1 %cmp177536, label %for.body181.lr.ph, label %for.end209
-
-for.body181.lr.ph:                                ; preds = %if.then169
-  %arrayidx188 = getelementptr inbounds [512 x %struct.move_s]* %ourmoves, i64 0, i64 0
-  br label %for.body181
-
-for.body181:                                      ; preds = %for.body181.lr.ph, %if.end205
-  %i.3537 = phi i32 [ 0, %for.body181.lr.ph ], [ %inc208, %if.end205 ]
-  call void @make(%struct.move_s* %arrayidx175, i32 %i.3537) #8
-  %call184 = call i32 @check_legal(%struct.move_s* %arrayidx175, i32 %i.3537, i32 %call) #8
-  %tobool185 = icmp eq i32 %call184, 0
-  br i1 %tobool185, label %if.end205, label %if.then186
-
-if.then186:                                       ; preds = %for.body181
-  %call187 = call i32 @in_check() #8
-  call void @gen(%struct.move_s* %arrayidx188) #8
-  %27 = load i32* @numb_moves, align 4, !tbaa !2
-  %cmp190531 = icmp slt i32 %27, 1
-  br i1 %cmp190531, label %if.end205, label %for.body194
-
-for.body194:                                      ; preds = %if.then186, %for.body194
-  %rookmates.1534 = phi i32 [ %rookmates.1., %for.body194 ], [ 3, %if.then186 ]
-  %j.3533 = phi i32 [ %inc203, %for.body194 ], [ 0, %if.then186 ]
-  call void @make(%struct.move_s* %arrayidx188, i32 %j.3533) #8
-  %call197 = call i32 @check_legal(%struct.move_s* %arrayidx188, i32 %j.3533, i32 %call187) #8
-  %tobool198 = icmp eq i32 %call197, 0
-  %rookmates.1. = select i1 %tobool198, i32 %rookmates.1534, i32 0
-  call void @unmake(%struct.move_s* %arrayidx188, i32 %j.3533) #8
-  %inc203 = add nsw i32 %j.3533, 1
-  %cmp190 = icmp sge i32 %inc203, %27
-  %cmp192 = icmp eq i32 %rookmates.1., 0
-  %or.cond519 = or i1 %cmp190, %cmp192
-  br i1 %or.cond519, label %if.end205, label %for.body194
-
-if.end205:                                        ; preds = %if.then186, %for.body194, %for.body181
-  %rookmates.3 = phi i32 [ 0, %for.body181 ], [ 3, %if.then186 ], [ %rookmates.1., %for.body194 ]
-  call void @unmake(%struct.move_s* %arrayidx175, i32 %i.3537) #8
-  %inc208 = add nsw i32 %i.3537, 1
-  %cmp177 = icmp slt i32 %inc208, %26
-  %cmp179 = icmp eq i32 %rookmates.3, 0
-  %or.cond518 = and i1 %cmp177, %cmp179
-  br i1 %or.cond518, label %for.body181, label %for.end209
-
-for.end209:                                       ; preds = %if.end205, %if.then169
-  %rookmates.0.lcssa = phi i32 [ 0, %if.then169 ], [ %rookmates.3, %if.end205 ]
-  %28 = load i32* @white_to_move, align 4, !tbaa !2
-  %tobool210 = icmp ne i32 %28, 0
-  %cond211 = select i1 %tobool210, i32 7, i32 8
-  %29 = zext i1 %tobool210 to i32
-  %lnot.ext214 = xor i32 %29, 1
-  call void @DropremoveHolding(i32 %cond211, i32 %lnot.ext214) #8
-  %.pre569 = load i32* @white_to_move, align 4, !tbaa !2
-  br label %if.end215
-
-if.end215:                                        ; preds = %if.end158, %for.end209
-  %30 = phi i32 [ %23, %if.end158 ], [ %.pre569, %for.end209 ]
-  %rookmates.4 = phi i32 [ 0, %if.end158 ], [ %rookmates.0.lcssa, %for.end209 ]
-  %tobool216 = icmp ne i32 %30, 0
-  %cond217 = select i1 %tobool216, i32 9, i32 10
-  %idxprom218496 = zext i32 %cond217 to i64
-  %31 = zext i1 %tobool216 to i32
-  %lnot.ext221 = xor i32 %31, 1
-  %idxprom222497 = zext i32 %lnot.ext221 to i64
-  %arrayidx224 = getelementptr inbounds [2 x [16 x i32]]* @holding, i64 0, i64 %idxprom222497, i64 %idxprom218496
-  %32 = load i32* %arrayidx224, align 4, !tbaa !2
-  %tobool225 = icmp eq i32 %32, 0
-  br i1 %tobool225, label %if.then226, label %if.end272
-
-if.then226:                                       ; preds = %if.end215
-  call void @DropaddHolding(i32 %cond217, i32 %lnot.ext221) #8
-  %arrayidx232 = getelementptr inbounds [512 x %struct.move_s]* %hismoves, i64 0, i64 0
-  call void @gen(%struct.move_s* %arrayidx232) #8
-  %33 = load i32* @numb_moves, align 4, !tbaa !2
-  %cmp234527 = icmp sgt i32 %33, 0
-  br i1 %cmp234527, label %for.body238.lr.ph, label %for.end266
-
-for.body238.lr.ph:                                ; preds = %if.then226
-  %arrayidx245 = getelementptr inbounds [512 x %struct.move_s]* %ourmoves, i64 0, i64 0
-  br label %for.body238
-
-for.body238:                                      ; preds = %for.body238.lr.ph, %if.end262
-  %i.4528 = phi i32 [ 0, %for.body238.lr.ph ], [ %inc265, %if.end262 ]
-  call void @make(%struct.move_s* %arrayidx232, i32 %i.4528) #8
-  %call241 = call i32 @check_legal(%struct.move_s* %arrayidx232, i32 %i.4528, i32 %call) #8
-  %tobool242 = icmp eq i32 %call241, 0
-  br i1 %tobool242, label %if.end262, label %if.then243
-
-if.then243:                                       ; preds = %for.body238
-  %call244 = call i32 @in_check() #8
-  call void @gen(%struct.move_s* %arrayidx245) #8
-  %34 = load i32* @numb_moves, align 4, !tbaa !2
-  %cmp247523 = icmp slt i32 %34, 1
-  br i1 %cmp247523, label %if.end262, label %for.body251
-
-for.body251:                                      ; preds = %if.then243, %for.body251
-  %queenmates.1526 = phi i32 [ %queenmates.1., %for.body251 ], [ 3, %if.then243 ]
-  %j.4525 = phi i32 [ %inc260, %for.body251 ], [ 0, %if.then243 ]
-  call void @make(%struct.move_s* %arrayidx245, i32 %j.4525) #8
-  %call254 = call i32 @check_legal(%struct.move_s* %arrayidx245, i32 %j.4525, i32 %call244) #8
-  %tobool255 = icmp eq i32 %call254, 0
-  %queenmates.1. = select i1 %tobool255, i32 %queenmates.1526, i32 0
-  call void @unmake(%struct.move_s* %arrayidx245, i32 %j.4525) #8
-  %inc260 = add nsw i32 %j.4525, 1
-  %cmp247 = icmp sge i32 %inc260, %34
-  %cmp249 = icmp eq i32 %queenmates.1., 0
-  %or.cond521 = or i1 %cmp247, %cmp249
-  br i1 %or.cond521, label %if.end262, label %for.body251
-
-if.end262:                                        ; preds = %if.then243, %for.body251, %for.body238
-  %queenmates.3 = phi i32 [ 0, %for.body238 ], [ 3, %if.then243 ], [ %queenmates.1., %for.body251 ]
-  call void @unmake(%struct.move_s* %arrayidx232, i32 %i.4528) #8
-  %inc265 = add nsw i32 %i.4528, 1
-  %cmp234 = icmp slt i32 %inc265, %33
-  %cmp236 = icmp eq i32 %queenmates.3, 0
-  %or.cond520 = and i1 %cmp234, %cmp236
-  br i1 %or.cond520, label %for.body238, label %for.end266
-
-for.end266:                                       ; preds = %if.end262, %if.then226
-  %queenmates.0.lcssa = phi i32 [ 0, %if.then226 ], [ %queenmates.3, %if.end262 ]
-  %35 = load i32* @white_to_move, align 4, !tbaa !2
-  %tobool267 = icmp ne i32 %35, 0
-  %cond268 = select i1 %tobool267, i32 9, i32 10
-  %36 = zext i1 %tobool267 to i32
-  %lnot.ext271 = xor i32 %36, 1
-  call void @DropremoveHolding(i32 %cond268, i32 %lnot.ext271) #8
-  br label %if.end272
-
-if.end272:                                        ; preds = %if.end215, %for.end266
-  %queenmates.4 = phi i32 [ 0, %if.end215 ], [ %queenmates.0.lcssa, %for.end266 ]
-  %37 = load i32* @CheckBadFlow.pawnmated, align 4, !tbaa !2
-  %cmp273 = icmp eq i32 %pawnmates.4, %37
-  br i1 %cmp273, label %if.end283, label %if.then274
-
-if.then274:                                       ; preds = %if.end272
-  %cmp275 = icmp eq i32 %pawnmates.4, 3
-  br i1 %cmp275, label %if.end283, label %if.else
-
-if.else:                                          ; preds = %if.then274
-  %38 = or i32 %37, %pawnmates.4
-  %39 = icmp eq i32 %38, 0
-  br i1 %39, label %if.then279, label %if.end283
-
-if.then279:                                       ; preds = %if.else
-  %puts512 = call i32 @puts(i8* getelementptr inbounds ([40 x i8]* @str116, i64 0, i64 0))
-  br label %if.end283
-
-if.end283:                                        ; preds = %if.then274, %if.end272, %if.then279, %if.else
-  %othermove.0 = phi i32 [ 1, %if.then279 ], [ 0, %if.else ], [ 0, %if.end272 ], [ 0, %if.then274 ]
-  %pawnwarn.0 = phi i32 [ 0, %if.then279 ], [ 0, %if.else ], [ 0, %if.end272 ], [ 1, %if.then274 ]
-  %40 = load i32* @CheckBadFlow.knightmated, align 4, !tbaa !2
-  %cmp284 = icmp eq i32 %knightmates.4, %40
-  br i1 %cmp284, label %if.end296, label %if.then285
-
-if.then285:                                       ; preds = %if.end283
-  %cmp286 = icmp eq i32 %knightmates.4, 3
-  br i1 %cmp286, label %if.end296, label %if.else288
-
-if.else288:                                       ; preds = %if.then285
-  %41 = or i32 %40, %knightmates.4
-  %42 = icmp eq i32 %41, 0
-  br i1 %42, label %if.then292, label %if.end296
-
-if.then292:                                       ; preds = %if.else288
-  %puts511 = call i32 @puts(i8* getelementptr inbounds ([40 x i8]* @str115, i64 0, i64 0))
-  br label %if.end296
-
-if.end296:                                        ; preds = %if.then285, %if.end283, %if.then292, %if.else288
-  %othermove.1 = phi i32 [ 1, %if.then292 ], [ %othermove.0, %if.else288 ], [ %othermove.0, %if.end283 ], [ %othermove.0, %if.then285 ]
-  %knightwarn.0 = phi i32 [ 0, %if.then292 ], [ 0, %if.else288 ], [ 0, %if.end283 ], [ 1, %if.then285 ]
-  %43 = load i32* @CheckBadFlow.bishopmated, align 4, !tbaa !2
-  %cmp297 = icmp eq i32 %bishopmates.4, %43
-  br i1 %cmp297, label %if.end309, label %if.then298
-
-if.then298:                                       ; preds = %if.end296
-  %cmp299 = icmp eq i32 %bishopmates.4, 3
-  br i1 %cmp299, label %if.end309, label %if.else301
-
-if.else301:                                       ; preds = %if.then298
-  %44 = or i32 %43, %bishopmates.4
-  %45 = icmp eq i32 %44, 0
-  br i1 %45, label %if.then305, label %if.end309
-
-if.then305:                                       ; preds = %if.else301
-  %puts510 = call i32 @puts(i8* getelementptr inbounds ([40 x i8]* @str114, i64 0, i64 0))
-  br label %if.end309
-
-if.end309:                                        ; preds = %if.then298, %if.end296, %if.then305, %if.else301
-  %othermove.2 = phi i32 [ 1, %if.then305 ], [ %othermove.1, %if.else301 ], [ %othermove.1, %if.end296 ], [ %othermove.1, %if.then298 ]
-  %bishopwarn.0 = phi i32 [ 0, %if.then305 ], [ 0, %if.else301 ], [ 0, %if.end296 ], [ 1, %if.then298 ]
-  %46 = load i32* @CheckBadFlow.rookmated, align 4, !tbaa !2
-  %cmp310 = icmp eq i32 %rookmates.4, %46
-  br i1 %cmp310, label %if.end322, label %if.then311
-
-if.then311:                                       ; preds = %if.end309
-  %cmp312 = icmp eq i32 %rookmates.4, 3
-  br i1 %cmp312, label %if.end322, label %if.else314
-
-if.else314:                                       ; preds = %if.then311
-  %47 = or i32 %46, %rookmates.4
-  %48 = icmp eq i32 %47, 0
-  br i1 %48, label %if.then318, label %if.end322
-
-if.then318:                                       ; preds = %if.else314
-  %puts509 = call i32 @puts(i8* getelementptr inbounds ([40 x i8]* @str113, i64 0, i64 0))
-  br label %if.end322
-
-if.end322:                                        ; preds = %if.then311, %if.end309, %if.then318, %if.else314
-  %othermove.3 = phi i32 [ 1, %if.then318 ], [ %othermove.2, %if.else314 ], [ %othermove.2, %if.end309 ], [ %othermove.2, %if.then311 ]
-  %rookwarn.0 = phi i32 [ 0, %if.then318 ], [ 0, %if.else314 ], [ 0, %if.end309 ], [ 1, %if.then311 ]
-  %49 = load i32* @CheckBadFlow.queenmated, align 4, !tbaa !2
-  %cmp323 = icmp eq i32 %queenmates.4, %49
-  br i1 %cmp323, label %if.end335, label %if.then324
-
-if.then324:                                       ; preds = %if.end322
-  %cmp325 = icmp eq i32 %queenmates.4, 3
-  br i1 %cmp325, label %if.end335, label %if.else327
-
-if.else327:                                       ; preds = %if.then324
-  %50 = or i32 %49, %queenmates.4
-  %51 = icmp eq i32 %50, 0
-  br i1 %51, label %if.then331, label %if.end335
-
-if.then331:                                       ; preds = %if.else327
-  %puts508 = call i32 @puts(i8* getelementptr inbounds ([40 x i8]* @str112, i64 0, i64 0))
-  br label %if.end335
-
-if.end335:                                        ; preds = %if.then324, %if.end322, %if.then331, %if.else327
-  %othermove.4 = phi i32 [ 1, %if.then331 ], [ %othermove.3, %if.else327 ], [ %othermove.3, %if.end322 ], [ %othermove.3, %if.then324 ]
-  %queenwarn.0 = phi i32 [ 0, %if.then331 ], [ 0, %if.else327 ], [ 0, %if.end322 ], [ 1, %if.then324 ]
-  %tobool336 = icmp eq i32 %pawnwarn.0, 0
-  br i1 %tobool336, label %if.end339, label %if.then337
-
-if.then337:                                       ; preds = %if.end335
-  %puts507 = call i32 @puts(i8* getelementptr inbounds ([19 x i8]* @str111, i64 0, i64 0))
-  br label %if.end339
-
-if.end339:                                        ; preds = %if.end335, %if.then337
-  %tobool340 = icmp eq i32 %knightwarn.0, 0
-  br i1 %tobool340, label %if.end343, label %if.then341
-
-if.then341:                                       ; preds = %if.end339
-  %puts506 = call i32 @puts(i8* getelementptr inbounds ([19 x i8]* @str110, i64 0, i64 0))
-  br label %if.end343
-
-if.end343:                                        ; preds = %if.end339, %if.then341
-  %tobool344 = icmp eq i32 %bishopwarn.0, 0
-  br i1 %tobool344, label %if.end347, label %if.then345
-
-if.then345:                                       ; preds = %if.end343
-  %puts505 = call i32 @puts(i8* getelementptr inbounds ([19 x i8]* @str109, i64 0, i64 0))
-  br label %if.end347
-
-if.end347:                                        ; preds = %if.end343, %if.then345
-  %tobool348 = icmp eq i32 %rookwarn.0, 0
-  br i1 %tobool348, label %if.end351, label %if.then349
-
-if.then349:                                       ; preds = %if.end347
-  %puts504 = call i32 @puts(i8* getelementptr inbounds ([19 x i8]* @str108, i64 0, i64 0))
-  br label %if.end351
-
-if.end351:                                        ; preds = %if.end347, %if.then349
-  %tobool352 = icmp eq i32 %queenwarn.0, 0
-  br i1 %tobool352, label %if.end355, label %if.then353
-
-if.then353:                                       ; preds = %if.end351
-  %puts503 = call i32 @puts(i8* getelementptr inbounds ([19 x i8]* @str107, i64 0, i64 0))
-  br label %if.end355
-
-if.end355:                                        ; preds = %if.end351, %if.then353
-  %52 = load i32* @piecedead, align 4, !tbaa !0
-  %tobool356 = icmp eq i32 %52, 0
-  %tobool358 = icmp eq i32 %othermove.4, 0
-  %or.cond522 = or i1 %tobool356, %tobool358
-  br i1 %or.cond522, label %if.end362, label %if.then359
-
-if.then359:                                       ; preds = %if.end355
-  store i32 0, i32* @piecedead, align 4, !tbaa !0
-  %puts = call i32 @puts(i8* getelementptr inbounds ([16 x i8]* @str105, i64 0, i64 0))
-  %puts502 = call i32 @puts(i8* getelementptr inbounds ([17 x i8]* @str106, i64 0, i64 0))
-  store i32 0, i32* @go_fast, align 4, !tbaa !0
-  br label %if.end362
-
-if.end362:                                        ; preds = %if.end355, %if.then359
-  %tobool363 = icmp eq i32 %pawnmates.4, 0
-  br i1 %tobool363, label %cond.false, label %cond.end
-
-cond.false:                                       ; preds = %if.end362
-  %53 = load i32* @CheckBadFlow.pawnmated, align 4, !tbaa !2
-  %dec = add nsw i32 %53, -1
-  br label %cond.end
-
-cond.end:                                         ; preds = %if.end362, %cond.false
-  %storemerge = phi i32 [ %dec, %cond.false ], [ %pawnmates.4, %if.end362 ]
-  store i32 %storemerge, i32* @CheckBadFlow.pawnmated, align 4, !tbaa !2
-  %tobool365 = icmp eq i32 %bishopmates.4, 0
-  br i1 %tobool365, label %cond.false367, label %cond.end369
-
-cond.false367:                                    ; preds = %cond.end
-  %54 = load i32* @CheckBadFlow.bishopmated, align 4, !tbaa !2
-  %dec368 = add nsw i32 %54, -1
-  br label %cond.end369
-
-cond.end369:                                      ; preds = %cond.end, %cond.false367
-  %storemerge498 = phi i32 [ %dec368, %cond.false367 ], [ %bishopmates.4, %cond.end ]
-  store i32 %storemerge498, i32* @CheckBadFlow.bishopmated, align 4, !tbaa !2
-  %tobool371 = icmp eq i32 %rookmates.4, 0
-  br i1 %tobool371, label %cond.false373, label %cond.end375
-
-cond.false373:                                    ; preds = %cond.end369
-  %55 = load i32* @CheckBadFlow.rookmated, align 4, !tbaa !2
-  %dec374 = add nsw i32 %55, -1
-  br label %cond.end375
-
-cond.end375:                                      ; preds = %cond.end369, %cond.false373
-  %storemerge499 = phi i32 [ %dec374, %cond.false373 ], [ %rookmates.4, %cond.end369 ]
-  store i32 %storemerge499, i32* @CheckBadFlow.rookmated, align 4, !tbaa !2
-  %tobool377 = icmp eq i32 %queenmates.4, 0
-  br i1 %tobool377, label %cond.false379, label %cond.end381
-
-cond.false379:                                    ; preds = %cond.end375
-  %56 = load i32* @CheckBadFlow.queenmated, align 4, !tbaa !2
-  %dec380 = add nsw i32 %56, -1
-  br label %cond.end381
-
-cond.end381:                                      ; preds = %cond.end375, %cond.false379
-  %storemerge500 = phi i32 [ %dec380, %cond.false379 ], [ %queenmates.4, %cond.end375 ]
-  store i32 %storemerge500, i32* @CheckBadFlow.queenmated, align 4, !tbaa !2
-  %tobool383 = icmp eq i32 %knightmates.4, 0
-  br i1 %tobool383, label %cond.false385, label %cond.end387
-
-cond.false385:                                    ; preds = %cond.end381
-  %57 = load i32* @CheckBadFlow.knightmated, align 4, !tbaa !2
-  %dec386 = add nsw i32 %57, -1
-  br label %cond.end387
-
-cond.end387:                                      ; preds = %cond.end381, %cond.false385
-  %storemerge501 = phi i32 [ %dec386, %cond.false385 ], [ %knightmates.4, %cond.end381 ]
-  store i32 %storemerge501, i32* @CheckBadFlow.knightmated, align 4, !tbaa !2
-  br label %cleanup
-
-cleanup:                                          ; preds = %cond.end387, %if.then
-  call void @llvm.lifetime.end(i64 12288, i8* %1) #1
-  call void @llvm.lifetime.end(i64 12288, i8* %0) #1
-  ret void
+  tail call void @llvm.dbg.value(metadata i32 %reset, i64 0, metadata !39, metadata !95), !dbg !753
+  %1 = bitcast [512 x %struct.move_s]* %hismoves to i8*, !dbg !754
+  call void @llvm.lifetime.start(i64 12288, i8* %1) #1, !dbg !754
+  tail call void @llvm.dbg.declare(metadata [512 x %struct.move_s]* %hismoves, metadata !40, metadata !95), !dbg !755
+  %2 = bitcast [512 x %struct.move_s]* %ourmoves to i8*, !dbg !756
+  call void @llvm.lifetime.start(i64 12288, i8* %2) #1, !dbg !756
+  tail call void @llvm.dbg.declare(metadata [512 x %struct.move_s]* %ourmoves, metadata !53, metadata !95), !dbg !757
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !60, metadata !95), !dbg !758
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !61, metadata !95), !dbg !759
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !62, metadata !95), !dbg !760
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !63, metadata !95), !dbg !761
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !64, metadata !95), !dbg !762
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !65, metadata !95), !dbg !763
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !66, metadata !95), !dbg !764
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !67, metadata !95), !dbg !765
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !68, metadata !95), !dbg !766
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !69, metadata !95), !dbg !767
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !70, metadata !95), !dbg !768
+  %3 = icmp eq i32 %reset, 0, !dbg !769
+  br i1 %3, label %5, label %4, !dbg !771
+
+; <label>:4                                       ; preds = %0
+  store i32 0, i32* @CheckBadFlow.pawnmated, align 4, !dbg !772, !tbaa !136
+  store i32 0, i32* @CheckBadFlow.knightmated, align 4, !dbg !774, !tbaa !136
+  store i32 0, i32* @CheckBadFlow.bishopmated, align 4, !dbg !775, !tbaa !136
+  store i32 0, i32* @CheckBadFlow.rookmated, align 4, !dbg !776, !tbaa !136
+  store i32 0, i32* @CheckBadFlow.queenmated, align 4, !dbg !777, !tbaa !136
+  br label %277, !dbg !778
+
+; <label>:5                                       ; preds = %0
+  %6 = tail call i32 @in_check() #9, !dbg !779
+  tail call void @llvm.dbg.value(metadata i32 %6, i64 0, metadata !58, metadata !95), !dbg !780
+  %7 = load i32* @white_to_move, align 4, !dbg !781, !tbaa !136
+  %8 = icmp ne i32 %7, 0, !dbg !781
+  %9 = select i1 %8, i32 1, i32 2, !dbg !781
+  %10 = zext i32 %9 to i64, !dbg !783
+  %11 = zext i1 %8 to i32, !dbg !784
+  %12 = xor i32 %11, 1, !dbg !784
+  %13 = zext i32 %12 to i64, !dbg !783
+  %14 = getelementptr inbounds [2 x [16 x i32]]* @holding, i64 0, i64 %13, i64 %10, !dbg !783
+  %15 = load i32* %14, align 4, !dbg !783, !tbaa !136
+  %16 = icmp eq i32 %15, 0, !dbg !783
+  br i1 %16, label %17, label %42, !dbg !785
+
+; <label>:17                                      ; preds = %5
+  tail call void @DropaddHolding(i32 %9, i32 %12) #9, !dbg !786
+  %18 = getelementptr inbounds [512 x %struct.move_s]* %hismoves, i64 0, i64 0, !dbg !788
+  call void @gen(%struct.move_s* %18) #9, !dbg !789
+  %19 = load i32* @numb_moves, align 4, !dbg !790, !tbaa !136
+  call void @llvm.dbg.value(metadata i32 %19, i64 0, metadata !54, metadata !95), !dbg !791
+  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !57, metadata !95), !dbg !792
+  %20 = icmp sgt i32 %19, 0, !dbg !793
+  br i1 %20, label %.lr.ph97, label %.critedge, !dbg !796
+
+.lr.ph97:                                         ; preds = %17
+  %21 = getelementptr inbounds [512 x %struct.move_s]* %ourmoves, i64 0, i64 0, !dbg !797
+  br label %22, !dbg !796
+
+; <label>:22                                      ; preds = %.lr.ph97, %.critedge1
+  %i.095 = phi i32 [ 0, %.lr.ph97 ], [ %34, %.critedge1 ]
+  call void @make(%struct.move_s* %18, i32 %i.095) #9, !dbg !801
+  %23 = call i32 @check_legal(%struct.move_s* %18, i32 %i.095, i32 %6) #9, !dbg !802
+  %24 = icmp eq i32 %23, 0, !dbg !802
+  br i1 %24, label %.critedge1, label %25, !dbg !803
+
+; <label>:25                                      ; preds = %22
+  call void @llvm.dbg.value(metadata i32 3, i64 0, metadata !61, metadata !95), !dbg !759
+  %26 = call i32 @in_check() #9, !dbg !804
+  call void @llvm.dbg.value(metadata i32 %26, i64 0, metadata !59, metadata !95), !dbg !805
+  call void @gen(%struct.move_s* %21) #9, !dbg !806
+  %27 = load i32* @numb_moves, align 4, !dbg !807, !tbaa !136
+  call void @llvm.dbg.value(metadata i32 %27, i64 0, metadata !55, metadata !95), !dbg !808
+  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !56, metadata !95), !dbg !809
+  %28 = icmp sgt i32 %27, 0, !dbg !810
+  br i1 %28, label %.lr.ph93, label %.critedge1, !dbg !813
+
+.lr.ph93:                                         ; preds = %25, %.lr.ph93
+  %pawnmates.192 = phi i32 [ %pawnmates.1., %.lr.ph93 ], [ 3, %25 ]
+  %j.091 = phi i32 [ %31, %.lr.ph93 ], [ 0, %25 ]
+  call void @make(%struct.move_s* %21, i32 %j.091) #9, !dbg !814
+  %29 = call i32 @check_legal(%struct.move_s* %21, i32 %j.091, i32 %26) #9, !dbg !816
+  %30 = icmp eq i32 %29, 0, !dbg !816
+  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !61, metadata !95), !dbg !759
+  %pawnmates.1. = select i1 %30, i32 %pawnmates.192, i32 0, !dbg !818
+  call void @unmake(%struct.move_s* %21, i32 %j.091) #9, !dbg !819
+  %31 = add nuw nsw i32 %j.091, 1, !dbg !820
+  call void @llvm.dbg.value(metadata i32 %31, i64 0, metadata !56, metadata !95), !dbg !809
+  %32 = icmp slt i32 %31, %27, !dbg !810
+  %33 = icmp ne i32 %pawnmates.1., 0, !dbg !821
+  %or.cond24 = and i1 %32, %33, !dbg !813
+  br i1 %or.cond24, label %.lr.ph93, label %.critedge1, !dbg !813
+
+.critedge1:                                       ; preds = %.lr.ph93, %25, %22
+  %pawnmates.3 = phi i32 [ 0, %22 ], [ 3, %25 ], [ %pawnmates.1., %.lr.ph93 ]
+  call void @unmake(%struct.move_s* %18, i32 %i.095) #9, !dbg !822
+  %34 = add nuw nsw i32 %i.095, 1, !dbg !823
+  call void @llvm.dbg.value(metadata i32 %34, i64 0, metadata !57, metadata !95), !dbg !792
+  %35 = icmp slt i32 %34, %19, !dbg !793
+  %36 = icmp eq i32 %pawnmates.3, 0, !dbg !824
+  %or.cond22 = and i1 %35, %36, !dbg !796
+  br i1 %or.cond22, label %22, label %.critedge, !dbg !796
+
+.critedge:                                        ; preds = %.critedge1, %17
+  %pawnmates.0.lcssa = phi i32 [ 0, %17 ], [ %pawnmates.3, %.critedge1 ]
+  %37 = load i32* @white_to_move, align 4, !dbg !825, !tbaa !136
+  %38 = icmp ne i32 %37, 0, !dbg !825
+  %39 = select i1 %38, i32 1, i32 2, !dbg !825
+  %40 = zext i1 %38 to i32, !dbg !826
+  %41 = xor i32 %40, 1, !dbg !826
+  call void @DropremoveHolding(i32 %39, i32 %41) #9, !dbg !827
+  %.pre = load i32* @white_to_move, align 4, !dbg !828, !tbaa !136
+  br label %42, !dbg !830
+
+; <label>:42                                      ; preds = %5, %.critedge
+  %43 = phi i32 [ %7, %5 ], [ %.pre, %.critedge ]
+  %pawnmates.4 = phi i32 [ 0, %5 ], [ %pawnmates.0.lcssa, %.critedge ]
+  %44 = icmp ne i32 %43, 0, !dbg !828
+  %45 = select i1 %44, i32 3, i32 4, !dbg !828
+  %46 = zext i32 %45 to i64, !dbg !831
+  %47 = zext i1 %44 to i32, !dbg !832
+  %48 = xor i32 %47, 1, !dbg !832
+  %49 = zext i32 %48 to i64, !dbg !831
+  %50 = getelementptr inbounds [2 x [16 x i32]]* @holding, i64 0, i64 %49, i64 %46, !dbg !831
+  %51 = load i32* %50, align 4, !dbg !831, !tbaa !136
+  %52 = icmp eq i32 %51, 0, !dbg !831
+  br i1 %52, label %53, label %78, !dbg !833
+
+; <label>:53                                      ; preds = %42
+  call void @DropaddHolding(i32 %45, i32 %48) #9, !dbg !834
+  %54 = getelementptr inbounds [512 x %struct.move_s]* %hismoves, i64 0, i64 0, !dbg !836
+  call void @gen(%struct.move_s* %54) #9, !dbg !837
+  %55 = load i32* @numb_moves, align 4, !dbg !838, !tbaa !136
+  call void @llvm.dbg.value(metadata i32 %55, i64 0, metadata !54, metadata !95), !dbg !791
+  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !57, metadata !95), !dbg !792
+  %56 = icmp sgt i32 %55, 0, !dbg !839
+  br i1 %56, label %.lr.ph88, label %.critedge2, !dbg !842
+
+.lr.ph88:                                         ; preds = %53
+  %57 = getelementptr inbounds [512 x %struct.move_s]* %ourmoves, i64 0, i64 0, !dbg !843
+  br label %58, !dbg !842
+
+; <label>:58                                      ; preds = %.lr.ph88, %.critedge3
+  %i.186 = phi i32 [ 0, %.lr.ph88 ], [ %70, %.critedge3 ]
+  call void @make(%struct.move_s* %54, i32 %i.186) #9, !dbg !847
+  %59 = call i32 @check_legal(%struct.move_s* %54, i32 %i.186, i32 %6) #9, !dbg !848
+  %60 = icmp eq i32 %59, 0, !dbg !848
+  br i1 %60, label %.critedge3, label %61, !dbg !849
+
+; <label>:61                                      ; preds = %58
+  call void @llvm.dbg.value(metadata i32 3, i64 0, metadata !62, metadata !95), !dbg !760
+  %62 = call i32 @in_check() #9, !dbg !850
+  call void @llvm.dbg.value(metadata i32 %62, i64 0, metadata !59, metadata !95), !dbg !805
+  call void @gen(%struct.move_s* %57) #9, !dbg !851
+  %63 = load i32* @numb_moves, align 4, !dbg !852, !tbaa !136
+  call void @llvm.dbg.value(metadata i32 %63, i64 0, metadata !55, metadata !95), !dbg !808
+  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !56, metadata !95), !dbg !809
+  %64 = icmp sgt i32 %63, 0, !dbg !853
+  br i1 %64, label %.lr.ph84, label %.critedge3, !dbg !856
+
+.lr.ph84:                                         ; preds = %61, %.lr.ph84
+  %knightmates.183 = phi i32 [ %knightmates.1., %.lr.ph84 ], [ 3, %61 ]
+  %j.182 = phi i32 [ %67, %.lr.ph84 ], [ 0, %61 ]
+  call void @make(%struct.move_s* %57, i32 %j.182) #9, !dbg !857
+  %65 = call i32 @check_legal(%struct.move_s* %57, i32 %j.182, i32 %62) #9, !dbg !859
+  %66 = icmp eq i32 %65, 0, !dbg !859
+  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !62, metadata !95), !dbg !760
+  %knightmates.1. = select i1 %66, i32 %knightmates.183, i32 0, !dbg !861
+  call void @unmake(%struct.move_s* %57, i32 %j.182) #9, !dbg !862
+  %67 = add nuw nsw i32 %j.182, 1, !dbg !863
+  call void @llvm.dbg.value(metadata i32 %67, i64 0, metadata !56, metadata !95), !dbg !809
+  %68 = icmp slt i32 %67, %63, !dbg !853
+  %69 = icmp ne i32 %knightmates.1., 0, !dbg !864
+  %or.cond28 = and i1 %68, %69, !dbg !856
+  br i1 %or.cond28, label %.lr.ph84, label %.critedge3, !dbg !856
+
+.critedge3:                                       ; preds = %.lr.ph84, %61, %58
+  %knightmates.3 = phi i32 [ 0, %58 ], [ 3, %61 ], [ %knightmates.1., %.lr.ph84 ]
+  call void @unmake(%struct.move_s* %54, i32 %i.186) #9, !dbg !865
+  %70 = add nuw nsw i32 %i.186, 1, !dbg !866
+  call void @llvm.dbg.value(metadata i32 %70, i64 0, metadata !57, metadata !95), !dbg !792
+  %71 = icmp slt i32 %70, %55, !dbg !839
+  %72 = icmp eq i32 %knightmates.3, 0, !dbg !867
+  %or.cond26 = and i1 %71, %72, !dbg !842
+  br i1 %or.cond26, label %58, label %.critedge2, !dbg !842
+
+.critedge2:                                       ; preds = %.critedge3, %53
+  %knightmates.0.lcssa = phi i32 [ 0, %53 ], [ %knightmates.3, %.critedge3 ]
+  %73 = load i32* @white_to_move, align 4, !dbg !868, !tbaa !136
+  %74 = icmp ne i32 %73, 0, !dbg !868
+  %75 = select i1 %74, i32 3, i32 4, !dbg !868
+  %76 = zext i1 %74 to i32, !dbg !869
+  %77 = xor i32 %76, 1, !dbg !869
+  call void @DropremoveHolding(i32 %75, i32 %77) #9, !dbg !870
+  %.pre99 = load i32* @white_to_move, align 4, !dbg !871, !tbaa !136
+  br label %78, !dbg !873
+
+; <label>:78                                      ; preds = %42, %.critedge2
+  %79 = phi i32 [ %43, %42 ], [ %.pre99, %.critedge2 ]
+  %knightmates.4 = phi i32 [ 0, %42 ], [ %knightmates.0.lcssa, %.critedge2 ]
+  %80 = icmp ne i32 %79, 0, !dbg !871
+  %81 = select i1 %80, i32 11, i32 12, !dbg !871
+  %82 = zext i32 %81 to i64, !dbg !874
+  %83 = zext i1 %80 to i32, !dbg !875
+  %84 = xor i32 %83, 1, !dbg !875
+  %85 = zext i32 %84 to i64, !dbg !874
+  %86 = getelementptr inbounds [2 x [16 x i32]]* @holding, i64 0, i64 %85, i64 %82, !dbg !874
+  %87 = load i32* %86, align 4, !dbg !874, !tbaa !136
+  %88 = icmp eq i32 %87, 0, !dbg !874
+  br i1 %88, label %89, label %114, !dbg !876
+
+; <label>:89                                      ; preds = %78
+  call void @DropaddHolding(i32 %81, i32 %84) #9, !dbg !877
+  %90 = getelementptr inbounds [512 x %struct.move_s]* %hismoves, i64 0, i64 0, !dbg !879
+  call void @gen(%struct.move_s* %90) #9, !dbg !880
+  %91 = load i32* @numb_moves, align 4, !dbg !881, !tbaa !136
+  call void @llvm.dbg.value(metadata i32 %91, i64 0, metadata !54, metadata !95), !dbg !791
+  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !57, metadata !95), !dbg !792
+  %92 = icmp sgt i32 %91, 0, !dbg !882
+  br i1 %92, label %.lr.ph79, label %.critedge4, !dbg !885
+
+.lr.ph79:                                         ; preds = %89
+  %93 = getelementptr inbounds [512 x %struct.move_s]* %ourmoves, i64 0, i64 0, !dbg !886
+  br label %94, !dbg !885
+
+; <label>:94                                      ; preds = %.lr.ph79, %.critedge5
+  %i.277 = phi i32 [ 0, %.lr.ph79 ], [ %106, %.critedge5 ]
+  call void @make(%struct.move_s* %90, i32 %i.277) #9, !dbg !890
+  %95 = call i32 @check_legal(%struct.move_s* %90, i32 %i.277, i32 %6) #9, !dbg !891
+  %96 = icmp eq i32 %95, 0, !dbg !891
+  br i1 %96, label %.critedge5, label %97, !dbg !892
+
+; <label>:97                                      ; preds = %94
+  call void @llvm.dbg.value(metadata i32 3, i64 0, metadata !63, metadata !95), !dbg !761
+  %98 = call i32 @in_check() #9, !dbg !893
+  call void @llvm.dbg.value(metadata i32 %98, i64 0, metadata !59, metadata !95), !dbg !805
+  call void @gen(%struct.move_s* %93) #9, !dbg !894
+  %99 = load i32* @numb_moves, align 4, !dbg !895, !tbaa !136
+  call void @llvm.dbg.value(metadata i32 %99, i64 0, metadata !55, metadata !95), !dbg !808
+  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !56, metadata !95), !dbg !809
+  %100 = icmp sgt i32 %99, 0, !dbg !896
+  br i1 %100, label %.lr.ph75, label %.critedge5, !dbg !899
+
+.lr.ph75:                                         ; preds = %97, %.lr.ph75
+  %bishopmates.174 = phi i32 [ %bishopmates.1., %.lr.ph75 ], [ 3, %97 ]
+  %j.273 = phi i32 [ %103, %.lr.ph75 ], [ 0, %97 ]
+  call void @make(%struct.move_s* %93, i32 %j.273) #9, !dbg !900
+  %101 = call i32 @check_legal(%struct.move_s* %93, i32 %j.273, i32 %98) #9, !dbg !902
+  %102 = icmp eq i32 %101, 0, !dbg !902
+  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !63, metadata !95), !dbg !761
+  %bishopmates.1. = select i1 %102, i32 %bishopmates.174, i32 0, !dbg !904
+  call void @unmake(%struct.move_s* %93, i32 %j.273) #9, !dbg !905
+  %103 = add nuw nsw i32 %j.273, 1, !dbg !906
+  call void @llvm.dbg.value(metadata i32 %103, i64 0, metadata !56, metadata !95), !dbg !809
+  %104 = icmp slt i32 %103, %99, !dbg !896
+  %105 = icmp ne i32 %bishopmates.1., 0, !dbg !907
+  %or.cond32 = and i1 %104, %105, !dbg !899
+  br i1 %or.cond32, label %.lr.ph75, label %.critedge5, !dbg !899
+
+.critedge5:                                       ; preds = %.lr.ph75, %97, %94
+  %bishopmates.3 = phi i32 [ 0, %94 ], [ 3, %97 ], [ %bishopmates.1., %.lr.ph75 ]
+  call void @unmake(%struct.move_s* %90, i32 %i.277) #9, !dbg !908
+  %106 = add nuw nsw i32 %i.277, 1, !dbg !909
+  call void @llvm.dbg.value(metadata i32 %106, i64 0, metadata !57, metadata !95), !dbg !792
+  %107 = icmp slt i32 %106, %91, !dbg !882
+  %108 = icmp eq i32 %bishopmates.3, 0, !dbg !910
+  %or.cond30 = and i1 %107, %108, !dbg !885
+  br i1 %or.cond30, label %94, label %.critedge4, !dbg !885
+
+.critedge4:                                       ; preds = %.critedge5, %89
+  %bishopmates.0.lcssa = phi i32 [ 0, %89 ], [ %bishopmates.3, %.critedge5 ]
+  %109 = load i32* @white_to_move, align 4, !dbg !911, !tbaa !136
+  %110 = icmp ne i32 %109, 0, !dbg !911
+  %111 = select i1 %110, i32 11, i32 12, !dbg !911
+  %112 = zext i1 %110 to i32, !dbg !912
+  %113 = xor i32 %112, 1, !dbg !912
+  call void @DropremoveHolding(i32 %111, i32 %113) #9, !dbg !913
+  %.pre100 = load i32* @white_to_move, align 4, !dbg !914, !tbaa !136
+  br label %114, !dbg !916
+
+; <label>:114                                     ; preds = %78, %.critedge4
+  %115 = phi i32 [ %79, %78 ], [ %.pre100, %.critedge4 ]
+  %bishopmates.4 = phi i32 [ 0, %78 ], [ %bishopmates.0.lcssa, %.critedge4 ]
+  %116 = icmp ne i32 %115, 0, !dbg !914
+  %117 = select i1 %116, i32 7, i32 8, !dbg !914
+  %118 = zext i32 %117 to i64, !dbg !917
+  %119 = zext i1 %116 to i32, !dbg !918
+  %120 = xor i32 %119, 1, !dbg !918
+  %121 = zext i32 %120 to i64, !dbg !917
+  %122 = getelementptr inbounds [2 x [16 x i32]]* @holding, i64 0, i64 %121, i64 %118, !dbg !917
+  %123 = load i32* %122, align 4, !dbg !917, !tbaa !136
+  %124 = icmp eq i32 %123, 0, !dbg !917
+  br i1 %124, label %125, label %150, !dbg !919
+
+; <label>:125                                     ; preds = %114
+  call void @DropaddHolding(i32 %117, i32 %120) #9, !dbg !920
+  %126 = getelementptr inbounds [512 x %struct.move_s]* %hismoves, i64 0, i64 0, !dbg !922
+  call void @gen(%struct.move_s* %126) #9, !dbg !923
+  %127 = load i32* @numb_moves, align 4, !dbg !924, !tbaa !136
+  call void @llvm.dbg.value(metadata i32 %127, i64 0, metadata !54, metadata !95), !dbg !791
+  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !57, metadata !95), !dbg !792
+  %128 = icmp sgt i32 %127, 0, !dbg !925
+  br i1 %128, label %.lr.ph70, label %.critedge6, !dbg !928
+
+.lr.ph70:                                         ; preds = %125
+  %129 = getelementptr inbounds [512 x %struct.move_s]* %ourmoves, i64 0, i64 0, !dbg !929
+  br label %130, !dbg !928
+
+; <label>:130                                     ; preds = %.lr.ph70, %.critedge7
+  %i.368 = phi i32 [ 0, %.lr.ph70 ], [ %142, %.critedge7 ]
+  call void @make(%struct.move_s* %126, i32 %i.368) #9, !dbg !933
+  %131 = call i32 @check_legal(%struct.move_s* %126, i32 %i.368, i32 %6) #9, !dbg !934
+  %132 = icmp eq i32 %131, 0, !dbg !934
+  br i1 %132, label %.critedge7, label %133, !dbg !935
+
+; <label>:133                                     ; preds = %130
+  call void @llvm.dbg.value(metadata i32 3, i64 0, metadata !64, metadata !95), !dbg !762
+  %134 = call i32 @in_check() #9, !dbg !936
+  call void @llvm.dbg.value(metadata i32 %134, i64 0, metadata !59, metadata !95), !dbg !805
+  call void @gen(%struct.move_s* %129) #9, !dbg !937
+  %135 = load i32* @numb_moves, align 4, !dbg !938, !tbaa !136
+  call void @llvm.dbg.value(metadata i32 %135, i64 0, metadata !55, metadata !95), !dbg !808
+  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !56, metadata !95), !dbg !809
+  %136 = icmp sgt i32 %135, 0, !dbg !939
+  br i1 %136, label %.lr.ph66, label %.critedge7, !dbg !942
+
+.lr.ph66:                                         ; preds = %133, %.lr.ph66
+  %rookmates.165 = phi i32 [ %rookmates.1., %.lr.ph66 ], [ 3, %133 ]
+  %j.364 = phi i32 [ %139, %.lr.ph66 ], [ 0, %133 ]
+  call void @make(%struct.move_s* %129, i32 %j.364) #9, !dbg !943
+  %137 = call i32 @check_legal(%struct.move_s* %129, i32 %j.364, i32 %134) #9, !dbg !945
+  %138 = icmp eq i32 %137, 0, !dbg !945
+  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !64, metadata !95), !dbg !762
+  %rookmates.1. = select i1 %138, i32 %rookmates.165, i32 0, !dbg !947
+  call void @unmake(%struct.move_s* %129, i32 %j.364) #9, !dbg !948
+  %139 = add nuw nsw i32 %j.364, 1, !dbg !949
+  call void @llvm.dbg.value(metadata i32 %139, i64 0, metadata !56, metadata !95), !dbg !809
+  %140 = icmp slt i32 %139, %135, !dbg !939
+  %141 = icmp ne i32 %rookmates.1., 0, !dbg !950
+  %or.cond36 = and i1 %140, %141, !dbg !942
+  br i1 %or.cond36, label %.lr.ph66, label %.critedge7, !dbg !942
+
+.critedge7:                                       ; preds = %.lr.ph66, %133, %130
+  %rookmates.3 = phi i32 [ 0, %130 ], [ 3, %133 ], [ %rookmates.1., %.lr.ph66 ]
+  call void @unmake(%struct.move_s* %126, i32 %i.368) #9, !dbg !951
+  %142 = add nuw nsw i32 %i.368, 1, !dbg !952
+  call void @llvm.dbg.value(metadata i32 %142, i64 0, metadata !57, metadata !95), !dbg !792
+  %143 = icmp slt i32 %142, %127, !dbg !925
+  %144 = icmp eq i32 %rookmates.3, 0, !dbg !953
+  %or.cond34 = and i1 %143, %144, !dbg !928
+  br i1 %or.cond34, label %130, label %.critedge6, !dbg !928
+
+.critedge6:                                       ; preds = %.critedge7, %125
+  %rookmates.0.lcssa = phi i32 [ 0, %125 ], [ %rookmates.3, %.critedge7 ]
+  %145 = load i32* @white_to_move, align 4, !dbg !954, !tbaa !136
+  %146 = icmp ne i32 %145, 0, !dbg !954
+  %147 = select i1 %146, i32 7, i32 8, !dbg !954
+  %148 = zext i1 %146 to i32, !dbg !955
+  %149 = xor i32 %148, 1, !dbg !955
+  call void @DropremoveHolding(i32 %147, i32 %149) #9, !dbg !956
+  %.pre101 = load i32* @white_to_move, align 4, !dbg !957, !tbaa !136
+  br label %150, !dbg !959
+
+; <label>:150                                     ; preds = %114, %.critedge6
+  %151 = phi i32 [ %115, %114 ], [ %.pre101, %.critedge6 ]
+  %rookmates.4 = phi i32 [ 0, %114 ], [ %rookmates.0.lcssa, %.critedge6 ]
+  %152 = icmp ne i32 %151, 0, !dbg !957
+  %153 = select i1 %152, i32 9, i32 10, !dbg !957
+  %154 = zext i32 %153 to i64, !dbg !960
+  %155 = zext i1 %152 to i32, !dbg !961
+  %156 = xor i32 %155, 1, !dbg !961
+  %157 = zext i32 %156 to i64, !dbg !960
+  %158 = getelementptr inbounds [2 x [16 x i32]]* @holding, i64 0, i64 %157, i64 %154, !dbg !960
+  %159 = load i32* %158, align 4, !dbg !960, !tbaa !136
+  %160 = icmp eq i32 %159, 0, !dbg !960
+  br i1 %160, label %161, label %186, !dbg !962
+
+; <label>:161                                     ; preds = %150
+  call void @DropaddHolding(i32 %153, i32 %156) #9, !dbg !963
+  %162 = getelementptr inbounds [512 x %struct.move_s]* %hismoves, i64 0, i64 0, !dbg !965
+  call void @gen(%struct.move_s* %162) #9, !dbg !966
+  %163 = load i32* @numb_moves, align 4, !dbg !967, !tbaa !136
+  call void @llvm.dbg.value(metadata i32 %163, i64 0, metadata !54, metadata !95), !dbg !791
+  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !57, metadata !95), !dbg !792
+  %164 = icmp sgt i32 %163, 0, !dbg !968
+  br i1 %164, label %.lr.ph61, label %.critedge8, !dbg !971
+
+.lr.ph61:                                         ; preds = %161
+  %165 = getelementptr inbounds [512 x %struct.move_s]* %ourmoves, i64 0, i64 0, !dbg !972
+  br label %166, !dbg !971
+
+; <label>:166                                     ; preds = %.lr.ph61, %.critedge9
+  %i.459 = phi i32 [ 0, %.lr.ph61 ], [ %178, %.critedge9 ]
+  call void @make(%struct.move_s* %162, i32 %i.459) #9, !dbg !976
+  %167 = call i32 @check_legal(%struct.move_s* %162, i32 %i.459, i32 %6) #9, !dbg !977
+  %168 = icmp eq i32 %167, 0, !dbg !977
+  br i1 %168, label %.critedge9, label %169, !dbg !978
+
+; <label>:169                                     ; preds = %166
+  call void @llvm.dbg.value(metadata i32 3, i64 0, metadata !65, metadata !95), !dbg !763
+  %170 = call i32 @in_check() #9, !dbg !979
+  call void @llvm.dbg.value(metadata i32 %170, i64 0, metadata !59, metadata !95), !dbg !805
+  call void @gen(%struct.move_s* %165) #9, !dbg !980
+  %171 = load i32* @numb_moves, align 4, !dbg !981, !tbaa !136
+  call void @llvm.dbg.value(metadata i32 %171, i64 0, metadata !55, metadata !95), !dbg !808
+  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !56, metadata !95), !dbg !809
+  %172 = icmp sgt i32 %171, 0, !dbg !982
+  br i1 %172, label %.lr.ph, label %.critedge9, !dbg !985
+
+.lr.ph:                                           ; preds = %169, %.lr.ph
+  %queenmates.158 = phi i32 [ %queenmates.1., %.lr.ph ], [ 3, %169 ]
+  %j.457 = phi i32 [ %175, %.lr.ph ], [ 0, %169 ]
+  call void @make(%struct.move_s* %165, i32 %j.457) #9, !dbg !986
+  %173 = call i32 @check_legal(%struct.move_s* %165, i32 %j.457, i32 %170) #9, !dbg !988
+  %174 = icmp eq i32 %173, 0, !dbg !988
+  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !65, metadata !95), !dbg !763
+  %queenmates.1. = select i1 %174, i32 %queenmates.158, i32 0, !dbg !990
+  call void @unmake(%struct.move_s* %165, i32 %j.457) #9, !dbg !991
+  %175 = add nuw nsw i32 %j.457, 1, !dbg !992
+  call void @llvm.dbg.value(metadata i32 %175, i64 0, metadata !56, metadata !95), !dbg !809
+  %176 = icmp slt i32 %175, %171, !dbg !982
+  %177 = icmp ne i32 %queenmates.1., 0, !dbg !993
+  %or.cond40 = and i1 %176, %177, !dbg !985
+  br i1 %or.cond40, label %.lr.ph, label %.critedge9, !dbg !985
+
+.critedge9:                                       ; preds = %.lr.ph, %169, %166
+  %queenmates.3 = phi i32 [ 0, %166 ], [ 3, %169 ], [ %queenmates.1., %.lr.ph ]
+  call void @unmake(%struct.move_s* %162, i32 %i.459) #9, !dbg !994
+  %178 = add nuw nsw i32 %i.459, 1, !dbg !995
+  call void @llvm.dbg.value(metadata i32 %178, i64 0, metadata !57, metadata !95), !dbg !792
+  %179 = icmp slt i32 %178, %163, !dbg !968
+  %180 = icmp eq i32 %queenmates.3, 0, !dbg !996
+  %or.cond38 = and i1 %179, %180, !dbg !971
+  br i1 %or.cond38, label %166, label %.critedge8, !dbg !971
+
+.critedge8:                                       ; preds = %.critedge9, %161
+  %queenmates.0.lcssa = phi i32 [ 0, %161 ], [ %queenmates.3, %.critedge9 ]
+  %181 = load i32* @white_to_move, align 4, !dbg !997, !tbaa !136
+  %182 = icmp ne i32 %181, 0, !dbg !997
+  %183 = select i1 %182, i32 9, i32 10, !dbg !997
+  %184 = zext i1 %182 to i32, !dbg !998
+  %185 = xor i32 %184, 1, !dbg !998
+  call void @DropremoveHolding(i32 %183, i32 %185) #9, !dbg !999
+  br label %186, !dbg !1000
+
+; <label>:186                                     ; preds = %150, %.critedge8
+  %queenmates.4 = phi i32 [ 0, %150 ], [ %queenmates.0.lcssa, %.critedge8 ]
+  %187 = load i32* @CheckBadFlow.pawnmated, align 4, !dbg !1001, !tbaa !136
+  %188 = icmp eq i32 %pawnmates.4, %187, !dbg !1003
+  br i1 %188, label %195, label %189, !dbg !1004
+
+; <label>:189                                     ; preds = %186
+  %190 = icmp eq i32 %pawnmates.4, 3, !dbg !1005
+  br i1 %190, label %195, label %191, !dbg !1008
+
+; <label>:191                                     ; preds = %189
+  %192 = or i32 %187, %pawnmates.4, !dbg !1009
+  %193 = icmp eq i32 %192, 0, !dbg !1009
+  br i1 %193, label %194, label %195, !dbg !1009
+
+; <label>:194                                     ; preds = %191
+  %puts55 = call i32 @puts(i8* getelementptr inbounds ([40 x i8]* @str116, i64 0, i64 0)), !dbg !1011
+  call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !60, metadata !95), !dbg !758
+  br label %195, !dbg !1013
+
+; <label>:195                                     ; preds = %189, %186, %194, %191
+  %othermove.0 = phi i32 [ 1, %194 ], [ 0, %191 ], [ 0, %186 ], [ 0, %189 ]
+  %pawnwarn.0 = phi i32 [ 0, %194 ], [ 0, %191 ], [ 0, %186 ], [ 1, %189 ]
+  %196 = load i32* @CheckBadFlow.knightmated, align 4, !dbg !1014, !tbaa !136
+  %197 = icmp eq i32 %knightmates.4, %196, !dbg !1016
+  br i1 %197, label %204, label %198, !dbg !1017
+
+; <label>:198                                     ; preds = %195
+  %199 = icmp eq i32 %knightmates.4, 3, !dbg !1018
+  br i1 %199, label %204, label %200, !dbg !1021
+
+; <label>:200                                     ; preds = %198
+  %201 = or i32 %196, %knightmates.4, !dbg !1022
+  %202 = icmp eq i32 %201, 0, !dbg !1022
+  br i1 %202, label %203, label %204, !dbg !1022
+
+; <label>:203                                     ; preds = %200
+  %puts54 = call i32 @puts(i8* getelementptr inbounds ([40 x i8]* @str115, i64 0, i64 0)), !dbg !1024
+  call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !60, metadata !95), !dbg !758
+  br label %204, !dbg !1026
+
+; <label>:204                                     ; preds = %198, %195, %203, %200
+  %othermove.1 = phi i32 [ 1, %203 ], [ %othermove.0, %200 ], [ %othermove.0, %195 ], [ %othermove.0, %198 ]
+  %knightwarn.0 = phi i32 [ 0, %203 ], [ 0, %200 ], [ 0, %195 ], [ 1, %198 ]
+  %205 = load i32* @CheckBadFlow.bishopmated, align 4, !dbg !1027, !tbaa !136
+  %206 = icmp eq i32 %bishopmates.4, %205, !dbg !1029
+  br i1 %206, label %213, label %207, !dbg !1030
+
+; <label>:207                                     ; preds = %204
+  %208 = icmp eq i32 %bishopmates.4, 3, !dbg !1031
+  br i1 %208, label %213, label %209, !dbg !1034
+
+; <label>:209                                     ; preds = %207
+  %210 = or i32 %205, %bishopmates.4, !dbg !1035
+  %211 = icmp eq i32 %210, 0, !dbg !1035
+  br i1 %211, label %212, label %213, !dbg !1035
+
+; <label>:212                                     ; preds = %209
+  %puts53 = call i32 @puts(i8* getelementptr inbounds ([40 x i8]* @str114, i64 0, i64 0)), !dbg !1037
+  call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !60, metadata !95), !dbg !758
+  br label %213, !dbg !1039
+
+; <label>:213                                     ; preds = %207, %204, %212, %209
+  %othermove.2 = phi i32 [ 1, %212 ], [ %othermove.1, %209 ], [ %othermove.1, %204 ], [ %othermove.1, %207 ]
+  %bishopwarn.0 = phi i32 [ 0, %212 ], [ 0, %209 ], [ 0, %204 ], [ 1, %207 ]
+  %214 = load i32* @CheckBadFlow.rookmated, align 4, !dbg !1040, !tbaa !136
+  %215 = icmp eq i32 %rookmates.4, %214, !dbg !1042
+  br i1 %215, label %222, label %216, !dbg !1043
+
+; <label>:216                                     ; preds = %213
+  %217 = icmp eq i32 %rookmates.4, 3, !dbg !1044
+  br i1 %217, label %222, label %218, !dbg !1047
+
+; <label>:218                                     ; preds = %216
+  %219 = or i32 %214, %rookmates.4, !dbg !1048
+  %220 = icmp eq i32 %219, 0, !dbg !1048
+  br i1 %220, label %221, label %222, !dbg !1048
+
+; <label>:221                                     ; preds = %218
+  %puts52 = call i32 @puts(i8* getelementptr inbounds ([40 x i8]* @str113, i64 0, i64 0)), !dbg !1050
+  call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !60, metadata !95), !dbg !758
+  br label %222, !dbg !1052
+
+; <label>:222                                     ; preds = %216, %213, %221, %218
+  %othermove.3 = phi i32 [ 1, %221 ], [ %othermove.2, %218 ], [ %othermove.2, %213 ], [ %othermove.2, %216 ]
+  %rookwarn.0 = phi i32 [ 0, %221 ], [ 0, %218 ], [ 0, %213 ], [ 1, %216 ]
+  %223 = load i32* @CheckBadFlow.queenmated, align 4, !dbg !1053, !tbaa !136
+  %224 = icmp eq i32 %queenmates.4, %223, !dbg !1055
+  br i1 %224, label %231, label %225, !dbg !1056
+
+; <label>:225                                     ; preds = %222
+  %226 = icmp eq i32 %queenmates.4, 3, !dbg !1057
+  br i1 %226, label %231, label %227, !dbg !1060
+
+; <label>:227                                     ; preds = %225
+  %228 = or i32 %223, %queenmates.4, !dbg !1061
+  %229 = icmp eq i32 %228, 0, !dbg !1061
+  br i1 %229, label %230, label %231, !dbg !1061
+
+; <label>:230                                     ; preds = %227
+  %puts51 = call i32 @puts(i8* getelementptr inbounds ([40 x i8]* @str112, i64 0, i64 0)), !dbg !1063
+  call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !60, metadata !95), !dbg !758
+  br label %231, !dbg !1065
+
+; <label>:231                                     ; preds = %225, %222, %230, %227
+  %othermove.4 = phi i32 [ 1, %230 ], [ %othermove.3, %227 ], [ %othermove.3, %222 ], [ %othermove.3, %225 ]
+  %queenwarn.0 = phi i32 [ 0, %230 ], [ 0, %227 ], [ 0, %222 ], [ 1, %225 ]
+  %232 = icmp eq i32 %pawnwarn.0, 0, !dbg !1066
+  br i1 %232, label %234, label %233, !dbg !1068
+
+; <label>:233                                     ; preds = %231
+  %puts50 = call i32 @puts(i8* getelementptr inbounds ([19 x i8]* @str111, i64 0, i64 0)), !dbg !1069
+  br label %234, !dbg !1069
+
+; <label>:234                                     ; preds = %231, %233
+  %235 = icmp eq i32 %knightwarn.0, 0, !dbg !1070
+  br i1 %235, label %237, label %236, !dbg !1072
+
+; <label>:236                                     ; preds = %234
+  %puts49 = call i32 @puts(i8* getelementptr inbounds ([19 x i8]* @str110, i64 0, i64 0)), !dbg !1073
+  br label %237, !dbg !1073
+
+; <label>:237                                     ; preds = %234, %236
+  %238 = icmp eq i32 %bishopwarn.0, 0, !dbg !1074
+  br i1 %238, label %240, label %239, !dbg !1076
+
+; <label>:239                                     ; preds = %237
+  %puts48 = call i32 @puts(i8* getelementptr inbounds ([19 x i8]* @str109, i64 0, i64 0)), !dbg !1077
+  br label %240, !dbg !1077
+
+; <label>:240                                     ; preds = %237, %239
+  %241 = icmp eq i32 %rookwarn.0, 0, !dbg !1078
+  br i1 %241, label %243, label %242, !dbg !1080
+
+; <label>:242                                     ; preds = %240
+  %puts47 = call i32 @puts(i8* getelementptr inbounds ([19 x i8]* @str108, i64 0, i64 0)), !dbg !1081
+  br label %243, !dbg !1081
+
+; <label>:243                                     ; preds = %240, %242
+  %244 = icmp eq i32 %queenwarn.0, 0, !dbg !1082
+  br i1 %244, label %246, label %245, !dbg !1084
+
+; <label>:245                                     ; preds = %243
+  %puts46 = call i32 @puts(i8* getelementptr inbounds ([19 x i8]* @str107, i64 0, i64 0)), !dbg !1085
+  br label %246, !dbg !1085
+
+; <label>:246                                     ; preds = %243, %245
+  %247 = load i32* @piecedead, align 4, !dbg !1086, !tbaa !99
+  %248 = icmp ne i32 %247, 0, !dbg !1086
+  %249 = icmp ne i32 %othermove.4, 0, !dbg !1088
+  %or.cond20 = and i1 %249, %248, !dbg !1089
+  br i1 %or.cond20, label %250, label %251, !dbg !1089
+
+; <label>:250                                     ; preds = %246
+  store i32 0, i32* @piecedead, align 4, !dbg !1090, !tbaa !99
+  %puts = call i32 @puts(i8* getelementptr inbounds ([16 x i8]* @str105, i64 0, i64 0)), !dbg !1092
+  %puts45 = call i32 @puts(i8* getelementptr inbounds ([17 x i8]* @str106, i64 0, i64 0)), !dbg !1093
+  store i32 0, i32* @go_fast, align 4, !dbg !1094, !tbaa !99
+  br label %251, !dbg !1095
+
+; <label>:251                                     ; preds = %250, %246
+  %252 = icmp eq i32 %pawnmates.4, 0, !dbg !1096
+  br i1 %252, label %253, label %256, !dbg !1096
+
+; <label>:253                                     ; preds = %251
+  %254 = load i32* @CheckBadFlow.pawnmated, align 4, !dbg !1097, !tbaa !136
+  %255 = add nsw i32 %254, -1, !dbg !1097
+  br label %256, !dbg !1096
+
+; <label>:256                                     ; preds = %251, %253
+  %storemerge = phi i32 [ %255, %253 ], [ %pawnmates.4, %251 ]
+  store i32 %storemerge, i32* @CheckBadFlow.pawnmated, align 4, !dbg !1098, !tbaa !136
+  %257 = icmp eq i32 %bishopmates.4, 0, !dbg !1099
+  br i1 %257, label %258, label %261, !dbg !1099
+
+; <label>:258                                     ; preds = %256
+  %259 = load i32* @CheckBadFlow.bishopmated, align 4, !dbg !1100, !tbaa !136
+  %260 = add nsw i32 %259, -1, !dbg !1100
+  br label %261, !dbg !1099
+
+; <label>:261                                     ; preds = %256, %258
+  %storemerge41 = phi i32 [ %260, %258 ], [ %bishopmates.4, %256 ]
+  store i32 %storemerge41, i32* @CheckBadFlow.bishopmated, align 4, !dbg !1101, !tbaa !136
+  %262 = icmp eq i32 %rookmates.4, 0, !dbg !1102
+  br i1 %262, label %263, label %266, !dbg !1102
+
+; <label>:263                                     ; preds = %261
+  %264 = load i32* @CheckBadFlow.rookmated, align 4, !dbg !1103, !tbaa !136
+  %265 = add nsw i32 %264, -1, !dbg !1103
+  br label %266, !dbg !1102
+
+; <label>:266                                     ; preds = %261, %263
+  %storemerge42 = phi i32 [ %265, %263 ], [ %rookmates.4, %261 ]
+  store i32 %storemerge42, i32* @CheckBadFlow.rookmated, align 4, !dbg !1104, !tbaa !136
+  %267 = icmp eq i32 %queenmates.4, 0, !dbg !1105
+  br i1 %267, label %268, label %271, !dbg !1105
+
+; <label>:268                                     ; preds = %266
+  %269 = load i32* @CheckBadFlow.queenmated, align 4, !dbg !1106, !tbaa !136
+  %270 = add nsw i32 %269, -1, !dbg !1106
+  br label %271, !dbg !1105
+
+; <label>:271                                     ; preds = %266, %268
+  %storemerge43 = phi i32 [ %270, %268 ], [ %queenmates.4, %266 ]
+  store i32 %storemerge43, i32* @CheckBadFlow.queenmated, align 4, !dbg !1107, !tbaa !136
+  %272 = icmp eq i32 %knightmates.4, 0, !dbg !1108
+  br i1 %272, label %273, label %276, !dbg !1108
+
+; <label>:273                                     ; preds = %271
+  %274 = load i32* @CheckBadFlow.knightmated, align 4, !dbg !1109, !tbaa !136
+  %275 = add nsw i32 %274, -1, !dbg !1109
+  br label %276, !dbg !1108
+
+; <label>:276                                     ; preds = %271, %273
+  %storemerge44 = phi i32 [ %275, %273 ], [ %knightmates.4, %271 ]
+  store i32 %storemerge44, i32* @CheckBadFlow.knightmated, align 4, !dbg !1110, !tbaa !136
+  br label %277, !dbg !1111
+
+; <label>:277                                     ; preds = %276, %4
+  call void @llvm.lifetime.end(i64 12288, i8* %2) #1, !dbg !1112
+  call void @llvm.lifetime.end(i64 12288, i8* %1) #1, !dbg !1112
+  ret void, !dbg !1112
 }

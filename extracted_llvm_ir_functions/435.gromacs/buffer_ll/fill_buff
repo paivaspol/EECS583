@@ -1,32 +1,35 @@
 define void @fill_buff(i32* nocapture %data, i32 %items) #3 {
-  %1 = icmp sgt i32 %items, 0
-  br i1 %1, label %.lr.ph, label %._crit_edge
+  tail call void @llvm.dbg.value(metadata i32* %data, i64 0, metadata !91, metadata !111), !dbg !162
+  tail call void @llvm.dbg.value(metadata i32 %items, i64 0, metadata !92, metadata !111), !dbg !163
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !93, metadata !111), !dbg !164
+  %1 = icmp sgt i32 %items, 0, !dbg !165
+  br i1 %1, label %.lr.ph, label %._crit_edge, !dbg !168
 
 .lr.ph:                                           ; preds = %0
-  %2 = add i32 %items, -1
-  br label %3
+  %2 = add i32 %items, -1, !dbg !168
+  br label %3, !dbg !168
 
 ; <label>:3                                       ; preds = %3, %.lr.ph
   %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %3 ]
-  %4 = trunc i64 %indvars.iv to i32
-  %5 = and i32 %4, 255
-  %6 = shl i32 %4, 8
-  %7 = add i32 %6, 256
-  %8 = and i32 %7, 65280
-  %9 = shl i32 %4, 16
-  %10 = add i32 %9, 131072
-  %11 = and i32 %10, 16711680
-  %12 = shl i32 %4, 24
-  %13 = add i32 %12, 50331648
-  %14 = or i32 %13, %5
-  %15 = or i32 %14, %8
-  %16 = or i32 %15, %11
-  %17 = getelementptr inbounds i32* %data, i64 %indvars.iv
-  store i32 %16, i32* %17, align 4, !tbaa !14
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %exitcond = icmp eq i32 %4, %2
-  br i1 %exitcond, label %._crit_edge, label %3
+  %4 = trunc i64 %indvars.iv to i32, !dbg !169
+  %5 = and i32 %4, 255, !dbg !169
+  %6 = shl i32 %4, 8, !dbg !171
+  %7 = add i32 %6, 256, !dbg !171
+  %8 = and i32 %7, 65280, !dbg !171
+  %9 = shl i32 %4, 16, !dbg !172
+  %10 = add i32 %9, 131072, !dbg !172
+  %11 = and i32 %10, 16711680, !dbg !172
+  %12 = shl i32 %4, 24, !dbg !173
+  %13 = add i32 %12, 50331648, !dbg !173
+  %14 = or i32 %13, %5, !dbg !174
+  %15 = or i32 %14, %8, !dbg !175
+  %16 = or i32 %15, %11, !dbg !176
+  %17 = getelementptr inbounds i32* %data, i64 %indvars.iv, !dbg !177
+  store i32 %16, i32* %17, align 4, !dbg !178, !tbaa !179
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !168
+  %exitcond = icmp eq i32 %4, %2, !dbg !168
+  br i1 %exitcond, label %._crit_edge, label %3, !dbg !168
 
 ._crit_edge:                                      ; preds = %3, %0
-  ret void
+  ret void, !dbg !180
 }

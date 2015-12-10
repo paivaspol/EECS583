@@ -1,28 +1,29 @@
 define void @IVL_setNlist(%struct._IVL* %ivl, i32 %newnlist) #0 {
-entry:
-  %cmp = icmp eq %struct._IVL* %ivl, null
-  %cmp1 = icmp slt i32 %newnlist, 0
-  %or.cond = or i1 %cmp, %cmp1
-  br i1 %or.cond, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata %struct._IVL* %ivl, i64 0, metadata !68, metadata !74), !dbg !261
+  tail call void @llvm.dbg.value(metadata i32 %newnlist, i64 0, metadata !69, metadata !74), !dbg !262
+  %1 = icmp eq %struct._IVL* %ivl, null, !dbg !263
+  %2 = icmp slt i32 %newnlist, 0, !dbg !265
+  %or.cond = or i1 %1, %2, !dbg !266
+  br i1 %or.cond, label %3, label %6, !dbg !266
 
-if.then:                                          ; preds = %entry
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([49 x i8]* @.str6, i64 0, i64 0), %struct._IVL* %ivl, i32 %newnlist) #4
-  tail call void @exit(i32 -1) #5
-  unreachable
+; <label>:3                                       ; preds = %0
+  %4 = load %struct.__sFILE** @__stderrp, align 8, !dbg !267, !tbaa !86
+  %5 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %4, i8* getelementptr inbounds ([49 x i8]* @.str6, i64 0, i64 0), %struct._IVL* %ivl, i32 %newnlist) #5, !dbg !269
+  tail call void @exit(i32 -1) #6, !dbg !270
+  unreachable, !dbg !270
 
-if.end:                                           ; preds = %entry
-  %maxnlist = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 1
-  %1 = load i32* %maxnlist, align 4, !tbaa !3
-  %cmp2 = icmp slt i32 %1, %newnlist
-  br i1 %cmp2, label %if.then3, label %if.end4
+; <label>:6                                       ; preds = %0
+  %7 = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 1, !dbg !271
+  %8 = load i32* %7, align 4, !dbg !271, !tbaa !100
+  %9 = icmp slt i32 %8, %newnlist, !dbg !273
+  br i1 %9, label %10, label %11, !dbg !274
 
-if.then3:                                         ; preds = %if.end
-  tail call void @IVL_setMaxnlist(%struct._IVL* %ivl, i32 %newnlist) #6
-  br label %if.end4
+; <label>:10                                      ; preds = %6
+  tail call void @IVL_setMaxnlist(%struct._IVL* %ivl, i32 %newnlist) #7, !dbg !275
+  br label %11, !dbg !277
 
-if.end4:                                          ; preds = %if.then3, %if.end
-  %nlist = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 2
-  store i32 %newnlist, i32* %nlist, align 4, !tbaa !3
-  ret void
+; <label>:11                                      ; preds = %10, %6
+  %12 = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 2, !dbg !278
+  store i32 %newnlist, i32* %12, align 4, !dbg !279, !tbaa !103
+  ret void, !dbg !280
 }

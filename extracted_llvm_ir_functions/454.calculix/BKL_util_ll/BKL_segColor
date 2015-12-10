@@ -1,66 +1,81 @@
 define i32 @BKL_segColor(%struct._BKL* %bkl, i32 %iseg) #0 {
-entry:
   %size = alloca i32, align 4
   %adj = alloca i32*, align 8
-  %cmp = icmp eq %struct._BKL* %bkl, null
-  br i1 %cmp, label %if.then, label %lor.lhs.false
+  tail call void @llvm.dbg.value(metadata %struct._BKL* %bkl, i64 0, metadata !112, metadata !186), !dbg !294
+  tail call void @llvm.dbg.value(metadata i32 %iseg, i64 0, metadata !113, metadata !186), !dbg !295
+  %1 = icmp eq %struct._BKL* %bkl, null, !dbg !296
+  br i1 %1, label %10, label %2, !dbg !298
 
-lor.lhs.false:                                    ; preds = %entry
-  %ndom = getelementptr inbounds %struct._BKL* %bkl, i64 0, i32 1
-  %0 = load i32* %ndom, align 4, !tbaa !3
-  %cmp1 = icmp sgt i32 %0, %iseg
-  br i1 %cmp1, label %if.then, label %lor.lhs.false2
+; <label>:2                                       ; preds = %0
+  %3 = getelementptr inbounds %struct._BKL* %bkl, i64 0, i32 1, !dbg !299
+  %4 = load i32* %3, align 4, !dbg !299, !tbaa !209
+  %5 = icmp sgt i32 %4, %iseg, !dbg !300
+  br i1 %5, label %10, label %6, !dbg !301
 
-lor.lhs.false2:                                   ; preds = %lor.lhs.false
-  %nreg = getelementptr inbounds %struct._BKL* %bkl, i64 0, i32 3
-  %1 = load i32* %nreg, align 4, !tbaa !3
-  %cmp3 = icmp sgt i32 %1, %iseg
-  br i1 %cmp3, label %if.end, label %if.then
+; <label>:6                                       ; preds = %2
+  %7 = getelementptr inbounds %struct._BKL* %bkl, i64 0, i32 3, !dbg !302
+  %8 = load i32* %7, align 4, !dbg !302, !tbaa !264
+  %9 = icmp sgt i32 %8, %iseg, !dbg !303
+  br i1 %9, label %13, label %10, !dbg !304
 
-if.then:                                          ; preds = %lor.lhs.false2, %lor.lhs.false, %entry
-  %2 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([49 x i8]* @.str3, i64 0, i64 0), %struct._BKL* %bkl, i32 %iseg) #5
-  call void @exit(i32 -1) #6
-  unreachable
+; <label>:10                                      ; preds = %6, %2, %0
+  %11 = load %struct.__sFILE** @__stderrp, align 8, !dbg !305, !tbaa !205
+  %12 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %11, i8* getelementptr inbounds ([49 x i8]* @.str3, i64 0, i64 0), %struct._BKL* %bkl, i32 %iseg) #6, !dbg !307
+  tail call void @exit(i32 -1) #7, !dbg !308
+  unreachable, !dbg !308
 
-if.end:                                           ; preds = %lor.lhs.false2
-  %colors4 = getelementptr inbounds %struct._BKL* %bkl, i64 0, i32 10
-  %3 = load i32** %colors4, align 8, !tbaa !0
-  %bpg = getelementptr inbounds %struct._BKL* %bkl, i64 0, i32 0
-  %4 = load %struct._BPG** %bpg, align 8, !tbaa !0
-  %graph = getelementptr inbounds %struct._BPG* %4, i64 0, i32 2
-  %5 = load %struct._Graph** %graph, align 8, !tbaa !0
-  call void @Graph_adjAndSize(%struct._Graph* %5, i32 %iseg, i32* %size, i32** %adj) #5
-  %6 = load i32* %size, align 4, !tbaa !3
-  %cmp5 = icmp sgt i32 %6, 0
-  br i1 %cmp5, label %if.then6, label %if.end16
+; <label>:13                                      ; preds = %6
+  %14 = getelementptr inbounds %struct._BKL* %bkl, i64 0, i32 10, !dbg !309
+  %15 = load i32** %14, align 8, !dbg !309, !tbaa !212
+  tail call void @llvm.dbg.value(metadata i32* %15, i64 0, metadata !118, metadata !186), !dbg !310
+  %16 = getelementptr inbounds %struct._BKL* %bkl, i64 0, i32 0, !dbg !311
+  %17 = load %struct._BPG** %16, align 8, !dbg !311, !tbaa !194
+  %18 = getelementptr inbounds %struct._BPG* %17, i64 0, i32 2, !dbg !312
+  %19 = load %struct._Graph** %18, align 8, !dbg !312, !tbaa !313
+  tail call void @llvm.dbg.value(metadata i32* %size, i64 0, metadata !116, metadata !186), !dbg !315
+  tail call void @llvm.dbg.value(metadata i32** %adj, i64 0, metadata !117, metadata !186), !dbg !316
+  call void @Graph_adjAndSize(%struct._Graph* %19, i32 %iseg, i32* %size, i32** %adj) #6, !dbg !317
+  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !114, metadata !186), !dbg !318
+  call void @llvm.dbg.value(metadata i32* %size, i64 0, metadata !116, metadata !186), !dbg !315
+  %20 = load i32* %size, align 4, !dbg !319, !tbaa !234
+  %21 = icmp sgt i32 %20, 0, !dbg !321
+  br i1 %21, label %22, label %.loopexit, !dbg !322
 
-if.then6:                                         ; preds = %if.end
-  %7 = load i32** %adj, align 8, !tbaa !0
-  %8 = load i32* %7, align 4, !tbaa !3
-  %idxprom = sext i32 %8 to i64
-  %arrayidx7 = getelementptr inbounds i32* %3, i64 %idxprom
-  %9 = load i32* %arrayidx7, align 4, !tbaa !3
-  %cmp829 = icmp sgt i32 %6, 1
-  br i1 %cmp829, label %for.body, label %if.end16
+; <label>:22                                      ; preds = %13
+  call void @llvm.dbg.value(metadata i32** %adj, i64 0, metadata !117, metadata !186), !dbg !316
+  %23 = load i32** %adj, align 8, !dbg !323, !tbaa !205
+  %24 = load i32* %23, align 4, !dbg !323, !tbaa !234
+  %25 = sext i32 %24 to i64, !dbg !325
+  %26 = getelementptr inbounds i32* %15, i64 %25, !dbg !325
+  %27 = load i32* %26, align 4, !dbg !325, !tbaa !234
+  call void @llvm.dbg.value(metadata i32 %27, i64 0, metadata !114, metadata !186), !dbg !318
+  call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !115, metadata !186), !dbg !326
+  call void @llvm.dbg.value(metadata i32* %size, i64 0, metadata !116, metadata !186), !dbg !315
+  %28 = icmp sgt i32 %20, 1, !dbg !327
+  br i1 %28, label %.lr.ph, label %.loopexit, !dbg !330
 
-for.cond:                                         ; preds = %for.body
-  %10 = trunc i64 %indvars.iv.next to i32
-  %cmp8 = icmp slt i32 %10, %6
-  br i1 %cmp8, label %for.body, label %if.end16
+.lr.ph:                                           ; preds = %22
+  %29 = sext i32 %20 to i64, !dbg !330
+  br label %32, !dbg !330
 
-for.body:                                         ; preds = %if.then6, %for.cond
-  %indvars.iv = phi i64 [ %indvars.iv.next, %for.cond ], [ 1, %if.then6 ]
-  %arrayidx10 = getelementptr inbounds i32* %7, i64 %indvars.iv
-  %11 = load i32* %arrayidx10, align 4, !tbaa !3
-  %idxprom11 = sext i32 %11 to i64
-  %arrayidx12 = getelementptr inbounds i32* %3, i64 %idxprom11
-  %12 = load i32* %arrayidx12, align 4, !tbaa !3
-  %cmp13 = icmp eq i32 %9, %12
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  br i1 %cmp13, label %for.cond, label %if.end16
+; <label>:30                                      ; preds = %32
+  call void @llvm.dbg.value(metadata i32* %size, i64 0, metadata !116, metadata !186), !dbg !315
+  %31 = icmp slt i64 %indvars.iv.next, %29, !dbg !327
+  br i1 %31, label %32, label %.loopexit, !dbg !330
 
-if.end16:                                         ; preds = %if.then6, %for.body, %for.cond, %if.end
-  %color.0 = phi i32 [ 0, %if.end ], [ %9, %if.then6 ], [ 0, %for.body ], [ %9, %for.cond ]
-  ret i32 %color.0
+; <label>:32                                      ; preds = %.lr.ph, %30
+  %indvars.iv = phi i64 [ 1, %.lr.ph ], [ %indvars.iv.next, %30 ]
+  call void @llvm.dbg.value(metadata i32** %adj, i64 0, metadata !117, metadata !186), !dbg !316
+  %33 = getelementptr inbounds i32* %23, i64 %indvars.iv, !dbg !331
+  %34 = load i32* %33, align 4, !dbg !331, !tbaa !234
+  %35 = sext i32 %34 to i64, !dbg !334
+  %36 = getelementptr inbounds i32* %15, i64 %35, !dbg !334
+  %37 = load i32* %36, align 4, !dbg !334, !tbaa !234
+  %38 = icmp eq i32 %27, %37, !dbg !335
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !330
+  br i1 %38, label %30, label %.loopexit, !dbg !336
+
+.loopexit:                                        ; preds = %30, %32, %22, %13
+  %color.0 = phi i32 [ 0, %13 ], [ %27, %22 ], [ 0, %32 ], [ %27, %30 ]
+  ret i32 %color.0, !dbg !337
 }

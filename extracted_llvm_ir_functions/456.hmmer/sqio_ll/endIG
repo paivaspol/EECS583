@@ -1,17 +1,18 @@
-define internal i32 @endIG(i8* %s, i32* nocapture %addend) #0 {
-entry:
-  store i32 1, i32* %addend, align 4, !tbaa !0
-  %call = tail call i8* @strchr(i8* %s, i32 49) #9
-  %cmp = icmp eq i8* %call, null
-  br i1 %cmp, label %lor.rhs, label %lor.end
+define internal i32 @endIG(i8* readonly %s, i32* nocapture %addend) #0 {
+  tail call void @llvm.dbg.value(metadata i8* %s, i64 0, metadata !547, metadata !624), !dbg !2913
+  tail call void @llvm.dbg.value(metadata i32* %addend, i64 0, metadata !548, metadata !624), !dbg !2914
+  store i32 1, i32* %addend, align 4, !dbg !2915, !tbaa !897
+  %1 = tail call i8* @strchr(i8* %s, i32 49) #8, !dbg !2916
+  %2 = icmp eq i8* %1, null, !dbg !2917
+  br i1 %2, label %3, label %6, !dbg !2918
 
-lor.rhs:                                          ; preds = %entry
-  %call1 = tail call i8* @strchr(i8* %s, i32 50) #9
-  %cmp2 = icmp ne i8* %call1, null
-  br label %lor.end
+; <label>:3                                       ; preds = %0
+  %4 = tail call i8* @strchr(i8* %s, i32 50) #8, !dbg !2919
+  %5 = icmp ne i8* %4, null, !dbg !2920
+  br label %6, !dbg !2918
 
-lor.end:                                          ; preds = %entry, %lor.rhs
-  %0 = phi i1 [ true, %entry ], [ %cmp2, %lor.rhs ]
-  %lor.ext = zext i1 %0 to i32
-  ret i32 %lor.ext
+; <label>:6                                       ; preds = %0, %3
+  %7 = phi i1 [ true, %0 ], [ %5, %3 ]
+  %8 = zext i1 %7 to i32, !dbg !2918
+  ret i32 %8, !dbg !2921
 }

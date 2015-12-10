@@ -1,18 +1,23 @@
 define i32 @CCTK_ParameterFilename(i32 %len, i8* %filename) #1 {
-  %1 = load i8** @parameter_file_name, align 8, !tbaa !6
-  %2 = tail call i32 @CCTK_Equals(i8* %1, i8* getelementptr inbounds ([2 x i8]* @.str15, i64 0, i64 0)) #7
-  %3 = icmp eq i32 %2, 0
-  %4 = load i8** @parameter_file_name, align 8, !tbaa !6
-  %copy_string.0 = select i1 %3, i8* %4, i8* getelementptr inbounds ([6 x i8]* @.str16, i64 0, i64 0)
-  %5 = tail call i64 @strlen(i8* %copy_string.0) #7
-  %6 = trunc i64 %5 to i32
-  %7 = add nsw i32 %len, -1
-  %8 = icmp sgt i32 %6, %7
-  %. = select i1 %8, i32 %7, i32 %6
-  %9 = sext i32 %. to i64
-  %10 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %filename, i1 false)
-  %11 = tail call i8* @__strncpy_chk(i8* %filename, i8* %copy_string.0, i64 %9, i64 %10) #7
-  %12 = getelementptr inbounds i8* %filename, i64 %9
-  store i8 0, i8* %12, align 1, !tbaa !10
-  ret i32 %.
+  tail call void @llvm.dbg.value(metadata i32 %len, i64 0, metadata !94, metadata !115), !dbg !206
+  tail call void @llvm.dbg.value(metadata i8* %filename, i64 0, metadata !95, metadata !115), !dbg !207
+  %1 = load i8** @parameter_file_name, align 8, !dbg !208, !tbaa !127
+  %2 = tail call i32 @CCTK_Equals(i8* %1, i8* getelementptr inbounds ([2 x i8]* @.str15, i64 0, i64 0)) #7, !dbg !210
+  %3 = icmp eq i32 %2, 0, !dbg !210
+  %4 = load i8** @parameter_file_name, align 8, !dbg !211, !tbaa !127
+  tail call void @llvm.dbg.value(metadata i8* %4, i64 0, metadata !97, metadata !115), !dbg !213
+  %copy_string.0 = select i1 %3, i8* %4, i8* getelementptr inbounds ([6 x i8]* @.str16, i64 0, i64 0), !dbg !214
+  %5 = tail call i64 @strlen(i8* %copy_string.0) #7, !dbg !215
+  %6 = trunc i64 %5 to i32, !dbg !215
+  tail call void @llvm.dbg.value(metadata i32 %6, i64 0, metadata !96, metadata !115), !dbg !216
+  %7 = add nsw i32 %len, -1, !dbg !217
+  %8 = icmp sgt i32 %6, %7, !dbg !219
+  tail call void @llvm.dbg.value(metadata i32 %7, i64 0, metadata !96, metadata !115), !dbg !216
+  %. = select i1 %8, i32 %7, i32 %6, !dbg !220
+  %9 = sext i32 %. to i64, !dbg !221
+  %10 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %filename, i1 false), !dbg !221
+  %11 = tail call i8* @__strncpy_chk(i8* %filename, i8* %copy_string.0, i64 %9, i64 %10) #7, !dbg !221
+  %12 = getelementptr inbounds i8* %filename, i64 %9, !dbg !222
+  store i8 0, i8* %12, align 1, !dbg !223, !tbaa !224
+  ret i32 %., !dbg !225
 }

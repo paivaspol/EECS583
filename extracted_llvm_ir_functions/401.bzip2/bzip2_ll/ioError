@@ -1,11 +1,19 @@
-define internal fastcc void @ioError() #4 {
-entry:
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
-  %1 = load i8** @progName, align 8, !tbaa !3
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([65 x i8]* @.str13, i64 0, i64 0), i8* %1) #6
-  %2 = load i8** @progName, align 8, !tbaa !3
-  tail call void @perror(i8* %2) #6
-  tail call fastcc void @showFileNames() #7
-  tail call fastcc void @cleanUpAndFail() #7
-  unreachable
+define internal fastcc void @ioError() #3 {
+  %1 = load %struct.__sFILE** @__stderrp, align 8, !dbg !2662, !tbaa !542
+  %2 = load i8** @progName, align 8, !dbg !2663, !tbaa !542
+  %3 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %1, i8* getelementptr inbounds ([65 x i8]* @.str78, i64 0, i64 0), i8* %2) #9, !dbg !2664
+  %4 = load i8** @progName, align 8, !dbg !2665, !tbaa !542
+  tail call void @perror(i8* %4) #13, !dbg !2666
+  %5 = load i8* @noisy, align 1, !dbg !2667, !tbaa !547
+  %6 = icmp eq i8 %5, 0, !dbg !2667
+  br i1 %6, label %showFileNames.exit, label %7, !dbg !2669
+
+; <label>:7                                       ; preds = %0
+  %8 = load %struct.__sFILE** @__stderrp, align 8, !dbg !2670, !tbaa !542
+  %9 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %8, i8* getelementptr inbounds ([36 x i8]* @.str38, i64 0, i64 0), i8* getelementptr inbounds ([1034 x i8]* @inName, i64 0, i64 0), i8* getelementptr inbounds ([1034 x i8]* @outName, i64 0, i64 0)) #9, !dbg !2671
+  br label %showFileNames.exit, !dbg !2671
+
+showFileNames.exit:                               ; preds = %0, %7
+  tail call fastcc void @cleanUpAndFail(i32 1) #12, !dbg !2672
+  unreachable, !dbg !2672
 }

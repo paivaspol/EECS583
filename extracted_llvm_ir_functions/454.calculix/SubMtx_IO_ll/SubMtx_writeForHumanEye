@@ -1,5 +1,4 @@
-define i32 @SubMtx_writeForHumanEye(%struct._SubMtx* %mtx, %struct._IO_FILE* %fp) #0 {
-entry:
+define i32 @SubMtx_writeForHumanEye(%struct._SubMtx* %mtx, %struct.__sFILE* %fp) #0 {
   %a2 = alloca %struct._A2, align 8
   %imag = alloca double, align 8
   %real = alloca double, align 8
@@ -8,91 +7,120 @@ entry:
   %nrow = alloca i32, align 4
   %colind = alloca i32*, align 8
   %rowind = alloca i32*, align 8
-  %cmp = icmp eq %struct._SubMtx* %mtx, null
-  %cmp1 = icmp eq %struct._IO_FILE* %fp, null
-  %or.cond = or i1 %cmp, %cmp1
-  br i1 %or.cond, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata %struct._SubMtx* %mtx, i64 0, metadata !199, metadata !338), !dbg !1213
+  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %fp, i64 0, metadata !200, metadata !338), !dbg !1214
+  %1 = icmp eq %struct._SubMtx* %mtx, null, !dbg !1215
+  %2 = icmp eq %struct.__sFILE* %fp, null, !dbg !1217
+  %or.cond = or i1 %1, %2, !dbg !1218
+  br i1 %or.cond, label %3, label %6, !dbg !1218
 
-if.then:                                          ; preds = %entry
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([60 x i8]* @.str44, i64 0, i64 0), %struct._SubMtx* %mtx, %struct._IO_FILE* %fp) #5
-  call void @exit(i32 -1) #8
-  unreachable
+; <label>:3                                       ; preds = %0
+  %4 = load %struct.__sFILE** @__stderrp, align 8, !dbg !1219, !tbaa !347
+  %5 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %4, i8* getelementptr inbounds ([60 x i8]* @.str44, i64 0, i64 0), %struct._SubMtx* %mtx, %struct.__sFILE* %fp) #7, !dbg !1221
+  tail call void @exit(i32 -1) #9, !dbg !1222
+  unreachable, !dbg !1222
 
-if.end:                                           ; preds = %entry
-  %call2 = call i32 @SubMtx_writeStats(%struct._SubMtx* %mtx, %struct._IO_FILE* %fp) #7
-  call void @SubMtx_rowIndices(%struct._SubMtx* %mtx, i32* %nrow, i32** %rowind) #5
-  %1 = call i64 @fwrite(i8* getelementptr inbounds ([12 x i8]* @.str45, i64 0, i64 0), i64 11, i64 1, %struct._IO_FILE* %fp) #9
-  %2 = load i32* %nrow, align 4, !tbaa !3
-  %3 = load i32** %rowind, align 8, !tbaa !0
-  %call4 = call i32 @IVfp80(%struct._IO_FILE* %fp, i32 %2, i32* %3, i32 80, i32* %ierr) #5
-  call void @SubMtx_columnIndices(%struct._SubMtx* %mtx, i32* %ncol, i32** %colind) #5
-  %4 = call i64 @fwrite(i8* getelementptr inbounds ([12 x i8]* @.str46, i64 0, i64 0), i64 11, i64 1, %struct._IO_FILE* %fp) #9
-  %5 = load i32* %ncol, align 4, !tbaa !3
-  %6 = load i32** %colind, align 8, !tbaa !0
-  %call6 = call i32 @IVfp80(%struct._IO_FILE* %fp, i32 %5, i32* %6, i32 80, i32* %ierr) #5
-  call void @A2_setDefaultFields(%struct._A2* %a2) #5
-  %type = getelementptr inbounds %struct._SubMtx* %mtx, i64 0, i32 0
-  %7 = load i32* %type, align 4, !tbaa !3
-  %8 = load i32* %nrow, align 4, !tbaa !3
-  %9 = load i32* %ncol, align 4, !tbaa !3
-  call void @A2_init(%struct._A2* %a2, i32 %7, i32 %8, i32 %9, i32 1, i32 %8, double* null) #5
-  call void @A2_zero(%struct._A2* %a2) #5
-  %10 = load i32* %nrow, align 4, !tbaa !3
-  %cmp751 = icmp sgt i32 %10, 0
-  br i1 %cmp751, label %for.cond8.preheader.lr.ph, label %for.end23
+; <label>:6                                       ; preds = %0
+  %7 = tail call i32 @SubMtx_writeStats(%struct._SubMtx* %mtx, %struct.__sFILE* %fp) #8, !dbg !1223
+  tail call void @llvm.dbg.value(metadata i32* %nrow, i64 0, metadata !219, metadata !338), !dbg !1224
+  tail call void @llvm.dbg.value(metadata i32** %rowind, i64 0, metadata !221, metadata !338), !dbg !1225
+  call void @SubMtx_rowIndices(%struct._SubMtx* %mtx, i32* %nrow, i32** %rowind) #7, !dbg !1226
+  %8 = call i64 @fwrite(i8* getelementptr inbounds ([12 x i8]* @.str45, i64 0, i64 0), i64 11, i64 1, %struct.__sFILE* %fp), !dbg !1227
+  call void @llvm.dbg.value(metadata i32* %nrow, i64 0, metadata !219, metadata !338), !dbg !1224
+  %9 = load i32* %nrow, align 4, !dbg !1228, !tbaa !438
+  call void @llvm.dbg.value(metadata i32** %rowind, i64 0, metadata !221, metadata !338), !dbg !1225
+  %10 = load i32** %rowind, align 8, !dbg !1229, !tbaa !347
+  call void @llvm.dbg.value(metadata i32* %ierr, i64 0, metadata !215, metadata !338), !dbg !1230
+  %11 = call i32 @IVfp80(%struct.__sFILE* %fp, i32 %9, i32* %10, i32 80, i32* %ierr) #7, !dbg !1231
+  call void @llvm.dbg.value(metadata i32* %ncol, i64 0, metadata !218, metadata !338), !dbg !1232
+  call void @llvm.dbg.value(metadata i32** %colind, i64 0, metadata !220, metadata !338), !dbg !1233
+  call void @SubMtx_columnIndices(%struct._SubMtx* %mtx, i32* %ncol, i32** %colind) #7, !dbg !1234
+  %12 = call i64 @fwrite(i8* getelementptr inbounds ([12 x i8]* @.str46, i64 0, i64 0), i64 11, i64 1, %struct.__sFILE* %fp), !dbg !1235
+  call void @llvm.dbg.value(metadata i32* %ncol, i64 0, metadata !218, metadata !338), !dbg !1232
+  %13 = load i32* %ncol, align 4, !dbg !1236, !tbaa !438
+  call void @llvm.dbg.value(metadata i32** %colind, i64 0, metadata !220, metadata !338), !dbg !1233
+  %14 = load i32** %colind, align 8, !dbg !1237, !tbaa !347
+  call void @llvm.dbg.value(metadata i32* %ierr, i64 0, metadata !215, metadata !338), !dbg !1230
+  %15 = call i32 @IVfp80(%struct.__sFILE* %fp, i32 %13, i32* %14, i32 80, i32* %ierr) #7, !dbg !1238
+  call void @llvm.dbg.value(metadata %struct._A2* %a2, i64 0, metadata !201, metadata !338), !dbg !1239
+  call void @A2_setDefaultFields(%struct._A2* %a2) #7, !dbg !1240
+  %16 = getelementptr inbounds %struct._SubMtx* %mtx, i64 0, i32 0, !dbg !1241
+  %17 = load i32* %16, align 4, !dbg !1241, !tbaa !622
+  call void @llvm.dbg.value(metadata i32* %nrow, i64 0, metadata !219, metadata !338), !dbg !1224
+  %18 = load i32* %nrow, align 4, !dbg !1242, !tbaa !438
+  call void @llvm.dbg.value(metadata i32* %ncol, i64 0, metadata !218, metadata !338), !dbg !1232
+  %19 = load i32* %ncol, align 4, !dbg !1243, !tbaa !438
+  call void @llvm.dbg.value(metadata %struct._A2* %a2, i64 0, metadata !201, metadata !338), !dbg !1239
+  call void @A2_init(%struct._A2* %a2, i32 %17, i32 %18, i32 %19, i32 1, i32 %18, double* null) #7, !dbg !1244
+  call void @llvm.dbg.value(metadata %struct._A2* %a2, i64 0, metadata !201, metadata !338), !dbg !1239
+  call void @A2_zero(%struct._A2* %a2) #7, !dbg !1245
+  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !216, metadata !338), !dbg !1246
+  call void @llvm.dbg.value(metadata i32* %nrow, i64 0, metadata !219, metadata !338), !dbg !1224
+  %20 = load i32* %nrow, align 4, !dbg !1247, !tbaa !438
+  %21 = icmp sgt i32 %20, 0, !dbg !1250
+  br i1 %21, label %.preheader.lr.ph, label %._crit_edge4, !dbg !1251
 
-for.cond8.preheader.lr.ph:                        ; preds = %if.end
-  %.pre = load i32* %ncol, align 4, !tbaa !3
-  br label %for.cond8.preheader
+.preheader.lr.ph:                                 ; preds = %6
+  %.pre = load i32* %ncol, align 4, !dbg !1252, !tbaa !438
+  br label %.preheader, !dbg !1251
 
-for.cond8.preheader:                              ; preds = %for.cond8.preheader.lr.ph, %for.inc21
-  %11 = phi i32 [ %10, %for.cond8.preheader.lr.ph ], [ %18, %for.inc21 ]
-  %12 = phi i32 [ %.pre, %for.cond8.preheader.lr.ph ], [ %19, %for.inc21 ]
-  %irow.052 = phi i32 [ 0, %for.cond8.preheader.lr.ph ], [ %inc22, %for.inc21 ]
-  %cmp949 = icmp sgt i32 %12, 0
-  br i1 %cmp949, label %for.body10, label %for.inc21
+.preheader:                                       ; preds = %.preheader.lr.ph, %._crit_edge
+  %22 = phi i32 [ %.pre, %.preheader.lr.ph ], [ %36, %._crit_edge ], !dbg !1232
+  %irow.03 = phi i32 [ 0, %.preheader.lr.ph ], [ %37, %._crit_edge ]
+  call void @llvm.dbg.value(metadata i32* %ncol, i64 0, metadata !218, metadata !338), !dbg !1232
+  %23 = icmp sgt i32 %22, 0, !dbg !1256
+  br i1 %23, label %.lr.ph, label %._crit_edge, !dbg !1257
 
-for.body10:                                       ; preds = %for.inc, %for.cond8.preheader
-  %jcol.050 = phi i32 [ 0, %for.cond8.preheader ], [ %inc, %for.inc ]
-  %13 = load i32* %type, align 4, !tbaa !3
-  switch i32 %13, label %for.inc [
-    i32 1, label %if.then13
-    i32 2, label %if.then17
-  ]
+.lr.ph:                                           ; preds = %.preheader, %32
+  %jcol.02 = phi i32 [ %33, %32 ], [ 0, %.preheader ]
+  %24 = load i32* %16, align 4, !dbg !1258, !tbaa !622
+  switch i32 %24, label %32 [
+    i32 1, label %25
+    i32 2, label %28
+  ], !dbg !1261
 
-if.then13:                                        ; preds = %for.body10
-  %call14 = call i32 @SubMtx_realEntry(%struct._SubMtx* %mtx, i32 %irow.052, i32 %jcol.050, double* %real) #5
-  %14 = load double* %real, align 8, !tbaa !4
-  call void @A2_setRealEntry(%struct._A2* %a2, i32 %irow.052, i32 %jcol.050, double %14) #5
-  br label %for.inc
+; <label>:25                                      ; preds = %.lr.ph
+  call void @llvm.dbg.value(metadata double* %real, i64 0, metadata !214, metadata !338), !dbg !1262
+  %26 = call i32 @SubMtx_realEntry(%struct._SubMtx* %mtx, i32 %irow.03, i32 %jcol.02, double* %real) #7, !dbg !1263
+  call void @llvm.dbg.value(metadata double* %real, i64 0, metadata !214, metadata !338), !dbg !1262
+  %27 = load double* %real, align 8, !dbg !1265, !tbaa !1266
+  call void @llvm.dbg.value(metadata %struct._A2* %a2, i64 0, metadata !201, metadata !338), !dbg !1239
+  call void @A2_setRealEntry(%struct._A2* %a2, i32 %irow.03, i32 %jcol.02, double %27) #7, !dbg !1268
+  br label %32, !dbg !1269
 
-if.then17:                                        ; preds = %for.body10
-  %call18 = call i32 @SubMtx_complexEntry(%struct._SubMtx* %mtx, i32 %irow.052, i32 %jcol.050, double* %real, double* %imag) #5
-  %15 = load double* %real, align 8, !tbaa !4
-  %16 = load double* %imag, align 8, !tbaa !4
-  call void @A2_setComplexEntry(%struct._A2* %a2, i32 %irow.052, i32 %jcol.050, double %15, double %16) #5
-  br label %for.inc
+; <label>:28                                      ; preds = %.lr.ph
+  call void @llvm.dbg.value(metadata double* %imag, i64 0, metadata !213, metadata !338), !dbg !1270
+  call void @llvm.dbg.value(metadata double* %real, i64 0, metadata !214, metadata !338), !dbg !1262
+  %29 = call i32 @SubMtx_complexEntry(%struct._SubMtx* %mtx, i32 %irow.03, i32 %jcol.02, double* %real, double* %imag) #7, !dbg !1271
+  call void @llvm.dbg.value(metadata double* %real, i64 0, metadata !214, metadata !338), !dbg !1262
+  %30 = load double* %real, align 8, !dbg !1274, !tbaa !1266
+  call void @llvm.dbg.value(metadata double* %imag, i64 0, metadata !213, metadata !338), !dbg !1270
+  %31 = load double* %imag, align 8, !dbg !1275, !tbaa !1266
+  call void @llvm.dbg.value(metadata %struct._A2* %a2, i64 0, metadata !201, metadata !338), !dbg !1239
+  call void @A2_setComplexEntry(%struct._A2* %a2, i32 %irow.03, i32 %jcol.02, double %30, double %31) #7, !dbg !1276
+  br label %32, !dbg !1277
 
-for.inc:                                          ; preds = %for.body10, %if.then13, %if.then17
-  %inc = add nsw i32 %jcol.050, 1
-  %17 = load i32* %ncol, align 4, !tbaa !3
-  %cmp9 = icmp slt i32 %inc, %17
-  br i1 %cmp9, label %for.body10, label %for.cond8.for.inc21_crit_edge
+; <label>:32                                      ; preds = %.lr.ph, %25, %28
+  %33 = add nuw nsw i32 %jcol.02, 1, !dbg !1278
+  call void @llvm.dbg.value(metadata i32 %33, i64 0, metadata !217, metadata !338), !dbg !1279
+  call void @llvm.dbg.value(metadata i32* %ncol, i64 0, metadata !218, metadata !338), !dbg !1232
+  %34 = load i32* %ncol, align 4, !dbg !1252, !tbaa !438
+  %35 = icmp slt i32 %33, %34, !dbg !1256
+  br i1 %35, label %.lr.ph, label %._crit_edge, !dbg !1257
 
-for.cond8.for.inc21_crit_edge:                    ; preds = %for.inc
-  %.pre53 = load i32* %nrow, align 4, !tbaa !3
-  br label %for.inc21
+._crit_edge:                                      ; preds = %32, %.preheader
+  %36 = phi i32 [ %22, %.preheader ], [ %34, %32 ]
+  %37 = add nuw nsw i32 %irow.03, 1, !dbg !1280
+  call void @llvm.dbg.value(metadata i32 %37, i64 0, metadata !216, metadata !338), !dbg !1246
+  call void @llvm.dbg.value(metadata i32* %nrow, i64 0, metadata !219, metadata !338), !dbg !1224
+  %38 = load i32* %nrow, align 4, !dbg !1247, !tbaa !438
+  %39 = icmp slt i32 %37, %38, !dbg !1250
+  br i1 %39, label %.preheader, label %._crit_edge4, !dbg !1251
 
-for.inc21:                                        ; preds = %for.cond8.preheader, %for.cond8.for.inc21_crit_edge
-  %18 = phi i32 [ %.pre53, %for.cond8.for.inc21_crit_edge ], [ %11, %for.cond8.preheader ]
-  %19 = phi i32 [ %17, %for.cond8.for.inc21_crit_edge ], [ %12, %for.cond8.preheader ]
-  %inc22 = add nsw i32 %irow.052, 1
-  %cmp7 = icmp slt i32 %inc22, %18
-  br i1 %cmp7, label %for.cond8.preheader, label %for.end23
-
-for.end23:                                        ; preds = %for.inc21, %if.end
-  call void @A2_writeForHumanEye(%struct._A2* %a2, %struct._IO_FILE* %fp) #5
-  call void @A2_clearData(%struct._A2* %a2) #5
-  ret i32 1
+._crit_edge4:                                     ; preds = %._crit_edge, %6
+  call void @llvm.dbg.value(metadata %struct._A2* %a2, i64 0, metadata !201, metadata !338), !dbg !1239
+  call void @A2_writeForHumanEye(%struct._A2* %a2, %struct.__sFILE* %fp) #7, !dbg !1281
+  call void @llvm.dbg.value(metadata %struct._A2* %a2, i64 0, metadata !201, metadata !338), !dbg !1239
+  call void @A2_clearData(%struct._A2* %a2) #7, !dbg !1282
+  ret i32 1, !dbg !1283
 }

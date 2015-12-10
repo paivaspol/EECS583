@@ -1,33 +1,36 @@
 define i32 @get_mem_FME() #0 {
-entry:
-  %0 = load %struct.ImageParameters** @img, align 8, !tbaa !3
-  %width = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 13
-  %1 = load i32* %width, align 4, !tbaa !4
-  %shr = ashr i32 %1, 4
-  %add = add nsw i32 %shr, 1
-  %conv = sext i32 %add to i64
-  %call = tail call noalias i8* @calloc(i64 %conv, i64 4) #5
-  %2 = bitcast i8* %call to i32*
-  store i32* %2, i32** @flag_intra, align 8, !tbaa !3
-  %cmp = icmp eq i8* %call, null
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !68, metadata !914), !dbg !1114
+  %1 = load %struct.ImageParameters** @img, align 8, !dbg !1115, !tbaa !906
+  %2 = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 13, !dbg !1117
+  %3 = load i32* %2, align 4, !dbg !1117, !tbaa !957
+  %4 = ashr i32 %3, 4, !dbg !1118
+  %5 = add nsw i32 %4, 1, !dbg !1119
+  %6 = sext i32 %5 to i64, !dbg !1120
+  %7 = tail call i8* @calloc(i64 %6, i64 4) #6, !dbg !1121
+  store i8* %7, i8** bitcast (i32** @flag_intra to i8**), align 8, !dbg !1122, !tbaa !906
+  %8 = icmp eq i8* %7, null, !dbg !1123
+  br i1 %8, label %9, label %10, !dbg !1124
 
-if.then:                                          ; preds = %entry
-  tail call void @no_mem_exit(i8* getelementptr inbounds ([24 x i8]* @.str1, i64 0, i64 0)) #5
-  br label %if.end
+; <label>:9                                       ; preds = %0
+  tail call void @no_mem_exit(i8* getelementptr inbounds ([24 x i8]* @.str1, i64 0, i64 0)) #6, !dbg !1125
+  br label %10, !dbg !1125
 
-if.end:                                           ; preds = %if.then, %entry
-  %3 = load %struct.InputParameters** @input, align 8, !tbaa !3
-  %search_range = getelementptr inbounds %struct.InputParameters* %3, i64 0, i32 8
-  %4 = load i32* %search_range, align 4, !tbaa !4
-  %mul = shl nsw i32 %4, 1
-  %add218 = or i32 %mul, 1
-  %call6 = tail call i32 @get_mem2Dint(i32*** @McostState, i32 %add218, i32 %add218) #5
-  %call8 = tail call i32 @get_mem_mincost(i32****** @all_mincost) #4
-  %add9 = add nsw i32 %call8, %call6
-  %call10 = tail call i32 @get_mem_bwmincost(i32****** @all_bwmincost) #4
-  %add11 = add nsw i32 %add9, %call10
-  %call12 = tail call i32 @get_mem2D(i8*** @SearchState, i32 7, i32 7) #5
-  %add13 = add nsw i32 %add11, %call12
-  ret i32 %add13
+; <label>:10                                      ; preds = %9, %0
+  %11 = load %struct.InputParameters** @input, align 8, !dbg !1126, !tbaa !906
+  %12 = getelementptr inbounds %struct.InputParameters* %11, i64 0, i32 8, !dbg !1127
+  %13 = load i32* %12, align 4, !dbg !1127, !tbaa !1128
+  %14 = shl nsw i32 %13, 1, !dbg !1129
+  %15 = or i32 %14, 1, !dbg !1130
+  %16 = tail call i32 @get_mem2Dint(i32*** @McostState, i32 %15, i32 %15) #6, !dbg !1131
+  tail call void @llvm.dbg.value(metadata i32 %16, i64 0, metadata !68, metadata !914), !dbg !1114
+  %17 = tail call i32 @get_mem_mincost(i32****** @all_mincost) #5, !dbg !1132
+  %18 = add nsw i32 %17, %16, !dbg !1133
+  tail call void @llvm.dbg.value(metadata i32 %18, i64 0, metadata !68, metadata !914), !dbg !1114
+  %19 = tail call i32 @get_mem_bwmincost(i32****** @all_bwmincost) #5, !dbg !1134
+  %20 = add nsw i32 %18, %19, !dbg !1135
+  tail call void @llvm.dbg.value(metadata i32 %20, i64 0, metadata !68, metadata !914), !dbg !1114
+  %21 = tail call i32 @get_mem2D(i8*** @SearchState, i32 7, i32 7) #6, !dbg !1136
+  %22 = add nsw i32 %20, %21, !dbg !1137
+  tail call void @llvm.dbg.value(metadata i32 %22, i64 0, metadata !68, metadata !914), !dbg !1114
+  ret i32 %22, !dbg !1138
 }

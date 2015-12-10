@@ -1,47 +1,51 @@
-define void @write_xpm_axis(%struct.__sFILE* nocapture %out, i8* %axis, i32 %n, float* readonly %label) #3 {
-  %1 = icmp eq float* %label, null
-  br i1 %1, label %20, label %.preheader
+define void @write_xpm_axis(%struct.__sFILE* nocapture %out, i8* %axis, i32 %n, float* readonly %label) #4 {
+  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %out, i64 0, metadata !358, metadata !477), !dbg !1570
+  tail call void @llvm.dbg.value(metadata i8* %axis, i64 0, metadata !359, metadata !477), !dbg !1571
+  tail call void @llvm.dbg.value(metadata i32 %n, i64 0, metadata !360, metadata !477), !dbg !1572
+  tail call void @llvm.dbg.value(metadata float* %label, i64 0, metadata !361, metadata !477), !dbg !1573
+  %1 = icmp eq float* %label, null, !dbg !1574
+  br i1 %1, label %20, label %.preheader, !dbg !1576
 
 .preheader:                                       ; preds = %0
-  %2 = icmp sgt i32 %n, 0
-  br i1 %2, label %.lr.ph, label %._crit_edge
+  %2 = icmp sgt i32 %n, 0, !dbg !1577
+  br i1 %2, label %.lr.ph, label %._crit_edge, !dbg !1581
 
 .lr.ph:                                           ; preds = %.preheader
-  %3 = add i32 %n, -1
-  br label %4
+  %3 = add i32 %n, -1, !dbg !1581
+  br label %4, !dbg !1581
 
 ; <label>:4                                       ; preds = %14, %.lr.ph
   %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %14 ]
-  %5 = trunc i64 %indvars.iv to i32
-  %6 = srem i32 %5, 80
-  %7 = icmp eq i32 %6, 0
-  br i1 %7, label %8, label %14
+  %5 = trunc i64 %indvars.iv to i32, !dbg !1582
+  %6 = srem i32 %5, 80, !dbg !1582
+  %7 = icmp eq i32 %6, 0, !dbg !1585
+  br i1 %7, label %8, label %14, !dbg !1586
 
 ; <label>:8                                       ; preds = %4
-  %9 = icmp eq i32 %5, 0
-  br i1 %9, label %12, label %10
+  %9 = icmp eq i32 %5, 0, !dbg !1587
+  br i1 %9, label %12, label %10, !dbg !1590
 
 ; <label>:10                                      ; preds = %8
-  %11 = tail call i64 @fwrite(i8* getelementptr inbounds ([4 x i8]* @.str68, i64 0, i64 0), i64 3, i64 1, %struct.__sFILE* %out)
-  br label %12
+  %11 = tail call i64 @fwrite(i8* getelementptr inbounds ([4 x i8]* @.str68, i64 0, i64 0), i64 3, i64 1, %struct.__sFILE* %out), !dbg !1591
+  br label %12, !dbg !1591
 
 ; <label>:12                                      ; preds = %8, %10
-  %13 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %out, i8* getelementptr inbounds ([14 x i8]* @.str69, i64 0, i64 0), i8* %axis) #10
-  br label %14
+  %13 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %out, i8* getelementptr inbounds ([14 x i8]* @.str69, i64 0, i64 0), i8* %axis) #10, !dbg !1592
+  br label %14, !dbg !1593
 
 ; <label>:14                                      ; preds = %12, %4
-  %15 = getelementptr inbounds float* %label, i64 %indvars.iv
-  %16 = load float* %15, align 4, !tbaa !35
-  %17 = fpext float %16 to double
-  %18 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %out, i8* getelementptr inbounds ([4 x i8]* @.str70, i64 0, i64 0), double %17) #10
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %exitcond = icmp eq i32 %5, %3
-  br i1 %exitcond, label %._crit_edge, label %4
+  %15 = getelementptr inbounds float* %label, i64 %indvars.iv, !dbg !1594
+  %16 = load float* %15, align 4, !dbg !1594, !tbaa !1073
+  %17 = fpext float %16 to double, !dbg !1594
+  %18 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %out, i8* getelementptr inbounds ([4 x i8]* @.str70, i64 0, i64 0), double %17) #10, !dbg !1595
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !1581
+  %exitcond = icmp eq i32 %5, %3, !dbg !1581
+  br i1 %exitcond, label %._crit_edge, label %4, !dbg !1581
 
 ._crit_edge:                                      ; preds = %14, %.preheader
-  %19 = tail call i64 @fwrite(i8* getelementptr inbounds ([4 x i8]* @.str68, i64 0, i64 0), i64 3, i64 1, %struct.__sFILE* %out)
-  br label %20
+  %19 = tail call i64 @fwrite(i8* getelementptr inbounds ([4 x i8]* @.str68, i64 0, i64 0), i64 3, i64 1, %struct.__sFILE* %out), !dbg !1596
+  br label %20, !dbg !1597
 
 ; <label>:20                                      ; preds = %0, %._crit_edge
-  ret void
+  ret void, !dbg !1598
 }

@@ -1,43 +1,47 @@
 define void @comm_tcr(%struct.__sFILE* nocapture readnone %log, %struct.t_commrec* nocapture readonly %cr, %struct.t_coupl_rec** nocapture %tcr) #4 {
   %shit = alloca %struct.t_coupl_rec, align 8
-  %1 = bitcast %struct.t_coupl_rec* %shit to i8*
-  call void @llvm.lifetime.start(i64 288, i8* %1) #5
-  %2 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 0
-  %3 = load i32* %2, align 4, !tbaa !18
-  %4 = icmp eq i32 %3, 0
-  br i1 %4, label %5, label %15
+  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %log, i64 0, metadata !463, metadata !780), !dbg !943
+  tail call void @llvm.dbg.value(metadata %struct.t_commrec* %cr, i64 0, metadata !464, metadata !780), !dbg !944
+  tail call void @llvm.dbg.value(metadata %struct.t_coupl_rec** %tcr, i64 0, metadata !465, metadata !780), !dbg !945
+  %1 = bitcast %struct.t_coupl_rec* %shit to i8*, !dbg !946
+  call void @llvm.lifetime.start(i64 288, i8* %1) #5, !dbg !946
+  %2 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 0, !dbg !947
+  %3 = load i32* %2, align 4, !dbg !947, !tbaa !949
+  %4 = icmp eq i32 %3, 0, !dbg !947
+  br i1 %4, label %5, label %15, !dbg !947
 
 ; <label>:5                                       ; preds = %0
-  %6 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 4
-  %7 = load i32* %6, align 4, !tbaa !20
-  %8 = icmp eq i32 %7, 0
-  br i1 %8, label %9, label %15
+  %6 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 4, !dbg !947
+  %7 = load i32* %6, align 4, !dbg !947, !tbaa !951
+  %8 = icmp eq i32 %7, 0, !dbg !947
+  br i1 %8, label %9, label %15, !dbg !952
 
 ; <label>:9                                       ; preds = %5
-  %10 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 2
-  %11 = load i32* %10, align 4, !tbaa !21
-  %12 = load %struct.t_coupl_rec** %tcr, align 8, !tbaa !22
-  tail call fastcc void @send_tcr(i32 %11, %struct.t_coupl_rec* %12) #11
-  %13 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 3
-  %14 = load i32* %13, align 4, !tbaa !23
-  call fastcc void @rec_tcr(i32 %14, %struct.t_coupl_rec* %shit) #11
-  br label %24
+  %10 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 2, !dbg !953
+  %11 = load i32* %10, align 4, !dbg !953, !tbaa !955
+  %12 = load %struct.t_coupl_rec** %tcr, align 8, !dbg !956, !tbaa !957
+  tail call fastcc void @send_tcr(i32 %11, %struct.t_coupl_rec* %12) #11, !dbg !958
+  %13 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 3, !dbg !959
+  %14 = load i32* %13, align 4, !dbg !959, !tbaa !960
+  tail call void @llvm.dbg.value(metadata %struct.t_coupl_rec* %shit, i64 0, metadata !466, metadata !780), !dbg !961
+  call fastcc void @rec_tcr(i32 %14, %struct.t_coupl_rec* %shit) #11, !dbg !962
+  br label %24, !dbg !963
 
 ; <label>:15                                      ; preds = %5, %0
-  %16 = tail call i8* @save_calloc(i8* getelementptr inbounds ([5 x i8]* @.str17, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str18, i64 0, i64 0), i32 108, i32 1, i32 288) #9
-  %17 = bitcast i8* %16 to %struct.t_coupl_rec*
-  %18 = bitcast %struct.t_coupl_rec** %tcr to i8**
-  store i8* %16, i8** %18, align 8, !tbaa !22
-  %19 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 3
-  %20 = load i32* %19, align 4, !tbaa !23
-  tail call fastcc void @rec_tcr(i32 %20, %struct.t_coupl_rec* %17) #11
-  %21 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 2
-  %22 = load i32* %21, align 4, !tbaa !21
-  %23 = load %struct.t_coupl_rec** %tcr, align 8, !tbaa !22
-  tail call fastcc void @send_tcr(i32 %22, %struct.t_coupl_rec* %23) #11
+  %16 = tail call i8* @save_calloc(i8* getelementptr inbounds ([5 x i8]* @.str17, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str18, i64 0, i64 0), i32 108, i32 1, i32 288) #9, !dbg !964
+  %17 = bitcast i8* %16 to %struct.t_coupl_rec*, !dbg !964
+  %18 = bitcast %struct.t_coupl_rec** %tcr to i8**, !dbg !964
+  store i8* %16, i8** %18, align 8, !dbg !964, !tbaa !957
+  %19 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 3, !dbg !966
+  %20 = load i32* %19, align 4, !dbg !966, !tbaa !960
+  tail call fastcc void @rec_tcr(i32 %20, %struct.t_coupl_rec* %17) #11, !dbg !967
+  %21 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 2, !dbg !968
+  %22 = load i32* %21, align 4, !dbg !968, !tbaa !955
+  %23 = load %struct.t_coupl_rec** %tcr, align 8, !dbg !969, !tbaa !957
+  tail call fastcc void @send_tcr(i32 %22, %struct.t_coupl_rec* %23) #11, !dbg !970
   br label %24
 
 ; <label>:24                                      ; preds = %15, %9
-  call void @llvm.lifetime.end(i64 288, i8* %1) #5
-  ret void
+  call void @llvm.lifetime.end(i64 288, i8* %1) #5, !dbg !971
+  ret void, !dbg !971
 }

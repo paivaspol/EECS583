@@ -1,61 +1,64 @@
 define void @ToIUPAC(i8* nocapture %seq, i32 %is_aseq) #0 {
-entry:
-  %tobool = icmp eq i32 %is_aseq, 0
-  %0 = load i8* %seq, align 1, !tbaa !1
-  %cmp2656 = icmp eq i8 %0, 0
-  br i1 %tobool, label %for.cond24.preheader, label %for.cond.preheader
+  tail call void @llvm.dbg.value(metadata i8* %seq, i64 0, metadata !326, metadata !624), !dbg !1230
+  tail call void @llvm.dbg.value(metadata i32 %is_aseq, i64 0, metadata !327, metadata !624), !dbg !1231
+  %1 = icmp eq i32 %is_aseq, 0, !dbg !1232
+  %2 = load i8* %seq, align 1, !dbg !1234, !tbaa !861
+  %3 = icmp eq i8 %2, 0, !dbg !1238
+  br i1 %1, label %.preheader, label %.preheader2, !dbg !1239
 
-for.cond.preheader:                               ; preds = %entry
-  br i1 %cmp2656, label %if.end38, label %for.body
+.preheader2:                                      ; preds = %0
+  br i1 %3, label %.loopexit, label %.lr.ph6, !dbg !1240
 
-for.cond24.preheader:                             ; preds = %entry
-  br i1 %cmp2656, label %if.end38, label %for.body28
+.preheader:                                       ; preds = %0
+  br i1 %3, label %.loopexit, label %.lr.ph, !dbg !1243
 
-for.body:                                         ; preds = %for.cond.preheader, %for.inc
-  %1 = phi i8 [ %2, %for.inc ], [ %0, %for.cond.preheader ]
-  %seq.addr.060 = phi i8* [ %incdec.ptr, %for.inc ], [ %seq, %for.cond.preheader ]
-  %conv = sext i8 %1 to i32
-  %memchr51 = tail call i8* @memchr(i8* getelementptr inbounds ([33 x i8]* @.str5, i64 0, i64 0), i32 %conv, i64 33)
-  %cmp3 = icmp eq i8* %memchr51, null
-  br i1 %cmp3, label %switch.early.test, label %for.inc
+.lr.ph6:                                          ; preds = %.preheader2, %9
+  %4 = phi i8 [ %11, %9 ], [ %2, %.preheader2 ]
+  %.05 = phi i8* [ %10, %9 ], [ %seq, %.preheader2 ]
+  %5 = sext i8 %4 to i32, !dbg !1244
+  %memchr1 = tail call i8* @memchr(i8* getelementptr inbounds ([33 x i8]* @.str5, i64 0, i64 0), i32 %5, i64 33), !dbg !1246
+  %6 = icmp eq i8* %memchr1, null, !dbg !1248
+  br i1 %6, label %7, label %9, !dbg !1249
 
-switch.early.test:                                ; preds = %for.body
-  switch i8 %1, label %if.then23 [
-    i8 126, label %for.inc
-    i8 95, label %for.inc
-    i8 46, label %for.inc
-    i8 45, label %for.inc
-    i8 32, label %for.inc
-  ]
+; <label>:7                                       ; preds = %.lr.ph6
+  switch i8 %4, label %8 [
+    i8 32, label %9
+    i8 46, label %9
+    i8 95, label %9
+    i8 45, label %9
+    i8 126, label %9
+  ], !dbg !1250
 
-if.then23:                                        ; preds = %switch.early.test
-  store i8 78, i8* %seq.addr.060, align 1, !tbaa !1
-  br label %for.inc
+; <label>:8                                       ; preds = %7
+  store i8 78, i8* %.05, align 1, !dbg !1251, !tbaa !861
+  br label %9, !dbg !1252
 
-for.inc:                                          ; preds = %for.body, %switch.early.test, %switch.early.test, %switch.early.test, %switch.early.test, %switch.early.test, %if.then23
-  %incdec.ptr = getelementptr inbounds i8* %seq.addr.060, i64 1
-  %2 = load i8* %incdec.ptr, align 1, !tbaa !1
-  %cmp = icmp eq i8 %2, 0
-  br i1 %cmp, label %if.end38, label %for.body
+; <label>:9                                       ; preds = %7, %7, %7, %7, %7, %.lr.ph6, %8
+  %10 = getelementptr inbounds i8* %.05, i64 1, !dbg !1253
+  tail call void @llvm.dbg.value(metadata i8* %10, i64 0, metadata !326, metadata !624), !dbg !1230
+  %11 = load i8* %10, align 1, !dbg !1244, !tbaa !861
+  %12 = icmp eq i8 %11, 0, !dbg !1254
+  br i1 %12, label %.loopexit, label %.lr.ph6, !dbg !1240
 
-for.body28:                                       ; preds = %for.cond24.preheader, %for.inc35
-  %3 = phi i8 [ %4, %for.inc35 ], [ %0, %for.cond24.preheader ]
-  %seq.addr.157 = phi i8* [ %incdec.ptr36, %for.inc35 ], [ %seq, %for.cond24.preheader ]
-  %conv25 = sext i8 %3 to i32
-  %memchr = tail call i8* @memchr(i8* getelementptr inbounds ([33 x i8]* @.str5, i64 0, i64 0), i32 %conv25, i64 33)
-  %cmp31 = icmp eq i8* %memchr, null
-  br i1 %cmp31, label %if.then33, label %for.inc35
+.lr.ph:                                           ; preds = %.preheader, %17
+  %13 = phi i8 [ %19, %17 ], [ %2, %.preheader ]
+  %.14 = phi i8* [ %18, %17 ], [ %seq, %.preheader ]
+  %14 = sext i8 %13 to i32, !dbg !1234
+  %memchr = tail call i8* @memchr(i8* getelementptr inbounds ([33 x i8]* @.str5, i64 0, i64 0), i32 %14, i64 33), !dbg !1255
+  %15 = icmp eq i8* %memchr, null, !dbg !1257
+  br i1 %15, label %16, label %17, !dbg !1258
 
-if.then33:                                        ; preds = %for.body28
-  store i8 78, i8* %seq.addr.157, align 1, !tbaa !1
-  br label %for.inc35
+; <label>:16                                      ; preds = %.lr.ph
+  store i8 78, i8* %.14, align 1, !dbg !1259, !tbaa !861
+  br label %17, !dbg !1260
 
-for.inc35:                                        ; preds = %for.body28, %if.then33
-  %incdec.ptr36 = getelementptr inbounds i8* %seq.addr.157, i64 1
-  %4 = load i8* %incdec.ptr36, align 1, !tbaa !1
-  %cmp26 = icmp eq i8 %4, 0
-  br i1 %cmp26, label %if.end38, label %for.body28
+; <label>:17                                      ; preds = %.lr.ph, %16
+  %18 = getelementptr inbounds i8* %.14, i64 1, !dbg !1261
+  tail call void @llvm.dbg.value(metadata i8* %18, i64 0, metadata !326, metadata !624), !dbg !1230
+  %19 = load i8* %18, align 1, !dbg !1234, !tbaa !861
+  %20 = icmp eq i8 %19, 0, !dbg !1238
+  br i1 %20, label %.loopexit, label %.lr.ph, !dbg !1243
 
-if.end38:                                         ; preds = %for.cond.preheader, %for.inc, %for.cond24.preheader, %for.inc35
-  ret void
+.loopexit:                                        ; preds = %9, %17, %.preheader2, %.preheader
+  ret void, !dbg !1262
 }

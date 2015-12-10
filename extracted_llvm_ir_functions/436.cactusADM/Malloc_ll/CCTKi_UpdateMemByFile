@@ -1,50 +1,58 @@
 define i32 @CCTKi_UpdateMemByFile(i32 %size, i32 %line, i8* %file) #1 {
-  %memfile = alloca i8*, align 8
-  %1 = load %struct.cHandledData** @memfileDB, align 8, !tbaa !2
-  %2 = call i32 @Util_GetHandle(%struct.cHandledData* %1, i8* %file, i8** %memfile) #6
-  %3 = icmp sgt i32 %2, -1
-  br i1 %3, label %4, label %16
+  %memfile = alloca i8*, align 8, !dbg !162
+  tail call void @llvm.dbg.value(metadata i32 %size, i64 0, metadata !55, metadata !120), !dbg !164
+  tail call void @llvm.dbg.value(metadata i32 %line, i64 0, metadata !56, metadata !120), !dbg !165
+  tail call void @llvm.dbg.value(metadata i8* %file, i64 0, metadata !57, metadata !120), !dbg !166
+  tail call void @llvm.dbg.value(metadata i32 -1, i64 0, metadata !60, metadata !120), !dbg !167
+  tail call void @llvm.dbg.value(metadata i32 %line, i64 0, metadata !56, metadata !120), !dbg !165
+  %1 = load %struct.cHandledData** @memfileDB, align 8, !dbg !168, !tbaa !132
+  %2 = call i32 @Util_GetHandle(%struct.cHandledData* %1, i8* %file, i8** %memfile) #7, !dbg !169
+  call void @llvm.dbg.value(metadata i32 %2, i64 0, metadata !59, metadata !120), !dbg !170
+  %3 = icmp sgt i32 %2, -1, !dbg !171
+  br i1 %3, label %4, label %16, !dbg !172
 
 ; <label>:4                                       ; preds = %0
-  %5 = load %struct.cHandledData** @memfileDB, align 8, !tbaa !2
-  %6 = call i8* @Util_GetHandledData(%struct.cHandledData* %5, i32 %2) #6
-  store i8* %6, i8** %memfile, align 8, !tbaa !2
-  %7 = icmp eq i8* %6, null
-  br i1 %7, label %30, label %8
+  %5 = load %struct.cHandledData** @memfileDB, align 8, !dbg !173, !tbaa !132
+  %6 = call i8* @Util_GetHandledData(%struct.cHandledData* %5, i32 %2) #7, !dbg !175
+  store i8* %6, i8** %memfile, align 8, !dbg !176, !tbaa !132
+  %7 = icmp eq i8* %6, null, !dbg !177
+  br i1 %7, label %30, label %8, !dbg !179
 
 ; <label>:8                                       ; preds = %4
-  %9 = sext i32 %size to i64
-  %10 = bitcast i8* %6 to <2 x i64>*
-  %11 = load <2 x i64>* %10, align 8, !tbaa !14
-  %12 = insertelement <2 x i64> undef, i64 %9, i32 0
-  %13 = insertelement <2 x i64> %12, i64 %9, i32 1
-  %14 = add <2 x i64> %11, %13
-  %15 = bitcast i8* %6 to <2 x i64>*
-  store <2 x i64> %14, <2 x i64>* %15, align 8, !tbaa !14
-  br label %30
+  %9 = sext i32 %size to i64, !dbg !180
+  %10 = bitcast i8* %6 to <2 x i64>*, !dbg !182
+  %11 = load <2 x i64>* %10, align 8, !dbg !182, !tbaa !157
+  %12 = insertelement <2 x i64> undef, i64 %9, i32 0, !dbg !182
+  %13 = insertelement <2 x i64> %12, i64 %9, i32 1, !dbg !182
+  %14 = add <2 x i64> %11, %13, !dbg !182
+  %15 = bitcast i8* %6 to <2 x i64>*, !dbg !182
+  store <2 x i64> %14, <2 x i64>* %15, align 8, !dbg !182, !tbaa !157
+  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !60, metadata !120), !dbg !167
+  br label %30, !dbg !183
 
 ; <label>:16                                      ; preds = %0
-  %17 = call i8* @malloc(i64 24) #6
-  store i8* %17, i8** %memfile, align 8, !tbaa !2
-  %18 = icmp eq i8* %17, null
-  br i1 %18, label %30, label %19
+  %17 = call i8* @malloc(i64 24) #7, !dbg !184
+  store i8* %17, i8** %memfile, align 8, !dbg !186, !tbaa !132
+  %18 = icmp eq i8* %17, null, !dbg !187
+  br i1 %18, label %30, label %19, !dbg !189
 
 ; <label>:19                                      ; preds = %16
-  %20 = sext i32 %size to i64
-  %21 = add nsw i64 %20, 24
-  %22 = getelementptr inbounds i8* %17, i64 8
-  %23 = bitcast i8* %22 to i64*
-  %24 = load i64* %23, align 8, !tbaa !15
-  %25 = add i64 %21, %24
-  store i64 %25, i64* %23, align 8, !tbaa !15
-  %26 = getelementptr inbounds i8* %17, i64 16
-  %27 = bitcast i8* %26 to i8**
-  store i8* %file, i8** %27, align 8, !tbaa !17
-  %28 = load i8** %memfile, align 8, !tbaa !2
-  %29 = call i32 @Util_NewHandle(%struct.cHandledData** @memfileDB, i8* %file, i8* %28) #6
-  br label %30
+  %20 = sext i32 %size to i64, !dbg !190
+  %21 = add nsw i64 %20, 24, !dbg !192
+  %22 = getelementptr inbounds i8* %17, i64 8, !dbg !193
+  %23 = bitcast i8* %22 to i64*, !dbg !193
+  %24 = load i64* %23, align 8, !dbg !194, !tbaa !195
+  %25 = add i64 %21, %24, !dbg !194
+  store i64 %25, i64* %23, align 8, !dbg !194, !tbaa !195
+  %26 = getelementptr inbounds i8* %17, i64 16, !dbg !197
+  %27 = bitcast i8* %26 to i8**, !dbg !197
+  store i8* %file, i8** %27, align 8, !dbg !198, !tbaa !199
+  %28 = load i8** %memfile, align 8, !dbg !200, !tbaa !132
+  %29 = call i32 @Util_NewHandle(%struct.cHandledData** @memfileDB, i8* %file, i8* %28) #7, !dbg !201
+  call void @llvm.dbg.value(metadata i32 %29, i64 0, metadata !60, metadata !120), !dbg !167
+  br label %30, !dbg !202
 
 ; <label>:30                                      ; preds = %16, %4, %19, %8
   %retval.0 = phi i32 [ 0, %8 ], [ %29, %19 ], [ -3, %4 ], [ -1, %16 ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !203
 }

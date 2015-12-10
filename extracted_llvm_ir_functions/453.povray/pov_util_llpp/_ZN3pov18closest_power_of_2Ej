@@ -1,0 +1,23 @@
+define i32 @_ZN3pov18closest_power_of_2Ej(i32 %theNumber) #2 {
+  tail call void @llvm.dbg.value(metadata i32 %theNumber, i64 0, metadata !332, metadata !685), !dbg !709
+  %1 = icmp eq i32 %theNumber, 0, !dbg !710
+  br i1 %1, label %.loopexit, label %.preheader, !dbg !712
+
+.preheader:                                       ; preds = %0
+  %2 = icmp ugt i32 %theNumber, 1, !dbg !713
+  br i1 %2, label %.lr.ph, label %.loopexit, !dbg !714
+
+.lr.ph:                                           ; preds = %.preheader, %.lr.ph
+  %PowerOf2Counter.03 = phi i32 [ %3, %.lr.ph ], [ 1, %.preheader ]
+  %.02 = phi i32 [ %4, %.lr.ph ], [ %theNumber, %.preheader ]
+  %3 = shl i32 %PowerOf2Counter.03, 1, !dbg !715
+  tail call void @llvm.dbg.value(metadata i32 %3, i64 0, metadata !333, metadata !685), !dbg !717
+  %4 = lshr i32 %.02, 1, !dbg !718
+  tail call void @llvm.dbg.value(metadata i32 %4, i64 0, metadata !332, metadata !685), !dbg !709
+  %5 = icmp ugt i32 %.02, 3, !dbg !713
+  br i1 %5, label %.lr.ph, label %.loopexit, !dbg !714
+
+.loopexit:                                        ; preds = %.lr.ph, %.preheader, %0
+  %.01 = phi i32 [ 0, %0 ], [ 1, %.preheader ], [ %3, %.lr.ph ]
+  ret i32 %.01, !dbg !719
+}

@@ -1,40 +1,41 @@
 define i32 @init_store_piece_of_field_() #0 {
   %.b = load i1* @frst, align 1
-  br i1 %.b, label %1, label %.preheader
+  br i1 %.b, label %1, label %.preheader, !dbg !203
 
 .preheader:                                       ; preds = %0
-  call void @llvm.memset.p0i8.i64(i8* bitcast ([2000 x i8*]* @fld_cache to i8*), i8 0, i64 16000, i32 16, i1 false)
+  call void @llvm.memset.p0i8.i64(i8* bitcast ([2000 x i8*]* @fld_cache to i8*), i8 0, i64 16000, i32 16, i1 false), !dbg !204
   store i1 true, i1* @frst, align 1
-  br label %1
+  br label %1, !dbg !210
 
 ; <label>:1                                       ; preds = %0, %.preheader
-  store i32 0, i32* @numflds, align 4, !tbaa !2
-  br label %2
+  store i32 0, i32* @numflds, align 4, !dbg !211, !tbaa !119
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !55, metadata !113), !dbg !212
+  br label %2, !dbg !213
 
 ; <label>:2                                       ; preds = %10, %1
   %indvars.iv = phi i64 [ 0, %1 ], [ %indvars.iv.next, %10 ]
-  %3 = getelementptr inbounds [2000 x [256 x i8]]* @fld_name, i64 0, i64 %indvars.iv, i64 0
-  %4 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %3, i1 false)
-  %5 = tail call i8* @__memcpy_chk(i8* %3, i8* getelementptr inbounds ([1 x i8]* @.str, i64 0, i64 0), i64 1, i64 %4)
-  %6 = getelementptr inbounds [2000 x i8*]* @fld_cache, i64 0, i64 %indvars.iv
-  %7 = load i8** %6, align 8, !tbaa !7
-  %8 = icmp eq i8* %7, null
-  br i1 %8, label %10, label %9
+  %3 = getelementptr inbounds [2000 x [256 x i8]]* @fld_name, i64 0, i64 %indvars.iv, i64 0, !dbg !215
+  %4 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %3, i1 false), !dbg !215
+  %5 = tail call i8* @__memcpy_chk(i8* %3, i8* getelementptr inbounds ([1 x i8]* @.str, i64 0, i64 0), i64 1, i64 %4), !dbg !215
+  %6 = getelementptr inbounds [2000 x i8*]* @fld_cache, i64 0, i64 %indvars.iv, !dbg !218
+  %7 = load i8** %6, align 8, !dbg !218, !tbaa !220
+  %8 = icmp eq i8* %7, null, !dbg !222
+  br i1 %8, label %10, label %9, !dbg !223
 
 ; <label>:9                                       ; preds = %2
-  tail call void @free(i8* %7) #6
-  br label %10
+  tail call void @free(i8* %7) #6, !dbg !224
+  br label %10, !dbg !224
 
 ; <label>:10                                      ; preds = %2, %9
-  store i8* null, i8** %6, align 8, !tbaa !7
-  %11 = getelementptr inbounds [2000 x i32]* @fld_curs, i64 0, i64 %indvars.iv
-  store i32 0, i32* %11, align 4, !tbaa !2
-  %12 = getelementptr inbounds [2000 x i32]* @fld_bufsize, i64 0, i64 %indvars.iv
-  store i32 0, i32* %12, align 4, !tbaa !2
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %exitcond = icmp eq i64 %indvars.iv.next, 2000
-  br i1 %exitcond, label %13, label %2
+  store i8* null, i8** %6, align 8, !dbg !225, !tbaa !220
+  %11 = getelementptr inbounds [2000 x i32]* @fld_curs, i64 0, i64 %indvars.iv, !dbg !226
+  store i32 0, i32* %11, align 4, !dbg !227, !tbaa !119
+  %12 = getelementptr inbounds [2000 x i32]* @fld_bufsize, i64 0, i64 %indvars.iv, !dbg !228
+  store i32 0, i32* %12, align 4, !dbg !229, !tbaa !119
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !213
+  %exitcond = icmp eq i64 %indvars.iv.next, 2000, !dbg !213
+  br i1 %exitcond, label %13, label %2, !dbg !213
 
 ; <label>:13                                      ; preds = %10
-  ret i32 0
+  ret i32 0, !dbg !230
 }

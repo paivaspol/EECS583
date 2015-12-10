@@ -1,0 +1,40 @@
+define i16* @_ZN3pov12Parse_ConcatEb(i1 zeroext %pathname) #0 {
+  tail call void @llvm.dbg.value(metadata i1 %pathname, i64 0, metadata !696, metadata !1286), !dbg !1699
+  tail call void @_ZN3pov9Get_TokenEv() #8, !dbg !1700
+  %1 = load i32* getelementptr inbounds (%"struct.pov::Token_Struct"* @_ZN3pov5TokenE, i64 0, i32 0), align 8, !dbg !1701, !tbaa !1301
+  %2 = icmp eq i32 %1, 173, !dbg !1701
+  br i1 %2, label %4, label %3, !dbg !1700
+
+; <label>:3                                       ; preds = %0
+  tail call void @_ZN3pov11Parse_ErrorEi(i32 173) #8, !dbg !1701
+  br label %4, !dbg !1701
+
+; <label>:4                                       ; preds = %0, %3
+  %5 = tail call i16* @_ZN3pov12Parse_StringEb(i1 zeroext false) #8, !dbg !1703
+  tail call void @llvm.dbg.value(metadata i16* %5, i64 0, metadata !698, metadata !1286), !dbg !1704
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !699, metadata !1286), !dbg !1705
+  tail call void @_ZN3pov9Get_TokenEv() #8, !dbg !1706
+  %6 = load i32* getelementptr inbounds (%"struct.pov::Token_Struct"* @_ZN3pov5TokenE, i64 0, i32 0), align 8, !dbg !1706, !tbaa !1301
+  %cond1 = icmp eq i32 %6, 219, !dbg !1706
+  br i1 %cond1, label %.critedge, label %.outer, !dbg !1706
+
+.outer:                                           ; preds = %4, %.outer
+  %New.0.ph2 = phi i16* [ %8, %.outer ], [ %5, %4 ]
+  tail call void @_ZN3pov11Unget_TokenEv() #8, !dbg !1708
+  tail call void @_ZN3pov11Parse_CommaEv() #8, !dbg !1710
+  %7 = tail call i16* @_ZN3pov12Parse_StringEb(i1 zeroext %pathname) #8, !dbg !1711
+  tail call void @llvm.dbg.value(metadata i16* %7, i64 0, metadata !697, metadata !1286), !dbg !1712
+  %8 = tail call i16* @_ZN3pov11UCS2_strcatEPtS0_(i16* %New.0.ph2, i16* %7) #8, !dbg !1713
+  tail call void @llvm.dbg.value(metadata i16* %8, i64 0, metadata !698, metadata !1286), !dbg !1704
+  %9 = bitcast i16* %7 to i8*, !dbg !1714
+  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %9, i8* getelementptr inbounds ([69 x i8]* @.str, i64 0, i64 0), i32 410) #8, !dbg !1714
+  tail call void @llvm.dbg.value(metadata i16* null, i64 0, metadata !697, metadata !1286), !dbg !1712
+  tail call void @_ZN3pov9Get_TokenEv() #8, !dbg !1706
+  %10 = load i32* getelementptr inbounds (%"struct.pov::Token_Struct"* @_ZN3pov5TokenE, i64 0, i32 0), align 8, !dbg !1706, !tbaa !1301
+  %cond = icmp eq i32 %10, 219, !dbg !1706
+  br i1 %cond, label %.critedge, label %.outer, !dbg !1706
+
+.critedge:                                        ; preds = %.outer, %4
+  %New.0.ph.lcssa = phi i16* [ %5, %4 ], [ %8, %.outer ]
+  ret i16* %New.0.ph.lcssa, !dbg !1716
+}

@@ -1,22 +1,29 @@
-define void @parsestring(i8* %line, i8* nocapture readonly %label, i8* %string) #3 {
+define void @parsestring(i8* %line, i8* nocapture readonly %label, i8* %string) #4 {
   %1 = alloca i8*, align 8
-  store i8* %line, i8** %1, align 8, !tbaa !14
-  %2 = tail call i8* @strstr(i8* %line, i8* %label) #10
-  %3 = icmp eq i8* %2, null
-  br i1 %3, label %12, label %4
+  tail call void @llvm.dbg.value(metadata i8* %line, i64 0, metadata !233, metadata !477), !dbg !805
+  store i8* %line, i8** %1, align 8, !tbaa !525
+  tail call void @llvm.dbg.value(metadata i8* %label, i64 0, metadata !234, metadata !477), !dbg !806
+  tail call void @llvm.dbg.value(metadata i8* %string, i64 0, metadata !235, metadata !477), !dbg !807
+  %2 = tail call i8* @strstr(i8* %line, i8* %label) #10, !dbg !808
+  %3 = icmp eq i8* %2, null, !dbg !808
+  br i1 %3, label %12, label %4, !dbg !810
 
 ; <label>:4                                       ; preds = %0
-  %5 = tail call i8* @strchr(i8* %line, i32 34) #10
-  %6 = icmp ult i8* %2, %5
-  br i1 %6, label %7, label %12
+  tail call void @llvm.dbg.value(metadata i8** %1, i64 0, metadata !233, metadata !477), !dbg !805
+  tail call void @llvm.dbg.value(metadata i8** %1, i64 0, metadata !233, metadata !477), !dbg !805
+  %5 = tail call i8* @strchr(i8* %line, i32 34) #10, !dbg !811
+  %6 = icmp ult i8* %2, %5, !dbg !814
+  br i1 %6, label %7, label %12, !dbg !815
 
 ; <label>:7                                       ; preds = %4
-  %8 = call i8* @line2string(i8** %1) #11
-  %9 = load i8** %1, align 8, !tbaa !14
-  %10 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %string, i1 false)
-  %11 = tail call i8* @__strcpy_chk(i8* %string, i8* %9, i64 %10) #10
-  br label %12
+  tail call void @llvm.dbg.value(metadata i8** %1, i64 0, metadata !233, metadata !477), !dbg !805
+  %8 = call i8* @line2string(i8** %1) #11, !dbg !816
+  tail call void @llvm.dbg.value(metadata i8** %1, i64 0, metadata !233, metadata !477), !dbg !805
+  %9 = load i8** %1, align 8, !dbg !818, !tbaa !525
+  %10 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %string, i1 false), !dbg !818
+  %11 = tail call i8* @__strcpy_chk(i8* %string, i8* %9, i64 %10) #10, !dbg !818
+  br label %12, !dbg !819
 
 ; <label>:12                                      ; preds = %0, %4, %7
-  ret void
+  ret void, !dbg !820
 }

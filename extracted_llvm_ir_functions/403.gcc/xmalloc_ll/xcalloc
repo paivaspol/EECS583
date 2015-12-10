@@ -1,19 +1,23 @@
 define noalias i8* @xcalloc(i64 %nelem, i64 %elsize) #0 {
-entry:
-  %cmp = icmp eq i64 %nelem, 0
-  %cmp1 = icmp eq i64 %elsize, 0
-  %or.cond = or i1 %cmp, %cmp1
-  %elsize.addr.0 = select i1 %or.cond, i64 1, i64 %elsize
-  %nelem.addr.0 = select i1 %or.cond, i64 1, i64 %nelem
-  %call = tail call i8* @calloc(i64 %nelem.addr.0, i64 %elsize.addr.0) #4
-  %tobool = icmp eq i8* %call, null
-  br i1 %tobool, label %if.then2, label %if.end3
+  tail call void @llvm.dbg.value(metadata i64 %nelem, i64 0, metadata !32, metadata !48), !dbg !74
+  tail call void @llvm.dbg.value(metadata i64 %elsize, i64 0, metadata !33, metadata !48), !dbg !75
+  %1 = icmp eq i64 %nelem, 0, !dbg !76
+  %2 = icmp eq i64 %elsize, 0, !dbg !78
+  %or.cond = or i1 %1, %2, !dbg !79
+  tail call void @llvm.dbg.value(metadata i64 1, i64 0, metadata !33, metadata !48), !dbg !75
+  tail call void @llvm.dbg.value(metadata i64 1, i64 0, metadata !32, metadata !48), !dbg !74
+  %.elsize = select i1 %or.cond, i64 1, i64 %elsize, !dbg !79
+  %.nelem = select i1 %or.cond, i64 1, i64 %nelem, !dbg !79
+  %3 = tail call i8* @calloc(i64 %.nelem, i64 %.elsize) #5, !dbg !80
+  tail call void @llvm.dbg.value(metadata i8* %3, i64 0, metadata !34, metadata !48), !dbg !81
+  %4 = icmp eq i8* %3, null, !dbg !82
+  br i1 %4, label %5, label %7, !dbg !84
 
-if.then2:                                         ; preds = %entry
-  %mul = mul i64 %nelem.addr.0, %elsize.addr.0
-  tail call void @xmalloc_failed(i64 %mul) #6
-  unreachable
+; <label>:5                                       ; preds = %0
+  %6 = mul i64 %.nelem, %.elsize, !dbg !85
+  tail call void @xmalloc_failed(i64 %6) #7, !dbg !86
+  unreachable, !dbg !86
 
-if.end3:                                          ; preds = %entry
-  ret i8* %call
+; <label>:7                                       ; preds = %0
+  ret i8* %3, !dbg !87
 }

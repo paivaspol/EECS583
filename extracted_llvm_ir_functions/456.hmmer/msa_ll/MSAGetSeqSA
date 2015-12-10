@@ -1,21 +1,22 @@
-define i8* @MSAGetSeqSA(%struct.msa_struct* nocapture %msa, i32 %idx) #4 {
-entry:
-  %sa = getelementptr inbounds %struct.msa_struct* %msa, i64 0, i32 17
-  %0 = load i8*** %sa, align 8, !tbaa !0
-  %cmp = icmp eq i8** %0, null
-  br i1 %cmp, label %if.else, label %land.lhs.true
+define i8* @MSAGetSeqSA(%struct.msa_struct* nocapture readonly %msa, i32 %idx) #6 {
+  tail call void @llvm.dbg.value(metadata %struct.msa_struct* %msa, i64 0, metadata !468, metadata !481), !dbg !2378
+  tail call void @llvm.dbg.value(metadata i32 %idx, i64 0, metadata !469, metadata !481), !dbg !2379
+  %1 = getelementptr inbounds %struct.msa_struct* %msa, i64 0, i32 17, !dbg !2380
+  %2 = load i8*** %1, align 8, !dbg !2380, !tbaa !604
+  %3 = icmp eq i8** %2, null, !dbg !2382
+  br i1 %3, label %9, label %4, !dbg !2383
 
-land.lhs.true:                                    ; preds = %entry
-  %idxprom = sext i32 %idx to i64
-  %arrayidx = getelementptr inbounds i8** %0, i64 %idxprom
-  %1 = load i8** %arrayidx, align 8, !tbaa !0
-  %cmp2 = icmp eq i8* %1, null
-  br i1 %cmp2, label %if.else, label %return
+; <label>:4                                       ; preds = %0
+  %5 = sext i32 %idx to i64, !dbg !2384
+  %6 = getelementptr inbounds i8** %2, i64 %5, !dbg !2384
+  %7 = load i8** %6, align 8, !dbg !2384, !tbaa !519
+  %8 = icmp eq i8* %7, null, !dbg !2385
+  br i1 %8, label %9, label %10, !dbg !2386
 
-if.else:                                          ; preds = %land.lhs.true, %entry
-  br label %return
+; <label>:9                                       ; preds = %4, %0
+  br label %10, !dbg !2387
 
-return:                                           ; preds = %land.lhs.true, %if.else
-  %retval.0 = phi i8* [ null, %if.else ], [ %1, %land.lhs.true ]
-  ret i8* %retval.0
+; <label>:10                                      ; preds = %4, %9
+  %.0 = phi i8* [ null, %9 ], [ %7, %4 ]
+  ret i8* %.0, !dbg !2388
 }

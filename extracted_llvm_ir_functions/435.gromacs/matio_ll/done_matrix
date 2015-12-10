@@ -1,27 +1,30 @@
-define void @done_matrix(i32 %nx, float*** nocapture %m) #3 {
-  %1 = icmp sgt i32 %nx, 0
-  br i1 %1, label %.lr.ph, label %._crit_edge
+define void @done_matrix(i32 %nx, float*** nocapture %m) #4 {
+  tail call void @llvm.dbg.value(metadata i32 %nx, i64 0, metadata !101, metadata !477), !dbg !538
+  tail call void @llvm.dbg.value(metadata float*** %m, i64 0, metadata !102, metadata !477), !dbg !539
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !103, metadata !477), !dbg !540
+  %1 = icmp sgt i32 %nx, 0, !dbg !541
+  br i1 %1, label %.lr.ph, label %._crit_edge, !dbg !544
 
 .lr.ph:                                           ; preds = %0
-  %2 = add i32 %nx, -1
-  br label %3
+  %2 = add i32 %nx, -1, !dbg !544
+  br label %3, !dbg !544
 
 ; <label>:3                                       ; preds = %3, %.lr.ph
   %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %3 ]
-  %4 = load float*** %m, align 8, !tbaa !14
-  %5 = getelementptr inbounds float** %4, i64 %indvars.iv
-  %6 = bitcast float** %5 to i8**
-  %7 = load i8** %6, align 8, !tbaa !14
-  tail call void @save_free(i8* getelementptr inbounds ([8 x i8]* @.str4, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str1, i64 0, i64 0), i32 73, i8* %7) #10
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %2
-  br i1 %exitcond, label %._crit_edge, label %3
+  %4 = load float*** %m, align 8, !dbg !545, !tbaa !525
+  %5 = getelementptr inbounds float** %4, i64 %indvars.iv, !dbg !545
+  %6 = bitcast float** %5 to i8**, !dbg !545
+  %7 = load i8** %6, align 8, !dbg !545, !tbaa !525
+  tail call void @save_free(i8* getelementptr inbounds ([8 x i8]* @.str4, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str1, i64 0, i64 0), i32 73, i8* %7) #10, !dbg !545
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !544
+  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !544
+  %exitcond = icmp eq i32 %lftr.wideiv, %2, !dbg !544
+  br i1 %exitcond, label %._crit_edge, label %3, !dbg !544
 
 ._crit_edge:                                      ; preds = %3, %0
-  %8 = bitcast float*** %m to i8**
-  %9 = load i8** %8, align 8, !tbaa !14
-  tail call void @save_free(i8* getelementptr inbounds ([3 x i8]* @.str5, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str1, i64 0, i64 0), i32 74, i8* %9) #10
-  store float** null, float*** %m, align 8, !tbaa !14
-  ret void
+  %8 = bitcast float*** %m to i8**, !dbg !546
+  %9 = load i8** %8, align 8, !dbg !546, !tbaa !525
+  tail call void @save_free(i8* getelementptr inbounds ([3 x i8]* @.str5, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str1, i64 0, i64 0), i32 74, i8* %9) #10, !dbg !546
+  store float** null, float*** %m, align 8, !dbg !547, !tbaa !525
+  ret void, !dbg !548
 }

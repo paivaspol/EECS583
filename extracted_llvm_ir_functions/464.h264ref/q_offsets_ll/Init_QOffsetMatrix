@@ -1,38 +1,38 @@
 define void @Init_QOffsetMatrix() #0 {
-entry:
-  %0 = load %struct.InputParameters** @input, align 8, !tbaa !3
-  %OffsetMatrixPresentFlag = getelementptr inbounds %struct.InputParameters* %0, i64 0, i32 147
-  %1 = load i32* %OffsetMatrixPresentFlag, align 4, !tbaa !0
-  %tobool = icmp eq i32 %1, 0
-  br i1 %tobool, label %if.end9, label %if.then
+  %1 = load %struct.InputParameters** @input, align 8, !dbg !818, !tbaa !731
+  %2 = getelementptr inbounds %struct.InputParameters* %1, i64 0, i32 147, !dbg !820
+  %3 = load i32* %2, align 4, !dbg !820, !tbaa !821
+  %4 = icmp eq i32 %3, 0, !dbg !818
+  br i1 %4, label %20, label %5, !dbg !824
 
-if.then:                                          ; preds = %entry
-  %arraydecay = getelementptr inbounds %struct.InputParameters* %0, i64 0, i32 146, i64 0
-  %call = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([44 x i8]* @.str6, i64 0, i64 0), i8* %arraydecay) #7
-  %2 = load %struct.InputParameters** @input, align 8, !tbaa !3
-  %arraydecay2 = getelementptr inbounds %struct.InputParameters* %2, i64 0, i32 146, i64 0
-  %call3 = tail call i8* @GetConfigFileContent(i8* %arraydecay2, i32 0) #7
-  %cmp = icmp eq i8* %call3, null
-  br i1 %cmp, label %if.else, label %if.then4
+; <label>:5                                       ; preds = %0
+  %6 = getelementptr inbounds %struct.InputParameters* %1, i64 0, i32 146, i64 0, !dbg !825
+  %7 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([44 x i8]* @.str6, i64 0, i64 0), i8* %6) #6, !dbg !827
+  %8 = load %struct.InputParameters** @input, align 8, !dbg !828, !tbaa !731
+  %9 = getelementptr inbounds %struct.InputParameters* %8, i64 0, i32 146, i64 0, !dbg !828
+  %10 = tail call i8* @GetConfigFileContent(i8* %9, i32 0) #6, !dbg !829
+  tail call void @llvm.dbg.value(metadata i8* %10, i64 0, metadata !59, metadata !659), !dbg !830
+  %11 = icmp eq i8* %10, null, !dbg !831
+  br i1 %11, label %15, label %12, !dbg !833
 
-if.then4:                                         ; preds = %if.then
-  %call5 = tail call i64 @strlen(i8* %call3) #5
-  %conv = trunc i64 %call5 to i32
-  tail call void @ParseQOffsetMatrix(i8* %call3, i32 %conv) #6
-  br label %if.end
+; <label>:12                                      ; preds = %5
+  %13 = tail call i64 @strlen(i8* %10) #6, !dbg !834
+  %14 = trunc i64 %13 to i32, !dbg !834
+  tail call void @ParseQOffsetMatrix(i8* %10, i32 %14) #7, !dbg !835
+  br label %19, !dbg !835
 
-if.else:                                          ; preds = %if.then
-  %call6 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([60 x i8]* @.str7, i64 0, i64 0), i8* getelementptr inbounds ([300 x i8]* @errortext, i64 0, i64 0)) #7
-  %3 = load %struct.InputParameters** @input, align 8, !tbaa !3
-  %OffsetMatrixPresentFlag7 = getelementptr inbounds %struct.InputParameters* %3, i64 0, i32 147
-  store i32 0, i32* %OffsetMatrixPresentFlag7, align 4, !tbaa !0
-  br label %if.end
+; <label>:15                                      ; preds = %5
+  %16 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([60 x i8]* @.str7, i64 0, i64 0), i8* getelementptr inbounds ([300 x i8]* @errortext, i64 0, i64 0)) #6, !dbg !836
+  %17 = load %struct.InputParameters** @input, align 8, !dbg !838, !tbaa !731
+  %18 = getelementptr inbounds %struct.InputParameters* %17, i64 0, i32 147, !dbg !839
+  store i32 0, i32* %18, align 4, !dbg !840, !tbaa !821
+  br label %19
 
-if.end:                                           ; preds = %if.else, %if.then4
-  %putchar = tail call i32 @putchar(i32 10) #2
-  tail call void @free(i8* %call3) #7
-  br label %if.end9
+; <label>:19                                      ; preds = %15, %12
+  %putchar = tail call i32 @putchar(i32 10) #3, !dbg !841
+  tail call void @free(i8* %10) #7, !dbg !842
+  br label %20, !dbg !843
 
-if.end9:                                          ; preds = %entry, %if.end
-  ret void
+; <label>:20                                      ; preds = %0, %19
+  ret void, !dbg !844
 }

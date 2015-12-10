@@ -1,21 +1,22 @@
 define noalias i8* @CVinit2(i32 %size) #0 {
-entry:
-  %cmp = icmp slt i32 %size, 1
-  br i1 %cmp, label %if.end20, label %if.then2
+  tail call void @llvm.dbg.value(metadata i32 %size, i64 0, metadata !21, metadata !149), !dbg !160
+  %1 = icmp slt i32 %size, 1, !dbg !161
+  br i1 %1, label %9, label %2, !dbg !163
 
-if.then2:                                         ; preds = %entry
-  %conv = sext i32 %size to i64
-  %call = tail call noalias i8* @malloc(i64 %conv) #6
-  %cmp3 = icmp eq i8* %call, null
-  br i1 %cmp3, label %if.then5, label %if.end20
+; <label>:2                                       ; preds = %0
+  %3 = sext i32 %size to i64, !dbg !164
+  %4 = tail call i8* @malloc(i64 %3) #6, !dbg !164
+  tail call void @llvm.dbg.value(metadata i8* %4, i64 0, metadata !22, metadata !149), !dbg !169
+  %5 = icmp eq i8* %4, null, !dbg !164
+  br i1 %5, label %6, label %9, !dbg !170
 
-if.then5:                                         ; preds = %if.then2
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call8 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i64 %conv, i32 49, i8* getelementptr inbounds ([83 x i8]* @.str1, i64 0, i64 0)) #6
-  tail call void @exit(i32 -1) #7
-  unreachable
+; <label>:6                                       ; preds = %2
+  %7 = load %struct.__sFILE** @__stderrp, align 8, !dbg !171, !tbaa !173
+  %8 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %7, i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i64 %3, i32 49, i8* getelementptr inbounds ([95 x i8]* @.str1, i64 0, i64 0)) #6, !dbg !171
+  tail call void @exit(i32 -1) #7, !dbg !171
+  unreachable, !dbg !171
 
-if.end20:                                         ; preds = %entry, %if.then2
-  %y.0 = phi i8* [ %call, %if.then2 ], [ null, %entry ]
-  ret i8* %y.0
+; <label>:9                                       ; preds = %0, %2
+  %y.0 = phi i8* [ %4, %2 ], [ null, %0 ]
+  ret i8* %y.0, !dbg !177
 }

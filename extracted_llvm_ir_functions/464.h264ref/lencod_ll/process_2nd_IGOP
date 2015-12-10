@@ -1,44 +1,45 @@
 define void @process_2nd_IGOP() #0 {
-entry:
-  %0 = load %struct.InputParameters** @input, align 8, !tbaa !3
-  %NumFrameIn2ndIGOP = getelementptr inbounds %struct.InputParameters* %0, i64 0, i32 100
-  %1 = load i32* %NumFrameIn2ndIGOP, align 4, !tbaa !0
-  %cmp1 = icmp eq i32 %1, 0
-  br i1 %cmp1, label %return, label %if.end3
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !550, metadata !1429), !dbg !4997
+  %1 = load %struct.InputParameters** @input, align 8, !dbg !4998, !tbaa !1439
+  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !550, metadata !1429), !dbg !4997
+  %2 = getelementptr inbounds %struct.InputParameters* %1, i64 0, i32 100, !dbg !5000
+  %3 = load i32* %2, align 4, !dbg !5000, !tbaa !5002
+  %4 = icmp eq i32 %3, 0, !dbg !5003
+  br i1 %4, label %28, label %5, !dbg !5004
 
-if.end3:                                          ; preds = %entry
-  %no_frames = getelementptr inbounds %struct.InputParameters* %0, i64 0, i32 2
-  %2 = load %struct.ImageParameters** @img, align 8, !tbaa !3
-  %3 = load i32* %no_frames, align 4, !tbaa !0
-  %number = getelementptr inbounds %struct.ImageParameters* %2, i64 0, i32 0
-  %sub = add nsw i32 %3, -1
-  %4 = load i32* %number, align 4, !tbaa !0
-  %tobool = icmp ne i32 %4, %sub
-  %5 = load i32* @In2ndIGOP, align 4, !tbaa !1
-  %tobool4 = icmp ne i32 %5, 0
-  %or.cond = or i1 %tobool4, %tobool
-  br i1 %or.cond, label %return, label %if.end6
+; <label>:5                                       ; preds = %0
+  %6 = load %struct.ImageParameters** @img, align 8, !dbg !5005, !tbaa !1439
+  %7 = getelementptr inbounds %struct.ImageParameters* %6, i64 0, i32 0, !dbg !5006
+  %8 = load i32* %7, align 4, !dbg !5006, !tbaa !1562
+  %9 = getelementptr inbounds %struct.InputParameters* %1, i64 0, i32 2, !dbg !5007
+  %10 = load i32* %9, align 4, !dbg !5007, !tbaa !1537
+  %11 = add nsw i32 %10, -1, !dbg !5008
+  %12 = icmp ne i32 %8, %11, !dbg !5009
+  %13 = load i32* @In2ndIGOP, align 4
+  %14 = icmp ne i32 %13, 0, !dbg !5011
+  %or.cond = or i1 %14, %12, !dbg !5012
+  br i1 %or.cond, label %28, label %15, !dbg !5012
 
-if.end6:                                          ; preds = %if.end3
-  store i32 1, i32* @In2ndIGOP, align 4, !tbaa !1
-  %6 = load i32* %no_frames, align 4, !tbaa !0
-  store i32 %6, i32* @start_frame_no_in_this_IGOP, align 4, !tbaa !0
-  %7 = load i32* %no_frames, align 4, !tbaa !0
-  %sub9 = add nsw i32 %7, -1
-  %jumpd = getelementptr inbounds %struct.InputParameters* %0, i64 0, i32 5
-  %8 = load i32* %jumpd, align 4, !tbaa !0
-  %add = add nsw i32 %8, 1
-  %mul = mul nsw i32 %add, %sub9
-  %add10 = add nsw i32 %mul, 1
-  store i32 %add10, i32* @start_tr_in_this_IGOP, align 4, !tbaa !0
-  %9 = load i32* %no_frames, align 4, !tbaa !0
-  %10 = load i32* %NumFrameIn2ndIGOP, align 4, !tbaa !0
-  %add13 = add nsw i32 %10, %9
-  store i32 %add13, i32* %no_frames, align 4, !tbaa !0
-  %nb_references = getelementptr inbounds %struct.ImageParameters* %2, i64 0, i32 2
-  store i32 0, i32* %nb_references, align 4, !tbaa !0
-  br label %return
+; <label>:15                                      ; preds = %5
+  store i32 1, i32* @In2ndIGOP, align 4, !dbg !5013, !tbaa !2864
+  %16 = load i32* %9, align 4, !dbg !5014, !tbaa !1537
+  store i32 %16, i32* @start_frame_no_in_this_IGOP, align 4, !dbg !5015, !tbaa !1433
+  %17 = load i32* %9, align 4, !dbg !5016, !tbaa !1537
+  %18 = add nsw i32 %17, -1, !dbg !5017
+  %19 = getelementptr inbounds %struct.InputParameters* %1, i64 0, i32 5, !dbg !5018
+  %20 = load i32* %19, align 4, !dbg !5018, !tbaa !1530
+  %21 = add nsw i32 %20, 1, !dbg !5019
+  %22 = mul nsw i32 %21, %18, !dbg !5020
+  %23 = add nsw i32 %22, 1, !dbg !5021
+  store i32 %23, i32* @start_tr_in_this_IGOP, align 4, !dbg !5022, !tbaa !1433
+  %24 = load i32* %9, align 4, !dbg !5023, !tbaa !1537
+  %25 = load i32* %2, align 4, !dbg !5024, !tbaa !5002
+  %26 = add nsw i32 %25, %24, !dbg !5025
+  store i32 %26, i32* %9, align 4, !dbg !5026, !tbaa !1537
+  %27 = getelementptr inbounds %struct.ImageParameters* %6, i64 0, i32 2, !dbg !5027
+  store i32 0, i32* %27, align 4, !dbg !5028, !tbaa !1785
+  br label %28, !dbg !5029
 
-return:                                           ; preds = %if.end3, %entry, %if.end6
-  ret void
+; <label>:28                                      ; preds = %5, %0, %15
+  ret void, !dbg !5029
 }

@@ -1,27 +1,38 @@
 define internal void @Convert_CCTK_REAL16_to_CCTK_REAL8(i8* nocapture readonly %src, i8* nocapture %dst, i32 %nelems, i32 %src_stride, i32 %dst_stride) #1 {
-  %1 = icmp eq i32 %nelems, 0
-  br i1 %1, label %._crit_edge, label %.lr.ph
+  tail call void @llvm.dbg.value(metadata i8* %src, i64 0, metadata !113, metadata !159), !dbg !241
+  tail call void @llvm.dbg.value(metadata i8* %dst, i64 0, metadata !114, metadata !159), !dbg !241
+  tail call void @llvm.dbg.value(metadata i32 %nelems, i64 0, metadata !115, metadata !159), !dbg !241
+  tail call void @llvm.dbg.value(metadata i32 %src_stride, i64 0, metadata !116, metadata !159), !dbg !241
+  tail call void @llvm.dbg.value(metadata i32 %dst_stride, i64 0, metadata !117, metadata !159), !dbg !241
+  tail call void @llvm.dbg.value(metadata double* %3, i64 0, metadata !118, metadata !159), !dbg !241
+  tail call void @llvm.dbg.value(metadata x86_fp80* %2, i64 0, metadata !119, metadata !159), !dbg !241
+  tail call void @llvm.dbg.value(metadata i32 %7, i64 0, metadata !115, metadata !159), !dbg !241
+  %1 = icmp eq i32 %nelems, 0, !dbg !241
+  br i1 %1, label %._crit_edge, label %.lr.ph, !dbg !241
 
 .lr.ph:                                           ; preds = %0
-  %2 = bitcast i8* %src to x86_fp80*
-  %3 = bitcast i8* %dst to double*
-  %4 = sext i32 %src_stride to i64
-  %5 = sext i32 %dst_stride to i64
-  br label %6
+  %2 = bitcast i8* %src to x86_fp80*, !dbg !241
+  %3 = bitcast i8* %dst to double*, !dbg !241
+  %4 = sext i32 %src_stride to i64, !dbg !242
+  %5 = sext i32 %dst_stride to i64, !dbg !242
+  br label %6, !dbg !241
 
 ; <label>:6                                       ; preds = %.lr.ph, %6
   %_src.03 = phi x86_fp80* [ %2, %.lr.ph ], [ %10, %6 ]
   %_dst.02 = phi double* [ %3, %.lr.ph ], [ %11, %6 ]
   %.01 = phi i32 [ %nelems, %.lr.ph ], [ %7, %6 ]
-  %7 = add nsw i32 %.01, -1
-  %8 = load x86_fp80* %_src.03, align 16, !tbaa !14
-  %9 = fptrunc x86_fp80 %8 to double
-  store double %9, double* %_dst.02, align 8, !tbaa !10
-  %10 = getelementptr inbounds x86_fp80* %_src.03, i64 %4
-  %11 = getelementptr inbounds double* %_dst.02, i64 %5
-  %12 = icmp eq i32 %7, 0
-  br i1 %12, label %._crit_edge, label %6
+  %7 = add nsw i32 %.01, -1, !dbg !241
+  %8 = load x86_fp80* %_src.03, align 16, !dbg !242, !tbaa !239
+  %9 = fptrunc x86_fp80 %8 to double, !dbg !242
+  store double %9, double* %_dst.02, align 8, !dbg !242, !tbaa !232
+  %10 = getelementptr inbounds x86_fp80* %_src.03, i64 %4, !dbg !242
+  tail call void @llvm.dbg.value(metadata x86_fp80* %10, i64 0, metadata !119, metadata !159), !dbg !241
+  %11 = getelementptr inbounds double* %_dst.02, i64 %5, !dbg !242
+  tail call void @llvm.dbg.value(metadata double* %11, i64 0, metadata !118, metadata !159), !dbg !241
+  tail call void @llvm.dbg.value(metadata i32 %7, i64 0, metadata !115, metadata !159), !dbg !241
+  %12 = icmp eq i32 %7, 0, !dbg !241
+  br i1 %12, label %._crit_edge, label %6, !dbg !241
 
 ._crit_edge:                                      ; preds = %6, %0
-  ret void
+  ret void, !dbg !241
 }

@@ -1,24 +1,27 @@
 define void @cctk_numtimelevelsfromvari_(i32* nocapture %num, i32* nocapture readonly %var) #2 {
-  %1 = load i32* %var, align 4, !tbaa !6
-  %2 = icmp sgt i32 %1, -1
-  %3 = load i32* @total_variables, align 4
-  %4 = icmp sgt i32 %3, %1
-  %or.cond.i = and i1 %2, %4
-  br i1 %or.cond.i, label %5, label %CCTK_NumTimeLevelsFromVarI.exit
+  tail call void @llvm.dbg.value(metadata i32* %num, i64 0, metadata !267, metadata !483), !dbg !1060
+  tail call void @llvm.dbg.value(metadata i32* %var, i64 0, metadata !268, metadata !483), !dbg !1061
+  %1 = load i32* %var, align 4, !dbg !1062, !tbaa !502
+  tail call void @llvm.dbg.value(metadata i32 %1, i64 0, metadata !264, metadata !483), !dbg !1063
+  %2 = icmp sgt i32 %1, -1, !dbg !1065
+  %3 = load i32* @total_variables, align 4, !dbg !1066
+  %4 = icmp sgt i32 %3, %1, !dbg !1067
+  %or.cond.i = and i1 %2, %4, !dbg !1068
+  br i1 %or.cond.i, label %5, label %CCTK_NumTimeLevelsFromVarI.exit, !dbg !1068
 
 ; <label>:5                                       ; preds = %0
-  %6 = sext i32 %1 to i64
-  %7 = load i32** @group_of_variable, align 8, !tbaa !2
-  %8 = getelementptr inbounds i32* %7, i64 %6
-  %9 = load i32* %8, align 4, !tbaa !6
-  %10 = sext i32 %9 to i64
-  %11 = load %struct.cGroupDefinition** @groups, align 8, !tbaa !2
-  %12 = getelementptr inbounds %struct.cGroupDefinition* %11, i64 %10, i32 10
-  %13 = load i32* %12, align 4, !tbaa !20
-  br label %CCTK_NumTimeLevelsFromVarI.exit
+  %6 = sext i32 %1 to i64, !dbg !1069
+  %7 = load i32** @group_of_variable, align 8, !dbg !1069, !tbaa !487
+  %8 = getelementptr inbounds i32* %7, i64 %6, !dbg !1069
+  %9 = load i32* %8, align 4, !dbg !1069, !tbaa !502
+  %10 = sext i32 %9 to i64, !dbg !1070
+  %11 = load %struct.cGroupDefinition** @groups, align 8, !dbg !1070, !tbaa !487
+  %12 = getelementptr inbounds %struct.cGroupDefinition* %11, i64 %10, i32 10, !dbg !1071
+  %13 = load i32* %12, align 4, !dbg !1071, !tbaa !904
+  br label %CCTK_NumTimeLevelsFromVarI.exit, !dbg !1072
 
 CCTK_NumTimeLevelsFromVarI.exit:                  ; preds = %0, %5
-  %14 = phi i32 [ %13, %5 ], [ -1, %0 ]
-  store i32 %14, i32* %num, align 4, !tbaa !6
-  ret void
+  %14 = phi i32 [ %13, %5 ], [ -1, %0 ], !dbg !1072
+  store i32 %14, i32* %num, align 4, !dbg !1073, !tbaa !502
+  ret void, !dbg !1074
 }

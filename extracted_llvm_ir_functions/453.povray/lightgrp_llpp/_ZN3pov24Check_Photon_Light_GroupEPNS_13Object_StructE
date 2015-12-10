@@ -1,0 +1,38 @@
+define zeroext i1 @_ZN3pov24Check_Photon_Light_GroupEPNS_13Object_StructE(%"struct.pov::Object_Struct"* nocapture readonly %Object) #3 {
+  tail call void @llvm.dbg.value(metadata %"struct.pov::Object_Struct"* %Object, i64 0, metadata !840, metadata !1139), !dbg !1225
+  %1 = load i8* getelementptr inbounds (%"struct.pov::photon_options_struct"* @_ZN3pov13photonOptionsE, i64 0, i32 28), align 8, !dbg !1226, !tbaa !1227, !range !1230
+  %2 = icmp eq i8 %1, 0, !dbg !1226
+  br i1 %2, label %8, label %3, !dbg !1231
+
+; <label>:3                                       ; preds = %0
+  %4 = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 0, i32 13, !dbg !1232
+  %5 = load i32* %4, align 4, !dbg !1232, !tbaa !1235
+  %6 = and i32 %5, 131072, !dbg !1236
+  %7 = icmp eq i32 %6, 0, !dbg !1236
+  br label %.loopexit, !dbg !1237
+
+; <label>:8                                       ; preds = %0
+  %9 = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 0, i32 8, !dbg !1238
+  %Test_Light.01 = load %"struct.pov::Light_Source_Struct"** %9, align 8, !dbg !1238
+  %10 = icmp eq %"struct.pov::Light_Source_Struct"* %Test_Light.01, null, !dbg !1240
+  br i1 %10, label %.loopexit, label %.lr.ph, !dbg !1242
+
+.lr.ph:                                           ; preds = %8
+  %11 = load %"struct.pov::Light_Source_Struct"** getelementptr inbounds (%"struct.pov::photon_options_struct"* @_ZN3pov13photonOptionsE, i64 0, i32 27), align 8, !dbg !1243, !tbaa !1246
+  br label %15, !dbg !1242
+
+; <label>:12                                      ; preds = %15
+  %13 = getelementptr inbounds %"struct.pov::Light_Source_Struct"* %Test_Light.02, i64 0, i32 26, !dbg !1247
+  %Test_Light.0 = load %"struct.pov::Light_Source_Struct"** %13, align 8, !dbg !1238
+  %14 = icmp eq %"struct.pov::Light_Source_Struct"* %Test_Light.0, null, !dbg !1240
+  br i1 %14, label %.loopexit, label %15, !dbg !1242
+
+; <label>:15                                      ; preds = %.lr.ph, %12
+  %Test_Light.02 = phi %"struct.pov::Light_Source_Struct"* [ %Test_Light.01, %.lr.ph ], [ %Test_Light.0, %12 ]
+  %16 = icmp eq %"struct.pov::Light_Source_Struct"* %Test_Light.02, %11, !dbg !1248
+  br i1 %16, label %.loopexit, label %12, !dbg !1249
+
+.loopexit:                                        ; preds = %15, %12, %8, %3
+  %.0 = phi i1 [ %7, %3 ], [ false, %8 ], [ false, %12 ], [ true, %15 ]
+  ret i1 %.0, !dbg !1250
+}

@@ -1,47 +1,55 @@
-define internal fastcc i32 @cmpprecendence(i8* nocapture readonly %op1, i8* nocapture readonly %op2) #6 {
-  br label %5
+define internal fastcc i32 @cmpprecendence(i8* nocapture readonly %op1, i8* nocapture readonly %op2) #7 {
+  tail call void @llvm.dbg.value(metadata i8* %op1, i64 0, metadata !198, metadata !266), !dbg !759
+  tail call void @llvm.dbg.value(metadata i8* %op2, i64 0, metadata !199, metadata !266), !dbg !760
+  tail call void @llvm.dbg.value(metadata i32 -1, i64 0, metadata !202, metadata !266), !dbg !761
+  tail call void @llvm.dbg.value(metadata i32 -1, i64 0, metadata !203, metadata !266), !dbg !762
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !201, metadata !266), !dbg !763
+  br label %5, !dbg !764
 
 ; <label>:1                                       ; preds = %19
-  %2 = getelementptr inbounds [29 x %struct.anon]* @operators, i64 0, i64 %indvars.iv.next, i32 0
-  %3 = trunc i64 %indvars.iv.next to i32
-  %4 = icmp eq i32 %3, 28
-  br i1 %4, label %22, label %5
+  %2 = getelementptr inbounds [29 x %struct.anon]* @operators, i64 0, i64 %indvars.iv.next, i32 0, !dbg !766
+  %3 = trunc i64 %indvars.iv.next to i32, !dbg !764
+  %4 = icmp eq i32 %3, 28, !dbg !764
+  br i1 %4, label %22, label %5, !dbg !764
 
 ; <label>:5                                       ; preds = %0, %1
   %indvars.iv = phi i64 [ 0, %0 ], [ %indvars.iv.next, %1 ]
   %6 = phi i8** [ getelementptr inbounds ([29 x %struct.anon]* @operators, i64 0, i64 0, i32 0), %0 ], [ %2, %1 ]
   %op2prec.04 = phi i32 [ -1, %0 ], [ %op2prec.1, %1 ]
   %op1prec.03 = phi i32 [ -1, %0 ], [ %op1prec.1, %1 ]
-  %7 = load i8** %6, align 8, !tbaa !19
-  %8 = tail call i32 @strcmp(i8* %7, i8* %op1) #10
-  %9 = icmp eq i32 %8, 0
-  br i1 %9, label %10, label %13
+  %7 = load i8** %6, align 8, !dbg !766, !tbaa !545
+  %8 = tail call i32 @strcmp(i8* %7, i8* %op1) #10, !dbg !768
+  %9 = icmp eq i32 %8, 0, !dbg !768
+  br i1 %9, label %10, label %13, !dbg !771
 
 ; <label>:10                                      ; preds = %5
-  %11 = getelementptr inbounds [29 x %struct.anon]* @operators, i64 0, i64 %indvars.iv, i32 2
-  %12 = load i32* %11, align 4, !tbaa !27
-  br label %13
+  %11 = getelementptr inbounds [29 x %struct.anon]* @operators, i64 0, i64 %indvars.iv, i32 2, !dbg !772
+  %12 = load i32* %11, align 4, !dbg !772, !tbaa !774
+  tail call void @llvm.dbg.value(metadata i32 %12, i64 0, metadata !202, metadata !266), !dbg !761
+  br label %13, !dbg !775
 
 ; <label>:13                                      ; preds = %5, %10
   %op1prec.1 = phi i32 [ %op1prec.03, %5 ], [ %12, %10 ]
-  %14 = tail call i32 @strcmp(i8* %7, i8* %op2) #10
-  %15 = icmp eq i32 %14, 0
-  br i1 %15, label %16, label %19
+  %14 = tail call i32 @strcmp(i8* %7, i8* %op2) #10, !dbg !776
+  %15 = icmp eq i32 %14, 0, !dbg !776
+  br i1 %15, label %16, label %19, !dbg !778
 
 ; <label>:16                                      ; preds = %13
-  %17 = getelementptr inbounds [29 x %struct.anon]* @operators, i64 0, i64 %indvars.iv, i32 2
-  %18 = load i32* %17, align 4, !tbaa !27
-  br label %19
+  %17 = getelementptr inbounds [29 x %struct.anon]* @operators, i64 0, i64 %indvars.iv, i32 2, !dbg !779
+  %18 = load i32* %17, align 4, !dbg !779, !tbaa !774
+  tail call void @llvm.dbg.value(metadata i32 %18, i64 0, metadata !203, metadata !266), !dbg !762
+  br label %19, !dbg !781
 
 ; <label>:19                                      ; preds = %13, %16
   %op2prec.1 = phi i32 [ %op2prec.04, %13 ], [ %18, %16 ]
-  %20 = icmp ne i32 %op1prec.1, -1
-  %21 = icmp ne i32 %op2prec.1, -1
-  %or.cond = and i1 %20, %21
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  br i1 %or.cond, label %22, label %1
+  %20 = icmp ne i32 %op1prec.1, -1, !dbg !782
+  %21 = icmp ne i32 %op2prec.1, -1, !dbg !784
+  %or.cond = and i1 %20, %21, !dbg !785
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !764
+  br i1 %or.cond, label %22, label %1, !dbg !785
 
 ; <label>:22                                      ; preds = %1, %19
-  %23 = sub nsw i32 %op2prec.1, %op1prec.1
-  ret i32 %23
+  %23 = sub nsw i32 %op2prec.1, %op1prec.1, !dbg !786
+  tail call void @llvm.dbg.value(metadata i32 %23, i64 0, metadata !200, metadata !266), !dbg !787
+  ret i32 %23, !dbg !788
 }

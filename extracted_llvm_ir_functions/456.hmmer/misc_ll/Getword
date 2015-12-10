@@ -1,82 +1,83 @@
-define i8* @Getword(%struct._IO_FILE* nocapture %fp, i32 %type) #0 {
-entry:
-  %0 = load i8** @Getword.sptr, align 8, !tbaa !0
-  %cmp = icmp eq i8* %0, null
-  br i1 %cmp, label %while.body, label %while.cond.preheader
+define i8* @Getword(%struct.__sFILE* nocapture %fp, i32 %type) #0 {
+  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %fp, i64 0, metadata !96, metadata !204), !dbg !213
+  tail call void @llvm.dbg.value(metadata i32 %type, i64 0, metadata !97, metadata !204), !dbg !214
+  %1 = load i8** @Getword.sptr, align 8, !dbg !215, !tbaa !217
+  %2 = icmp eq i8* %1, null, !dbg !221
+  br i1 %2, label %.lr.ph, label %.preheader, !dbg !222
 
-while.cond.preheader:                             ; preds = %entry
-  %call = tail call i8* @strtok(i8* null, i8* getelementptr inbounds ([4 x i8]* @.str8, i64 0, i64 0)) #6
-  store i8* %call, i8** @Getword.sptr, align 8, !tbaa !0
-  %cmp125 = icmp eq i8* %call, null
-  br i1 %cmp125, label %while.body, label %while.end
+.preheader:                                       ; preds = %0
+  %3 = tail call i8* @strtok(i8* null, i8* getelementptr inbounds ([4 x i8]* @.str8, i64 0, i64 0)) #6, !dbg !223
+  store i8* %3, i8** @Getword.sptr, align 8, !dbg !224, !tbaa !217
+  %4 = icmp eq i8* %3, null, !dbg !225
+  br i1 %4, label %.lr.ph, label %._crit_edge, !dbg !226
 
-while.body:                                       ; preds = %entry, %while.cond.preheader, %if.end9
-  %call2 = tail call i8* @fgets(i8* getelementptr inbounds ([512 x i8]* @Getword.buffer, i64 0, i64 0), i32 512, %struct._IO_FILE* %fp) #6
-  store i8* %call2, i8** @Getword.sptr, align 8, !tbaa !0
-  %cmp3 = icmp eq i8* %call2, null
-  br i1 %cmp3, label %return, label %if.end5
+.lr.ph:                                           ; preds = %0, %.preheader, %11
+  %5 = tail call i8* @fgets(i8* getelementptr inbounds ([512 x i8]* @Getword.buffer, i64 0, i64 0), i32 512, %struct.__sFILE* %fp) #6, !dbg !227
+  store i8* %5, i8** @Getword.sptr, align 8, !dbg !230, !tbaa !217
+  %6 = icmp eq i8* %5, null, !dbg !231
+  br i1 %6, label %.loopexit, label %7, !dbg !232
 
-if.end5:                                          ; preds = %while.body
-  %call6 = tail call i8* @strchr(i8* getelementptr inbounds ([512 x i8]* @Getword.buffer, i64 0, i64 0), i32 35) #7
-  store i8* %call6, i8** @Getword.sptr, align 8, !tbaa !0
-  %cmp7 = icmp eq i8* %call6, null
-  br i1 %cmp7, label %if.end9, label %if.then8
+; <label>:7                                       ; preds = %.lr.ph
+  %8 = tail call i8* @strchr(i8* getelementptr inbounds ([512 x i8]* @Getword.buffer, i64 0, i64 0), i32 35) #6, !dbg !233
+  store i8* %8, i8** @Getword.sptr, align 8, !dbg !235, !tbaa !217
+  %9 = icmp eq i8* %8, null, !dbg !236
+  br i1 %9, label %11, label %10, !dbg !237
 
-if.then8:                                         ; preds = %if.end5
-  store i8 0, i8* %call6, align 1, !tbaa !1
-  br label %if.end9
+; <label>:10                                      ; preds = %7
+  store i8 0, i8* %8, align 1, !dbg !238, !tbaa !239
+  br label %11, !dbg !240
 
-if.end9:                                          ; preds = %if.end5, %if.then8
-  %call10 = tail call i8* @strtok(i8* getelementptr inbounds ([512 x i8]* @Getword.buffer, i64 0, i64 0), i8* getelementptr inbounds ([4 x i8]* @.str8, i64 0, i64 0)) #6
-  store i8* %call10, i8** @Getword.sptr, align 8, !tbaa !0
-  %cmp1 = icmp eq i8* %call10, null
-  br i1 %cmp1, label %while.body, label %while.end
+; <label>:11                                      ; preds = %7, %10
+  %12 = tail call i8* @strtok(i8* getelementptr inbounds ([512 x i8]* @Getword.buffer, i64 0, i64 0), i8* getelementptr inbounds ([4 x i8]* @.str8, i64 0, i64 0)) #6, !dbg !241
+  store i8* %12, i8** @Getword.sptr, align 8, !dbg !242, !tbaa !217
+  %13 = icmp eq i8* %12, null, !dbg !225
+  br i1 %13, label %.lr.ph, label %._crit_edge, !dbg !226
 
-while.end:                                        ; preds = %if.end9, %while.cond.preheader
-  %.lcssa = phi i8* [ %call, %while.cond.preheader ], [ %call10, %if.end9 ]
-  switch i32 %type, label %sw.epilog [
-    i32 4, label %sw.bb
-    i32 1, label %sw.bb15
-    i32 2, label %sw.bb19
-  ]
+._crit_edge:                                      ; preds = %11, %.preheader
+  %.lcssa = phi i8* [ %3, %.preheader ], [ %12, %11 ]
+  switch i32 %type, label %27 [
+    i32 4, label %14
+    i32 1, label %17
+    i32 2, label %22
+  ], !dbg !243
 
-sw.bb:                                            ; preds = %while.end
-  %strlenfirst = load i8* %.lcssa, align 1
-  %cmp12 = icmp eq i8 %strlenfirst, 0
-  br i1 %cmp12, label %if.then13, label %sw.epilog
+; <label>:14                                      ; preds = %._crit_edge
+  %strlenfirst = load i8* %.lcssa, align 1, !dbg !244
+  %15 = icmp eq i8 %strlenfirst, 0, !dbg !247
+  br i1 %15, label %16, label %27, !dbg !248
 
-if.then13:                                        ; preds = %sw.bb
-  tail call void (i8*, ...)* @Warn(i8* getelementptr inbounds ([43 x i8]* @.str9, i64 0, i64 0)) #6
-  store i8* null, i8** @Getword.sptr, align 8, !tbaa !0
-  br label %sw.epilog
+; <label>:16                                      ; preds = %14
+  tail call void (i8*, ...)* @Warn(i8* getelementptr inbounds ([43 x i8]* @.str9, i64 0, i64 0)) #6, !dbg !249
+  store i8* null, i8** @Getword.sptr, align 8, !dbg !251, !tbaa !217
+  br label %27, !dbg !252
 
-sw.bb15:                                          ; preds = %while.end
-  %call16 = tail call i32 @IsInt(i8* %.lcssa) #6
-  %tobool = icmp eq i32 %call16, 0
-  br i1 %tobool, label %if.then17, label %sw.epilog
+; <label>:17                                      ; preds = %._crit_edge
+  %18 = tail call i32 @IsInt(i8* %.lcssa) #6, !dbg !253
+  %19 = icmp eq i32 %18, 0, !dbg !253
+  br i1 %19, label %20, label %27, !dbg !255
 
-if.then17:                                        ; preds = %sw.bb15
-  %1 = load i8** @Getword.sptr, align 8, !tbaa !0
-  tail call void (i8*, ...)* @Warn(i8* getelementptr inbounds ([39 x i8]* @.str10, i64 0, i64 0), i8* %1) #6
-  store i8* null, i8** @Getword.sptr, align 8, !tbaa !0
-  br label %sw.epilog
+; <label>:20                                      ; preds = %17
+  %21 = load i8** @Getword.sptr, align 8, !dbg !256, !tbaa !217
+  tail call void (i8*, ...)* @Warn(i8* getelementptr inbounds ([39 x i8]* @.str10, i64 0, i64 0), i8* %21) #6, !dbg !258
+  store i8* null, i8** @Getword.sptr, align 8, !dbg !259, !tbaa !217
+  br label %27, !dbg !260
 
-sw.bb19:                                          ; preds = %while.end
-  %call20 = tail call i32 @IsReal(i8* %.lcssa) #6
-  %tobool21 = icmp eq i32 %call20, 0
-  br i1 %tobool21, label %if.then22, label %sw.epilog
+; <label>:22                                      ; preds = %._crit_edge
+  %23 = tail call i32 @IsReal(i8* %.lcssa) #6, !dbg !261
+  %24 = icmp eq i32 %23, 0, !dbg !261
+  br i1 %24, label %25, label %27, !dbg !263
 
-if.then22:                                        ; preds = %sw.bb19
-  %2 = load i8** @Getword.sptr, align 8, !tbaa !0
-  tail call void (i8*, ...)* @Warn(i8* getelementptr inbounds ([42 x i8]* @.str11, i64 0, i64 0), i8* %2) #6
-  store i8* null, i8** @Getword.sptr, align 8, !tbaa !0
-  br label %sw.epilog
+; <label>:25                                      ; preds = %22
+  %26 = load i8** @Getword.sptr, align 8, !dbg !264, !tbaa !217
+  tail call void (i8*, ...)* @Warn(i8* getelementptr inbounds ([42 x i8]* @.str11, i64 0, i64 0), i8* %26) #6, !dbg !266
+  store i8* null, i8** @Getword.sptr, align 8, !dbg !267, !tbaa !217
+  br label %27, !dbg !268
 
-sw.epilog:                                        ; preds = %sw.bb19, %sw.bb15, %if.then22, %if.then17, %sw.bb, %if.then13, %while.end
-  %3 = load i8** @Getword.sptr, align 8, !tbaa !0
-  br label %return
+; <label>:27                                      ; preds = %17, %22, %25, %20, %14, %16, %._crit_edge
+  %28 = load i8** @Getword.sptr, align 8, !dbg !269, !tbaa !217
+  br label %.loopexit, !dbg !270
 
-return:                                           ; preds = %while.body, %sw.epilog
-  %retval.0 = phi i8* [ %3, %sw.epilog ], [ null, %while.body ]
-  ret i8* %retval.0
+.loopexit:                                        ; preds = %.lr.ph, %27
+  %.0 = phi i8* [ %28, %27 ], [ null, %.lr.ph ]
+  ret i8* %.0, !dbg !271
 }

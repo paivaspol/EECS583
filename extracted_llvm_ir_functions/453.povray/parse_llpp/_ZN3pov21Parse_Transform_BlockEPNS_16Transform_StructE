@@ -1,0 +1,114 @@
+define %"struct.pov::Transform_Struct"* @_ZN3pov21Parse_Transform_BlockEPNS_16Transform_StructE(%"struct.pov::Transform_Struct"* %New) #0 {
+  %Local_Matrix = alloca [4 x [4 x double]], align 16
+  %Local_Trans = alloca %"struct.pov::Transform_Struct", align 8
+  %Local_Vector = alloca [3 x double], align 16
+  tail call void @llvm.dbg.value(metadata %"struct.pov::Transform_Struct"* %New, i64 0, metadata !3169, metadata !4736), !dbg !12407
+  %1 = bitcast [4 x [4 x double]]* %Local_Matrix to i8*, !dbg !12408
+  call void @llvm.lifetime.start(i64 128, i8* %1) #4, !dbg !12408
+  tail call void @llvm.dbg.declare(metadata [4 x [4 x double]]* %Local_Matrix, metadata !3170, metadata !4736), !dbg !12409
+  %2 = bitcast %"struct.pov::Transform_Struct"* %Local_Trans to i8*, !dbg !12410
+  call void @llvm.lifetime.start(i64 256, i8* %2) #4, !dbg !12410
+  tail call void @llvm.dbg.declare(metadata [3 x double]* %Local_Vector, metadata !3172, metadata !4736), !dbg !12411
+  tail call void @llvm.dbg.value(metadata i8 0, i64 0, metadata !3173, metadata !4736), !dbg !12412
+  tail call void @_ZN3pov11Parse_BeginEv() #9, !dbg !12413
+  %3 = icmp eq %"struct.pov::Transform_Struct"* %New, null, !dbg !12414
+  br i1 %3, label %4, label %6, !dbg !12416
+
+; <label>:4                                       ; preds = %0
+  %5 = tail call %"struct.pov::Transform_Struct"* @_ZN3pov16Create_TransformEv() #9, !dbg !12417
+  tail call void @llvm.dbg.value(metadata %"struct.pov::Transform_Struct"* %5, i64 0, metadata !3169, metadata !4736), !dbg !12407
+  br label %9, !dbg !12418
+
+; <label>:6                                       ; preds = %0
+  %7 = getelementptr inbounds %"struct.pov::Transform_Struct"* %New, i64 0, i32 0, i64 0, !dbg !12419
+  tail call void @_ZN3pov9MIdentityEPA4_d([4 x double]* %7) #9, !dbg !12421
+  %8 = getelementptr inbounds %"struct.pov::Transform_Struct"* %New, i64 0, i32 1, i64 0, !dbg !12422
+  tail call void @_ZN3pov9MIdentityEPA4_d([4 x double]* %8) #9, !dbg !12423
+  br label %9
+
+; <label>:9                                       ; preds = %6, %4
+  %.0 = phi %"struct.pov::Transform_Struct"* [ %5, %4 ], [ %New, %6 ]
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !3174, metadata !4736), !dbg !12424
+  %10 = getelementptr inbounds [3 x double]* %Local_Vector, i64 0, i64 0, !dbg !12425
+  %11 = getelementptr inbounds [4 x [4 x double]]* %Local_Matrix, i64 0, i64 0, !dbg !12428
+  br label %.backedge.thread.outer, !dbg !12424
+
+.backedge.thread.outer:                           ; preds = %.backedge.thread, %9
+  %isInverse.01.ph = phi i8 [ 0, %9 ], [ 1, %.backedge.thread ]
+  br label %.backedge.thread
+
+.backedge.thread:                                 ; preds = %13, %15, %17, %18, %19, %20, %.backedge.thread.outer
+  call void @_ZN3pov9Get_TokenEv() #9, !dbg !12429
+  %12 = load i32* getelementptr inbounds (%"struct.pov::Token_Struct"* @_ZN3pov5TokenE, i64 0, i32 0), align 8, !dbg !12429, !tbaa !4968
+  switch i32 %12, label %21 [
+    i32 167, label %.backedge.thread.outer
+    i32 252, label %13
+    i32 253, label %15
+    i32 254, label %17
+    i32 223, label %18
+    i32 225, label %19
+    i32 395, label %20
+  ], !dbg !12429
+
+; <label>:13                                      ; preds = %.backedge.thread
+  %14 = load %"struct.pov::Transform_Struct"** bitcast (i8** getelementptr inbounds (%"struct.pov::Token_Struct"* @_ZN3pov5TokenE, i64 0, i32 10) to %"struct.pov::Transform_Struct"**), align 8, !dbg !12430, !tbaa !8639
+  call void @_ZN3pov18Compose_TransformsEPNS_16Transform_StructES1_(%"struct.pov::Transform_Struct"* %.0, %"struct.pov::Transform_Struct"* %14) #9, !dbg !12431
+  br label %.backedge.thread, !dbg !12432
+
+; <label>:15                                      ; preds = %.backedge.thread
+  call void @llvm.dbg.value(metadata %"struct.pov::Transform_Struct"* %Local_Trans, i64 0, metadata !3171, metadata !4736), !dbg !12433
+  %16 = call %"struct.pov::Transform_Struct"* @_ZN3pov15Parse_TransformEPNS_16Transform_StructE(%"struct.pov::Transform_Struct"* %Local_Trans) #9, !dbg !12434
+  call void @_ZN3pov18Compose_TransformsEPNS_16Transform_StructES1_(%"struct.pov::Transform_Struct"* %.0, %"struct.pov::Transform_Struct"* %16) #9, !dbg !12435
+  br label %.backedge.thread, !dbg !12436
+
+; <label>:17                                      ; preds = %.backedge.thread
+  call void @_ZN3pov12Parse_VectorEPd(double* %10) #9, !dbg !12437
+  call void @llvm.dbg.value(metadata %"struct.pov::Transform_Struct"* %Local_Trans, i64 0, metadata !3171, metadata !4736), !dbg !12433
+  call void @_ZN3pov29Compute_Translation_TransformEPNS_16Transform_StructEPd(%"struct.pov::Transform_Struct"* %Local_Trans, double* %10) #9, !dbg !12438
+  call void @llvm.dbg.value(metadata %"struct.pov::Transform_Struct"* %Local_Trans, i64 0, metadata !3171, metadata !4736), !dbg !12433
+  call void @_ZN3pov18Compose_TransformsEPNS_16Transform_StructES1_(%"struct.pov::Transform_Struct"* %.0, %"struct.pov::Transform_Struct"* %Local_Trans) #9, !dbg !12439
+  br label %.backedge.thread, !dbg !12440
+
+; <label>:18                                      ; preds = %.backedge.thread
+  call void @_ZN3pov12Parse_VectorEPd(double* %10) #9, !dbg !12441
+  call void @llvm.dbg.value(metadata %"struct.pov::Transform_Struct"* %Local_Trans, i64 0, metadata !3171, metadata !4736), !dbg !12433
+  call void @_ZN3pov26Compute_Rotation_TransformEPNS_16Transform_StructEPd(%"struct.pov::Transform_Struct"* %Local_Trans, double* %10) #9, !dbg !12442
+  call void @llvm.dbg.value(metadata %"struct.pov::Transform_Struct"* %Local_Trans, i64 0, metadata !3171, metadata !4736), !dbg !12433
+  call void @_ZN3pov18Compose_TransformsEPNS_16Transform_StructES1_(%"struct.pov::Transform_Struct"* %.0, %"struct.pov::Transform_Struct"* %Local_Trans) #9, !dbg !12443
+  br label %.backedge.thread, !dbg !12444
+
+; <label>:19                                      ; preds = %.backedge.thread
+  call void @_ZN3pov18Parse_Scale_VectorEPd(double* %10) #9, !dbg !12445
+  call void @llvm.dbg.value(metadata %"struct.pov::Transform_Struct"* %Local_Trans, i64 0, metadata !3171, metadata !4736), !dbg !12433
+  call void @_ZN3pov25Compute_Scaling_TransformEPNS_16Transform_StructEPd(%"struct.pov::Transform_Struct"* %Local_Trans, double* %10) #9, !dbg !12446
+  call void @llvm.dbg.value(metadata %"struct.pov::Transform_Struct"* %Local_Trans, i64 0, metadata !3171, metadata !4736), !dbg !12433
+  call void @_ZN3pov18Compose_TransformsEPNS_16Transform_StructES1_(%"struct.pov::Transform_Struct"* %.0, %"struct.pov::Transform_Struct"* %Local_Trans) #9, !dbg !12447
+  br label %.backedge.thread, !dbg !12448
+
+; <label>:20                                      ; preds = %.backedge.thread
+  call void @_ZN3pov12Parse_MatrixEPA4_d([4 x double]* %11) #9, !dbg !12449
+  call void @llvm.dbg.value(metadata %"struct.pov::Transform_Struct"* %Local_Trans, i64 0, metadata !3171, metadata !4736), !dbg !12433
+  call void @_ZN3pov24Compute_Matrix_TransformEPNS_16Transform_StructEPA4_d(%"struct.pov::Transform_Struct"* %Local_Trans, [4 x double]* %11) #9, !dbg !12450
+  call void @llvm.dbg.value(metadata %"struct.pov::Transform_Struct"* %Local_Trans, i64 0, metadata !3171, metadata !4736), !dbg !12433
+  call void @_ZN3pov18Compose_TransformsEPNS_16Transform_StructES1_(%"struct.pov::Transform_Struct"* %.0, %"struct.pov::Transform_Struct"* %Local_Trans) #9, !dbg !12451
+  br label %.backedge.thread, !dbg !12452
+
+; <label>:21                                      ; preds = %.backedge.thread
+  call void @_ZN3pov11Unget_TokenEv() #9, !dbg !12453
+  call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !3174, metadata !4736), !dbg !12424
+  call void @_ZN3pov9Parse_EndEv() #9, !dbg !12454
+  %22 = icmp eq i8 %isInverse.01.ph, 0, !dbg !12455
+  br i1 %22, label %26, label %23, !dbg !12457
+
+; <label>:23                                      ; preds = %21
+  %24 = getelementptr inbounds %"struct.pov::Transform_Struct"* %.0, i64 0, i32 0, i64 0, !dbg !12458
+  call void @_ZN3pov7MInversEPA4_dS1_([4 x double]* %24, [4 x double]* %24) #9, !dbg !12460
+  %25 = getelementptr inbounds %"struct.pov::Transform_Struct"* %.0, i64 0, i32 1, i64 0, !dbg !12461
+  call void @_ZN3pov7MInversEPA4_dS1_([4 x double]* %25, [4 x double]* %25) #9, !dbg !12462
+  br label %26, !dbg !12463
+
+; <label>:26                                      ; preds = %21, %23
+  call void @llvm.lifetime.end(i64 256, i8* %2) #4, !dbg !12464
+  call void @llvm.lifetime.end(i64 128, i8* %1) #4, !dbg !12464
+  ret %"struct.pov::Transform_Struct"* %.0, !dbg !12464
+}

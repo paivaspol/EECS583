@@ -1,0 +1,25 @@
+define zeroext i1 @_ZN12POVMS_Object11WriteObjectEPhi(%class.POVMS_Object* %this, i8* %stream, i32 %objectsize) #5 align 2 {
+  %1 = alloca i32, align 4
+  tail call void @llvm.dbg.value(metadata %class.POVMS_Object* %this, i64 0, metadata !929, metadata !1380), !dbg !2633
+  tail call void @llvm.dbg.value(metadata i8* %stream, i64 0, metadata !930, metadata !1380), !dbg !2634
+  tail call void @llvm.dbg.value(metadata i32 %objectsize, i64 0, metadata !931, metadata !1380), !dbg !2635
+  store i32 %objectsize, i32* %1, align 4, !tbaa !1456
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !932, metadata !1380), !dbg !2636
+  %2 = icmp eq i8* %stream, null, !dbg !2637
+  %3 = icmp eq i32 %objectsize, 0, !dbg !2639
+  %or.cond = or i1 %2, %3, !dbg !2641
+  br i1 %or.cond, label %9, label %4, !dbg !2641
+
+; <label>:4                                       ; preds = %0
+  %5 = getelementptr inbounds %class.POVMS_Object* %this, i64 0, i32 0, i32 1, !dbg !2642
+  tail call void @llvm.dbg.value(metadata i32* %1, i64 0, metadata !931, metadata !1380), !dbg !2635
+  %6 = call i32 @_Z17POVMSStream_WriteP9POVMSDataPhPi(%struct.POVMSData* %5, i8* %stream, i32* %1) #13, !dbg !2643
+  call void @llvm.dbg.value(metadata i32* %1, i64 0, metadata !931, metadata !1380), !dbg !2635
+  %7 = load i32* %1, align 4, !dbg !2644, !tbaa !1456
+  %8 = icmp eq i32 %7, 0, !dbg !2646
+  br label %9, !dbg !2647
+
+; <label>:9                                       ; preds = %4, %0
+  %.0 = phi i1 [ false, %0 ], [ %8, %4 ]
+  ret i1 %.0, !dbg !2648
+}

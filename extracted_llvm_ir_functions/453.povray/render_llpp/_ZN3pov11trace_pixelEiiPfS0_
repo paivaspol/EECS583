@@ -1,0 +1,109 @@
+define void @_ZN3pov11trace_pixelEiiPfS0_(i32 %x, i32 %y, float* nocapture %ColourClipped, float* %ColourUnclipped) #0 {
+  tail call void @llvm.dbg.value(metadata i32 %x, i64 0, metadata !1209, metadata !2153), !dbg !2748
+  tail call void @llvm.dbg.value(metadata i32 %y, i64 0, metadata !1210, metadata !2153), !dbg !2749
+  tail call void @llvm.dbg.value(metadata float* %ColourClipped, i64 0, metadata !1211, metadata !2153), !dbg !2750
+  tail call void @llvm.dbg.value(metadata float* %ColourUnclipped, i64 0, metadata !1212, metadata !2153), !dbg !2751
+  tail call void @llvm.dbg.value(metadata i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 0), i64 0, metadata !1301, metadata !2153), !dbg !2752
+  %1 = load i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 0), align 8, !dbg !2754, !tbaa !2670
+  %2 = add nsw i64 %1, 1, !dbg !2754
+  store i64 %2, i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 0), align 8, !dbg !2754, !tbaa !2670
+  store i32 1, i32* @_ZN3pov11Trace_LevelE, align 4, !dbg !2755, !tbaa !2144
+  store i8 0, i8* @_ZN3pov17In_Reflection_RayE, align 1, !dbg !2756, !tbaa !2757
+  store i8 0, i8* @_ZN3pov13In_Shadow_RayE, align 1, !dbg !2758, !tbaa !2757
+  %3 = load i8* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 64), align 8, !dbg !2759, !tbaa !2238, !range !2239
+  %4 = icmp eq i8 %3, 0, !dbg !2759
+  br i1 %4, label %6, label %5, !dbg !2761
+
+; <label>:5                                       ; preds = %0
+  tail call void @_ZN3pov20accumulate_histogramEiii(i32 %x, i32 %y, i32 1) #7, !dbg !2762
+  br label %6, !dbg !2764
+
+; <label>:6                                       ; preds = %0, %5
+  %7 = load i32* @_ZN3povL18Focal_Blur_Is_UsedE, align 4, !dbg !2765, !tbaa !2144
+  %8 = icmp eq i32 %7, 0, !dbg !2765
+  %9 = sitofp i32 %x to double, !dbg !2767
+  %10 = sitofp i32 %y to double, !dbg !2770
+  br i1 %8, label %12, label %11, !dbg !2771
+
+; <label>:11                                      ; preds = %6
+  tail call fastcc void @_ZN3povL10focal_blurEPNS_10Ray_StructEPfdd(float* %ColourUnclipped, double %9, double %10) #7, !dbg !2772
+  br label %28, !dbg !2774
+
+; <label>:12                                      ; preds = %6
+  %13 = tail call fastcc i32 @_ZN3povL10create_rayEPNS_10Ray_StructEddi(double %9, double %10, i32 0) #7, !dbg !2775
+  %14 = icmp eq i32 %13, 0, !dbg !2775
+  br i1 %14, label %25, label %15, !dbg !2776
+
+; <label>:15                                      ; preds = %12
+  tail call void @llvm.dbg.value(metadata i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 2), i64 0, metadata !1301, metadata !2153), !dbg !2777
+  %16 = load i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 2), align 8, !dbg !2780, !tbaa !2670
+  %17 = add nsw i64 %16, 1, !dbg !2780
+  store i64 %17, i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 2), align 8, !dbg !2780, !tbaa !2670
+  %18 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 0), align 8, !dbg !2781, !tbaa !2198
+  %19 = and i32 %18, 2048, !dbg !2783
+  %20 = icmp eq i32 %19, 0, !dbg !2783
+  br i1 %20, label %23, label %21, !dbg !2784
+
+; <label>:21                                      ; preds = %15
+  %22 = tail call double @_ZN3pov17Trace_Primary_RayEPNS_10Ray_StructEPfdi(%"struct.pov::Ray_Struct"* @_ZN3povL10Camera_RayE, float* %ColourUnclipped, double 1.000000e+00, i32 %x) #7, !dbg !2785
+  br label %28, !dbg !2787
+
+; <label>:23                                      ; preds = %15
+  %24 = tail call double @_ZN3pov5TraceEPNS_10Ray_StructEPfd(%"struct.pov::Ray_Struct"* @_ZN3povL10Camera_RayE, float* %ColourUnclipped, double 1.000000e+00) #7, !dbg !2788
+  br label %28
+
+; <label>:25                                      ; preds = %12
+  tail call void @llvm.dbg.value(metadata float* %ColourUnclipped, i64 0, metadata !1226, metadata !2153), !dbg !2790
+  tail call void @llvm.dbg.value(metadata float 0.000000e+00, i64 0, metadata !1227, metadata !2153), !dbg !2793
+  tail call void @llvm.dbg.value(metadata float 0.000000e+00, i64 0, metadata !1228, metadata !2153), !dbg !2794
+  tail call void @llvm.dbg.value(metadata float 0.000000e+00, i64 0, metadata !1229, metadata !2153), !dbg !2795
+  tail call void @llvm.dbg.value(metadata float 0.000000e+00, i64 0, metadata !1230, metadata !2153), !dbg !2796
+  tail call void @llvm.dbg.value(metadata float 1.000000e+00, i64 0, metadata !1231, metadata !2153), !dbg !2797
+  %26 = getelementptr inbounds float* %ColourUnclipped, i64 4, !dbg !2798
+  %27 = bitcast float* %ColourUnclipped to i8*, !dbg !2799
+  call void @llvm.memset.p0i8.i64(i8* %27, i8 0, i64 16, i32 4, i1 false), !dbg !2800
+  store float 1.000000e+00, float* %26, align 4, !dbg !2799, !tbaa !2801
+  br label %28
+
+; <label>:28                                      ; preds = %25, %23, %21, %11
+  tail call void @llvm.dbg.value(metadata float* %ColourClipped, i64 0, metadata !1283, metadata !2153), !dbg !2802
+  tail call void @llvm.dbg.value(metadata float* %ColourUnclipped, i64 0, metadata !1284, metadata !2153), !dbg !2804
+  %29 = bitcast float* %ColourUnclipped to i32*, !dbg !2805
+  %30 = load i32* %29, align 4, !dbg !2805, !tbaa !2801
+  %31 = bitcast float* %ColourClipped to i32*, !dbg !2806
+  store i32 %30, i32* %31, align 4, !dbg !2806, !tbaa !2801
+  %32 = getelementptr inbounds float* %ColourUnclipped, i64 1, !dbg !2807
+  %33 = bitcast float* %32 to i32*, !dbg !2807
+  %34 = load i32* %33, align 4, !dbg !2807, !tbaa !2801
+  %35 = getelementptr inbounds float* %ColourClipped, i64 1, !dbg !2808
+  %36 = bitcast float* %35 to i32*, !dbg !2809
+  store i32 %34, i32* %36, align 4, !dbg !2809, !tbaa !2801
+  %37 = getelementptr inbounds float* %ColourUnclipped, i64 2, !dbg !2810
+  %38 = bitcast float* %37 to i32*, !dbg !2810
+  %39 = load i32* %38, align 4, !dbg !2810, !tbaa !2801
+  %40 = getelementptr inbounds float* %ColourClipped, i64 2, !dbg !2811
+  %41 = bitcast float* %40 to i32*, !dbg !2812
+  store i32 %39, i32* %41, align 4, !dbg !2812, !tbaa !2801
+  %42 = getelementptr inbounds float* %ColourUnclipped, i64 3, !dbg !2813
+  %43 = bitcast float* %42 to i32*, !dbg !2813
+  %44 = load i32* %43, align 4, !dbg !2813, !tbaa !2801
+  %45 = getelementptr inbounds float* %ColourClipped, i64 3, !dbg !2814
+  %46 = bitcast float* %45 to i32*, !dbg !2815
+  store i32 %44, i32* %46, align 4, !dbg !2815, !tbaa !2801
+  %47 = getelementptr inbounds float* %ColourUnclipped, i64 4, !dbg !2816
+  %48 = bitcast float* %47 to i32*, !dbg !2816
+  %49 = load i32* %48, align 4, !dbg !2816, !tbaa !2801
+  %50 = getelementptr inbounds float* %ColourClipped, i64 4, !dbg !2817
+  %51 = bitcast float* %50 to i32*, !dbg !2818
+  store i32 %49, i32* %51, align 4, !dbg !2818, !tbaa !2801
+  %52 = load i8* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 64), align 8, !dbg !2819, !tbaa !2238, !range !2239
+  %53 = icmp eq i8 %52, 0, !dbg !2819
+  br i1 %53, label %55, label %54, !dbg !2821
+
+; <label>:54                                      ; preds = %28
+  tail call void @_ZN3pov20accumulate_histogramEiii(i32 %x, i32 %y, i32 0) #7, !dbg !2822
+  br label %55, !dbg !2824
+
+; <label>:55                                      ; preds = %28, %54
+  ret void, !dbg !2825
+}

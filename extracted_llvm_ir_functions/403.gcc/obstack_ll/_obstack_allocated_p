@@ -1,0 +1,30 @@
+define i32 @_obstack_allocated_p(%struct.obstack* nocapture readonly %h, i8* readnone %obj) #2 {
+  tail call void @llvm.dbg.value(metadata %struct.obstack* %h, i64 0, metadata !108, metadata !155), !dbg !352
+  tail call void @llvm.dbg.value(metadata i8* %obj, i64 0, metadata !109, metadata !155), !dbg !353
+  %1 = getelementptr inbounds %struct.obstack* %h, i64 0, i32 1, !dbg !354
+  %lp.02 = load %struct._obstack_chunk** %1, align 8, !dbg !354
+  %2 = icmp eq %struct._obstack_chunk* %lp.02, null, !dbg !355
+  br i1 %2, label %.critedge, label %.lr.ph, !dbg !356
+
+.lr.ph:                                           ; preds = %0, %.critedge1
+  %lp.03 = phi %struct._obstack_chunk* [ %lp.0, %.critedge1 ], [ %lp.02, %0 ]
+  %3 = bitcast %struct._obstack_chunk* %lp.03 to i8*, !dbg !357
+  %4 = icmp ult i8* %3, %obj, !dbg !358
+  br i1 %4, label %5, label %.critedge1, !dbg !359
+
+; <label>:5                                       ; preds = %.lr.ph
+  %6 = getelementptr inbounds %struct._obstack_chunk* %lp.03, i64 0, i32 0, !dbg !360
+  %7 = load i8** %6, align 8, !dbg !360, !tbaa !205
+  %8 = icmp ult i8* %7, %obj, !dbg !361
+  br i1 %8, label %.critedge1, label %.critedge, !dbg !362
+
+.critedge1:                                       ; preds = %.lr.ph, %5
+  %9 = getelementptr inbounds %struct._obstack_chunk* %lp.03, i64 0, i32 1, !dbg !363
+  %lp.0 = load %struct._obstack_chunk** %9, align 8, !dbg !354
+  %10 = icmp eq %struct._obstack_chunk* %lp.0, null, !dbg !355
+  br i1 %10, label %.critedge, label %.lr.ph, !dbg !356
+
+.critedge:                                        ; preds = %5, %.critedge1, %0
+  %.lcssa = phi i32 [ 0, %0 ], [ 1, %5 ], [ 0, %.critedge1 ]
+  ret i32 %.lcssa, !dbg !365
+}

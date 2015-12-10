@@ -1,74 +1,88 @@
-define i32 @GuessAlignmentSeqtype(i8** nocapture %aseq, i32 %nseq) #0 {
-entry:
-  %cmp29 = icmp sgt i32 %nseq, 0
-  br i1 %cmp29, label %for.body, label %if.end
+define i32 @GuessAlignmentSeqtype(i8** nocapture readonly %aseq, i32 %nseq) #0 {
+  tail call void @llvm.dbg.value(metadata i8** %aseq, i64 0, metadata !390, metadata !624), !dbg !2320
+  tail call void @llvm.dbg.value(metadata i32 %nseq, i64 0, metadata !391, metadata !624), !dbg !2321
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !393, metadata !624), !dbg !2322
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !394, metadata !624), !dbg !2323
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !395, metadata !624), !dbg !2324
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !396, metadata !624), !dbg !2325
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !392, metadata !624), !dbg !2326
+  %1 = icmp sgt i32 %nseq, 0, !dbg !2327
+  br i1 %1, label %.lr.ph, label %._crit_edge.thread, !dbg !2330
 
-for.body:                                         ; preds = %entry, %for.inc
-  %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc ], [ 0, %entry ]
-  %nother.034 = phi i32 [ %nother.1, %for.inc ], [ 0, %entry ]
-  %namino.033 = phi i32 [ %namino.1, %for.inc ], [ 0, %entry ]
-  %ndna.032 = phi i32 [ %ndna.1, %for.inc ], [ 0, %entry ]
-  %nrna.031 = phi i32 [ %nrna.1, %for.inc ], [ 0, %entry ]
-  %arrayidx = getelementptr inbounds i8** %aseq, i64 %indvars.iv
-  %0 = load i8** %arrayidx, align 8, !tbaa !3
-  %call = tail call i32 @Seqtype(i8* %0) #7
-  switch i32 %call, label %sw.default [
-    i32 2, label %sw.bb
-    i32 1, label %sw.bb1
-    i32 3, label %sw.bb3
-  ]
+.lr.ph:                                           ; preds = %0
+  %2 = add i32 %nseq, -1, !dbg !2330
+  br label %3, !dbg !2330
 
-sw.bb:                                            ; preds = %for.body
-  %inc = add nsw i32 %nrna.031, 1
-  br label %for.inc
+; <label>:3                                       ; preds = %15, %.lr.ph
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %15 ]
+  %nother.05 = phi i32 [ 0, %.lr.ph ], [ %nother.1, %15 ]
+  %namino.04 = phi i32 [ 0, %.lr.ph ], [ %namino.1, %15 ]
+  %ndna.03 = phi i32 [ 0, %.lr.ph ], [ %ndna.1, %15 ]
+  %nrna.02 = phi i32 [ 0, %.lr.ph ], [ %nrna.1, %15 ]
+  %4 = getelementptr inbounds i8** %aseq, i64 %indvars.iv, !dbg !2331
+  %5 = load i8** %4, align 8, !dbg !2331, !tbaa !669
+  %6 = tail call i32 @Seqtype(i8* %5) #7, !dbg !2332
+  switch i32 %6, label %13 [
+    i32 2, label %7
+    i32 1, label %9
+    i32 3, label %11
+  ], !dbg !2333
 
-sw.bb1:                                           ; preds = %for.body
-  %inc2 = add nsw i32 %ndna.032, 1
-  br label %for.inc
+; <label>:7                                       ; preds = %3
+  %8 = add nsw i32 %nrna.02, 1, !dbg !2334
+  tail call void @llvm.dbg.value(metadata i32 %8, i64 0, metadata !393, metadata !624), !dbg !2322
+  br label %15, !dbg !2336
 
-sw.bb3:                                           ; preds = %for.body
-  %inc4 = add nsw i32 %namino.033, 1
-  br label %for.inc
+; <label>:9                                       ; preds = %3
+  %10 = add nsw i32 %ndna.03, 1, !dbg !2337
+  tail call void @llvm.dbg.value(metadata i32 %10, i64 0, metadata !394, metadata !624), !dbg !2323
+  br label %15, !dbg !2338
 
-sw.default:                                       ; preds = %for.body
-  %inc5 = add nsw i32 %nother.034, 1
-  br label %for.inc
+; <label>:11                                      ; preds = %3
+  %12 = add nsw i32 %namino.04, 1, !dbg !2339
+  tail call void @llvm.dbg.value(metadata i32 %12, i64 0, metadata !395, metadata !624), !dbg !2324
+  br label %15, !dbg !2340
 
-for.inc:                                          ; preds = %sw.bb, %sw.bb1, %sw.bb3, %sw.default
-  %nrna.1 = phi i32 [ %nrna.031, %sw.default ], [ %nrna.031, %sw.bb3 ], [ %nrna.031, %sw.bb1 ], [ %inc, %sw.bb ]
-  %ndna.1 = phi i32 [ %ndna.032, %sw.default ], [ %ndna.032, %sw.bb3 ], [ %inc2, %sw.bb1 ], [ %ndna.032, %sw.bb ]
-  %namino.1 = phi i32 [ %namino.033, %sw.default ], [ %inc4, %sw.bb3 ], [ %namino.033, %sw.bb1 ], [ %namino.033, %sw.bb ]
-  %nother.1 = phi i32 [ %inc5, %sw.default ], [ %nother.034, %sw.bb3 ], [ %nother.034, %sw.bb1 ], [ %nother.034, %sw.bb ]
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %nseq
-  br i1 %exitcond, label %for.end, label %for.body
+; <label>:13                                      ; preds = %3
+  %14 = add nsw i32 %nother.05, 1, !dbg !2341
+  tail call void @llvm.dbg.value(metadata i32 %14, i64 0, metadata !396, metadata !624), !dbg !2325
+  br label %15, !dbg !2342
 
-for.end:                                          ; preds = %for.inc
-  %tobool = icmp eq i32 %nother.1, 0
-  br i1 %tobool, label %if.end, label %return
+; <label>:15                                      ; preds = %7, %9, %11, %13
+  %nrna.1 = phi i32 [ %nrna.02, %13 ], [ %nrna.02, %11 ], [ %nrna.02, %9 ], [ %8, %7 ]
+  %ndna.1 = phi i32 [ %ndna.03, %13 ], [ %ndna.03, %11 ], [ %10, %9 ], [ %ndna.03, %7 ]
+  %namino.1 = phi i32 [ %namino.04, %13 ], [ %12, %11 ], [ %namino.04, %9 ], [ %namino.04, %7 ]
+  %nother.1 = phi i32 [ %14, %13 ], [ %nother.05, %11 ], [ %nother.05, %9 ], [ %nother.05, %7 ]
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !2330
+  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !2330
+  %exitcond = icmp eq i32 %lftr.wideiv, %2, !dbg !2330
+  br i1 %exitcond, label %._crit_edge, label %3, !dbg !2330
 
-if.end:                                           ; preds = %entry, %for.end
-  %nrna.0.lcssa41 = phi i32 [ %nrna.1, %for.end ], [ 0, %entry ]
-  %ndna.0.lcssa40 = phi i32 [ %ndna.1, %for.end ], [ 0, %entry ]
-  %namino.0.lcssa39 = phi i32 [ %namino.1, %for.end ], [ 0, %entry ]
-  %cmp7 = icmp eq i32 %namino.0.lcssa39, %nseq
-  br i1 %cmp7, label %return, label %if.end9
+._crit_edge:                                      ; preds = %15
+  %16 = icmp eq i32 %nother.1, 0, !dbg !2343
+  br i1 %16, label %._crit_edge.thread, label %24, !dbg !2345
 
-if.end9:                                          ; preds = %if.end
-  %cmp10 = icmp eq i32 %ndna.0.lcssa40, %nseq
-  br i1 %cmp10, label %return, label %if.end12
+._crit_edge.thread:                               ; preds = %0, %._crit_edge
+  %nrna.0.lcssa11 = phi i32 [ %nrna.1, %._crit_edge ], [ 0, %0 ]
+  %ndna.0.lcssa10 = phi i32 [ %ndna.1, %._crit_edge ], [ 0, %0 ]
+  %namino.0.lcssa9 = phi i32 [ %namino.1, %._crit_edge ], [ 0, %0 ]
+  %17 = icmp eq i32 %namino.0.lcssa9, %nseq, !dbg !2346
+  br i1 %17, label %24, label %18, !dbg !2348
 
-if.end12:                                         ; preds = %if.end9
-  %cmp13 = icmp eq i32 %nrna.0.lcssa41, %nseq
-  br i1 %cmp13, label %return, label %if.end15
+; <label>:18                                      ; preds = %._crit_edge.thread
+  %19 = icmp eq i32 %ndna.0.lcssa10, %nseq, !dbg !2349
+  br i1 %19, label %24, label %20, !dbg !2351
 
-if.end15:                                         ; preds = %if.end12
-  %cmp16 = icmp eq i32 %namino.0.lcssa39, 0
-  %. = select i1 %cmp16, i32 2, i32 3
-  br label %return
+; <label>:20                                      ; preds = %18
+  %21 = icmp eq i32 %nrna.0.lcssa11, %nseq, !dbg !2352
+  br i1 %21, label %24, label %22, !dbg !2354
 
-return:                                           ; preds = %if.end15, %if.end12, %if.end9, %if.end, %for.end
-  %retval.0 = phi i32 [ 0, %for.end ], [ 3, %if.end ], [ 1, %if.end9 ], [ 2, %if.end12 ], [ %., %if.end15 ]
-  ret i32 %retval.0
+; <label>:22                                      ; preds = %20
+  %23 = icmp eq i32 %namino.0.lcssa9, 0, !dbg !2355
+  %. = select i1 %23, i32 2, i32 3, !dbg !2357
+  br label %24, !dbg !2357
+
+; <label>:24                                      ; preds = %22, %20, %18, %._crit_edge.thread, %._crit_edge
+  %.0 = phi i32 [ 0, %._crit_edge ], [ 3, %._crit_edge.thread ], [ 1, %18 ], [ 2, %20 ], [ %., %22 ]
+  ret i32 %.0, !dbg !2358
 }

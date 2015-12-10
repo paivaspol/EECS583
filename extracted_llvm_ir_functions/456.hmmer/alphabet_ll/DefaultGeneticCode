@@ -1,36 +1,32 @@
 define void @DefaultGeneticCode(i32* nocapture %aacode) #0 {
-entry:
-  br label %for.body
+  tail call void @llvm.dbg.value(metadata i32* %aacode, i64 0, metadata !144, metadata !167), !dbg !436
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !145, metadata !167), !dbg !437
+  br label %1, !dbg !438
 
-for.body:                                         ; preds = %for.inc, %entry
-  %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %for.inc ]
-  %arrayidx = getelementptr inbounds [0 x i8*]* @stdcode1, i64 0, i64 %indvars.iv
-  %0 = load i8** %arrayidx, align 8, !tbaa !0
-  %1 = load i8* %0, align 1, !tbaa !1
-  %cmp1 = icmp eq i8 %1, 42
-  br i1 %cmp1, label %if.then, label %if.else
+; <label>:1                                       ; preds = %12, %0
+  %indvars.iv = phi i64 [ 0, %0 ], [ %indvars.iv.next, %12 ]
+  %2 = getelementptr inbounds [0 x i8*]* @stdcode1, i64 0, i64 %indvars.iv, !dbg !440
+  %3 = load i8** %2, align 8, !dbg !440, !tbaa !181
+  %4 = load i8* %3, align 1, !dbg !444, !tbaa !255
+  %5 = icmp eq i8 %4, 42, !dbg !445
+  br i1 %5, label %12, label %6, !dbg !446
 
-if.then:                                          ; preds = %for.body
-  %arrayidx4 = getelementptr inbounds i32* %aacode, i64 %indvars.iv
-  store i32 -1, i32* %arrayidx4, align 4, !tbaa !3
-  br label %for.inc
+; <label>:6                                       ; preds = %1
+  %7 = sext i8 %4 to i32, !dbg !444
+  %8 = tail call i8* @strchr(i8* getelementptr inbounds ([25 x i8]* @Alphabet, i64 0, i64 0), i32 %7) #6, !dbg !447
+  %9 = ptrtoint i8* %8 to i64, !dbg !447
+  %10 = sub i64 %9, ptrtoint ([25 x i8]* @Alphabet to i64), !dbg !447
+  %11 = trunc i64 %10 to i32, !dbg !447
+  br label %12
 
-if.else:                                          ; preds = %for.body
-  %conv = sext i8 %1 to i32
-  %call = tail call i8* @strchr(i8* getelementptr inbounds ([25 x i8]* @Alphabet, i64 0, i64 0), i32 %conv) #7
-  %sub.ptr.lhs.cast = ptrtoint i8* %call to i64
-  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, ptrtoint ([25 x i8]* @Alphabet to i64)
-  %conv8 = trunc i64 %sub.ptr.sub to i32
-  %arrayidx10 = getelementptr inbounds i32* %aacode, i64 %indvars.iv
-  store i32 %conv8, i32* %arrayidx10, align 4, !tbaa !3
-  br label %for.inc
+; <label>:12                                      ; preds = %1, %6
+  %.sink = phi i32 [ %11, %6 ], [ -1, %1 ]
+  %13 = getelementptr inbounds i32* %aacode, i64 %indvars.iv, !dbg !448
+  store i32 %.sink, i32* %13, align 4
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !438
+  %exitcond = icmp eq i64 %indvars.iv.next, 64, !dbg !438
+  br i1 %exitcond, label %14, label %1, !dbg !438
 
-for.inc:                                          ; preds = %if.then, %if.else
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, 64
-  br i1 %exitcond, label %for.end, label %for.body
-
-for.end:                                          ; preds = %for.inc
-  ret void
+; <label>:14                                      ; preds = %12
+  ret void, !dbg !449
 }

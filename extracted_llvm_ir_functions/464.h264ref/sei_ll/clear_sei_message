@@ -1,12 +1,13 @@
 define void @clear_sei_message(i32 %id) #0 {
-entry:
-  %idxprom = sext i32 %id to i64
-  %data = getelementptr inbounds [2 x %struct.sei_struct]* @sei_message, i64 0, i64 %idxprom, i32 3
-  %0 = load i8** %data, align 8, !tbaa !0
-  tail call void @llvm.memset.p0i8.i64(i8* %0, i8 0, i64 65496, i32 1, i1 false)
-  %payloadSize = getelementptr inbounds [2 x %struct.sei_struct]* @sei_message, i64 0, i64 %idxprom, i32 1
-  store i32 0, i32* %payloadSize, align 4, !tbaa !3
-  %available = getelementptr inbounds [2 x %struct.sei_struct]* @sei_message, i64 0, i64 %idxprom, i32 0
-  store i32 0, i32* %available, align 8, !tbaa !1
-  ret void
+  tail call void @llvm.dbg.value(metadata i32 %id, i64 0, metadata !102, metadata !931), !dbg !1000
+  %1 = sext i32 %id to i64, !dbg !1001
+  %2 = getelementptr inbounds [2 x %struct.sei_struct]* @sei_message, i64 0, i64 %1, i32 3, !dbg !1001
+  %3 = load i8** %2, align 8, !dbg !1001, !tbaa !940
+  %4 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %3, i1 false), !dbg !1001
+  %5 = tail call i8* @__memset_chk(i8* %3, i32 0, i64 65496, i64 %4) #8, !dbg !1001
+  %6 = getelementptr inbounds [2 x %struct.sei_struct]* @sei_message, i64 0, i64 %1, i32 1, !dbg !1002
+  store i32 0, i32* %6, align 4, !dbg !1003, !tbaa !957
+  %7 = getelementptr inbounds [2 x %struct.sei_struct]* @sei_message, i64 0, i64 %1, i32 0, !dbg !1004
+  store i32 0, i32* %7, align 8, !dbg !1005, !tbaa !960
+  ret void, !dbg !1006
 }

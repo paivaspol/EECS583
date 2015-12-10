@@ -1,37 +1,43 @@
 define internal i32 @blockcomp(i8* nocapture readonly %a, i8* nocapture readonly %b) #5 {
-  %1 = load i32* @nwat, align 4, !tbaa !18
-  %2 = bitcast i8* %a to i32*
-  %3 = load i32* %2, align 4, !tbaa !18
-  %4 = mul nsw i32 %3, %1
-  %5 = bitcast i8* %b to i32*
-  %6 = load i32* %5, align 4, !tbaa !18
-  %7 = mul nsw i32 %6, %1
-  %8 = sext i32 %4 to i64
-  %9 = load [3 x float]** @xptr, align 8, !tbaa !19
-  %10 = getelementptr inbounds [3 x float]* %9, i64 %8, i64 0
-  %11 = tail call fastcc i32 @block_index(float* %10) #10
-  %12 = sext i32 %7 to i64
-  %13 = getelementptr inbounds [3 x float]* %9, i64 %12, i64 0
-  %14 = tail call fastcc i32 @block_index(float* %13) #10
-  %15 = icmp eq i32 %11, %14
-  br i1 %15, label %16, label %22
+  tail call void @llvm.dbg.value(metadata i8* %a, i64 0, metadata !274, metadata !405), !dbg !1073
+  tail call void @llvm.dbg.value(metadata i8* %b, i64 0, metadata !275, metadata !405), !dbg !1074
+  %1 = load i32* @nwat, align 4, !dbg !1075, !tbaa !596
+  %2 = bitcast i8* %a to i32*, !dbg !1076
+  %3 = load i32* %2, align 4, !dbg !1077, !tbaa !596
+  %4 = mul nsw i32 %3, %1, !dbg !1078
+  tail call void @llvm.dbg.value(metadata i32 %4, i64 0, metadata !276, metadata !405), !dbg !1079
+  %5 = bitcast i8* %b to i32*, !dbg !1080
+  %6 = load i32* %5, align 4, !dbg !1081, !tbaa !596
+  %7 = mul nsw i32 %6, %1, !dbg !1082
+  tail call void @llvm.dbg.value(metadata i32 %7, i64 0, metadata !277, metadata !405), !dbg !1083
+  %8 = sext i32 %4 to i64, !dbg !1084
+  %9 = load [3 x float]** @xptr, align 8, !dbg !1084, !tbaa !699
+  %10 = getelementptr inbounds [3 x float]* %9, i64 %8, i64 0, !dbg !1084
+  %11 = tail call fastcc i32 @block_index(float* %10) #10, !dbg !1085
+  tail call void @llvm.dbg.value(metadata i32 %11, i64 0, metadata !278, metadata !405), !dbg !1086
+  %12 = sext i32 %7 to i64, !dbg !1087
+  %13 = getelementptr inbounds [3 x float]* %9, i64 %12, i64 0, !dbg !1087
+  %14 = tail call fastcc i32 @block_index(float* %13) #10, !dbg !1088
+  tail call void @llvm.dbg.value(metadata i32 %14, i64 0, metadata !279, metadata !405), !dbg !1089
+  %15 = icmp eq i32 %11, %14, !dbg !1090
+  br i1 %15, label %16, label %22, !dbg !1092
 
 ; <label>:16                                      ; preds = %0
-  %17 = load float* %10, align 4, !tbaa !14
-  %18 = load float* %13, align 4, !tbaa !14
-  %19 = fcmp olt float %17, %18
-  br i1 %19, label %24, label %20
+  %17 = load float* %10, align 4, !dbg !1093, !tbaa !533
+  %18 = load float* %13, align 4, !dbg !1096, !tbaa !533
+  %19 = fcmp olt float %17, %18, !dbg !1097
+  br i1 %19, label %24, label %20, !dbg !1098
 
 ; <label>:20                                      ; preds = %16
-  %21 = fcmp ogt float %17, %18
-  %. = zext i1 %21 to i32
-  br label %24
+  %21 = fcmp ogt float %17, %18, !dbg !1099
+  %. = zext i1 %21 to i32, !dbg !1101
+  br label %24, !dbg !1101
 
 ; <label>:22                                      ; preds = %0
-  %23 = sub nsw i32 %11, %14
-  br label %24
+  %23 = sub nsw i32 %11, %14, !dbg !1102
+  br label %24, !dbg !1103
 
 ; <label>:24                                      ; preds = %20, %16, %22
   %.0 = phi i32 [ %23, %22 ], [ -1, %16 ], [ %., %20 ]
-  ret i32 %.0
+  ret i32 %.0, !dbg !1104
 }

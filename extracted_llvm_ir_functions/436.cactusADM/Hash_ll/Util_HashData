@@ -1,14 +1,20 @@
 define i8* @Util_HashData(%struct.T_HASH* nocapture readonly %hash, i32 %klen, i8* nocapture readonly %key, i32 %hashval) #1 {
-  %1 = tail call fastcc %struct.T_HASH_ENTRY* @HashFind(%struct.T_HASH* %hash, i32 %klen, i8* %key, i32 %hashval) #6
-  %2 = icmp eq %struct.T_HASH_ENTRY* %1, null
-  br i1 %2, label %6, label %3
+  tail call void @llvm.dbg.value(metadata %struct.T_HASH* %hash, i64 0, metadata !95, metadata !143), !dbg !546
+  tail call void @llvm.dbg.value(metadata i32 %klen, i64 0, metadata !96, metadata !143), !dbg !547
+  tail call void @llvm.dbg.value(metadata i8* %key, i64 0, metadata !97, metadata !143), !dbg !548
+  tail call void @llvm.dbg.value(metadata i32 %hashval, i64 0, metadata !98, metadata !143), !dbg !549
+  %1 = tail call fastcc %struct.T_HASH_ENTRY* @HashFind(%struct.T_HASH* %hash, i32 %klen, i8* %key, i32 %hashval) #7, !dbg !550
+  tail call void @llvm.dbg.value(metadata %struct.T_HASH_ENTRY* %1, i64 0, metadata !100, metadata !143), !dbg !551
+  %2 = icmp eq %struct.T_HASH_ENTRY* %1, null, !dbg !552
+  br i1 %2, label %6, label %3, !dbg !554
 
 ; <label>:3                                       ; preds = %0
-  %4 = getelementptr inbounds %struct.T_HASH_ENTRY* %1, i64 0, i32 5
-  %5 = load i8** %4, align 8, !tbaa !15
-  br label %6
+  %4 = getelementptr inbounds %struct.T_HASH_ENTRY* %1, i64 0, i32 5, !dbg !555
+  %5 = load i8** %4, align 8, !dbg !555, !tbaa !211
+  tail call void @llvm.dbg.value(metadata i8* %5, i64 0, metadata !99, metadata !143), !dbg !557
+  br label %6, !dbg !558
 
 ; <label>:6                                       ; preds = %0, %3
   %retval.0 = phi i8* [ %5, %3 ], [ null, %0 ]
-  ret i8* %retval.0
+  ret i8* %retval.0, !dbg !559
 }

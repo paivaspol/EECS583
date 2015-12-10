@@ -1,0 +1,30 @@
+define internal fastcc void @pad() #0 {
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !309, metadata !524), !dbg !2614
+  %1 = tail call i64 @strlen(i8* getelementptr inbounds ([1034 x i8]* @inName, i64 0, i64 0)) #9, !dbg !2615
+  %2 = trunc i64 %1 to i32, !dbg !2617
+  %3 = load i32* @longestFileName, align 4, !dbg !2618, !tbaa !552
+  %4 = icmp slt i32 %2, %3, !dbg !2619
+  br i1 %4, label %.preheader, label %.loopexit, !dbg !2620
+
+.preheader:                                       ; preds = %0
+  %5 = tail call i64 @strlen(i8* getelementptr inbounds ([1034 x i8]* @inName, i64 0, i64 0)) #9, !dbg !2621
+  %6 = trunc i64 %5 to i32, !dbg !2624
+  %7 = icmp sgt i32 %3, %6, !dbg !2625
+  br i1 %7, label %.lr.ph, label %.loopexit, !dbg !2626
+
+.lr.ph:                                           ; preds = %.preheader, %.lr.ph
+  %i.01 = phi i32 [ %9, %.lr.ph ], [ 1, %.preheader ]
+  %8 = load %struct.__sFILE** @__stderrp, align 8, !dbg !2627, !tbaa !542
+  %fputc = tail call i32 @fputc(i32 32, %struct.__sFILE* %8), !dbg !2628
+  %9 = add nuw nsw i32 %i.01, 1, !dbg !2629
+  tail call void @llvm.dbg.value(metadata i32 %9, i64 0, metadata !310, metadata !524), !dbg !2630
+  %10 = load i32* @longestFileName, align 4, !dbg !2631, !tbaa !552
+  %11 = tail call i64 @strlen(i8* getelementptr inbounds ([1034 x i8]* @inName, i64 0, i64 0)) #9, !dbg !2621
+  %12 = trunc i64 %11 to i32, !dbg !2624
+  %13 = sub nsw i32 %10, %12, !dbg !2632
+  %14 = icmp slt i32 %i.01, %13, !dbg !2625
+  br i1 %14, label %.lr.ph, label %.loopexit, !dbg !2626
+
+.loopexit:                                        ; preds = %.lr.ph, %.preheader, %0
+  ret void, !dbg !2633
+}

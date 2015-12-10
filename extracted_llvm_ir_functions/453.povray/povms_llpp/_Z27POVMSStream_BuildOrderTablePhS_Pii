@@ -1,0 +1,46 @@
+define void @_Z27POVMSStream_BuildOrderTablePhS_Pii(i8* nocapture readonly %srcdata, i8* nocapture readonly %dstdata, i32* nocapture %order, i32 %datasize) #0 {
+  tail call void @llvm.dbg.value(metadata i8* %srcdata, i64 0, metadata !310, metadata !1201), !dbg !2823
+  tail call void @llvm.dbg.value(metadata i8* %dstdata, i64 0, metadata !311, metadata !1201), !dbg !2824
+  tail call void @llvm.dbg.value(metadata i32* %order, i64 0, metadata !312, metadata !1201), !dbg !2825
+  tail call void @llvm.dbg.value(metadata i32 %datasize, i64 0, metadata !313, metadata !1201), !dbg !2826
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !315, metadata !1201), !dbg !2827
+  %1 = icmp sgt i32 %datasize, 0, !dbg !2828
+  br i1 %1, label %.preheader.lr.ph, label %._crit_edge3, !dbg !2831
+
+.preheader.lr.ph:                                 ; preds = %0
+  %2 = add i32 %datasize, -1, !dbg !2831
+  br label %.lr.ph, !dbg !2831
+
+.lr.ph:                                           ; preds = %.preheader.lr.ph, %._crit_edge
+  %indvars.iv4 = phi i64 [ 0, %.preheader.lr.ph ], [ %indvars.iv.next5, %._crit_edge ]
+  %3 = getelementptr inbounds i8* %srcdata, i64 %indvars.iv4, !dbg !2832
+  %4 = getelementptr inbounds i32* %order, i64 %indvars.iv4, !dbg !2838
+  br label %5, !dbg !2839
+
+; <label>:5                                       ; preds = %._crit_edge8, %.lr.ph
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %._crit_edge8 ]
+  %6 = load i8* %3, align 1, !dbg !2832, !tbaa !1562
+  %7 = getelementptr inbounds i8* %dstdata, i64 %indvars.iv, !dbg !2840
+  %8 = load i8* %7, align 1, !dbg !2840, !tbaa !1562
+  %9 = icmp eq i8 %6, %8, !dbg !2841
+  %10 = trunc i64 %indvars.iv to i32, !dbg !2842
+  br i1 %9, label %11, label %._crit_edge8, !dbg !2843
+
+; <label>:11                                      ; preds = %5
+  store i32 %10, i32* %4, align 4, !dbg !2842, !tbaa !1260
+  br label %._crit_edge8, !dbg !2838
+
+._crit_edge8:                                     ; preds = %5, %11
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !2839
+  %exitcond = icmp eq i32 %10, %2, !dbg !2839
+  br i1 %exitcond, label %._crit_edge, label %5, !dbg !2839
+
+._crit_edge:                                      ; preds = %._crit_edge8
+  %indvars.iv.next5 = add nuw nsw i64 %indvars.iv4, 1, !dbg !2831
+  %lftr.wideiv6 = trunc i64 %indvars.iv4 to i32, !dbg !2831
+  %exitcond7 = icmp eq i32 %lftr.wideiv6, %2, !dbg !2831
+  br i1 %exitcond7, label %._crit_edge3, label %.lr.ph, !dbg !2831
+
+._crit_edge3:                                     ; preds = %._crit_edge, %0
+  ret void, !dbg !2844
+}

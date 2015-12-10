@@ -1,0 +1,41 @@
+define i32 @_Z18POVMS_CloseContextPv(i8* %contextref) #0 {
+  tail call void @llvm.dbg.value(metadata i8* %contextref, i64 0, metadata !181, metadata !1201), !dbg !1291
+  %1 = bitcast i8* %contextref to %struct.POVMSContextData*, !dbg !1292
+  tail call void @llvm.dbg.value(metadata %struct.POVMSContextData* %1, i64 0, metadata !182, metadata !1201), !dbg !1293
+  %2 = icmp eq i8* %contextref, null, !dbg !1294
+  br i1 %2, label %19, label %3, !dbg !1296
+
+; <label>:3                                       ; preds = %0
+  %4 = bitcast i8* %contextref to i32*, !dbg !1297
+  %5 = load i32* %4, align 4, !dbg !1297, !tbaa !1255
+  %6 = icmp eq i32 %5, 0, !dbg !1299
+  br i1 %6, label %19, label %7, !dbg !1300
+
+; <label>:7                                       ; preds = %3
+  store i32 0, i32* %4, align 4, !dbg !1301, !tbaa !1255
+  %8 = getelementptr inbounds i8* %contextref, i64 16, !dbg !1302
+  %9 = bitcast i8* %8 to %struct.POVMS_Sys_QueueNode_Default**, !dbg !1302
+  %10 = load %struct.POVMS_Sys_QueueNode_Default** %9, align 8, !dbg !1302, !tbaa !1248
+  tail call void @_Z28POVMS_Sys_QueueClose_DefaultP27POVMS_Sys_QueueNode_Default(%struct.POVMS_Sys_QueueNode_Default* %10) #8, !dbg !1302
+  store %struct.POVMS_Sys_QueueNode_Default* null, %struct.POVMS_Sys_QueueNode_Default** %9, align 8, !dbg !1303, !tbaa !1248
+  %11 = getelementptr inbounds i8* %contextref, i64 8, !dbg !1304
+  %12 = bitcast i8* %11 to %struct.POVMSReceiveHandlerNode**, !dbg !1304
+  %13 = load %struct.POVMSReceiveHandlerNode** %12, align 8, !dbg !1304, !tbaa !1228
+  %14 = icmp eq %struct.POVMSReceiveHandlerNode* %13, null, !dbg !1305
+  br i1 %14, label %._crit_edge, label %.lr.ph, !dbg !1306
+
+.lr.ph:                                           ; preds = %7, %.lr.ph
+  %15 = phi %struct.POVMSReceiveHandlerNode* [ %17, %.lr.ph ], [ %13, %7 ]
+  %16 = tail call i32 @_Z30POVMS_RemoveReceiveHandlerNodeP16POVMSContextDataP23POVMSReceiveHandlerNode(%struct.POVMSContextData* %1, %struct.POVMSReceiveHandlerNode* %15) #8, !dbg !1307
+  %17 = load %struct.POVMSReceiveHandlerNode** %12, align 8, !dbg !1304, !tbaa !1228
+  %18 = icmp eq %struct.POVMSReceiveHandlerNode* %17, null, !dbg !1305
+  br i1 %18, label %._crit_edge, label %.lr.ph, !dbg !1306
+
+._crit_edge:                                      ; preds = %.lr.ph, %7
+  tail call void @free(i8* %contextref) #8, !dbg !1308
+  br label %19, !dbg !1309
+
+; <label>:19                                      ; preds = %3, %0, %._crit_edge
+  %.0 = phi i32 [ 0, %._crit_edge ], [ -1, %0 ], [ -21, %3 ]
+  ret i32 %.0, !dbg !1310
+}

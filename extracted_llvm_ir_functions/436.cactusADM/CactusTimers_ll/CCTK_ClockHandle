@@ -1,29 +1,30 @@
 define i32 @CCTK_ClockHandle(i8* nocapture readonly %clockname) #1 {
-  %1 = load i32* @n_clocks, align 4, !tbaa !11
-  %handle.01 = add nsw i32 %1, -1
-  %2 = icmp sgt i32 %1, 0
-  br i1 %2, label %.lr.ph, label %._crit_edge
+  tail call void @llvm.dbg.value(metadata i8* %clockname, i64 0, metadata !93, metadata !354), !dbg !429
+  %1 = load i32* @n_clocks, align 4, !dbg !430, !tbaa !388
+  %handle.01 = add nsw i32 %1, -1, !dbg !433
+  %2 = icmp sgt i32 %1, 0, !dbg !434
+  br i1 %2, label %.lr.ph, label %._crit_edge, !dbg !436
 
 .lr.ph:                                           ; preds = %0, %.backedge
   %handle.02 = phi i32 [ %handle.0, %.backedge ], [ %handle.01, %0 ]
-  %3 = load %struct.cHandledData** @clocks, align 8, !tbaa !9
-  %4 = tail call i8* @Util_GetHandledData(%struct.cHandledData* %3, i32 %handle.02) #7
-  %5 = icmp eq i8* %4, null
-  br i1 %5, label %.backedge, label %7
+  %3 = load %struct.cHandledData** @clocks, align 8, !dbg !437, !tbaa !376
+  %4 = tail call i8* @Util_GetHandledData(%struct.cHandledData* %3, i32 %handle.02) #8, !dbg !439
+  %5 = icmp eq i8* %4, null, !dbg !440
+  br i1 %5, label %.backedge, label %7, !dbg !442
 
 .backedge:                                        ; preds = %.lr.ph, %7
-  %handle.0 = add nsw i32 %handle.02, -1
-  %6 = icmp sgt i32 %handle.02, 0
-  br i1 %6, label %.lr.ph, label %._crit_edge
+  %handle.0 = add nsw i32 %handle.02, -1, !dbg !433
+  %6 = icmp sgt i32 %handle.02, 0, !dbg !434
+  br i1 %6, label %.lr.ph, label %._crit_edge, !dbg !436
 
 ; <label>:7                                       ; preds = %.lr.ph
-  %8 = bitcast i8* %4 to i8**
-  %9 = load i8** %8, align 8, !tbaa !2
-  %10 = tail call i32 @strcmp(i8* %9, i8* %clockname) #7
-  %11 = icmp eq i32 %10, 0
-  br i1 %11, label %._crit_edge, label %.backedge
+  %8 = bitcast i8* %4 to i8**, !dbg !443
+  %9 = load i8** %8, align 8, !dbg !443, !tbaa !364
+  %10 = tail call i32 @strcmp(i8* %9, i8* %clockname) #8, !dbg !444
+  %11 = icmp eq i32 %10, 0, !dbg !445
+  br i1 %11, label %._crit_edge, label %.backedge, !dbg !446
 
 ._crit_edge:                                      ; preds = %.backedge, %7, %0
   %handle.0.lcssa = phi i32 [ %handle.01, %0 ], [ %handle.0, %.backedge ], [ %handle.02, %7 ]
-  ret i32 %handle.0.lcssa
+  ret i32 %handle.0.lcssa, !dbg !447
 }

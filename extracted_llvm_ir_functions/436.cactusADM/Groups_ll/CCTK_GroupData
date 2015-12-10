@@ -1,52 +1,55 @@
 define i32 @CCTK_GroupData(i32 %group, %struct.cGroup* %gp) #2 {
-  %1 = icmp sgt i32 %group, -1
-  br i1 %1, label %2, label %.thread
+  tail call void @llvm.dbg.value(metadata i32 %group, i64 0, metadata !208, metadata !483), !dbg !877
+  tail call void @llvm.dbg.value(metadata %struct.cGroup* %gp, i64 0, metadata !209, metadata !483), !dbg !878
+  %1 = icmp sgt i32 %group, -1, !dbg !879
+  br i1 %1, label %2, label %.thread, !dbg !880
 
 ; <label>:2                                       ; preds = %0
-  %3 = load i32* @n_groups, align 4, !tbaa !6
+  %3 = load i32* @n_groups, align 4, !dbg !881, !tbaa !502
   %phitmp = icmp sle i32 %3, %group
-  %4 = sext i1 %phitmp to i32
-  br i1 %phitmp, label %.thread, label %5
+  %4 = sext i1 %phitmp to i32, !dbg !882
+  tail call void @llvm.dbg.value(metadata i32 %4, i64 0, metadata !210, metadata !483), !dbg !883
+  br i1 %phitmp, label %.thread, label %5, !dbg !884
 
 ; <label>:5                                       ; preds = %2
-  %6 = icmp eq %struct.cGroup* %gp, null
-  br i1 %6, label %.thread, label %7
+  %6 = icmp eq %struct.cGroup* %gp, null, !dbg !885
+  br i1 %6, label %.thread, label %7, !dbg !889
 
 ; <label>:7                                       ; preds = %5
-  %8 = sext i32 %group to i64
-  %9 = load %struct.cGroupDefinition** @groups, align 8, !tbaa !2
-  %10 = getelementptr inbounds %struct.cGroupDefinition* %9, i64 %8, i32 4
-  %11 = getelementptr inbounds %struct.cGroupDefinition* %9, i64 %8, i32 9
-  %12 = load i32* %11, align 4, !tbaa !16
-  %13 = getelementptr inbounds %struct.cGroup* %gp, i64 0, i32 4
-  store i32 %12, i32* %13, align 4, !tbaa !17
-  %14 = getelementptr inbounds %struct.cGroupDefinition* %9, i64 %8, i32 11
-  %15 = load i32* %14, align 4, !tbaa !11
-  %16 = getelementptr inbounds %struct.cGroup* %gp, i64 0, i32 5
-  store i32 %15, i32* %16, align 4, !tbaa !19
-  %17 = getelementptr inbounds %struct.cGroupDefinition* %9, i64 %8, i32 10
-  %18 = load i32* %17, align 4, !tbaa !20
-  %19 = getelementptr inbounds %struct.cGroup* %gp, i64 0, i32 6
-  store i32 %18, i32* %19, align 4, !tbaa !21
-  %20 = bitcast i32* %10 to <4 x i32>*
-  %21 = load <4 x i32>* %20, align 4, !tbaa !6
-  %22 = bitcast %struct.cGroup* %gp to <4 x i32>*
-  store <4 x i32> %21, <4 x i32>* %22, align 4, !tbaa !6
-  %23 = getelementptr inbounds %struct.cGroupDefinition* %9, i64 %8, i32 15
-  %24 = load i8** %23, align 8, !tbaa !22
-  %25 = icmp eq i8* %24, null
-  %26 = getelementptr inbounds %struct.cGroup* %gp, i64 0, i32 7
-  br i1 %25, label %28, label %27
+  %8 = sext i32 %group to i64, !dbg !890
+  %9 = load %struct.cGroupDefinition** @groups, align 8, !dbg !890, !tbaa !487
+  %10 = getelementptr inbounds %struct.cGroupDefinition* %9, i64 %8, i32 4, !dbg !892
+  %11 = getelementptr inbounds %struct.cGroupDefinition* %9, i64 %8, i32 9, !dbg !893
+  %12 = load i32* %11, align 4, !dbg !893, !tbaa !894
+  %13 = getelementptr inbounds %struct.cGroup* %gp, i64 0, i32 4, !dbg !895
+  store i32 %12, i32* %13, align 4, !dbg !896, !tbaa !897
+  %14 = getelementptr inbounds %struct.cGroupDefinition* %9, i64 %8, i32 11, !dbg !899
+  %15 = load i32* %14, align 4, !dbg !899, !tbaa !594
+  %16 = getelementptr inbounds %struct.cGroup* %gp, i64 0, i32 5, !dbg !900
+  store i32 %15, i32* %16, align 4, !dbg !901, !tbaa !902
+  %17 = getelementptr inbounds %struct.cGroupDefinition* %9, i64 %8, i32 10, !dbg !903
+  %18 = load i32* %17, align 4, !dbg !903, !tbaa !904
+  %19 = getelementptr inbounds %struct.cGroup* %gp, i64 0, i32 6, !dbg !905
+  store i32 %18, i32* %19, align 4, !dbg !906, !tbaa !907
+  %20 = bitcast i32* %10 to <4 x i32>*, !dbg !892
+  %21 = load <4 x i32>* %20, align 4, !dbg !892, !tbaa !502
+  %22 = bitcast %struct.cGroup* %gp to <4 x i32>*, !dbg !908
+  store <4 x i32> %21, <4 x i32>* %22, align 4, !dbg !908, !tbaa !502
+  %23 = getelementptr inbounds %struct.cGroupDefinition* %9, i64 %8, i32 15, !dbg !909
+  %24 = load i8** %23, align 8, !dbg !909, !tbaa !911
+  %25 = icmp eq i8* %24, null, !dbg !912
+  %26 = getelementptr inbounds %struct.cGroup* %gp, i64 0, i32 7, !dbg !913
+  br i1 %25, label %28, label %27, !dbg !915
 
 ; <label>:27                                      ; preds = %7
-  store i32 1, i32* %26, align 4, !tbaa !23
-  br label %.thread
+  store i32 1, i32* %26, align 4, !dbg !916, !tbaa !917
+  br label %.thread, !dbg !918
 
 ; <label>:28                                      ; preds = %7
-  store i32 0, i32* %26, align 4, !tbaa !23
+  store i32 0, i32* %26, align 4, !dbg !919, !tbaa !917
   br label %.thread
 
 .thread:                                          ; preds = %0, %5, %28, %27, %2
   %retval.0 = phi i32 [ %4, %2 ], [ %4, %27 ], [ %4, %28 ], [ -2, %5 ], [ -1, %0 ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !921
 }

@@ -1,0 +1,67 @@
+define i32 @_Z14POVMSAttr_CopyP9POVMSDataS0_(%struct.POVMSData* %sourceattr, %struct.POVMSData* %destattr) #0 {
+  tail call void @llvm.dbg.value(metadata %struct.POVMSData* %sourceattr, i64 0, metadata !609, metadata !1201), !dbg !3420
+  tail call void @llvm.dbg.value(metadata %struct.POVMSData* %destattr, i64 0, metadata !610, metadata !1201), !dbg !3421
+  %1 = icmp eq %struct.POVMSData* %sourceattr, null, !dbg !3422
+  %2 = icmp eq %struct.POVMSData* %destattr, null, !dbg !3424
+  %or.cond = or i1 %1, %2, !dbg !3426
+  %3 = icmp eq %struct.POVMSData* %sourceattr, %destattr, !dbg !3427
+  %or.cond1 = or i1 %3, %or.cond, !dbg !3426
+  br i1 %or.cond1, label %31, label %4, !dbg !3426
+
+; <label>:4                                       ; preds = %0
+  %5 = getelementptr inbounds %struct.POVMSData* %sourceattr, i64 0, i32 1, !dbg !3429
+  %6 = load i32* %5, align 4, !dbg !3429, !tbaa !1542
+  %7 = icmp slt i32 %6, 0, !dbg !3431
+  br i1 %7, label %31, label %8, !dbg !3432
+
+; <label>:8                                       ; preds = %4
+  %9 = getelementptr inbounds %struct.POVMSData* %sourceattr, i64 0, i32 0, !dbg !3433
+  %10 = load i32* %9, align 4, !dbg !3433, !tbaa !1539
+  switch i32 %10, label %15 [
+    i32 1329744453, label %11
+    i32 1279873876, label %13
+  ], !dbg !3435
+
+; <label>:11                                      ; preds = %8
+  %12 = tail call i32 @_Z16POVMSObject_CopyP9POVMSDataS0_(%struct.POVMSData* %sourceattr, %struct.POVMSData* %destattr) #8, !dbg !3436
+  br label %31, !dbg !3438
+
+; <label>:13                                      ; preds = %8
+  %14 = tail call i32 @_Z18POVMSAttrList_CopyP9POVMSDataS0_(%struct.POVMSData* %sourceattr, %struct.POVMSData* %destattr) #8, !dbg !3439
+  br label %31, !dbg !3442
+
+; <label>:15                                      ; preds = %8
+  %16 = bitcast %struct.POVMSData* %destattr to i8*, !dbg !3443
+  %17 = bitcast %struct.POVMSData* %sourceattr to i8*, !dbg !3443
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %16, i8* %17, i64 16, i32 8, i1 false), !dbg !3443, !tbaa.struct !2408
+  %18 = getelementptr inbounds %struct.POVMSData* %sourceattr, i64 0, i32 2, i32 0, !dbg !3445
+  %19 = load i8** %18, align 8, !dbg !3445, !tbaa !1210
+  %20 = icmp eq i8* %19, null, !dbg !3447
+  br i1 %20, label %31, label %21, !dbg !3448
+
+; <label>:21                                      ; preds = %15
+  %22 = load i32* %5, align 4, !dbg !3449, !tbaa !1542
+  %23 = sext i32 %22 to i64, !dbg !3449
+  %24 = tail call i8* @malloc(i64 %23) #8, !dbg !3449
+  %25 = getelementptr inbounds %struct.POVMSData* %destattr, i64 0, i32 2, i32 0, !dbg !3451
+  store i8* %24, i8** %25, align 8, !dbg !3452, !tbaa !1210
+  %26 = icmp eq i8* %24, null, !dbg !3453
+  tail call void @llvm.dbg.value(metadata i8* getelementptr inbounds ([37 x i8]* @.str8, i64 0, i64 0), i64 0, metadata !198, metadata !1201) #6, !dbg !3455
+  tail call void @llvm.dbg.value(metadata i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i64 0, metadata !199, metadata !1201) #6, !dbg !3457
+  tail call void @llvm.dbg.value(metadata i32 2761, i64 0, metadata !200, metadata !1201) #6, !dbg !3458
+  br i1 %26, label %_Z20POVMS_AssertFunctioniPKcS0_i.exit.thread, label %29, !dbg !3459
+
+_Z20POVMS_AssertFunctioniPKcS0_i.exit.thread:     ; preds = %21
+  %27 = load %struct.__sFILE** @__stderrp, align 8, !dbg !3460, !tbaa !1210
+  %28 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %27, i8* getelementptr inbounds ([39 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i32 2761, i8* getelementptr inbounds ([37 x i8]* @.str8, i64 0, i64 0)) #9, !dbg !3460
+  br label %31, !dbg !3461
+
+; <label>:29                                      ; preds = %21
+  %30 = load i8** %18, align 8, !dbg !3462, !tbaa !1210
+  tail call void @llvm.memmove.p0i8.p0i8.i64(i8* %24, i8* %30, i64 %23, i32 1, i1 false), !dbg !3462
+  br label %31, !dbg !3463
+
+; <label>:31                                      ; preds = %_Z20POVMS_AssertFunctioniPKcS0_i.exit.thread, %29, %15, %4, %0, %13, %11
+  %.0 = phi i32 [ %12, %11 ], [ %14, %13 ], [ -1, %0 ], [ -1, %4 ], [ 0, %15 ], [ 0, %29 ], [ -2, %_Z20POVMS_AssertFunctioniPKcS0_i.exit.thread ]
+  ret i32 %.0, !dbg !3464
+}

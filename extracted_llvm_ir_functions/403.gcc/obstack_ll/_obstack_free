@@ -1,0 +1,78 @@
+define void @_obstack_free(%struct.obstack* nocapture %h, i8* %obj) #1 {
+  tail call void @llvm.dbg.value(metadata %struct.obstack* %h, i64 0, metadata !116, metadata !155), !dbg !366
+  tail call void @llvm.dbg.value(metadata i8* %obj, i64 0, metadata !117, metadata !155), !dbg !367
+  %1 = getelementptr inbounds %struct.obstack* %h, i64 0, i32 1, !dbg !368
+  %2 = load %struct._obstack_chunk** %1, align 8, !dbg !368, !tbaa !186
+  tail call void @llvm.dbg.value(metadata %struct._obstack_chunk* %2, i64 0, metadata !118, metadata !155), !dbg !369
+  %3 = icmp eq %struct._obstack_chunk* %2, null, !dbg !370
+  br i1 %3, label %.critedge2, label %.lr.ph, !dbg !371
+
+.lr.ph:                                           ; preds = %0
+  %4 = getelementptr inbounds %struct.obstack* %h, i64 0, i32 10, !dbg !372
+  %5 = getelementptr inbounds %struct.obstack* %h, i64 0, i32 8, !dbg !372
+  %6 = getelementptr inbounds %struct.obstack* %h, i64 0, i32 9, !dbg !372
+  br label %7, !dbg !371
+
+; <label>:7                                       ; preds = %.lr.ph, %24
+  %lp.04 = phi %struct._obstack_chunk* [ %2, %.lr.ph ], [ %15, %24 ]
+  %8 = bitcast %struct._obstack_chunk* %lp.04 to i8*, !dbg !376
+  %9 = icmp ult i8* %8, %obj, !dbg !377
+  br i1 %9, label %10, label %.critedge1, !dbg !378
+
+; <label>:10                                      ; preds = %7
+  %11 = getelementptr inbounds %struct._obstack_chunk* %lp.04, i64 0, i32 0, !dbg !379
+  %12 = load i8** %11, align 8, !dbg !379, !tbaa !205
+  %13 = icmp ult i8* %12, %obj, !dbg !380
+  br i1 %13, label %.critedge1, label %.critedge, !dbg !381
+
+.critedge1:                                       ; preds = %7, %10
+  %14 = getelementptr inbounds %struct._obstack_chunk* %lp.04, i64 0, i32 1, !dbg !382
+  %15 = load %struct._obstack_chunk** %14, align 8, !dbg !382, !tbaa !212
+  tail call void @llvm.dbg.value(metadata %struct._obstack_chunk* %15, i64 0, metadata !119, metadata !155), !dbg !383
+  %16 = load i8* %4, align 8, !dbg !372
+  %17 = and i8 %16, 1, !dbg !372
+  %18 = icmp eq i8 %17, 0, !dbg !372
+  %19 = load void (i8*, %struct._obstack_chunk*)** %5, align 8, !dbg !372, !tbaa !172
+  br i1 %18, label %22, label %20, !dbg !384
+
+; <label>:20                                      ; preds = %.critedge1
+  %21 = load i8** %6, align 8, !dbg !372, !tbaa !238
+  tail call void %19(i8* %21, %struct._obstack_chunk* %lp.04) #6, !dbg !372
+  br label %24, !dbg !372
+
+; <label>:22                                      ; preds = %.critedge1
+  %23 = bitcast void (i8*, %struct._obstack_chunk*)* %19 to void (i8*)*, !dbg !372
+  tail call void %23(i8* %8) #6, !dbg !372
+  br label %24
+
+; <label>:24                                      ; preds = %20, %22
+  tail call void @llvm.dbg.value(metadata %struct._obstack_chunk* %15, i64 0, metadata !118, metadata !155), !dbg !369
+  %25 = load i8* %4, align 8, !dbg !385
+  %26 = or i8 %25, 2, !dbg !385
+  store i8 %26, i8* %4, align 8, !dbg !385
+  %27 = icmp eq %struct._obstack_chunk* %15, null, !dbg !370
+  br i1 %27, label %.critedge2, label %7, !dbg !371
+
+.critedge:                                        ; preds = %10
+  %28 = ptrtoint i8* %12 to i64
+  %29 = getelementptr inbounds %struct.obstack* %h, i64 0, i32 3, !dbg !386
+  store i8* %obj, i8** %29, align 8, !dbg !389, !tbaa !199
+  %30 = getelementptr inbounds %struct.obstack* %h, i64 0, i32 2, !dbg !390
+  store i8* %obj, i8** %30, align 8, !dbg !391, !tbaa !196
+  %31 = getelementptr inbounds %struct.obstack* %h, i64 0, i32 4, !dbg !392
+  %32 = bitcast i8** %31 to i64*, !dbg !393
+  store i64 %28, i64* %32, align 8, !dbg !393, !tbaa !209
+  store %struct._obstack_chunk* %lp.04, %struct._obstack_chunk** %1, align 8, !dbg !394, !tbaa !186
+  br label %35, !dbg !395
+
+.critedge2:                                       ; preds = %24, %0
+  %33 = icmp eq i8* %obj, null, !dbg !396
+  br i1 %33, label %35, label %34, !dbg !398
+
+; <label>:34                                      ; preds = %.critedge2
+  tail call void @abort() #7, !dbg !399
+  unreachable, !dbg !399
+
+; <label>:35                                      ; preds = %.critedge2, %.critedge
+  ret void, !dbg !400
+}

@@ -1,115 +1,123 @@
 define i32 @spec_random_load(i32 %fd) #0 {
-entry:
   %random_text = alloca [32 x [131072 x i8]], align 16
-  %0 = getelementptr inbounds [32 x [131072 x i8]]* %random_text, i64 0, i64 0, i64 0
-  call void @llvm.lifetime.start(i64 4194304, i8* %0) #2
-  %1 = load i32* @dbglvl, align 4, !tbaa !3
-  %cmp = icmp sgt i32 %1, 4
-  br i1 %cmp, label %if.then, label %for.cond6.preheader
+  tail call void @llvm.dbg.value(metadata i32 %fd, i64 0, metadata !33, metadata !127), !dbg !183
+  %1 = getelementptr inbounds [32 x [131072 x i8]]* %random_text, i64 0, i64 0, i64 0, !dbg !184
+  call void @llvm.lifetime.start(i64 4194304, i8* %1) #4, !dbg !184
+  tail call void @llvm.dbg.declare(metadata [32 x [131072 x i8]]* %random_text, metadata !36, metadata !127), !dbg !185
+  %2 = load i32* @dbglvl, align 4, !dbg !186, !tbaa !148
+  %3 = icmp sgt i32 %2, 4, !dbg !186
+  br i1 %3, label %4, label %.preheader, !dbg !189
 
-if.then:                                          ; preds = %entry
-  %puts47 = call i32 @puts(i8* getelementptr inbounds ([16 x i8]* @str36, i64 0, i64 0))
-  br label %for.cond
+; <label>:4                                       ; preds = %0
+  %puts1 = tail call i32 @puts(i8* getelementptr inbounds ([16 x i8]* @str25, i64 0, i64 0)), !dbg !186
+  br label %5, !dbg !186
 
-for.cond:                                         ; preds = %if.then, %for.inc13
-  %i.0.ph = phi i32 [ 0, %if.then ], [ %inc14, %for.inc13 ]
-  %.pr = load i32* @dbglvl, align 4, !tbaa !3
-  %cmp1 = icmp slt i32 %i.0.ph, 32
-  br i1 %cmp1, label %for.body, label %for.end15
+; <label>:5                                       ; preds = %4, %27
+  %i.0.ph = phi i32 [ 0, %4 ], [ %28, %27 ]
+  %.pr = load i32* @dbglvl, align 4, !dbg !190, !tbaa !148
+  %6 = icmp slt i32 %i.0.ph, 32, !dbg !196
+  br i1 %6, label %7, label %29, !dbg !197
 
-for.body:                                         ; preds = %for.cond
-  %cmp2 = icmp sgt i32 %.pr, 5
-  br i1 %cmp2, label %if.then3, label %for.cond6.preheader
+; <label>:7                                       ; preds = %5
+  %8 = icmp sgt i32 %.pr, 5, !dbg !190
+  br i1 %8, label %9, label %.preheader, !dbg !198
 
-if.then3:                                         ; preds = %for.body
-  %call4 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([19 x i8]* @.str3, i64 0, i64 0), i32 %i.0.ph) #8
-  br label %for.cond6.preheader
+; <label>:9                                       ; preds = %7
+  %10 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([19 x i8]* @.str3, i64 0, i64 0), i32 %i.0.ph) #6, !dbg !190
+  br label %.preheader, !dbg !190
 
-for.cond6.preheader:                              ; preds = %entry, %for.body, %if.then3
-  %i.06567 = phi i32 [ %i.0.ph, %if.then3 ], [ %i.0.ph, %for.body ], [ 0, %entry ]
-  %idxprom11 = sext i32 %i.06567 to i64
-  %seedi.promoted = load i64* @seedi, align 8, !tbaa !0
-  br label %for.body8
+.preheader:                                       ; preds = %0, %9, %7
+  %i.0911 = phi i32 [ %i.0.ph, %9 ], [ %i.0.ph, %7 ], [ 0, %0 ]
+  %11 = sext i32 %i.0911 to i64, !dbg !199
+  %seedi.promoted = load i64* @seedi, align 8, !dbg !203, !tbaa !122
+  br label %12, !dbg !205
 
-for.body8:                                        ; preds = %for.body8, %for.cond6.preheader
-  %indvars.iv = phi i64 [ 0, %for.cond6.preheader ], [ %indvars.iv.next, %for.body8 ]
-  %storemerge.i59 = phi i64 [ %seedi.promoted, %for.cond6.preheader ], [ %storemerge.i, %for.body8 ]
-  %div.i = sdiv i64 %storemerge.i59, 127773
-  %rem.i = srem i64 %storemerge.i59, 127773
-  %mul.i = mul nsw i64 %rem.i, 16807
-  %2 = mul i64 %div.i, -2836
-  %sub.i = add i64 %mul.i, %2
-  %cmp.i = icmp sgt i64 %sub.i, 0
-  %add.i = add nsw i64 %sub.i, 2147483647
-  %storemerge.i = select i1 %cmp.i, i64 %sub.i, i64 %add.i
-  %conv.i = sitofp i64 %storemerge.i to float
-  %div2.i = fmul float %conv.i, 0x3E00000000000000
-  %conv3.i = fpext float %div2.i to double
-  %mul = fmul double %conv3.i, 2.560000e+02
-  %conv = fptosi double %mul to i32
-  %conv10 = trunc i32 %conv to i8
-  %arrayidx12 = getelementptr inbounds [32 x [131072 x i8]]* %random_text, i64 0, i64 %idxprom11, i64 %indvars.iv
-  store i8 %conv10, i8* %arrayidx12, align 1, !tbaa !1
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, 131072
-  br i1 %exitcond, label %for.inc13, label %for.body8
+; <label>:12                                      ; preds = %12, %.preheader
+  %indvars.iv = phi i64 [ 0, %.preheader ], [ %indvars.iv.next, %12 ]
+  %storemerge.i5 = phi i64 [ %seedi.promoted, %.preheader ], [ %storemerge.i, %12 ], !dbg !206
+  %13 = sdiv i64 %storemerge.i5, 127773, !dbg !207
+  tail call void @llvm.dbg.value(metadata i64 %13, i64 0, metadata !17, metadata !127), !dbg !208
+  %14 = srem i64 %storemerge.i5, 127773, !dbg !209
+  tail call void @llvm.dbg.value(metadata i64 %14, i64 0, metadata !15, metadata !127), !dbg !210
+  %15 = mul nsw i64 %14, 16807, !dbg !211
+  %16 = mul nsw i64 %13, -2836, !dbg !212
+  %17 = add i64 %15, %16, !dbg !212
+  tail call void @llvm.dbg.value(metadata i64 %17, i64 0, metadata !18, metadata !127), !dbg !213
+  %18 = icmp sgt i64 %17, 0, !dbg !214
+  %19 = add nsw i64 %17, 2147483647, !dbg !215
+  %storemerge.i = select i1 %18, i64 %17, i64 %19, !dbg !216
+  %20 = sitofp i64 %storemerge.i to float, !dbg !217
+  %21 = fmul float %20, 0x3E00000000000000, !dbg !218
+  %22 = fpext float %21 to double, !dbg !219
+  %23 = fmul double %22, 2.560000e+02, !dbg !220
+  %24 = fptosi double %23 to i32, !dbg !221
+  %25 = trunc i32 %24 to i8, !dbg !221
+  %26 = getelementptr inbounds [32 x [131072 x i8]]* %random_text, i64 0, i64 %11, i64 %indvars.iv, !dbg !199
+  store i8 %25, i8* %26, align 1, !dbg !222, !tbaa !174
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !205
+  %exitcond = icmp eq i64 %indvars.iv.next, 131072, !dbg !205
+  br i1 %exitcond, label %27, label %12, !dbg !205
 
-for.inc13:                                        ; preds = %for.body8
-  store i64 %storemerge.i, i64* @seedi, align 8, !tbaa !0
-  %inc14 = add nsw i32 %i.06567, 1
-  br label %for.cond
+; <label>:27                                      ; preds = %12
+  store i64 %storemerge.i, i64* @seedi, align 8, !dbg !203, !tbaa !122
+  %28 = add nsw i32 %i.0911, 1, !dbg !223
+  tail call void @llvm.dbg.value(metadata i32 %28, i64 0, metadata !34, metadata !127), !dbg !224
+  br label %5, !dbg !225
 
-for.end15:                                        ; preds = %for.cond
-  %cmp16 = icmp sgt i32 %.pr, 4
-  br i1 %cmp16, label %if.then18, label %for.cond21.preheader
+; <label>:29                                      ; preds = %5
+  %30 = icmp sgt i32 %.pr, 4, !dbg !226
+  br i1 %30, label %31, label %.preheader3, !dbg !229
 
-if.then18:                                        ; preds = %for.end15
-  %puts = call i32 @puts(i8* getelementptr inbounds ([19 x i8]* @str35, i64 0, i64 0))
-  br label %for.cond21.preheader
+; <label>:31                                      ; preds = %29
+  %puts = tail call i32 @puts(i8* getelementptr inbounds ([19 x i8]* @str24, i64 0, i64 0)), !dbg !226
+  br label %.preheader3, !dbg !226
 
-for.cond21.preheader:                             ; preds = %if.then18, %for.end15
-  %idxprom22 = sext i32 %fd to i64
-  %limit = getelementptr inbounds [3 x %struct.spec_fd_t]* @spec_fd, i64 0, i64 %idxprom22, i32 0
-  %3 = load i32* %limit, align 8, !tbaa !3
-  %cmp2460 = icmp sgt i32 %3, 0
-  br i1 %cmp2460, label %for.body26.lr.ph, label %for.end35
+.preheader3:                                      ; preds = %31, %29
+  %32 = sext i32 %fd to i64, !dbg !230
+  %33 = getelementptr inbounds [3 x %struct.spec_fd_t]* @spec_fd, i64 0, i64 %32, i32 0, !dbg !233
+  %34 = load i32* %33, align 8, !dbg !233, !tbaa !153
+  %35 = icmp sgt i32 %34, 0, !dbg !234
+  br i1 %35, label %.lr.ph, label %._crit_edge, !dbg !235
 
-for.body26.lr.ph:                                 ; preds = %for.cond21.preheader
-  %buf = getelementptr inbounds [3 x %struct.spec_fd_t]* @spec_fd, i64 0, i64 %idxprom22, i32 3
-  br label %for.body26
+.lr.ph:                                           ; preds = %.preheader3
+  %36 = getelementptr inbounds [3 x %struct.spec_fd_t]* @spec_fd, i64 0, i64 %32, i32 3, !dbg !236
+  br label %37, !dbg !235
 
-for.body26:                                       ; preds = %for.body26, %for.body26.lr.ph
-  %indvars.iv62 = phi i64 [ 0, %for.body26.lr.ph ], [ %indvars.iv.next63, %for.body26 ]
-  %4 = load i8** %buf, align 8, !tbaa !4
-  %add.ptr = getelementptr inbounds i8* %4, i64 %indvars.iv62
-  %5 = load i64* @seedi, align 8, !tbaa !0
-  %div.i48 = sdiv i64 %5, 127773
-  %rem.i49 = srem i64 %5, 127773
-  %mul.i50 = mul nsw i64 %rem.i49, 16807
-  %6 = mul i64 %div.i48, -2836
-  %sub.i51 = add i64 %mul.i50, %6
-  %cmp.i52 = icmp sgt i64 %sub.i51, 0
-  %add.i53 = add nsw i64 %sub.i51, 2147483647
-  %storemerge.i54 = select i1 %cmp.i52, i64 %sub.i51, i64 %add.i53
-  store i64 %storemerge.i54, i64* @seedi, align 8, !tbaa !0
-  %conv.i55 = sitofp i64 %storemerge.i54 to float
-  %div2.i56 = fmul float %conv.i55, 0x3E00000000000000
-  %conv3.i57 = fpext float %div2.i56 to double
-  %mul30 = fmul double %conv3.i57, 3.200000e+01
-  %conv31 = fptosi double %mul30 to i32
-  %idxprom32 = sext i32 %conv31 to i64
-  %7 = getelementptr inbounds [32 x [131072 x i8]]* %random_text, i64 0, i64 %idxprom32, i64 0
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %add.ptr, i8* %7, i64 131072, i32 1, i1 false)
-  %indvars.iv.next63 = add i64 %indvars.iv62, 131072
-  %8 = load i32* %limit, align 8, !tbaa !3
-  %9 = trunc i64 %indvars.iv.next63 to i32
-  %cmp24 = icmp slt i32 %9, %8
-  br i1 %cmp24, label %for.body26, label %for.end35
+; <label>:37                                      ; preds = %.lr.ph, %37
+  %indvars.iv7 = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next8, %37 ]
+  %38 = load i8** %36, align 8, !dbg !236, !tbaa !164
+  %39 = getelementptr inbounds i8* %38, i64 %indvars.iv7, !dbg !236
+  %40 = load i64* @seedi, align 8, !dbg !238, !tbaa !122
+  %41 = sdiv i64 %40, 127773, !dbg !240
+  tail call void @llvm.dbg.value(metadata i64 %41, i64 0, metadata !17, metadata !127), !dbg !241
+  %42 = srem i64 %40, 127773, !dbg !242
+  tail call void @llvm.dbg.value(metadata i64 %42, i64 0, metadata !15, metadata !127), !dbg !243
+  %43 = mul nsw i64 %42, 16807, !dbg !244
+  %44 = mul nsw i64 %41, -2836, !dbg !245
+  %45 = add i64 %43, %44, !dbg !245
+  tail call void @llvm.dbg.value(metadata i64 %45, i64 0, metadata !18, metadata !127), !dbg !246
+  %46 = icmp sgt i64 %45, 0, !dbg !247
+  %47 = add nsw i64 %45, 2147483647, !dbg !248
+  %storemerge.i2 = select i1 %46, i64 %45, i64 %47, !dbg !249
+  store i64 %storemerge.i2, i64* @seedi, align 8, !dbg !250, !tbaa !122
+  %48 = sitofp i64 %storemerge.i2 to float, !dbg !251
+  %49 = fmul float %48, 0x3E00000000000000, !dbg !252
+  %50 = fpext float %49 to double, !dbg !253
+  %51 = fmul double %50, 3.200000e+01, !dbg !236
+  %52 = fptosi double %51 to i32, !dbg !236
+  %53 = sext i32 %52 to i64, !dbg !236
+  %54 = getelementptr inbounds [32 x [131072 x i8]]* %random_text, i64 0, i64 %53, i64 0, !dbg !236
+  %55 = call i64 @llvm.objectsize.i64.p0i8(i8* %39, i1 false), !dbg !236
+  %56 = call i8* @__memcpy_chk(i8* %39, i8* %54, i64 131072, i64 %55) #6, !dbg !236
+  %indvars.iv.next8 = add nsw i64 %indvars.iv7, 131072, !dbg !235
+  %57 = load i32* %33, align 8, !dbg !233, !tbaa !153
+  %58 = sext i32 %57 to i64, !dbg !234
+  %59 = icmp slt i64 %indvars.iv.next8, %58, !dbg !234
+  br i1 %59, label %37, label %._crit_edge, !dbg !235
 
-for.end35:                                        ; preds = %for.body26, %for.cond21.preheader
-  %len = getelementptr inbounds [3 x %struct.spec_fd_t]* @spec_fd, i64 0, i64 %idxprom22, i32 1
-  store i32 1048576, i32* %len, align 4, !tbaa !3
-  call void @llvm.lifetime.end(i64 4194304, i8* %0) #2
-  ret i32 0
+._crit_edge:                                      ; preds = %37, %.preheader3
+  %60 = getelementptr inbounds [3 x %struct.spec_fd_t]* @spec_fd, i64 0, i64 %32, i32 1, !dbg !254
+  store i32 1048576, i32* %60, align 4, !dbg !255, !tbaa !256
+  call void @llvm.lifetime.end(i64 4194304, i8* %1) #4, !dbg !257
+  ret i32 0, !dbg !257
 }

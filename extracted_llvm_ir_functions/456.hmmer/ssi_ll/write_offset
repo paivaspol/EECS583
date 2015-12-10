@@ -1,46 +1,53 @@
-define internal fastcc i32 @write_offset(%struct._IO_FILE* nocapture %fp, %struct.ssioffset_s* nocapture %offset) #0 {
-entry:
-  %n.addr.i14 = alloca i64, align 8
-  %n.addr.i = alloca i32, align 4
-  %mode = getelementptr inbounds %struct.ssioffset_s* %offset, i64 0, i32 0
-  %0 = load i8* %mode, align 1, !tbaa !1
-  switch i8 %0, label %if.else9 [
-    i8 0, label %if.then
-    i8 1, label %if.then6
-  ]
+define internal fastcc i32 @write_offset(%struct.__sFILE* %fp, %struct.ssioffset_s* nocapture readonly %offset) #0 {
+  %1 = alloca i64, align 8
+  %2 = alloca i32, align 4
+  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %fp, i64 0, metadata !466, metadata !535), !dbg !2534
+  tail call void @llvm.dbg.value(metadata %struct.ssioffset_s* %offset, i64 0, metadata !467, metadata !535), !dbg !2535
+  %3 = getelementptr inbounds %struct.ssioffset_s* %offset, i64 0, i32 0, !dbg !2536
+  %4 = load i8* %3, align 1, !dbg !2536, !tbaa !914
+  switch i8 %4, label %20 [
+    i8 0, label %5
+    i8 1, label %13
+  ], !dbg !2538
 
-if.then:                                          ; preds = %entry
-  %off = getelementptr inbounds %struct.ssioffset_s* %offset, i64 0, i32 1
-  %i32 = bitcast %union.anon* %off to i32*
-  %1 = load i32* %i32, align 4, !tbaa !4
-  %2 = bitcast i32* %n.addr.i to i8*
-  call void @llvm.lifetime.start(i64 4, i8* %2) #7
-  %call.i = call i32 @sre_hton32(i32 %1) #8
-  store i32 %call.i, i32* %n.addr.i, align 4, !tbaa !4
-  %call1.i = call i64 @fwrite(i8* %2, i64 4, i64 1, %struct._IO_FILE* %fp) #8
-  %cmp.i = icmp eq i64 %call1.i, 1
-  %..i = zext i1 %cmp.i to i32
-  call void @llvm.lifetime.end(i64 4, i8* %2) #7
-  br label %return
+; <label>:5                                       ; preds = %0
+  %6 = getelementptr inbounds %struct.ssioffset_s* %offset, i64 0, i32 1, !dbg !2539
+  %7 = bitcast %union.anon* %6 to i32*, !dbg !2540
+  %8 = load i32* %7, align 4, !dbg !2540, !tbaa !578
+  %9 = bitcast i32* %2 to i8*, !dbg !2541
+  call void @llvm.lifetime.start(i64 4, i8* %9), !dbg !2541
+  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %fp, i64 0, metadata !441, metadata !535) #4, !dbg !2541
+  tail call void @llvm.dbg.value(metadata i32 %8, i64 0, metadata !442, metadata !535) #4, !dbg !2543
+  %10 = tail call i32 @sre_hton32(i32 %8) #9, !dbg !2544
+  tail call void @llvm.dbg.value(metadata i32 %10, i64 0, metadata !442, metadata !535) #4, !dbg !2543
+  store i32 %10, i32* %2, align 4, !dbg !2545, !tbaa !578
+  %11 = call i64 @"\01_fwrite"(i8* %9, i64 4, i64 1, %struct.__sFILE* %fp) #9, !dbg !2546
+  %12 = icmp eq i64 %11, 1, !dbg !2547
+  %..i = zext i1 %12 to i32, !dbg !2548
+  call void @llvm.lifetime.end(i64 4, i8* %9), !dbg !2549
+  br label %21, !dbg !2550
 
-if.then6:                                         ; preds = %entry
-  %i64 = getelementptr inbounds %struct.ssioffset_s* %offset, i64 0, i32 1, i32 0
-  %3 = load i64* %i64, align 8, !tbaa !5
-  %4 = bitcast i64* %n.addr.i14 to i8*
-  call void @llvm.lifetime.start(i64 8, i8* %4) #7
-  %call.i15 = call i64 @sre_hton64(i64 %3) #8
-  store i64 %call.i15, i64* %n.addr.i14, align 8, !tbaa !5
-  %call1.i16 = call i64 @fwrite(i8* %4, i64 8, i64 1, %struct._IO_FILE* %fp) #8
-  %cmp.i17 = icmp eq i64 %call1.i16, 1
-  %..i18 = zext i1 %cmp.i17 to i32
-  call void @llvm.lifetime.end(i64 8, i8* %4) #7
-  br label %return
+; <label>:13                                      ; preds = %0
+  %14 = getelementptr inbounds %struct.ssioffset_s* %offset, i64 0, i32 1, i32 0, !dbg !2551
+  %15 = load i64* %14, align 8, !dbg !2551, !tbaa !937
+  %16 = bitcast i64* %1 to i8*, !dbg !2553
+  call void @llvm.lifetime.start(i64 8, i8* %16), !dbg !2553
+  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %fp, i64 0, metadata !447, metadata !535) #4, !dbg !2553
+  tail call void @llvm.dbg.value(metadata i64 %15, i64 0, metadata !448, metadata !535) #4, !dbg !2555
+  %17 = tail call i64 @sre_hton64(i64 %15) #9, !dbg !2556
+  tail call void @llvm.dbg.value(metadata i64 %17, i64 0, metadata !448, metadata !535) #4, !dbg !2555
+  store i64 %17, i64* %1, align 8, !dbg !2557, !tbaa !937
+  %18 = call i64 @"\01_fwrite"(i8* %16, i64 8, i64 1, %struct.__sFILE* %fp) #9, !dbg !2558
+  %19 = icmp eq i64 %18, 1, !dbg !2559
+  %..i1 = zext i1 %19 to i32, !dbg !2560
+  call void @llvm.lifetime.end(i64 8, i8* %16), !dbg !2561
+  br label %21, !dbg !2562
 
-if.else9:                                         ; preds = %entry
-  call void @abort() #11
-  unreachable
+; <label>:20                                      ; preds = %0
+  tail call void @abort() #11, !dbg !2563
+  unreachable, !dbg !2563
 
-return:                                           ; preds = %if.then6, %if.then
-  %retval.0 = phi i32 [ %..i, %if.then ], [ %..i18, %if.then6 ]
-  ret i32 %retval.0
+; <label>:21                                      ; preds = %13, %5
+  %.0 = phi i32 [ %..i, %5 ], [ %..i1, %13 ]
+  ret i32 %.0, !dbg !2564
 }

@@ -1,47 +1,62 @@
 define void @IVshuffle(i32 %size, i32* %y, i32 %seed) #0 {
-entry:
   %drand = alloca %struct._Drand, align 8
-  %cmp = icmp sgt i32 %size, 0
-  %cmp1 = icmp sgt i32 %seed, 0
-  %or.cond = and i1 %cmp, %cmp1
-  br i1 %or.cond, label %if.then, label %if.end13
+  tail call void @llvm.dbg.value(metadata i32 %size, i64 0, metadata !341, metadata !380), !dbg !998
+  tail call void @llvm.dbg.value(metadata i32* %y, i64 0, metadata !342, metadata !380), !dbg !999
+  tail call void @llvm.dbg.value(metadata i32 %seed, i64 0, metadata !343, metadata !380), !dbg !1000
+  %1 = icmp sgt i32 %size, 0, !dbg !1001
+  %2 = icmp sgt i32 %seed, 0, !dbg !1002
+  %or.cond = and i1 %1, %2, !dbg !1003
+  br i1 %or.cond, label %3, label %20, !dbg !1003
 
-if.then:                                          ; preds = %entry
-  %cmp2 = icmp eq i32* %y, null
-  br i1 %cmp2, label %if.then3, label %for.body.lr.ph
+; <label>:3                                       ; preds = %0
+  %4 = icmp eq i32* %y, null, !dbg !1004
+  br i1 %4, label %5, label %.lr.ph, !dbg !1005
 
-if.then3:                                         ; preds = %if.then
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([72 x i8]* @.str27, i64 0, i64 0), i32 %size, i32* null, i32 %seed) #6
-  call void @exit(i32 -1) #7
-  unreachable
+; <label>:5                                       ; preds = %3
+  %6 = load %struct.__sFILE** @__stderrp, align 8, !dbg !1006, !tbaa !399
+  %7 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %6, i8* getelementptr inbounds ([72 x i8]* @.str27, i64 0, i64 0), i32 %size, i32* null, i32 %seed) #8, !dbg !1008
+  tail call void @exit(i32 -1) #9, !dbg !1009
+  unreachable, !dbg !1009
 
-for.body.lr.ph:                                   ; preds = %if.then
-  %1 = bitcast %struct._Drand* %drand to i8*
-  call void @llvm.lifetime.start(i64 72, i8* %1) #4
-  call void @Drand_setDefaultFields(%struct._Drand* %drand) #6
-  call void @Drand_setSeed(%struct._Drand* %drand, i32 %seed) #6
-  call void @Drand_setUniform(%struct._Drand* %drand, double 0.000000e+00, double 1.000000e+00) #6
-  %conv = sitofp i32 %size to double
-  br label %for.body
+.lr.ph:                                           ; preds = %3
+  %8 = bitcast %struct._Drand* %drand to i8*, !dbg !1010
+  call void @llvm.lifetime.start(i64 72, i8* %8) #5, !dbg !1010
+  tail call void @llvm.dbg.value(metadata %struct._Drand* %drand, i64 0, metadata !352, metadata !380), !dbg !1011
+  call void @Drand_setDefaultFields(%struct._Drand* %drand) #8, !dbg !1012
+  call void @llvm.dbg.value(metadata %struct._Drand* %drand, i64 0, metadata !352, metadata !380), !dbg !1011
+  call void @Drand_setSeed(%struct._Drand* %drand, i32 %seed) #8, !dbg !1013
+  call void @llvm.dbg.value(metadata %struct._Drand* %drand, i64 0, metadata !352, metadata !380), !dbg !1011
+  call void @Drand_setUniform(%struct._Drand* %drand, double 0.000000e+00, double 1.000000e+00) #8, !dbg !1014
+  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !344, metadata !380), !dbg !1015
+  %9 = sitofp i32 %size to double, !dbg !1016
+  %10 = add i32 %size, -1, !dbg !1020
+  br label %11, !dbg !1020
 
-for.body:                                         ; preds = %for.body, %for.body.lr.ph
-  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
-  %call5 = call double @Drand_value(%struct._Drand* %drand) #6
-  %mul = fmul double %conv, %call5
-  %conv6 = fptosi double %mul to i32
-  %arrayidx = getelementptr inbounds i32* %y, i64 %indvars.iv
-  %2 = load i32* %arrayidx, align 4, !tbaa !3
-  %idxprom7 = sext i32 %conv6 to i64
-  %arrayidx8 = getelementptr inbounds i32* %y, i64 %idxprom7
-  %3 = load i32* %arrayidx8, align 4, !tbaa !3
-  store i32 %3, i32* %arrayidx, align 4, !tbaa !3
-  store i32 %2, i32* %arrayidx8, align 4, !tbaa !3
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %size
-  br i1 %exitcond, label %if.end13, label %for.body
+; <label>:11                                      ; preds = %11, %.lr.ph
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %11 ]
+  call void @llvm.dbg.value(metadata %struct._Drand* %drand, i64 0, metadata !352, metadata !380), !dbg !1011
+  %12 = call double @Drand_value(%struct._Drand* %drand) #8, !dbg !1021
+  call void @llvm.dbg.value(metadata double %12, i64 0, metadata !351, metadata !380), !dbg !1022
+  %13 = fmul double %9, %12, !dbg !1023
+  %14 = fptosi double %13 to i32, !dbg !1024
+  call void @llvm.dbg.value(metadata i32 %14, i64 0, metadata !349, metadata !380), !dbg !1025
+  %15 = getelementptr inbounds i32* %y, i64 %indvars.iv, !dbg !1026
+  %16 = load i32* %15, align 4, !dbg !1026, !tbaa !414
+  call void @llvm.dbg.value(metadata i32 %16, i64 0, metadata !350, metadata !380), !dbg !1027
+  %17 = sext i32 %14 to i64, !dbg !1028
+  %18 = getelementptr inbounds i32* %y, i64 %17, !dbg !1028
+  %19 = load i32* %18, align 4, !dbg !1028, !tbaa !414
+  store i32 %19, i32* %15, align 4, !dbg !1029, !tbaa !414
+  store i32 %16, i32* %18, align 4, !dbg !1030, !tbaa !414
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !1020
+  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !1020
+  %exitcond = icmp eq i32 %lftr.wideiv, %10, !dbg !1020
+  br i1 %exitcond, label %._crit_edge, label %11, !dbg !1020
 
-if.end13:                                         ; preds = %for.body, %entry
-  ret void
+._crit_edge:                                      ; preds = %11
+  call void @llvm.lifetime.end(i64 72, i8* %8) #5, !dbg !1031
+  br label %20, !dbg !1032
+
+; <label>:20                                      ; preds = %._crit_edge, %0
+  ret void, !dbg !1033
 }

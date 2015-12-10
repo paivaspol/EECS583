@@ -1,28 +1,26 @@
 define void @CloseUser_data_unregistered() #0 {
-entry:
-  %0 = load %struct.Bitstream** getelementptr inbounds (%struct.user_data_unregistered_information_struct* @seiUser_data_unregistered, i64 0, i32 2), align 8, !tbaa !0
-  %tobool = icmp eq %struct.Bitstream* %0, null
-  br i1 %tobool, label %if.end, label %if.then
+  %1 = load %struct.Bitstream** getelementptr inbounds (%struct.user_data_unregistered_information_struct* @seiUser_data_unregistered, i64 0, i32 2), align 8, !dbg !2260, !tbaa !2162
+  %2 = icmp eq %struct.Bitstream* %1, null, !dbg !2262
+  br i1 %2, label %7, label %3, !dbg !2263
 
-if.then:                                          ; preds = %entry
-  %streamBuffer = getelementptr inbounds %struct.Bitstream* %0, i64 0, i32 9
-  %1 = load i8** %streamBuffer, align 8, !tbaa !0
-  tail call void @free(i8* %1) #6
-  %2 = load %struct.Bitstream** getelementptr inbounds (%struct.user_data_unregistered_information_struct* @seiUser_data_unregistered, i64 0, i32 2), align 8, !tbaa !0
-  %3 = bitcast %struct.Bitstream* %2 to i8*
-  tail call void @free(i8* %3) #6
-  br label %if.end
+; <label>:3                                       ; preds = %0
+  %4 = getelementptr inbounds %struct.Bitstream* %1, i64 0, i32 9, !dbg !2264
+  %5 = load i8** %4, align 8, !dbg !2264, !tbaa !1130
+  tail call void @free(i8* %5) #9, !dbg !2266
+  %6 = load i8** bitcast (%struct.Bitstream** getelementptr inbounds (%struct.user_data_unregistered_information_struct* @seiUser_data_unregistered, i64 0, i32 2) to i8**), align 8, !dbg !2267, !tbaa !2162
+  tail call void @free(i8* %6) #9, !dbg !2268
+  br label %7, !dbg !2269
 
-if.end:                                           ; preds = %entry, %if.then
-  store %struct.Bitstream* null, %struct.Bitstream** getelementptr inbounds (%struct.user_data_unregistered_information_struct* @seiUser_data_unregistered, i64 0, i32 2), align 8, !tbaa !0
-  %4 = load i8** getelementptr inbounds (%struct.user_data_unregistered_information_struct* @seiUser_data_unregistered, i64 0, i32 0), align 8, !tbaa !0
-  %tobool1 = icmp eq i8* %4, null
-  br i1 %tobool1, label %if.end3, label %if.then2
+; <label>:7                                       ; preds = %0, %3
+  store %struct.Bitstream* null, %struct.Bitstream** getelementptr inbounds (%struct.user_data_unregistered_information_struct* @seiUser_data_unregistered, i64 0, i32 2), align 8, !dbg !2270, !tbaa !2162
+  %8 = load i8** getelementptr inbounds (%struct.user_data_unregistered_information_struct* @seiUser_data_unregistered, i64 0, i32 0), align 8, !dbg !2271, !tbaa !2178
+  %9 = icmp eq i8* %8, null, !dbg !2273
+  br i1 %9, label %11, label %10, !dbg !2274
 
-if.then2:                                         ; preds = %if.end
-  tail call void @free(i8* %4) #6
-  br label %if.end3
+; <label>:10                                      ; preds = %7
+  tail call void @free(i8* %8) #9, !dbg !2275
+  br label %11, !dbg !2277
 
-if.end3:                                          ; preds = %if.end, %if.then2
-  ret void
+; <label>:11                                      ; preds = %7, %10
+  ret void, !dbg !2278
 }

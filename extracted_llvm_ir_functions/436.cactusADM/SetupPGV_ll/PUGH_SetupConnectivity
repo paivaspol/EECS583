@@ -1,142 +1,149 @@
 define %struct.PConnectivity* @PUGH_SetupConnectivity(i32 %dim, i32 %total_procs, i32* nocapture readonly %nprocs, i32* nocapture readonly %perme) #1 {
-  %1 = tail call i8* @malloc(i64 32) #7
-  %2 = bitcast i8* %1 to %struct.PConnectivity*
-  %3 = icmp eq i8* %1, null
-  br i1 %3, label %74, label %4
+  tail call void @llvm.dbg.value(metadata i32 %dim, i64 0, metadata !116, metadata !374), !dbg !1203
+  tail call void @llvm.dbg.value(metadata i32 %total_procs, i64 0, metadata !117, metadata !374), !dbg !1204
+  tail call void @llvm.dbg.value(metadata i32* %nprocs, i64 0, metadata !118, metadata !374), !dbg !1205
+  tail call void @llvm.dbg.value(metadata i32* %perme, i64 0, metadata !119, metadata !374), !dbg !1206
+  %1 = tail call i8* @malloc(i64 32) #7, !dbg !1207
+  %2 = bitcast i8* %1 to %struct.PConnectivity*, !dbg !1208
+  tail call void @llvm.dbg.value(metadata %struct.PConnectivity* %2, i64 0, metadata !120, metadata !374), !dbg !1209
+  %3 = icmp eq i8* %1, null, !dbg !1210
+  br i1 %3, label %74, label %4, !dbg !1212
 
 ; <label>:4                                       ; preds = %0
-  %5 = sext i32 %dim to i64
-  %6 = shl nsw i64 %5, 2
-  %7 = tail call i8* @malloc(i64 %6) #7
-  %8 = getelementptr inbounds i8* %1, i64 8
-  %9 = bitcast i8* %8 to i32**
-  %10 = bitcast i8* %8 to i8**
-  store i8* %7, i8** %10, align 8, !tbaa !23
-  %11 = tail call i8* @malloc(i64 %6) #7
-  %12 = getelementptr inbounds i8* %1, i64 24
-  %13 = bitcast i8* %12 to i32**
-  %14 = bitcast i8* %12 to i8**
-  store i8* %11, i8** %14, align 8, !tbaa !25
-  %15 = sext i32 %total_procs to i64
-  %16 = shl nsw i64 %15, 3
-  %17 = tail call i8* @malloc(i64 %16) #7
-  %18 = getelementptr inbounds i8* %1, i64 16
-  %19 = bitcast i8* %18 to i32***
-  %20 = bitcast i8* %18 to i8**
-  store i8* %17, i8** %20, align 8, !tbaa !26
-  %21 = icmp eq i8* %17, null
-  br i1 %21, label %29, label %22
+  %5 = sext i32 %dim to i64, !dbg !1213
+  %6 = shl nsw i64 %5, 2, !dbg !1215
+  %7 = tail call i8* @malloc(i64 %6) #7, !dbg !1216
+  %8 = getelementptr inbounds i8* %1, i64 8, !dbg !1217
+  %9 = bitcast i8* %8 to i32**, !dbg !1217
+  %10 = bitcast i8* %8 to i8**, !dbg !1218
+  store i8* %7, i8** %10, align 8, !dbg !1218, !tbaa !1219
+  %11 = tail call i8* @malloc(i64 %6) #7, !dbg !1221
+  %12 = getelementptr inbounds i8* %1, i64 24, !dbg !1222
+  %13 = bitcast i8* %12 to i32**, !dbg !1222
+  %14 = bitcast i8* %12 to i8**, !dbg !1223
+  store i8* %11, i8** %14, align 8, !dbg !1223, !tbaa !1224
+  %15 = sext i32 %total_procs to i64, !dbg !1225
+  %16 = shl nsw i64 %15, 3, !dbg !1226
+  %17 = tail call i8* @malloc(i64 %16) #7, !dbg !1227
+  %18 = getelementptr inbounds i8* %1, i64 16, !dbg !1228
+  %19 = bitcast i8* %18 to i32***, !dbg !1228
+  %20 = bitcast i8* %18 to i8**, !dbg !1229
+  store i8* %17, i8** %20, align 8, !dbg !1229, !tbaa !1230
+  %21 = icmp eq i8* %17, null, !dbg !1231
+  br i1 %21, label %29, label %22, !dbg !1233
 
 ; <label>:22                                      ; preds = %4
   %23 = bitcast i8* %17 to i8**
-  %24 = shl i32 %dim, 1
-  %25 = mul i32 %24, %total_procs
-  %26 = sext i32 %25 to i64
-  %27 = shl nsw i64 %26, 2
-  %28 = tail call i8* @malloc(i64 %27) #7
-  store i8* %28, i8** %23, align 8, !tbaa !19
-  %.pre = load i32** %9, align 8, !tbaa !23
-  br label %31
+  %24 = shl i32 %dim, 1, !dbg !1234
+  %25 = mul i32 %24, %total_procs, !dbg !1236
+  %26 = sext i32 %25 to i64, !dbg !1237
+  %27 = shl nsw i64 %26, 2, !dbg !1238
+  %28 = tail call i8* @malloc(i64 %27) #7, !dbg !1239
+  store i8* %28, i8** %23, align 8, !dbg !1240, !tbaa !486
+  %.pre = load i32** %9, align 8, !dbg !1241, !tbaa !1219
+  br label %31, !dbg !1243
 
 ; <label>:29                                      ; preds = %4
   %30 = bitcast i8* %7 to i32*
-  store i32** null, i32*** %19, align 8, !tbaa !26
+  store i32** null, i32*** %19, align 8, !dbg !1244, !tbaa !1230
   br label %31
 
 ; <label>:31                                      ; preds = %29, %22
   %32 = phi i32* [ %30, %29 ], [ %.pre, %22 ]
-  %33 = icmp eq i32* %32, null
-  br i1 %33, label %41, label %34
+  %33 = icmp eq i32* %32, null, !dbg !1246
+  br i1 %33, label %41, label %34, !dbg !1247
 
 ; <label>:34                                      ; preds = %31
-  %35 = load i32** %13, align 8, !tbaa !25
-  %36 = icmp eq i32* %35, null
-  br i1 %36, label %41, label %37
+  %35 = load i32** %13, align 8, !dbg !1248, !tbaa !1224
+  %36 = icmp eq i32* %35, null, !dbg !1249
+  br i1 %36, label %41, label %37, !dbg !1250
 
 ; <label>:37                                      ; preds = %34
-  %38 = load i32*** %19, align 8, !tbaa !26
-  %39 = icmp eq i32** %38, null
+  %38 = load i32*** %19, align 8, !dbg !1251, !tbaa !1230
+  %39 = icmp eq i32** %38, null, !dbg !1252
   %40 = bitcast i32** %38 to i8*
-  br i1 %39, label %.thread1, label %.thread3
+  br i1 %39, label %.thread1, label %.thread3, !dbg !1253
 
 ; <label>:41                                      ; preds = %34, %31
-  %.pr = load i32*** %19, align 8, !tbaa !26
-  %42 = icmp eq i32** %.pr, null
+  %.pr = load i32*** %19, align 8, !dbg !1254, !tbaa !1230
+  %42 = icmp eq i32** %.pr, null, !dbg !1257
   %43 = bitcast i32** %.pr to i8*
-  br i1 %42, label %.thread1, label %44
+  br i1 %42, label %.thread1, label %44, !dbg !1258
 
 ; <label>:44                                      ; preds = %41
-  %45 = bitcast i32** %.pr to i8**
-  %46 = load i8** %45, align 8, !tbaa !19
-  tail call void @free(i8* %46) #8
-  br label %.thread1
+  %45 = bitcast i32** %.pr to i8**, !dbg !1259
+  %46 = load i8** %45, align 8, !dbg !1259, !tbaa !486
+  tail call void @free(i8* %46) #8, !dbg !1261
+  br label %.thread1, !dbg !1262
 
 .thread1:                                         ; preds = %44, %41, %37
   %47 = phi i8* [ %43, %44 ], [ %43, %41 ], [ %40, %37 ]
-  tail call void @free(i8* %47) #8
-  %48 = load i8** %14, align 8, !tbaa !25
-  tail call void @free(i8* %48) #8
-  %49 = load i8** %10, align 8, !tbaa !23
-  tail call void @free(i8* %49) #8
-  tail call void @free(i8* %1) #8
-  br label %74
+  tail call void @free(i8* %47) #8, !dbg !1263
+  %48 = load i8** %14, align 8, !dbg !1264, !tbaa !1224
+  tail call void @free(i8* %48) #8, !dbg !1265
+  %49 = load i8** %10, align 8, !dbg !1266, !tbaa !1219
+  tail call void @free(i8* %49) #8, !dbg !1267
+  tail call void @free(i8* %1) #8, !dbg !1268
+  tail call void @llvm.dbg.value(metadata %struct.PConnectivity* null, i64 0, metadata !120, metadata !374), !dbg !1209
+  br label %74, !dbg !1269
 
 .thread3:                                         ; preds = %37
-  %50 = bitcast i8* %1 to i32*
-  store i32 %dim, i32* %50, align 4, !tbaa !27
-  %51 = icmp sgt i32 %dim, 0
-  br i1 %51, label %.lr.ph7, label %.preheader
+  %50 = bitcast i8* %1 to i32*, !dbg !1270
+  store i32 %dim, i32* %50, align 4, !dbg !1273, !tbaa !1274
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !121, metadata !374), !dbg !1275
+  %51 = icmp sgt i32 %dim, 0, !dbg !1276
+  br i1 %51, label %.lr.ph7, label %.preheader, !dbg !1279
 
 .lr.ph7:                                          ; preds = %.thread3
-  %52 = add i32 %dim, -1
-  br label %57
+  %52 = add i32 %dim, -1, !dbg !1279
+  br label %57, !dbg !1279
 
 .preheader:                                       ; preds = %57, %.thread3
-  %53 = icmp sgt i32 %total_procs, 1
-  br i1 %53, label %.lr.ph, label %._crit_edge
+  %53 = icmp sgt i32 %total_procs, 1, !dbg !1280
+  br i1 %53, label %.lr.ph, label %._crit_edge, !dbg !1283
 
 .lr.ph:                                           ; preds = %.preheader
-  %54 = shl i32 %dim, 1
-  %55 = sext i32 %54 to i64
-  %56 = add i32 %total_procs, -1
-  br label %64
+  %54 = shl i32 %dim, 1, !dbg !1284
+  %55 = sext i32 %54 to i64, !dbg !1283
+  %56 = add i32 %total_procs, -1, !dbg !1283
+  br label %64, !dbg !1283
 
 ; <label>:57                                      ; preds = %57, %.lr.ph7
   %indvars.iv8 = phi i64 [ 0, %.lr.ph7 ], [ %indvars.iv.next9, %57 ]
-  %58 = getelementptr inbounds i32* %nprocs, i64 %indvars.iv8
-  %59 = load i32* %58, align 4, !tbaa !20
-  %60 = getelementptr inbounds i32* %32, i64 %indvars.iv8
-  store i32 %59, i32* %60, align 4, !tbaa !20
-  %61 = getelementptr inbounds i32* %perme, i64 %indvars.iv8
-  %62 = load i32* %61, align 4, !tbaa !20
-  %63 = getelementptr inbounds i32* %35, i64 %indvars.iv8
-  store i32 %62, i32* %63, align 4, !tbaa !20
-  %indvars.iv.next9 = add nuw nsw i64 %indvars.iv8, 1
-  %lftr.wideiv10 = trunc i64 %indvars.iv8 to i32
-  %exitcond11 = icmp eq i32 %lftr.wideiv10, %52
-  br i1 %exitcond11, label %.preheader, label %57
+  %58 = getelementptr inbounds i32* %nprocs, i64 %indvars.iv8, !dbg !1286
+  %59 = load i32* %58, align 4, !dbg !1286, !tbaa !814
+  %60 = getelementptr inbounds i32* %32, i64 %indvars.iv8, !dbg !1288
+  store i32 %59, i32* %60, align 4, !dbg !1289, !tbaa !814
+  %61 = getelementptr inbounds i32* %perme, i64 %indvars.iv8, !dbg !1290
+  %62 = load i32* %61, align 4, !dbg !1290, !tbaa !814
+  %63 = getelementptr inbounds i32* %35, i64 %indvars.iv8, !dbg !1291
+  store i32 %62, i32* %63, align 4, !dbg !1292, !tbaa !814
+  %indvars.iv.next9 = add nuw nsw i64 %indvars.iv8, 1, !dbg !1279
+  %lftr.wideiv10 = trunc i64 %indvars.iv8 to i32, !dbg !1279
+  %exitcond11 = icmp eq i32 %lftr.wideiv10, %52, !dbg !1279
+  br i1 %exitcond11, label %.preheader, label %57, !dbg !1279
 
 ; <label>:64                                      ; preds = %64, %.lr.ph
   %indvars.iv = phi i64 [ 1, %.lr.ph ], [ %indvars.iv.next, %64 ]
-  %65 = load i32** %38, align 8, !tbaa !19
-  %66 = mul nsw i64 %55, %indvars.iv
-  %67 = getelementptr inbounds i32* %65, i64 %66
-  %68 = getelementptr inbounds i32** %38, i64 %indvars.iv
-  store i32* %67, i32** %68, align 8, !tbaa !19
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %56
-  br i1 %exitcond, label %._crit_edge, label %64
+  %65 = load i32** %38, align 8, !dbg !1293, !tbaa !486
+  %66 = mul nsw i64 %55, %indvars.iv, !dbg !1294
+  %67 = getelementptr inbounds i32* %65, i64 %66, !dbg !1295
+  %68 = getelementptr inbounds i32** %38, i64 %indvars.iv, !dbg !1296
+  store i32* %67, i32** %68, align 8, !dbg !1297, !tbaa !486
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !1283
+  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !1283
+  %exitcond = icmp eq i32 %lftr.wideiv, %56, !dbg !1283
+  br i1 %exitcond, label %._crit_edge, label %64, !dbg !1283
 
 ._crit_edge:                                      ; preds = %64, %.preheader
-  %69 = tail call i32 @PUGH_GenerateTopology(i32 %dim, i32 %total_procs, i32* %32) #8
-  %70 = load i32** %9, align 8, !tbaa !23
-  %71 = load i32*** %19, align 8, !tbaa !26
-  %72 = load i32** %13, align 8, !tbaa !25
-  %73 = tail call i32 @PUGH_GenerateNeighbours(i32 %dim, i32 %total_procs, i32* %70, i32** %71, i32* %72) #8
-  br label %74
+  %69 = tail call i32 @PUGH_GenerateTopology(i32 %dim, i32 %total_procs, i32* %32) #8, !dbg !1298
+  %70 = load i32** %9, align 8, !dbg !1299, !tbaa !1219
+  %71 = load i32*** %19, align 8, !dbg !1300, !tbaa !1230
+  %72 = load i32** %13, align 8, !dbg !1301, !tbaa !1224
+  %73 = tail call i32 @PUGH_GenerateNeighbours(i32 %dim, i32 %total_procs, i32* %70, i32** %71, i32* %72) #8, !dbg !1302
+  br label %74, !dbg !1303
 
 ; <label>:74                                      ; preds = %0, %.thread1, %._crit_edge
   %this.02 = phi %struct.PConnectivity* [ null, %.thread1 ], [ %2, %._crit_edge ], [ null, %0 ]
-  ret %struct.PConnectivity* %this.02
+  ret %struct.PConnectivity* %this.02, !dbg !1304
 }

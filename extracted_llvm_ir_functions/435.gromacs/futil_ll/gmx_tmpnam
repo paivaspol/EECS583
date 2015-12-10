@@ -1,34 +1,37 @@
-define void @gmx_tmpnam(i8* %buf) #1 {
-  %1 = tail call i64 @strlen(i8* %buf) #8
-  %2 = trunc i64 %1 to i32
-  %3 = icmp slt i32 %2, 7
-  br i1 %3, label %4, label %5
+define void @gmx_tmpnam(i8* %buf) #2 {
+  tail call void @llvm.dbg.value(metadata i8* %buf, i64 0, metadata !216, metadata !235), !dbg !493
+  %1 = tail call i64 @strlen(i8* %buf) #8, !dbg !494
+  %2 = trunc i64 %1 to i32, !dbg !494
+  tail call void @llvm.dbg.value(metadata i32 %2, i64 0, metadata !218, metadata !235), !dbg !496
+  %3 = icmp slt i32 %2, 7, !dbg !497
+  br i1 %3, label %4, label %5, !dbg !498
 
 ; <label>:4                                       ; preds = %0
-  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([55 x i8]* @.str25, i64 0, i64 0)) #8
-  br label %5
+  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([55 x i8]* @.str25, i64 0, i64 0)) #8, !dbg !499
+  br label %5, !dbg !499
 
 ; <label>:5                                       ; preds = %4, %0
   %6 = shl i64 %1, 32
   %sext = add i64 %6, -25769803776
   %7 = ashr exact i64 %sext, 32
   %scevgep = getelementptr i8* %buf, i64 %7
-  call void @llvm.memset.p0i8.i64(i8* %scevgep, i8 88, i64 6, i32 1, i1 false)
-  %8 = tail call i32 @mkstemp(i8* %buf) #8
+  call void @llvm.memset.p0i8.i64(i8* %scevgep, i8 88, i64 6, i32 1, i1 false), !dbg !500
+  %8 = tail call i32 @mkstemp(i8* %buf) #8, !dbg !504
+  tail call void @llvm.dbg.value(metadata i32 %8, i64 0, metadata !219, metadata !235), !dbg !505
   switch i32 %8, label %11 [
     i32 22, label %9
     i32 17, label %10
-  ]
+  ], !dbg !506
 
 ; <label>:9                                       ; preds = %5
-  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([53 x i8]* @.str26, i64 0, i64 0), i8* %buf, i8* getelementptr inbounds ([65 x i8]* @.str1, i64 0, i64 0), i32 599) #8
-  br label %11
+  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([53 x i8]* @.str26, i64 0, i64 0), i8* %buf, i8* getelementptr inbounds ([65 x i8]* @.str1, i64 0, i64 0), i32 599) #8, !dbg !507
+  br label %11, !dbg !507
 
 ; <label>:10                                      ; preds = %5
-  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([54 x i8]* @.str27, i64 0, i64 0), i8* %buf, i8* getelementptr inbounds ([65 x i8]* @.str1, i64 0, i64 0), i32 601) #8
-  br label %11
+  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([54 x i8]* @.str27, i64 0, i64 0), i8* %buf, i8* getelementptr inbounds ([65 x i8]* @.str1, i64 0, i64 0), i32 601) #8, !dbg !509
+  br label %11, !dbg !509
 
 ; <label>:11                                      ; preds = %5, %10, %9
-  %12 = tail call i32 @"\01_close"(i32 %8) #8
-  ret void
+  %12 = tail call i32 @"\01_close"(i32 %8) #8, !dbg !511
+  ret void, !dbg !512
 }

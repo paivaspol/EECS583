@@ -1,14 +1,16 @@
 define i8* @CVinit(i32 %size, i8 signext %c) #0 {
-entry:
-  %cmp = icmp slt i32 %size, 1
-  br i1 %cmp, label %if.end, label %if.else
+  tail call void @llvm.dbg.value(metadata i32 %size, i64 0, metadata !14, metadata !149), !dbg !150
+  tail call void @llvm.dbg.value(metadata i8 %c, i64 0, metadata !15, metadata !149), !dbg !151
+  %1 = icmp slt i32 %size, 1, !dbg !152
+  br i1 %1, label %4, label %2, !dbg !154
 
-if.else:                                          ; preds = %entry
-  %call = tail call i8* @CVinit2(i32 %size) #5
-  tail call void @CVfill(i32 %size, i8* %call, i8 signext %c) #5
-  br label %if.end
+; <label>:2                                       ; preds = %0
+  %3 = tail call i8* @CVinit2(i32 %size) #5, !dbg !155
+  tail call void @llvm.dbg.value(metadata i8* %3, i64 0, metadata !16, metadata !149), !dbg !157
+  tail call void @CVfill(i32 %size, i8* %3, i8 signext %c) #5, !dbg !158
+  br label %4
 
-if.end:                                           ; preds = %entry, %if.else
-  %y.0 = phi i8* [ %call, %if.else ], [ null, %entry ]
-  ret i8* %y.0
+; <label>:4                                       ; preds = %0, %2
+  %y.0 = phi i8* [ %3, %2 ], [ null, %0 ]
+  ret i8* %y.0, !dbg !159
 }

@@ -1,18 +1,23 @@
 define i8* @CCTK_ThornImplementation(i8* %name) #1 {
-  %1 = load %struct.T_SKTREE** @thornlist, align 8, !tbaa !7
-  %2 = tail call %struct.T_SKTREE* @SKTreeFindNode(%struct.T_SKTREE* %1, i8* %name) #7
-  %3 = icmp eq %struct.T_SKTREE* %2, null
-  br i1 %3, label %10, label %4
+  tail call void @llvm.dbg.value(metadata i8* %name, i64 0, metadata !107, metadata !358), !dbg !646
+  %1 = load %struct.T_SKTREE** @thornlist, align 8, !dbg !647, !tbaa !381
+  %2 = tail call %struct.T_SKTREE* @SKTreeFindNode(%struct.T_SKTREE* %1, i8* %name) #8, !dbg !648
+  tail call void @llvm.dbg.value(metadata %struct.T_SKTREE* %2, i64 0, metadata !109, metadata !358), !dbg !649
+  tail call void @llvm.dbg.value(metadata i8* null, i64 0, metadata !108, metadata !358), !dbg !650
+  %3 = icmp eq %struct.T_SKTREE* %2, null, !dbg !651
+  br i1 %3, label %10, label %4, !dbg !653
 
 ; <label>:4                                       ; preds = %0
-  %5 = getelementptr inbounds %struct.T_SKTREE* %2, i64 0, i32 5
-  %6 = bitcast i8** %5 to %struct.THORN**
-  %7 = load %struct.THORN** %6, align 8, !tbaa !20
-  %8 = getelementptr inbounds %struct.THORN* %7, i64 0, i32 1
-  %9 = load i8** %8, align 8, !tbaa !10
-  br label %10
+  %5 = getelementptr inbounds %struct.T_SKTREE* %2, i64 0, i32 5, !dbg !654
+  %6 = bitcast i8** %5 to %struct.THORN**, !dbg !654
+  %7 = load %struct.THORN** %6, align 8, !dbg !654, !tbaa !555
+  tail call void @llvm.dbg.value(metadata %struct.THORN* %7, i64 0, metadata !110, metadata !358), !dbg !656
+  %8 = getelementptr inbounds %struct.THORN* %7, i64 0, i32 1, !dbg !657
+  %9 = load i8** %8, align 8, !dbg !657, !tbaa !431
+  tail call void @llvm.dbg.value(metadata i8* %9, i64 0, metadata !108, metadata !358), !dbg !650
+  br label %10, !dbg !658
 
 ; <label>:10                                      ; preds = %0, %4
   %retval.0 = phi i8* [ %9, %4 ], [ null, %0 ]
-  ret i8* %retval.0
+  ret i8* %retval.0, !dbg !659
 }

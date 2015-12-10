@@ -1,18 +1,22 @@
 define i32 @pr_indent(%struct.__sFILE* nocapture %fp, i32 %n) #4 {
-  %1 = icmp sgt i32 %n, 0
-  br i1 %1, label %.lr.ph, label %._crit_edge
+  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %fp, i64 0, metadata !356, metadata !1055), !dbg !1203
+  tail call void @llvm.dbg.value(metadata i32 %n, i64 0, metadata !357, metadata !1055), !dbg !1204
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !358, metadata !1055), !dbg !1205
+  %1 = icmp sgt i32 %n, 0, !dbg !1206
+  br i1 %1, label %.lr.ph, label %._crit_edge, !dbg !1209
 
 .lr.ph:                                           ; preds = %0
-  %2 = add i32 %n, -1
-  br label %3
+  %2 = add i32 %n, -1, !dbg !1209
+  br label %3, !dbg !1209
 
 ; <label>:3                                       ; preds = %3, %.lr.ph
   %i.01 = phi i32 [ 0, %.lr.ph ], [ %4, %3 ]
-  %fputc = tail call i32 @fputc(i32 32, %struct.__sFILE* %fp)
-  %4 = add nuw nsw i32 %i.01, 1
-  %exitcond = icmp eq i32 %i.01, %2
-  br i1 %exitcond, label %._crit_edge, label %3
+  %fputc = tail call i32 @fputc(i32 32, %struct.__sFILE* %fp), !dbg !1210
+  %4 = add nuw nsw i32 %i.01, 1, !dbg !1211
+  tail call void @llvm.dbg.value(metadata i32 %4, i64 0, metadata !358, metadata !1055), !dbg !1205
+  %exitcond = icmp eq i32 %i.01, %2, !dbg !1209
+  br i1 %exitcond, label %._crit_edge, label %3, !dbg !1209
 
 ._crit_edge:                                      ; preds = %3, %0
-  ret i32 %n
+  ret i32 %n, !dbg !1212
 }

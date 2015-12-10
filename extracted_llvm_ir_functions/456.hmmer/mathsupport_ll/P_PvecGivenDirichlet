@@ -1,53 +1,64 @@
-define float @P_PvecGivenDirichlet(float* nocapture %p, i32 %n, float* nocapture %alpha) #0 {
-entry:
-  %cmp39 = icmp sgt i32 %n, 0
-  br i1 %cmp39, label %for.body, label %for.end
+define float @P_PvecGivenDirichlet(float* nocapture readonly %p, i32 %n, float* nocapture readonly %alpha) #2 {
+  tail call void @llvm.dbg.value(metadata float* %p, i64 0, metadata !163, metadata !184), !dbg !509
+  tail call void @llvm.dbg.value(metadata i32 %n, i64 0, metadata !164, metadata !184), !dbg !510
+  tail call void @llvm.dbg.value(metadata float* %alpha, i64 0, metadata !165, metadata !184), !dbg !511
+  tail call void @llvm.dbg.value(metadata float 0.000000e+00, i64 0, metadata !167, metadata !184), !dbg !512
+  tail call void @llvm.dbg.value(metadata float 0.000000e+00, i64 0, metadata !166, metadata !184), !dbg !513
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !168, metadata !184), !dbg !514
+  %1 = icmp sgt i32 %n, 0, !dbg !515
+  br i1 %1, label %.lr.ph, label %._crit_edge, !dbg !518
 
-for.body:                                         ; preds = %entry, %for.inc
-  %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc ], [ 0, %entry ]
-  %logp.041 = phi float [ %logp.1, %for.inc ], [ 0.000000e+00, %entry ]
-  %sum.040 = phi float [ %sum.1, %for.inc ], [ 0.000000e+00, %entry ]
-  %arrayidx = getelementptr inbounds float* %p, i64 %indvars.iv
-  %0 = load float* %arrayidx, align 4, !tbaa !3
-  %cmp1 = fcmp ogt float %0, 0.000000e+00
-  br i1 %cmp1, label %if.then, label %for.inc
+.lr.ph:                                           ; preds = %0
+  %2 = add i32 %n, -1, !dbg !518
+  br label %3, !dbg !518
 
-if.then:                                          ; preds = %for.body
-  %conv = fpext float %0 to double
-  %arrayidx4 = getelementptr inbounds float* %alpha, i64 %indvars.iv
-  %1 = load float* %arrayidx4, align 4, !tbaa !3
-  %conv5 = fpext float %1 to double
-  %sub = fadd double %conv5, -1.000000e+00
-  %call = tail call double @log(double %conv) #5
-  %mul = fmul double %call, %sub
-  %conv9 = fpext float %logp.041 to double
-  %add = fadd double %conv9, %mul
-  %conv10 = fptrunc double %add to float
-  %2 = load float* %arrayidx4, align 4, !tbaa !3
-  %conv13 = fpext float %2 to double
-  %call14 = tail call double @Gammln(double %conv13) #5
-  %conv15 = fpext float %conv10 to double
-  %sub16 = fsub double %conv15, %call14
-  %conv17 = fptrunc double %sub16 to float
-  %3 = load float* %arrayidx4, align 4, !tbaa !3
-  %add20 = fadd float %sum.040, %3
-  br label %for.inc
+; <label>:3                                       ; preds = %24, %.lr.ph
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %24 ]
+  %logp.02 = phi float [ 0.000000e+00, %.lr.ph ], [ %logp.1, %24 ]
+  %sum.01 = phi float [ 0.000000e+00, %.lr.ph ], [ %sum.1, %24 ]
+  %4 = getelementptr inbounds float* %p, i64 %indvars.iv, !dbg !519
+  %5 = load float* %4, align 4, !dbg !519, !tbaa !333
+  %6 = fcmp ogt float %5, 0.000000e+00, !dbg !521
+  br i1 %6, label %7, label %24, !dbg !522
 
-for.inc:                                          ; preds = %for.body, %if.then
-  %sum.1 = phi float [ %add20, %if.then ], [ %sum.040, %for.body ]
-  %logp.1 = phi float [ %conv17, %if.then ], [ %logp.041, %for.body ]
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %n
-  br i1 %exitcond, label %for.end, label %for.body
+; <label>:7                                       ; preds = %3
+  %8 = fpext float %5 to double, !dbg !519
+  %9 = getelementptr inbounds float* %alpha, i64 %indvars.iv, !dbg !523
+  %10 = load float* %9, align 4, !dbg !523, !tbaa !333
+  %11 = fpext float %10 to double, !dbg !523
+  %12 = fadd double %11, -1.000000e+00, !dbg !525
+  %13 = tail call double @log(double %8) #5, !dbg !526
+  %14 = fmul double %13, %12, !dbg !527
+  %15 = fpext float %logp.02 to double, !dbg !528
+  %16 = fadd double %15, %14, !dbg !528
+  %17 = fptrunc double %16 to float, !dbg !528
+  tail call void @llvm.dbg.value(metadata float %17, i64 0, metadata !167, metadata !184), !dbg !512
+  %18 = tail call double @Gammln(double %11) #6, !dbg !529
+  %19 = fpext float %17 to double, !dbg !530
+  %20 = fsub double %19, %18, !dbg !530
+  %21 = fptrunc double %20 to float, !dbg !530
+  tail call void @llvm.dbg.value(metadata float %21, i64 0, metadata !167, metadata !184), !dbg !512
+  %22 = load float* %9, align 4, !dbg !531, !tbaa !333
+  %23 = fadd float %sum.01, %22, !dbg !532
+  tail call void @llvm.dbg.value(metadata float %23, i64 0, metadata !166, metadata !184), !dbg !513
+  br label %24, !dbg !533
 
-for.end:                                          ; preds = %for.inc, %entry
-  %logp.0.lcssa = phi float [ 0.000000e+00, %entry ], [ %logp.1, %for.inc ]
-  %sum.0.lcssa = phi float [ 0.000000e+00, %entry ], [ %sum.1, %for.inc ]
-  %conv21 = fpext float %sum.0.lcssa to double
-  %call22 = tail call double @Gammln(double %conv21) #5
-  %conv23 = fpext float %logp.0.lcssa to double
-  %add24 = fadd double %conv23, %call22
-  %conv25 = fptrunc double %add24 to float
-  ret float %conv25
+; <label>:24                                      ; preds = %3, %7
+  %sum.1 = phi float [ %23, %7 ], [ %sum.01, %3 ]
+  %logp.1 = phi float [ %21, %7 ], [ %logp.02, %3 ]
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !518
+  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !518
+  %exitcond = icmp eq i32 %lftr.wideiv, %2, !dbg !518
+  br i1 %exitcond, label %._crit_edge, label %3, !dbg !518
+
+._crit_edge:                                      ; preds = %24, %0
+  %logp.0.lcssa = phi float [ 0.000000e+00, %0 ], [ %logp.1, %24 ]
+  %sum.0.lcssa = phi float [ 0.000000e+00, %0 ], [ %sum.1, %24 ]
+  %25 = fpext float %sum.0.lcssa to double, !dbg !534
+  %26 = tail call double @Gammln(double %25) #6, !dbg !535
+  %27 = fpext float %logp.0.lcssa to double, !dbg !536
+  %28 = fadd double %27, %26, !dbg !536
+  %29 = fptrunc double %28 to float, !dbg !536
+  tail call void @llvm.dbg.value(metadata float %29, i64 0, metadata !167, metadata !184), !dbg !512
+  ret float %29, !dbg !537
 }

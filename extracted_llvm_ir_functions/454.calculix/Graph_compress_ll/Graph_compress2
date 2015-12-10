@@ -1,43 +1,45 @@
 define %struct._Graph* @Graph_compress2(%struct._Graph* %g, %struct._IV* %mapIV, i32 %coarseType) #0 {
-entry:
-  %cmp = icmp eq %struct._Graph* %g, null
-  %cmp1 = icmp eq %struct._IV* %mapIV, null
-  %or.cond = or i1 %cmp, %cmp1
-  br i1 %or.cond, label %if.then, label %lor.lhs.false2
+  tail call void @llvm.dbg.value(metadata %struct._Graph* %g, i64 0, metadata !57, metadata !98), !dbg !99
+  tail call void @llvm.dbg.value(metadata %struct._IV* %mapIV, i64 0, metadata !58, metadata !98), !dbg !100
+  tail call void @llvm.dbg.value(metadata i32 %coarseType, i64 0, metadata !59, metadata !98), !dbg !101
+  %1 = icmp eq %struct._Graph* %g, null, !dbg !102
+  %2 = icmp eq %struct._IV* %mapIV, null, !dbg !104
+  %or.cond = or i1 %1, %2, !dbg !105
+  br i1 %or.cond, label %10, label %3, !dbg !105
 
-lor.lhs.false2:                                   ; preds = %entry
-  %nvtx = getelementptr inbounds %struct._Graph* %g, i64 0, i32 1
-  %0 = load i32* %nvtx, align 4, !tbaa !0
-  %call = tail call i32 @IV_size(%struct._IV* %mapIV) #4
-  %cmp3 = icmp ne i32 %0, %call
-  %1 = icmp ugt i32 %coarseType, 3
-  %or.cond32 = or i1 %cmp3, %1
-  br i1 %or.cond32, label %if.then, label %if.end16
+; <label>:3                                       ; preds = %0
+  %4 = getelementptr inbounds %struct._Graph* %g, i64 0, i32 1, !dbg !106
+  %5 = load i32* %4, align 4, !dbg !106, !tbaa !107
+  %6 = tail call i32 @IV_size(%struct._IV* %mapIV) #5, !dbg !113
+  %7 = icmp ne i32 %5, %6, !dbg !114
+  %8 = icmp ugt i32 %coarseType, 3, !dbg !115
+  %9 = or i1 %8, %7, !dbg !115
+  br i1 %9, label %10, label %21, !dbg !115
 
-if.then:                                          ; preds = %lor.lhs.false2, %entry
-  %2 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
-  %call8 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([55 x i8]* @.str, i64 0, i64 0), %struct._Graph* %g, %struct._IV* %mapIV, i32 %coarseType) #4
-  br i1 %cmp, label %if.end, label %if.then10
+; <label>:10                                      ; preds = %3, %0
+  %11 = load %struct.__sFILE** @__stderrp, align 8, !dbg !116, !tbaa !118
+  %12 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %11, i8* getelementptr inbounds ([55 x i8]* @.str, i64 0, i64 0), %struct._Graph* %g, %struct._IV* %mapIV, i32 %coarseType) #5, !dbg !119
+  br i1 %1, label %16, label %13, !dbg !120
 
-if.then10:                                        ; preds = %if.then
-  %3 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
-  %call11 = tail call i32 @Graph_writeStats(%struct._Graph* %g, %struct._IO_FILE* %3) #4
-  br label %if.end
+; <label>:13                                      ; preds = %10
+  %14 = load %struct.__sFILE** @__stderrp, align 8, !dbg !121, !tbaa !118
+  %15 = tail call i32 @Graph_writeStats(%struct._Graph* %g, %struct.__sFILE* %14) #5, !dbg !124
+  br label %16, !dbg !125
 
-if.end:                                           ; preds = %if.then, %if.then10
-  br i1 %cmp1, label %if.end15, label %if.then13
+; <label>:16                                      ; preds = %10, %13
+  br i1 %2, label %20, label %17, !dbg !126
 
-if.then13:                                        ; preds = %if.end
-  %4 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
-  %call14 = tail call i32 @IV_writeStats(%struct._IV* %mapIV, %struct._IO_FILE* %4) #4
-  br label %if.end15
+; <label>:17                                      ; preds = %16
+  %18 = load %struct.__sFILE** @__stderrp, align 8, !dbg !127, !tbaa !118
+  %19 = tail call i32 @IV_writeStats(%struct._IV* %mapIV, %struct.__sFILE* %18) #5, !dbg !130
+  br label %20, !dbg !131
 
-if.end15:                                         ; preds = %if.end, %if.then13
-  tail call void @exit(i32 -1) #5
-  unreachable
+; <label>:20                                      ; preds = %16, %17
+  tail call void @exit(i32 -1) #6, !dbg !132
+  unreachable, !dbg !132
 
-if.end16:                                         ; preds = %lor.lhs.false2
-  %call17 = tail call i32* @IV_entries(%struct._IV* %mapIV) #4
-  %call18 = tail call %struct._Graph* @Graph_compress(%struct._Graph* %g, i32* %call17, i32 %coarseType) #6
-  ret %struct._Graph* %call18
+; <label>:21                                      ; preds = %3
+  %22 = tail call i32* @IV_entries(%struct._IV* %mapIV) #5, !dbg !133
+  %23 = tail call %struct._Graph* @Graph_compress(%struct._Graph* %g, i32* %22, i32 %coarseType) #7, !dbg !134
+  ret %struct._Graph* %23, !dbg !135
 }

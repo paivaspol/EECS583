@@ -1,41 +1,51 @@
 define i32 @CCTK_CoordIndex(i32 %dir, i8* %name, i8* %systemname) #1 {
   %coord_system = alloca %struct.Coordsystem*, align 8
-  %1 = load %struct.cHandledData** @CoordSystems, align 8, !tbaa !2
-  %2 = bitcast %struct.Coordsystem** %coord_system to i8**
-  %3 = call i32 @Util_GetHandle(%struct.cHandledData* %1, i8* %systemname, i8** %2) #5
-  %4 = load %struct.Coordsystem** %coord_system, align 8, !tbaa !2
-  %5 = icmp eq %struct.Coordsystem* %4, null
-  br i1 %5, label %6, label %8
+  tail call void @llvm.dbg.value(metadata i32 %dir, i64 0, metadata !214, metadata !389), !dbg !820
+  tail call void @llvm.dbg.value(metadata i8* %name, i64 0, metadata !215, metadata !389), !dbg !821
+  tail call void @llvm.dbg.value(metadata i8* %systemname, i64 0, metadata !216, metadata !389), !dbg !822
+  tail call void @llvm.dbg.value(metadata i32 -1, i64 0, metadata !218, metadata !389), !dbg !823
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !219, metadata !389), !dbg !824
+  %1 = load %struct.cHandledData** @CoordSystems, align 8, !dbg !825, !tbaa !395
+  %2 = bitcast %struct.Coordsystem** %coord_system to i8**, !dbg !826
+  %3 = call i32 @Util_GetHandle(%struct.cHandledData* %1, i8* %systemname, i8** %2) #6, !dbg !827
+  call void @llvm.dbg.value(metadata %struct.Coordsystem** %coord_system, i64 0, metadata !220, metadata !389), !dbg !828
+  %4 = load %struct.Coordsystem** %coord_system, align 8, !dbg !829, !tbaa !395
+  %5 = icmp eq %struct.Coordsystem* %4, null, !dbg !829
+  br i1 %5, label %6, label %8, !dbg !831
 
 ; <label>:6                                       ; preds = %0
-  %7 = call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 829, i8* getelementptr inbounds ([74 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([44 x i8]* @.str23, i64 0, i64 0), i8* %systemname) #5
-  br label %45
+  %7 = call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 829, i8* getelementptr inbounds ([74 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([44 x i8]* @.str23, i64 0, i64 0), i8* %systemname) #6, !dbg !832
+  call void @llvm.dbg.value(metadata i32 -1, i64 0, metadata !218, metadata !389), !dbg !823
+  br label %45, !dbg !834
 
 ; <label>:8                                       ; preds = %0
-  %9 = icmp sgt i32 %dir, 0
-  %10 = getelementptr inbounds %struct.Coordsystem* %4, i64 0, i32 1
-  %11 = load i32* %10, align 4, !tbaa !6
-  br i1 %9, label %13, label %.preheader
+  %9 = icmp sgt i32 %dir, 0, !dbg !835
+  %10 = getelementptr inbounds %struct.Coordsystem* %4, i64 0, i32 1, !dbg !838
+  %11 = load i32* %10, align 4, !dbg !838, !tbaa !418
+  br i1 %9, label %13, label %.preheader, !dbg !841
 
 .preheader:                                       ; preds = %8
-  %12 = icmp sgt i32 %11, 0
-  br i1 %12, label %.lr.ph, label %._crit_edge.thread
+  call void @llvm.dbg.value(metadata %struct.Coordsystem** %coord_system, i64 0, metadata !220, metadata !389), !dbg !828
+  %12 = icmp sgt i32 %11, 0, !dbg !842
+  br i1 %12, label %.lr.ph, label %._crit_edge.thread, !dbg !846
 
 ; <label>:13                                      ; preds = %8
-  %14 = icmp slt i32 %11, %dir
-  br i1 %14, label %15, label %17
+  %14 = icmp slt i32 %11, %dir, !dbg !847
+  br i1 %14, label %15, label %17, !dbg !848
 
 ; <label>:15                                      ; preds = %13
-  %16 = call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 2, i32 839, i8* getelementptr inbounds ([74 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([51 x i8]* @.str24, i64 0, i64 0), i32 %dir, i32 %11) #5
-  br label %45
+  %16 = call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 2, i32 839, i8* getelementptr inbounds ([74 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([51 x i8]* @.str24, i64 0, i64 0), i32 %dir, i32 %11) #6, !dbg !849
+  call void @llvm.dbg.value(metadata i32 -3, i64 0, metadata !218, metadata !389), !dbg !823
+  br label %45, !dbg !851
 
 ; <label>:17                                      ; preds = %13
-  %18 = add nsw i32 %dir, -1
-  %19 = sext i32 %18 to i64
-  %20 = getelementptr inbounds %struct.Coordsystem* %4, i64 0, i32 3
-  %21 = load %struct.Coordprops** %20, align 8, !tbaa !11
-  %22 = getelementptr inbounds %struct.Coordprops* %21, i64 %19, i32 1
-  %23 = load i32* %22, align 4, !tbaa !15
+  %18 = add nsw i32 %dir, -1, !dbg !852
+  %19 = sext i32 %18 to i64, !dbg !854
+  %20 = getelementptr inbounds %struct.Coordsystem* %4, i64 0, i32 3, !dbg !855
+  %21 = load %struct.Coordprops** %20, align 8, !dbg !855, !tbaa !436
+  %22 = getelementptr inbounds %struct.Coordprops* %21, i64 %19, i32 1, !dbg !856
+  %23 = load i32* %22, align 4, !dbg !856, !tbaa !532
+  call void @llvm.dbg.value(metadata i32 %23, i64 0, metadata !218, metadata !389), !dbg !823
   br label %45
 
 .lr.ph:                                           ; preds = %.preheader, %._crit_edge5
@@ -43,46 +53,51 @@ define i32 @CCTK_CoordIndex(i32 %dir, i8* %name, i8* %systemname) #1 {
   %24 = phi %struct.Coordsystem* [ %38, %._crit_edge5 ], [ %4, %.preheader ]
   %foundit.03 = phi i32 [ %foundit.1, %._crit_edge5 ], [ 0, %.preheader ]
   %vindex.02 = phi i32 [ %vindex.1, %._crit_edge5 ], [ -1, %.preheader ]
-  %25 = getelementptr inbounds %struct.Coordsystem* %24, i64 0, i32 3
-  %26 = load %struct.Coordprops** %25, align 8, !tbaa !11
-  %27 = getelementptr inbounds %struct.Coordprops* %26, i64 %indvars.iv, i32 0
-  %28 = load i8** %27, align 8, !tbaa !13
-  %29 = icmp eq i8* %28, null
-  br i1 %29, label %._crit_edge5, label %30
+  %25 = getelementptr inbounds %struct.Coordsystem* %24, i64 0, i32 3, !dbg !857
+  %26 = load %struct.Coordprops** %25, align 8, !dbg !857, !tbaa !436
+  %27 = getelementptr inbounds %struct.Coordprops* %26, i64 %indvars.iv, i32 0, !dbg !860
+  %28 = load i8** %27, align 8, !dbg !860, !tbaa !499
+  %29 = icmp eq i8* %28, null, !dbg !861
+  br i1 %29, label %._crit_edge5, label %30, !dbg !862
 
 ; <label>:30                                      ; preds = %.lr.ph
-  %31 = call i32 @CCTK_Equals(i8* %28, i8* %name) #5
-  %32 = icmp eq i32 %31, 0
-  %.pre = load %struct.Coordsystem** %coord_system, align 8, !tbaa !2
-  br i1 %32, label %._crit_edge5, label %33
+  %31 = call i32 @CCTK_Equals(i8* %28, i8* %name) #6, !dbg !863
+  %32 = icmp eq i32 %31, 0, !dbg !863
+  %.pre = load %struct.Coordsystem** %coord_system, align 8, !dbg !864, !tbaa !395
+  br i1 %32, label %._crit_edge5, label %33, !dbg !865
 
 ; <label>:33                                      ; preds = %30
-  %34 = getelementptr inbounds %struct.Coordsystem* %.pre, i64 0, i32 3
-  %35 = load %struct.Coordprops** %34, align 8, !tbaa !11
-  %36 = getelementptr inbounds %struct.Coordprops* %35, i64 %indvars.iv, i32 1
-  %37 = load i32* %36, align 4, !tbaa !15
-  br label %._crit_edge5
+  call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !219, metadata !389), !dbg !824
+  call void @llvm.dbg.value(metadata %struct.Coordsystem** %coord_system, i64 0, metadata !220, metadata !389), !dbg !828
+  %34 = getelementptr inbounds %struct.Coordsystem* %.pre, i64 0, i32 3, !dbg !866
+  %35 = load %struct.Coordprops** %34, align 8, !dbg !866, !tbaa !436
+  %36 = getelementptr inbounds %struct.Coordprops* %35, i64 %indvars.iv, i32 1, !dbg !868
+  %37 = load i32* %36, align 4, !dbg !868, !tbaa !532
+  call void @llvm.dbg.value(metadata i32 %37, i64 0, metadata !218, metadata !389), !dbg !823
+  br label %._crit_edge5, !dbg !869
 
 ._crit_edge5:                                     ; preds = %30, %.lr.ph, %33
-  %38 = phi %struct.Coordsystem* [ %.pre, %33 ], [ %24, %.lr.ph ], [ %.pre, %30 ]
+  %38 = phi %struct.Coordsystem* [ %.pre, %33 ], [ %24, %.lr.ph ], [ %.pre, %30 ], !dbg !846
   %vindex.1 = phi i32 [ %37, %33 ], [ %vindex.02, %.lr.ph ], [ %vindex.02, %30 ]
   %foundit.1 = phi i32 [ 1, %33 ], [ %foundit.03, %.lr.ph ], [ %foundit.03, %30 ]
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %39 = getelementptr inbounds %struct.Coordsystem* %38, i64 0, i32 1
-  %40 = load i32* %39, align 4, !tbaa !6
-  %41 = sext i32 %40 to i64
-  %42 = icmp slt i64 %indvars.iv.next, %41
-  br i1 %42, label %.lr.ph, label %._crit_edge
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !846
+  call void @llvm.dbg.value(metadata %struct.Coordsystem** %coord_system, i64 0, metadata !220, metadata !389), !dbg !828
+  %39 = getelementptr inbounds %struct.Coordsystem* %38, i64 0, i32 1, !dbg !870
+  %40 = load i32* %39, align 4, !dbg !870, !tbaa !418
+  %41 = sext i32 %40 to i64, !dbg !842
+  %42 = icmp slt i64 %indvars.iv.next, %41, !dbg !842
+  br i1 %42, label %.lr.ph, label %._crit_edge, !dbg !846
 
 ._crit_edge:                                      ; preds = %._crit_edge5
-  %43 = icmp eq i32 %foundit.1, 0
-  br i1 %43, label %._crit_edge.thread, label %45
+  %43 = icmp eq i32 %foundit.1, 0, !dbg !871
+  br i1 %43, label %._crit_edge.thread, label %45, !dbg !873
 
 ._crit_edge.thread:                               ; preds = %.preheader, %._crit_edge
-  %44 = call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 4, i32 862, i8* getelementptr inbounds ([74 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([48 x i8]* @.str25, i64 0, i64 0), i8* %name) #5
-  br label %45
+  %44 = call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 4, i32 862, i8* getelementptr inbounds ([74 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([48 x i8]* @.str25, i64 0, i64 0), i8* %name) #6, !dbg !874
+  call void @llvm.dbg.value(metadata i32 -2, i64 0, metadata !218, metadata !389), !dbg !823
+  br label %45, !dbg !876
 
 ; <label>:45                                      ; preds = %17, %15, %._crit_edge.thread, %._crit_edge, %6
   %vindex.2 = phi i32 [ -3, %15 ], [ %23, %17 ], [ -2, %._crit_edge.thread ], [ %vindex.1, %._crit_edge ], [ -1, %6 ]
-  ret i32 %vindex.2
+  ret i32 %vindex.2, !dbg !877
 }

@@ -1,64 +1,71 @@
 define %struct.uExpressionInternals* @Util_ExpressionParse(i8* %expression) #1 {
   %temp = alloca %struct.PToken*, align 8
-  %1 = tail call i8* @malloc(i64 32) #10
-  %2 = bitcast i8* %1 to %struct.uExpressionInternals*
-  %3 = icmp eq i8* %1, null
-  br i1 %3, label %FreeTokens.exit, label %4
+  tail call void @llvm.dbg.value(metadata i8* %expression, i64 0, metadata !103, metadata !266), !dbg !267
+  %1 = tail call i8* @malloc(i64 32) #10, !dbg !268
+  %2 = bitcast i8* %1 to %struct.uExpressionInternals*, !dbg !269
+  tail call void @llvm.dbg.value(metadata %struct.uExpressionInternals* %2, i64 0, metadata !106, metadata !266), !dbg !270
+  %3 = icmp eq i8* %1, null, !dbg !271
+  br i1 %3, label %FreeTokens.exit, label %4, !dbg !273
 
 ; <label>:4                                       ; preds = %0
-  %5 = bitcast i8* %1 to i32*
-  store i32 0, i32* %5, align 4, !tbaa !2
-  %6 = getelementptr inbounds i8* %1, i64 8
-  %7 = bitcast i8* %6 to %struct.uExpressionToken**
-  store %struct.uExpressionToken* null, %struct.uExpressionToken** %7, align 8, !tbaa !8
-  %8 = getelementptr inbounds i8* %1, i64 16
-  %9 = bitcast i8* %8 to i32*
-  store i32 0, i32* %9, align 4, !tbaa !9
-  %10 = getelementptr inbounds i8* %1, i64 24
-  %11 = bitcast i8* %10 to i8***
-  store i8** null, i8*** %11, align 8, !tbaa !10
-  %12 = load i8* %expression, align 1, !tbaa !11
-  %13 = icmp eq i8 %12, 0
-  br i1 %13, label %Tokenise.exit, label %.preheader.i
+  %5 = bitcast i8* %1 to i32*, !dbg !274
+  store i32 0, i32* %5, align 4, !dbg !276, !tbaa !277
+  %6 = getelementptr inbounds i8* %1, i64 8, !dbg !283
+  %7 = bitcast i8* %6 to %struct.uExpressionToken**, !dbg !283
+  store %struct.uExpressionToken* null, %struct.uExpressionToken** %7, align 8, !dbg !284, !tbaa !285
+  %8 = getelementptr inbounds i8* %1, i64 16, !dbg !286
+  %9 = bitcast i8* %8 to i32*, !dbg !286
+  store i32 0, i32* %9, align 4, !dbg !287, !tbaa !288
+  %10 = getelementptr inbounds i8* %1, i64 24, !dbg !289
+  %11 = bitcast i8* %10 to i8***, !dbg !289
+  store i8** null, i8*** %11, align 8, !dbg !290, !tbaa !291
+  tail call void @llvm.dbg.value(metadata i8* %expression, i64 0, metadata !138, metadata !266) #4, !dbg !292
+  tail call void @llvm.dbg.value(metadata %struct.PToken* null, i64 0, metadata !139, metadata !266) #4, !dbg !294
+  tail call void @llvm.dbg.value(metadata %struct.PToken* null, i64 0, metadata !140, metadata !266) #4, !dbg !295
+  tail call void @llvm.dbg.value(metadata i8* %expression, i64 0, metadata !142, metadata !266) #4, !dbg !296
+  %12 = load i8* %expression, align 1, !dbg !297, !tbaa !298
+  %13 = icmp eq i8 %12, 0, !dbg !299
+  br i1 %13, label %Tokenise.exit, label %.preheader.i, !dbg !299
 
 ; <label>:14                                      ; preds = %insertafter.exit.i
-  %15 = load i8* %80, align 1, !tbaa !11
-  %16 = icmp eq i8 %15, 0
-  br i1 %16, label %Tokenise.exit, label %.preheader.i
+  %15 = load i8* %80, align 1, !dbg !297, !tbaa !298
+  %16 = icmp eq i8 %15, 0, !dbg !299
+  br i1 %16, label %Tokenise.exit, label %.preheader.i, !dbg !299
 
 .preheader.i:                                     ; preds = %4, %14
-  %17 = phi i8 [ %15, %14 ], [ %12, %4 ]
-  %tokenstart.082.i = phi i8* [ %80, %14 ], [ %expression, %4 ]
-  %start.081.i = phi %struct.PToken* [ %.start.0.i, %14 ], [ null, %4 ]
-  %current.080.i = phi %struct.PToken* [ %41, %14 ], [ null, %4 ]
-  br label %18
+  %17 = phi i8 [ %15, %14 ], [ %12, %4 ], !dbg !300
+  %tokenstart.082.i = phi i8* [ %80, %14 ], [ %expression, %4 ], !dbg !300
+  %start.081.i = phi %struct.PToken* [ %.start.0.i, %14 ], [ null, %4 ], !dbg !300
+  %current.080.i = phi %struct.PToken* [ %41, %14 ], [ null, %4 ], !dbg !300
+  br label %18, !dbg !301
 
 ; <label>:18                                      ; preds = %.critedge.i, %.preheader.i
-  %19 = phi i8 [ %.pre.i, %.critedge.i ], [ %17, %.preheader.i ]
-  %tokenstart.1.i = phi i8* [ %23, %.critedge.i ], [ %tokenstart.082.i, %.preheader.i ]
+  %19 = phi i8 [ %.pre.i, %.critedge.i ], [ %17, %.preheader.i ], !dbg !300
+  %tokenstart.1.i = phi i8* [ %23, %.critedge.i ], [ %tokenstart.082.i, %.preheader.i ], !dbg !300
   switch i8 %19, label %.lr.ph.i.preheader [
     i8 32, label %.critedge.i
     i8 9, label %.critedge.i
     i8 0, label %.critedge1.i
-  ]
+  ], !dbg !305
 
 .lr.ph.i.preheader:                               ; preds = %18
-  %20 = getelementptr inbounds i8* %tokenstart.1.i, i64 1
-  %21 = load i8* %20, align 1, !tbaa !11
-  %22 = icmp eq i8 %21, 0
-  br i1 %22, label %.critedge1.i, label %.lr.ph
+  %20 = getelementptr inbounds i8* %tokenstart.1.i, i64 1, !dbg !306
+  %21 = load i8* %20, align 1, !dbg !309, !tbaa !298
+  %22 = icmp eq i8 %21, 0, !dbg !310
+  br i1 %22, label %.critedge1.i, label %.lr.ph, !dbg !311
 
 .critedge.i:                                      ; preds = %18, %18
-  %23 = getelementptr inbounds i8* %tokenstart.1.i, i64 1
-  %.pre.i = load i8* %23, align 1, !tbaa !11
-  br label %18
+  %23 = getelementptr inbounds i8* %tokenstart.1.i, i64 1, !dbg !312
+  tail call void @llvm.dbg.value(metadata i8* %23, i64 0, metadata !142, metadata !266) #4, !dbg !296
+  %.pre.i = load i8* %23, align 1, !dbg !301, !tbaa !298
+  br label %18, !dbg !313
 
 .lr.ph:                                           ; preds = %.lr.ph.i.preheader, %.lr.ph.i.backedge
   %24 = phi i8 [ %30, %.lr.ph.i.backedge ], [ %21, %.lr.ph.i.preheader ]
   %25 = phi i8* [ %26, %.lr.ph.i.backedge ], [ %tokenstart.1.i, %.lr.ph.i.preheader ]
   %26 = phi i8* [ %29, %.lr.ph.i.backedge ], [ %20, %.lr.ph.i.preheader ]
   %.in = phi i8 [ %.in.i.be, %.lr.ph.i.backedge ], [ %19, %.lr.ph.i.preheader ]
-  %27 = sext i8 %24 to i32
+  %27 = sext i8 %24 to i32, !dbg !309
   switch i32 %27, label %36 [
     i32 43, label %.critedge1.i
     i32 45, label %.critedge1.i
@@ -72,31 +79,31 @@ define %struct.uExpressionInternals* @Util_ExpressionParse(i8* %expression) #1 {
     i32 61, label %28
     i32 38, label %32
     i32 124, label %34
-  ]
+  ], !dbg !314
 
 ; <label>:28                                      ; preds = %.lr.ph
   switch i8 %.in, label %.critedge1.i [
     i8 60, label %.lr.ph.i.backedge
     i8 62, label %.lr.ph.i.backedge
-  ]
+  ], !dbg !316
 
 .lr.ph.i.backedge:                                ; preds = %28, %28, %32, %34, %36, %38
   %.in.i.be = phi i8 [ %24, %36 ], [ 61, %38 ], [ %24, %28 ], [ %24, %28 ], [ %24, %32 ], [ %24, %34 ]
-  %29 = getelementptr inbounds i8* %25, i64 2
-  %30 = load i8* %29, align 1, !tbaa !11
-  %31 = icmp eq i8 %30, 0
-  br i1 %31, label %.critedge1.i, label %.lr.ph
+  %29 = getelementptr inbounds i8* %25, i64 2, !dbg !306
+  %30 = load i8* %29, align 1, !dbg !309, !tbaa !298
+  %31 = icmp eq i8 %30, 0, !dbg !310
+  br i1 %31, label %.critedge1.i, label %.lr.ph, !dbg !311
 
 ; <label>:32                                      ; preds = %.lr.ph
-  %33 = icmp eq i8 %.in, 38
-  br i1 %33, label %.lr.ph.i.backedge, label %.critedge1.i
+  %33 = icmp eq i8 %.in, 38, !dbg !319
+  br i1 %33, label %.lr.ph.i.backedge, label %.critedge1.i, !dbg !300
 
 ; <label>:34                                      ; preds = %.lr.ph
-  %35 = icmp eq i8 %.in, 124
-  br i1 %35, label %.lr.ph.i.backedge, label %.critedge1.i
+  %35 = icmp eq i8 %.in, 124, !dbg !321
+  br i1 %35, label %.lr.ph.i.backedge, label %.critedge1.i, !dbg !300
 
 ; <label>:36                                      ; preds = %.lr.ph
-  %37 = sext i8 %.in to i32
+  %37 = sext i8 %.in to i32, !dbg !323
   switch i32 %37, label %.lr.ph.i.backedge [
     i32 43, label %.critedge1.i
     i32 45, label %.critedge1.i
@@ -110,203 +117,230 @@ define %struct.uExpressionInternals* @Util_ExpressionParse(i8* %expression) #1 {
     i32 124, label %.critedge1.i
     i32 60, label %38
     i32 62, label %38
-  ]
+  ], !dbg !324
 
 ; <label>:38                                      ; preds = %36, %36
-  %cond.i = icmp eq i8 %24, 61
-  br i1 %cond.i, label %.lr.ph.i.backedge, label %.critedge1.i
+  %cond.i = icmp eq i8 %24, 61, !dbg !325
+  br i1 %cond.i, label %.lr.ph.i.backedge, label %.critedge1.i, !dbg !325
 
 .critedge1.i:                                     ; preds = %18, %.lr.ph.i.backedge, %.lr.ph, %.lr.ph, %.lr.ph, %.lr.ph, %.lr.ph, %.lr.ph, %.lr.ph, %.lr.ph, %.lr.ph, %28, %32, %34, %36, %36, %36, %36, %36, %36, %36, %36, %36, %36, %38, %.lr.ph.i.preheader
-  %position.0.lcssa.i = phi i8* [ %tokenstart.1.i, %.lr.ph.i.preheader ], [ %25, %38 ], [ %25, %36 ], [ %25, %36 ], [ %25, %36 ], [ %25, %36 ], [ %25, %36 ], [ %25, %36 ], [ %25, %36 ], [ %25, %36 ], [ %25, %36 ], [ %25, %36 ], [ %25, %34 ], [ %25, %32 ], [ %25, %28 ], [ %25, %.lr.ph ], [ %25, %.lr.ph ], [ %25, %.lr.ph ], [ %25, %.lr.ph ], [ %25, %.lr.ph ], [ %25, %.lr.ph ], [ %25, %.lr.ph ], [ %25, %.lr.ph ], [ %25, %.lr.ph ], [ %26, %.lr.ph.i.backedge ], [ %tokenstart.1.i, %18 ]
-  %tokenend.2.i = phi i8* [ null, %.lr.ph.i.preheader ], [ %25, %38 ], [ %25, %36 ], [ %25, %36 ], [ %25, %36 ], [ %25, %36 ], [ %25, %36 ], [ %25, %36 ], [ %25, %36 ], [ %25, %36 ], [ %25, %36 ], [ %25, %36 ], [ %25, %34 ], [ %25, %32 ], [ %25, %28 ], [ %25, %.lr.ph ], [ %25, %.lr.ph ], [ %25, %.lr.ph ], [ %25, %.lr.ph ], [ %25, %.lr.ph ], [ %25, %.lr.ph ], [ %25, %.lr.ph ], [ %25, %.lr.ph ], [ %25, %.lr.ph ], [ null, %.lr.ph.i.backedge ], [ null, %18 ]
-  %39 = icmp eq i8* %tokenend.2.i, null
-  %position.0.tokenend.2.i = select i1 %39, i8* %position.0.lcssa.i, i8* %tokenend.2.i
-  %40 = tail call i8* @malloc(i64 24) #10
-  %41 = bitcast i8* %40 to %struct.PToken*
-  %42 = icmp eq i8* %40, null
-  br i1 %42, label %newtoken.exit.i, label %43
+  %position.0.lcssa.i = phi i8* [ %tokenstart.1.i, %.lr.ph.i.preheader ], [ %25, %38 ], [ %25, %36 ], [ %25, %36 ], [ %25, %36 ], [ %25, %36 ], [ %25, %36 ], [ %25, %36 ], [ %25, %36 ], [ %25, %36 ], [ %25, %36 ], [ %25, %36 ], [ %25, %34 ], [ %25, %32 ], [ %25, %28 ], [ %25, %.lr.ph ], [ %25, %.lr.ph ], [ %25, %.lr.ph ], [ %25, %.lr.ph ], [ %25, %.lr.ph ], [ %25, %.lr.ph ], [ %25, %.lr.ph ], [ %25, %.lr.ph ], [ %25, %.lr.ph ], [ %26, %.lr.ph.i.backedge ], [ %tokenstart.1.i, %18 ], !dbg !300
+  %tokenend.2.i = phi i8* [ null, %.lr.ph.i.preheader ], [ %25, %38 ], [ %25, %36 ], [ %25, %36 ], [ %25, %36 ], [ %25, %36 ], [ %25, %36 ], [ %25, %36 ], [ %25, %36 ], [ %25, %36 ], [ %25, %36 ], [ %25, %36 ], [ %25, %34 ], [ %25, %32 ], [ %25, %28 ], [ %25, %.lr.ph ], [ %25, %.lr.ph ], [ %25, %.lr.ph ], [ %25, %.lr.ph ], [ %25, %.lr.ph ], [ %25, %.lr.ph ], [ %25, %.lr.ph ], [ %25, %.lr.ph ], [ %25, %.lr.ph ], [ null, %.lr.ph.i.backedge ], [ null, %18 ], !dbg !300
+  %39 = icmp eq i8* %tokenend.2.i, null, !dbg !328
+  %position.0.tokenend.2.i = select i1 %39, i8* %position.0.lcssa.i, i8* %tokenend.2.i, !dbg !330
+  tail call void @llvm.dbg.value(metadata i8* %tokenstart.1.i, i64 0, metadata !149, metadata !266) #4, !dbg !331
+  tail call void @llvm.dbg.value(metadata i8* %position.0.tokenend.2.i, i64 0, metadata !150, metadata !266) #4, !dbg !333
+  %40 = tail call i8* @malloc(i64 24) #10, !dbg !334
+  %41 = bitcast i8* %40 to %struct.PToken*, !dbg !335
+  tail call void @llvm.dbg.value(metadata %struct.PToken* %41, i64 0, metadata !151, metadata !266) #4, !dbg !336
+  %42 = icmp eq i8* %40, null, !dbg !337
+  br i1 %42, label %newtoken.exit.i, label %43, !dbg !339
 
 ; <label>:43                                      ; preds = %.critedge1.i
-  %44 = ptrtoint i8* %position.0.tokenend.2.i to i64
-  %45 = ptrtoint i8* %tokenstart.1.i to i64
-  %46 = sub i64 2, %45
-  %47 = add i64 %46, %44
-  tail call void @llvm.memset.p0i8.i64(i8* %40, i8 0, i64 16, i32 8, i1 false) #3
-  %48 = tail call i8* @malloc(i64 %47) #10
-  %49 = getelementptr inbounds i8* %40, i64 16
-  %50 = bitcast i8* %49 to i8**
-  store i8* %48, i8** %50, align 8, !tbaa !12
-  %51 = icmp eq i8* %48, null
-  br i1 %51, label %newtoken.exit.thread.i, label %.preheader.i.i
+  %44 = ptrtoint i8* %position.0.tokenend.2.i to i64, !dbg !340
+  %45 = ptrtoint i8* %tokenstart.1.i to i64, !dbg !340
+  %46 = sub i64 2, %45, !dbg !340
+  %47 = add i64 %46, %44, !dbg !342
+  tail call void @llvm.memset.p0i8.i64(i8* %40, i8 0, i64 16, i32 8, i1 false) #4, !dbg !343
+  %48 = tail call i8* @malloc(i64 %47) #10, !dbg !344
+  %49 = getelementptr inbounds i8* %40, i64 16, !dbg !345
+  %50 = bitcast i8* %49 to i8**, !dbg !345
+  store i8* %48, i8** %50, align 8, !dbg !346, !tbaa !347
+  %51 = icmp eq i8* %48, null, !dbg !349
+  br i1 %51, label %newtoken.exit.thread.i, label %.preheader.i.i, !dbg !351
 
 .preheader.i.i:                                   ; preds = %43
-  %52 = icmp ugt i8* %tokenstart.1.i, %position.0.tokenend.2.i
-  br i1 %52, label %._crit_edge.i.i, label %.lr.ph7.i.i
+  %52 = icmp ugt i8* %tokenstart.1.i, %position.0.tokenend.2.i, !dbg !352
+  br i1 %52, label %._crit_edge.i.i, label %.lr.ph7.i.i, !dbg !356
 
 .lr.ph7.i.i:                                      ; preds = %.preheader.i.i, %.lr.ph7.i.i
-  %newpos.06.i.i = phi i8* [ %55, %.lr.ph7.i.i ], [ %48, %.preheader.i.i ]
-  %position.05.i.i = phi i8* [ %54, %.lr.ph7.i.i ], [ %tokenstart.1.i, %.preheader.i.i ]
-  %53 = load i8* %position.05.i.i, align 1, !tbaa !11
-  store i8 %53, i8* %newpos.06.i.i, align 1, !tbaa !11
-  %54 = getelementptr inbounds i8* %position.05.i.i, i64 1
-  %55 = getelementptr inbounds i8* %newpos.06.i.i, i64 1
-  %56 = icmp ugt i8* %54, %position.0.tokenend.2.i
-  br i1 %56, label %._crit_edge.i.i, label %.lr.ph7.i.i
+  %newpos.06.i.i = phi i8* [ %55, %.lr.ph7.i.i ], [ %48, %.preheader.i.i ], !dbg !357
+  %position.05.i.i = phi i8* [ %54, %.lr.ph7.i.i ], [ %tokenstart.1.i, %.preheader.i.i ], !dbg !357
+  %53 = load i8* %position.05.i.i, align 1, !dbg !358, !tbaa !298
+  store i8 %53, i8* %newpos.06.i.i, align 1, !dbg !360, !tbaa !298
+  %54 = getelementptr inbounds i8* %position.05.i.i, i64 1, !dbg !361
+  tail call void @llvm.dbg.value(metadata i8* %54, i64 0, metadata !152, metadata !266) #4, !dbg !362
+  %55 = getelementptr inbounds i8* %newpos.06.i.i, i64 1, !dbg !363
+  tail call void @llvm.dbg.value(metadata i8* %55, i64 0, metadata !153, metadata !266) #4, !dbg !364
+  %56 = icmp ugt i8* %54, %position.0.tokenend.2.i, !dbg !352
+  br i1 %56, label %._crit_edge.i.i, label %.lr.ph7.i.i, !dbg !356
 
 ._crit_edge.i.i:                                  ; preds = %.lr.ph7.i.i, %.preheader.i.i
-  %newpos.0.lcssa.i.i = phi i8* [ %48, %.preheader.i.i ], [ %55, %.lr.ph7.i.i ]
-  store i8 0, i8* %newpos.0.lcssa.i.i, align 1, !tbaa !11
-  %57 = load i8** %50, align 8, !tbaa !12
-  %58 = icmp ult i8* %newpos.0.lcssa.i.i, %57
-  br i1 %58, label %newtoken.exit.thread.i, label %.lr.ph.i.i
+  %newpos.0.lcssa.i.i = phi i8* [ %48, %.preheader.i.i ], [ %55, %.lr.ph7.i.i ], !dbg !357
+  store i8 0, i8* %newpos.0.lcssa.i.i, align 1, !dbg !365, !tbaa !298
+  %57 = load i8** %50, align 8, !dbg !366, !tbaa !347
+  %58 = icmp ult i8* %newpos.0.lcssa.i.i, %57, !dbg !369
+  br i1 %58, label %newtoken.exit.thread.i, label %.lr.ph.i.i, !dbg !370
 
 .lr.ph.i.i:                                       ; preds = %._crit_edge.i.i, %.critedge1._crit_edge.i.i
-  %59 = phi i8 [ %.pre.i.i, %.critedge1._crit_edge.i.i ], [ 0, %._crit_edge.i.i ]
-  %newpos.13.i.i = phi i8* [ %60, %.critedge1._crit_edge.i.i ], [ %newpos.0.lcssa.i.i, %._crit_edge.i.i ]
+  %59 = phi i8 [ %.pre.i.i, %.critedge1._crit_edge.i.i ], [ 0, %._crit_edge.i.i ], !dbg !357
+  %newpos.13.i.i = phi i8* [ %60, %.critedge1._crit_edge.i.i ], [ %newpos.0.lcssa.i.i, %._crit_edge.i.i ], !dbg !357
   switch i8 %59, label %newtoken.exit.thread.i [
     i8 0, label %.critedge1.i.i
     i8 32, label %.critedge1.i.i
     i8 9, label %.critedge1.i.i
-  ]
+  ], !dbg !371
 
 .critedge1.i.i:                                   ; preds = %.lr.ph.i.i, %.lr.ph.i.i, %.lr.ph.i.i
-  store i8 0, i8* %newpos.13.i.i, align 1, !tbaa !11
-  %60 = getelementptr inbounds i8* %newpos.13.i.i, i64 -1
-  %61 = load i8** %50, align 8, !tbaa !12
-  %62 = icmp ult i8* %60, %61
-  br i1 %62, label %newtoken.exit.thread.i, label %.critedge1._crit_edge.i.i
+  store i8 0, i8* %newpos.13.i.i, align 1, !dbg !372, !tbaa !298
+  %60 = getelementptr inbounds i8* %newpos.13.i.i, i64 -1, !dbg !374
+  tail call void @llvm.dbg.value(metadata i8* %60, i64 0, metadata !153, metadata !266) #4, !dbg !364
+  %61 = load i8** %50, align 8, !dbg !366, !tbaa !347
+  %62 = icmp ult i8* %60, %61, !dbg !369
+  br i1 %62, label %newtoken.exit.thread.i, label %.critedge1._crit_edge.i.i, !dbg !370
 
 .critedge1._crit_edge.i.i:                        ; preds = %.critedge1.i.i
-  %.pre.i.i = load i8* %60, align 1, !tbaa !11
-  br label %.lr.ph.i.i
+  %.pre.i.i = load i8* %60, align 1, !dbg !375, !tbaa !298
+  br label %.lr.ph.i.i, !dbg !370
 
 newtoken.exit.thread.i:                           ; preds = %.critedge1.i.i, %.lr.ph.i.i, %._crit_edge.i.i, %43
-  %63 = icmp eq %struct.PToken* %current.080.i, null
-  br i1 %63, label %insertafter.exit.i, label %64
+  %63 = icmp eq %struct.PToken* %current.080.i, null, !dbg !376
+  tail call void @llvm.dbg.value(metadata %struct.PToken* %41, i64 0, metadata !158, metadata !266) #4, !dbg !380
+  tail call void @llvm.dbg.value(metadata %struct.PToken* %41, i64 0, metadata !159, metadata !266) #4, !dbg !383
+  br i1 %63, label %insertafter.exit.i, label %64, !dbg !384
 
 ; <label>:64                                      ; preds = %newtoken.exit.thread.i
-  %65 = bitcast i8* %40 to %struct.PToken**
-  store %struct.PToken* %current.080.i, %struct.PToken** %65, align 8, !tbaa !14
-  %66 = getelementptr inbounds %struct.PToken* %current.080.i, i64 0, i32 1
-  %67 = bitcast %struct.PToken** %66 to i64*
-  %68 = load i64* %67, align 8, !tbaa !15
-  %69 = getelementptr inbounds i8* %40, i64 8
-  %70 = bitcast i8* %69 to %struct.PToken**
-  %71 = bitcast i8* %69 to i64*
-  store i64 %68, i64* %71, align 8, !tbaa !15
-  %72 = bitcast %struct.PToken** %66 to i8**
-  store i8* %40, i8** %72, align 8, !tbaa !15
-  %73 = load %struct.PToken** %70, align 8, !tbaa !15
-  %74 = icmp eq %struct.PToken* %73, null
-  br i1 %74, label %insertafter.exit.i, label %75
+  %65 = bitcast i8* %40 to %struct.PToken**, !dbg !385
+  store %struct.PToken* %current.080.i, %struct.PToken** %65, align 8, !dbg !388, !tbaa !389
+  %66 = getelementptr inbounds %struct.PToken* %current.080.i, i64 0, i32 1, !dbg !390
+  %67 = bitcast %struct.PToken** %66 to i64*, !dbg !390
+  %68 = load i64* %67, align 8, !dbg !390, !tbaa !391
+  %69 = getelementptr inbounds i8* %40, i64 8, !dbg !392
+  %70 = bitcast i8* %69 to %struct.PToken**, !dbg !392
+  %71 = bitcast i8* %69 to i64*, !dbg !393
+  store i64 %68, i64* %71, align 8, !dbg !393, !tbaa !391
+  %72 = bitcast %struct.PToken** %66 to i8**, !dbg !394
+  store i8* %40, i8** %72, align 8, !dbg !394, !tbaa !391
+  %73 = load %struct.PToken** %70, align 8, !dbg !395, !tbaa !391
+  %74 = icmp eq %struct.PToken* %73, null, !dbg !397
+  br i1 %74, label %insertafter.exit.i, label %75, !dbg !398
 
 ; <label>:75                                      ; preds = %64
-  %76 = bitcast %struct.PToken* %73 to i8**
-  store i8* %40, i8** %76, align 8, !tbaa !14
-  br label %insertafter.exit.i
+  %76 = bitcast %struct.PToken* %73 to i8**, !dbg !399
+  store i8* %40, i8** %76, align 8, !dbg !399, !tbaa !389
+  br label %insertafter.exit.i, !dbg !401
 
 insertafter.exit.i:                               ; preds = %75, %64, %newtoken.exit.thread.i
-  %77 = icmp eq %struct.PToken* %start.081.i, null
-  %.start.0.i = select i1 %77, %struct.PToken* %41, %struct.PToken* %start.081.i
-  %78 = load i8* %position.0.tokenend.2.i, align 1, !tbaa !11
-  %79 = icmp eq i8 %78, 0
-  %80 = getelementptr inbounds i8* %position.0.tokenend.2.i, i64 1
-  br i1 %79, label %Tokenise.exit, label %14
+  tail call void @llvm.dbg.value(metadata %struct.PToken* %41, i64 0, metadata !140, metadata !266) #4, !dbg !295
+  %77 = icmp eq %struct.PToken* %start.081.i, null, !dbg !402
+  tail call void @llvm.dbg.value(metadata %struct.PToken* %41, i64 0, metadata !139, metadata !266) #4, !dbg !294
+  %.start.0.i = select i1 %77, %struct.PToken* %41, %struct.PToken* %start.081.i, !dbg !404
+  %78 = load i8* %position.0.tokenend.2.i, align 1, !dbg !405, !tbaa !298
+  %79 = icmp eq i8 %78, 0, !dbg !405
+  %80 = getelementptr inbounds i8* %position.0.tokenend.2.i, i64 1, !dbg !407
+  tail call void @llvm.dbg.value(metadata i8* %80, i64 0, metadata !142, metadata !266) #4, !dbg !296
+  br i1 %79, label %Tokenise.exit, label %14, !dbg !409
 
 newtoken.exit.i:                                  ; preds = %.critedge1.i
-  %81 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !16
-  %82 = tail call i64 @fwrite(i8* getelementptr inbounds ([43 x i8]* @.str1, i64 0, i64 0), i64 42, i64 1, %struct.__sFILE* %81) #3
-  tail call void @abort() #11
-  unreachable
+  tail call void @llvm.dbg.value(metadata %struct.PToken* %41, i64 0, metadata !141, metadata !266) #4, !dbg !410
+  %81 = load %struct.__sFILE** @__stderrp, align 8, !dbg !411, !tbaa !413
+  %82 = tail call i64 @fwrite(i8* getelementptr inbounds ([43 x i8]* @.str1, i64 0, i64 0), i64 42, i64 1, %struct.__sFILE* %81) #4, !dbg !414
+  tail call void @abort() #11, !dbg !415
+  unreachable, !dbg !415
 
 Tokenise.exit:                                    ; preds = %14, %insertafter.exit.i, %4
-  %start.2.i = phi %struct.PToken* [ null, %4 ], [ %.start.0.i, %insertafter.exit.i ], [ %.start.0.i, %14 ]
-  store %struct.PToken* %start.2.i, %struct.PToken** %temp, align 8, !tbaa !16
-  %83 = call fastcc i32 @RPParse(%struct.PToken** %temp, %struct.uExpressionInternals* %2) #12
-  %84 = icmp eq i32 %83, 0
-  br i1 %84, label %85, label %106
+  %start.2.i = phi %struct.PToken* [ null, %4 ], [ %.start.0.i, %insertafter.exit.i ], [ %.start.0.i, %14 ], !dbg !300
+  tail call void @llvm.dbg.value(metadata %struct.PToken* %start.2.i, i64 0, metadata !104, metadata !266), !dbg !416
+  tail call void @llvm.dbg.value(metadata %struct.PToken* %start.2.i, i64 0, metadata !105, metadata !266), !dbg !417
+  store %struct.PToken* %start.2.i, %struct.PToken** %temp, align 8, !dbg !418, !tbaa !413
+  tail call void @llvm.dbg.value(metadata %struct.PToken** %temp, i64 0, metadata !105, metadata !266), !dbg !417
+  %83 = call fastcc i32 @RPParse(%struct.PToken** %temp, %struct.uExpressionInternals* %2) #12, !dbg !419
+  %84 = icmp eq i32 %83, 0, !dbg !419
+  br i1 %84, label %85, label %106, !dbg !421
 
 ; <label>:85                                      ; preds = %Tokenise.exit
-  %86 = load i32* %5, align 4, !tbaa !2
-  %87 = icmp sgt i32 %86, 0
-  br i1 %87, label %.lr.ph.i1, label %VerifyParsedExpression.exit.thread
+  tail call void @llvm.dbg.value(metadata %struct.uExpressionInternals* %2, i64 0, metadata !221, metadata !266), !dbg !422
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !223, metadata !266), !dbg !426
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !222, metadata !266), !dbg !427
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !224, metadata !266), !dbg !428
+  %86 = load i32* %5, align 4, !dbg !429, !tbaa !277
+  %87 = icmp sgt i32 %86, 0, !dbg !432
+  br i1 %87, label %.lr.ph.i1, label %VerifyParsedExpression.exit.thread, !dbg !433
 
 .lr.ph.i1:                                        ; preds = %85
-  %88 = load %struct.uExpressionToken** %7, align 8, !tbaa !8
-  %89 = sext i32 %86 to i64
-  br label %92
+  %88 = load %struct.uExpressionToken** %7, align 8, !dbg !434, !tbaa !285
+  %89 = sext i32 %86 to i64, !dbg !432
+  br label %92, !dbg !433
 
 ; <label>:90                                      ; preds = %102
-  %91 = icmp slt i64 %indvars.iv.next.i, %89
-  br i1 %91, label %92, label %VerifyParsedExpression.exit
+  %91 = icmp slt i64 %indvars.iv.next.i, %89, !dbg !432
+  br i1 %91, label %92, label %VerifyParsedExpression.exit, !dbg !433
 
 ; <label>:92                                      ; preds = %90, %.lr.ph.i1
-  %indvars.iv.i = phi i64 [ 0, %.lr.ph.i1 ], [ %indvars.iv.next.i, %90 ]
-  %stackpointer.07.i = phi i32 [ 0, %.lr.ph.i1 ], [ %stackpointer.1.i, %90 ]
-  %93 = getelementptr inbounds %struct.uExpressionToken* %88, i64 %indvars.iv.i, i32 0
-  %94 = load i32* %93, align 4, !tbaa !17
+  %indvars.iv.i = phi i64 [ 0, %.lr.ph.i1 ], [ %indvars.iv.next.i, %90 ], !dbg !437
+  %stackpointer.07.i = phi i32 [ 0, %.lr.ph.i1 ], [ %stackpointer.1.i, %90 ], !dbg !437
+  %93 = getelementptr inbounds %struct.uExpressionToken* %88, i64 %indvars.iv.i, i32 0, !dbg !438
+  %94 = load i32* %93, align 4, !dbg !438, !tbaa !439
   switch i32 %94, label %102 [
     i32 0, label %95
     i32 2, label %97
     i32 1, label %100
-  ]
+  ], !dbg !441
 
 ; <label>:95                                      ; preds = %92
-  %96 = add nsw i32 %stackpointer.07.i, 1
-  br label %102
+  %96 = add nsw i32 %stackpointer.07.i, 1, !dbg !442
+  tail call void @llvm.dbg.value(metadata i32 %96, i64 0, metadata !223, metadata !266), !dbg !426
+  br label %102, !dbg !444
 
 ; <label>:97                                      ; preds = %92
-  %98 = icmp sgt i32 %stackpointer.07.i, 1
-  %not..i = xor i1 %98, true
-  %retcode.0..i = sext i1 %not..i to i32
-  %99 = sext i1 %98 to i32
-  %.stackpointer.0.i = add nsw i32 %99, %stackpointer.07.i
-  br label %102
+  %98 = icmp sgt i32 %stackpointer.07.i, 1, !dbg !445
+  %not..i = xor i1 %98, true, !dbg !449
+  %retcode.0..i = sext i1 %not..i to i32, !dbg !449
+  %99 = sext i1 %98 to i32, !dbg !449
+  %.stackpointer.0.i = add nsw i32 %99, %stackpointer.07.i, !dbg !449
+  br label %102, !dbg !449
 
 ; <label>:100                                     ; preds = %92
-  %101 = icmp eq i32 %stackpointer.07.i, 0
-  %.retcode.0.i = sext i1 %101 to i32
-  br label %102
+  %101 = icmp eq i32 %stackpointer.07.i, 0, !dbg !450
+  tail call void @llvm.dbg.value(metadata i32 -1, i64 0, metadata !222, metadata !266), !dbg !427
+  %.retcode.0.i = sext i1 %101 to i32, !dbg !452
+  br label %102, !dbg !452
 
 ; <label>:102                                     ; preds = %100, %97, %95, %92
-  %retcode.1.i = phi i32 [ 0, %95 ], [ 0, %92 ], [ %.retcode.0.i, %100 ], [ %retcode.0..i, %97 ]
-  %stackpointer.1.i = phi i32 [ %96, %95 ], [ %stackpointer.07.i, %92 ], [ %stackpointer.07.i, %100 ], [ %.stackpointer.0.i, %97 ]
-  %103 = icmp ugt i32 %stackpointer.1.i, 256
-  %104 = icmp ne i32 %retcode.1.i, 0
-  %or.cond3.i = or i1 %104, %103
-  %indvars.iv.next.i = add nuw nsw i64 %indvars.iv.i, 1
-  br i1 %or.cond3.i, label %VerifyParsedExpression.exit.thread, label %90
+  %retcode.1.i = phi i32 [ 0, %95 ], [ 0, %92 ], [ %.retcode.0.i, %100 ], [ %retcode.0..i, %97 ], !dbg !437
+  %stackpointer.1.i = phi i32 [ %96, %95 ], [ %stackpointer.07.i, %92 ], [ %stackpointer.07.i, %100 ], [ %.stackpointer.0.i, %97 ], !dbg !437
+  %103 = icmp ugt i32 %stackpointer.1.i, 256, !dbg !453
+  %104 = icmp ne i32 %retcode.1.i, 0, !dbg !455
+  %or.cond3.i = or i1 %104, %103, !dbg !453
+  %indvars.iv.next.i = add nuw nsw i64 %indvars.iv.i, 1, !dbg !433
+  br i1 %or.cond3.i, label %VerifyParsedExpression.exit.thread, label %90, !dbg !453
 
 VerifyParsedExpression.exit:                      ; preds = %90
-  %105 = icmp eq i32 %stackpointer.1.i, 1
-  br i1 %105, label %107, label %VerifyParsedExpression.exit.thread
+  %105 = icmp eq i32 %stackpointer.1.i, 1, !dbg !456
+  br i1 %105, label %107, label %VerifyParsedExpression.exit.thread, !dbg !460
 
 VerifyParsedExpression.exit.thread:               ; preds = %102, %85, %VerifyParsedExpression.exit
-  tail call void @Util_ExpressionFree(%struct.uExpressionInternals* %2) #12
-  br label %107
+  tail call void @Util_ExpressionFree(%struct.uExpressionInternals* %2) #12, !dbg !461
+  tail call void @llvm.dbg.value(metadata %struct.uExpressionInternals* null, i64 0, metadata !106, metadata !266), !dbg !270
+  br label %107, !dbg !463
 
 ; <label>:106                                     ; preds = %Tokenise.exit
-  tail call void @Util_ExpressionFree(%struct.uExpressionInternals* %2) #12
+  tail call void @Util_ExpressionFree(%struct.uExpressionInternals* %2) #12, !dbg !464
+  tail call void @llvm.dbg.value(metadata %struct.uExpressionInternals* null, i64 0, metadata !106, metadata !266), !dbg !270
   br label %107
 
 ; <label>:107                                     ; preds = %VerifyParsedExpression.exit, %VerifyParsedExpression.exit.thread, %106
   %buffer.0 = phi %struct.uExpressionInternals* [ null, %106 ], [ %2, %VerifyParsedExpression.exit ], [ null, %VerifyParsedExpression.exit.thread ]
-  %108 = icmp eq %struct.PToken* %start.2.i, null
-  br i1 %108, label %FreeTokens.exit, label %.lr.ph.i2
+  tail call void @llvm.dbg.value(metadata %struct.PToken* %start.2.i, i64 0, metadata !246, metadata !266) #4, !dbg !466
+  tail call void @llvm.dbg.value(metadata %struct.PToken* %start.2.i, i64 0, metadata !247, metadata !266) #4, !dbg !468
+  %108 = icmp eq %struct.PToken* %start.2.i, null, !dbg !469
+  br i1 %108, label %FreeTokens.exit, label %.lr.ph.i2, !dbg !469
 
 .lr.ph.i2:                                        ; preds = %107, %.lr.ph.i2
-  %token.01.i = phi %struct.PToken* [ %110, %.lr.ph.i2 ], [ %start.2.i, %107 ]
-  %109 = getelementptr inbounds %struct.PToken* %token.01.i, i64 0, i32 1
-  %110 = load %struct.PToken** %109, align 8, !tbaa !15
-  %111 = getelementptr inbounds %struct.PToken* %token.01.i, i64 0, i32 2
-  %112 = load i8** %111, align 8, !tbaa !12
-  tail call void @free(i8* %112) #10
-  %113 = bitcast %struct.PToken* %token.01.i to i8*
-  tail call void @free(i8* %113) #10
-  %114 = icmp eq %struct.PToken* %110, null
-  br i1 %114, label %FreeTokens.exit, label %.lr.ph.i2
+  %token.01.i = phi %struct.PToken* [ %110, %.lr.ph.i2 ], [ %start.2.i, %107 ], !dbg !471
+  %109 = getelementptr inbounds %struct.PToken* %token.01.i, i64 0, i32 1, !dbg !472
+  %110 = load %struct.PToken** %109, align 8, !dbg !472, !tbaa !391
+  tail call void @llvm.dbg.value(metadata %struct.PToken* %110, i64 0, metadata !248, metadata !266) #4, !dbg !475
+  %111 = getelementptr inbounds %struct.PToken* %token.01.i, i64 0, i32 2, !dbg !476
+  %112 = load i8** %111, align 8, !dbg !476, !tbaa !347
+  tail call void @free(i8* %112) #10, !dbg !477
+  %113 = bitcast %struct.PToken* %token.01.i to i8*, !dbg !478
+  tail call void @free(i8* %113) #10, !dbg !479
+  tail call void @llvm.dbg.value(metadata %struct.PToken* %110, i64 0, metadata !247, metadata !266) #4, !dbg !468
+  %114 = icmp eq %struct.PToken* %110, null, !dbg !469
+  br i1 %114, label %FreeTokens.exit, label %.lr.ph.i2, !dbg !469
 
 FreeTokens.exit:                                  ; preds = %.lr.ph.i2, %107, %0
   %buffer.1 = phi %struct.uExpressionInternals* [ %2, %0 ], [ %buffer.0, %107 ], [ %buffer.0, %.lr.ph.i2 ]
-  ret %struct.uExpressionInternals* %buffer.1
+  ret %struct.uExpressionInternals* %buffer.1, !dbg !480
 }

@@ -1,31 +1,39 @@
 define void @AllocNalPayloadBuffer() #0 {
-entry:
-  %0 = load %struct.InputParameters** @input, align 8, !tbaa !3
-  %img_width = getelementptr inbounds %struct.InputParameters* %0, i64 0, i32 16
-  %1 = load i32* %img_width, align 4, !tbaa !2
-  %2 = load %struct.ImageParameters** @img, align 8, !tbaa !3
-  %auto_crop_right = getelementptr inbounds %struct.ImageParameters* %2, i64 0, i32 165
-  %3 = load i32* %auto_crop_right, align 4, !tbaa !2
-  %add = add nsw i32 %3, %1
-  %img_height = getelementptr inbounds %struct.InputParameters* %0, i64 0, i32 17
-  %4 = load i32* %img_height, align 4, !tbaa !2
-  %auto_crop_bottom = getelementptr inbounds %struct.ImageParameters* %2, i64 0, i32 166
-  %5 = load i32* %auto_crop_bottom, align 4, !tbaa !2
-  %add1 = add nsw i32 %5, %4
-  %mul = shl i32 %add, 2
-  %mul2 = mul i32 %mul, %add1
-  %6 = load i8** @NAL_Payload_buffer, align 8, !tbaa !3
-  %tobool.i = icmp eq i8* %6, null
-  br i1 %tobool.i, label %FreeNalPayloadBuffer.exit, label %if.then.i
+  %1 = load %struct.InputParameters** @input, align 8, !dbg !670, !tbaa !622
+  %2 = getelementptr inbounds %struct.InputParameters* %1, i64 0, i32 16, !dbg !671
+  %3 = load i32* %2, align 4, !dbg !671, !tbaa !672
+  %4 = load %struct.ImageParameters** @img, align 8, !dbg !674, !tbaa !622
+  %5 = getelementptr inbounds %struct.ImageParameters* %4, i64 0, i32 165, !dbg !675
+  %6 = load i32* %5, align 4, !dbg !675, !tbaa !676
+  %7 = add nsw i32 %6, %3, !dbg !677
+  %8 = getelementptr inbounds %struct.InputParameters* %1, i64 0, i32 17, !dbg !678
+  %9 = load i32* %8, align 4, !dbg !678, !tbaa !679
+  %10 = getelementptr inbounds %struct.ImageParameters* %4, i64 0, i32 166, !dbg !680
+  %11 = load i32* %10, align 4, !dbg !680, !tbaa !681
+  %12 = add nsw i32 %11, %9, !dbg !682
+  %13 = shl i32 %7, 2, !dbg !683
+  %14 = mul i32 %13, %12, !dbg !684
+  tail call void @llvm.dbg.value(metadata i32 %14, i64 0, metadata !52, metadata !583), !dbg !685
+  %15 = load i8** @NAL_Payload_buffer, align 8, !dbg !686, !tbaa !622
+  %16 = icmp eq i8* %15, null, !dbg !686
+  br i1 %16, label %FreeNalPayloadBuffer.exit, label %17, !dbg !689
 
-if.then.i:                                        ; preds = %entry
-  tail call void @free(i8* %6) #2
-  store i8* null, i8** @NAL_Payload_buffer, align 8, !tbaa !3
-  br label %FreeNalPayloadBuffer.exit
+; <label>:17                                      ; preds = %0
+  tail call void @free(i8* %15) #4, !dbg !690
+  store i8* null, i8** @NAL_Payload_buffer, align 8, !dbg !692, !tbaa !622
+  br label %FreeNalPayloadBuffer.exit, !dbg !693
 
-FreeNalPayloadBuffer.exit:                        ; preds = %entry, %if.then.i
-  %conv = sext i32 %mul2 to i64
-  %call = tail call noalias i8* @calloc(i64 %conv, i64 1) #2
-  store i8* %call, i8** @NAL_Payload_buffer, align 8, !tbaa !3
-  ret void
+FreeNalPayloadBuffer.exit:                        ; preds = %0, %17
+  %18 = sext i32 %14 to i64, !dbg !694
+  %19 = tail call i8* @calloc(i64 %18, i64 1) #4, !dbg !695
+  store i8* %19, i8** @NAL_Payload_buffer, align 8, !dbg !696, !tbaa !622
+  %20 = icmp eq i8* %19, null, !dbg !697
+  br i1 %20, label %21, label %22, !dbg !697, !prof !698
+
+; <label>:21                                      ; preds = %FreeNalPayloadBuffer.exit
+  tail call void @__assert_rtn(i8* getelementptr inbounds ([22 x i8]* @__func__.AllocNalPayloadBuffer, i64 0, i64 0), i8* getelementptr inbounds ([63 x i8]* @.str, i64 0, i64 0), i32 127, i8* getelementptr inbounds ([27 x i8]* @.str1, i64 0, i64 0)) #5, !dbg !697
+  unreachable, !dbg !697
+
+; <label>:22                                      ; preds = %FreeNalPayloadBuffer.exit
+  ret void, !dbg !699
 }

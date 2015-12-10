@@ -1,121 +1,144 @@
 define double @IncompleteGamma(double %a, double %x) #0 {
-entry:
-  %cmp = fcmp ugt double %a, 0.000000e+00
-  br i1 %cmp, label %if.end, label %if.then
+  tail call void @llvm.dbg.value(metadata double %a, i64 0, metadata !100, metadata !122), !dbg !336
+  tail call void @llvm.dbg.value(metadata double %x, i64 0, metadata !101, metadata !122), !dbg !337
+  %1 = fcmp ugt double %a, 0.000000e+00, !dbg !338
+  br i1 %1, label %3, label %2, !dbg !340
 
-if.then:                                          ; preds = %entry
-  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([33 x i8]* @.str1, i64 0, i64 0)) #4
-  br label %if.end
+; <label>:2                                       ; preds = %0
+  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([33 x i8]* @.str1, i64 0, i64 0)) #7, !dbg !341
+  br label %3, !dbg !341
 
-if.end:                                           ; preds = %entry, %if.then
-  %cmp1 = fcmp olt double %x, 0.000000e+00
-  br i1 %cmp1, label %if.then2, label %if.end3
+; <label>:3                                       ; preds = %0, %2
+  %4 = fcmp olt double %x, 0.000000e+00, !dbg !342
+  br i1 %4, label %5, label %6, !dbg !344
 
-if.then2:                                         ; preds = %if.end
-  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([34 x i8]* @.str2, i64 0, i64 0)) #4
-  br label %if.end3
+; <label>:5                                       ; preds = %3
+  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([34 x i8]* @.str2, i64 0, i64 0)) #7, !dbg !345
+  br label %6, !dbg !345
 
-if.end3:                                          ; preds = %if.then2, %if.end
-  %add = fadd double %a, 1.000000e+00
-  %cmp4 = fcmp olt double %add, %x
-  br i1 %cmp4, label %for.body, label %if.else
+; <label>:6                                       ; preds = %5, %3
+  %7 = fadd double %a, 1.000000e+00, !dbg !346
+  %8 = fcmp olt double %7, %x, !dbg !347
+  br i1 %8, label %.preheader.preheader, label %54, !dbg !348
 
-for.cond:                                         ; preds = %if.end25
-  %cmp6 = icmp slt i32 %inc, 100
-  br i1 %cmp6, label %for.body, label %for.end
+.preheader.preheader:                             ; preds = %6
+  %9 = insertelement <2 x double> undef, double %x, i32 0
+  %10 = insertelement <2 x double> %9, double 1.000000e+00, i32 1
+  %11 = insertelement <2 x double> %9, double %x, i32 1, !dbg !349
+  br label %.preheader, !dbg !353
 
-for.body:                                         ; preds = %if.end3, %for.cond
-  %de1.0116 = phi double [ %de1.1, %for.cond ], [ %x, %if.end3 ]
-  %de0.0115 = phi double [ %de0.1, %for.cond ], [ 1.000000e+00, %if.end3 ]
-  %nu0.0114 = phi double [ %nu0.1, %for.cond ], [ 0.000000e+00, %if.end3 ]
-  %oldp.0113 = phi double [ %nu1.1, %for.cond ], [ 1.000000e+00, %if.end3 ]
-  %iter.0112 = phi i32 [ %inc, %for.cond ], [ 1, %if.end3 ]
-  %conv = sitofp i32 %iter.0112 to double
-  %sub = fsub double %conv, %a
-  %mul = fmul double %sub, %nu0.0114
-  %add7 = fadd double %oldp.0113, %mul
-  %mul10 = fmul double %sub, %de0.0115
-  %add11 = fadd double %de1.0116, %mul10
-  %mul12 = fmul double %add7, %x
-  %mul14 = fmul double %conv, %oldp.0113
-  %add15 = fadd double %mul14, %mul12
-  %mul16 = fmul double %add11, %x
-  %mul18 = fmul double %conv, %de1.0116
-  %add19 = fadd double %mul18, %mul16
-  %cmp20 = fcmp une double %add19, 0.000000e+00
-  br i1 %cmp20, label %if.then22, label %if.end25
+; <label>:12                                      ; preds = %35
+  %13 = icmp slt i32 %44, 100, !dbg !354
+  br i1 %13, label %.preheader, label %53, !dbg !355
 
-if.then22:                                        ; preds = %for.body
-  %div = fdiv double %add7, %add19
-  %div23 = fdiv double %add11, %add19
-  %div24 = fdiv double %add15, %add19
-  br label %if.end25
+.preheader:                                       ; preds = %.preheader.preheader, %12
+  %iter.01 = phi i32 [ %44, %12 ], [ 1, %.preheader.preheader ]
+  %14 = phi <2 x double> [ %36, %12 ], [ <double 1.000000e+00, double 0.000000e+00>, %.preheader.preheader ]
+  %15 = phi <2 x double> [ %37, %12 ], [ %10, %.preheader.preheader ]
+  %16 = sitofp i32 %iter.01 to double, !dbg !353
+  %17 = fsub double %16, %a, !dbg !356
+  tail call void @llvm.dbg.value(metadata double undef, i64 0, metadata !106, metadata !122), !dbg !357
+  %18 = insertelement <2 x double> undef, double %17, i32 0, !dbg !358
+  %19 = insertelement <2 x double> %18, double %17, i32 1, !dbg !358
+  %20 = fmul <2 x double> %19, %14, !dbg !358
+  %21 = fadd <2 x double> %15, %20, !dbg !359
+  tail call void @llvm.dbg.value(metadata double undef, i64 0, metadata !108, metadata !122), !dbg !360
+  tail call void @llvm.dbg.value(metadata double undef, i64 0, metadata !107, metadata !122), !dbg !361
+  %22 = fmul <2 x double> %11, %21, !dbg !349
+  %23 = insertelement <2 x double> undef, double %16, i32 0, !dbg !362
+  %24 = insertelement <2 x double> %23, double %16, i32 1, !dbg !362
+  %25 = fmul <2 x double> %24, %15, !dbg !362
+  %26 = fadd <2 x double> %25, %22, !dbg !363
+  tail call void @llvm.dbg.value(metadata double undef, i64 0, metadata !109, metadata !122), !dbg !364
+  %27 = extractelement <2 x double> %26, i32 0, !dbg !365
+  %28 = fcmp une double %27, 0.000000e+00, !dbg !365
+  br i1 %28, label %29, label %35, !dbg !367
 
-if.end25:                                         ; preds = %if.then22, %for.body
-  %nu0.1 = phi double [ %div, %if.then22 ], [ %add7, %for.body ]
-  %nu1.1 = phi double [ %div24, %if.then22 ], [ %add15, %for.body ]
-  %de0.1 = phi double [ %div23, %if.then22 ], [ %add11, %for.body ]
-  %de1.1 = phi double [ 1.000000e+00, %if.then22 ], [ %add19, %for.body ]
-  %sub26 = fsub double %nu1.1, %oldp.0113
-  %div27 = fdiv double %sub26, %nu1.1
-  %call = tail call double @fabs(double %div27) #5
-  %cmp28 = fcmp olt double %call, 1.000000e-07
-  %inc = add nsw i32 %iter.0112, 1
-  br i1 %cmp28, label %if.then30, label %for.cond
+; <label>:29                                      ; preds = %.preheader
+  tail call void @llvm.dbg.value(metadata double undef, i64 0, metadata !106, metadata !122), !dbg !357
+  %30 = shufflevector <2 x double> %26, <2 x double> undef, <2 x i32> zeroinitializer, !dbg !368
+  %31 = fdiv <2 x double> %21, %30, !dbg !368
+  tail call void @llvm.dbg.value(metadata double undef, i64 0, metadata !108, metadata !122), !dbg !360
+  %32 = extractelement <2 x double> %26, i32 1, !dbg !370
+  %33 = fdiv double %32, %27, !dbg !370
+  tail call void @llvm.dbg.value(metadata double %33, i64 0, metadata !107, metadata !122), !dbg !361
+  tail call void @llvm.dbg.value(metadata double 1.000000e+00, i64 0, metadata !109, metadata !122), !dbg !364
+  %34 = insertelement <2 x double> <double 1.000000e+00, double undef>, double %33, i32 1
+  br label %35, !dbg !371
 
-if.then30:                                        ; preds = %if.end25
-  %call31 = tail call double @log(double %x) #4
-  %mul32 = fmul double %call31, %a
-  %sub33 = fsub double %mul32, %x
-  %call34 = tail call double @Gammln(double %a) #6
-  %sub35 = fsub double %sub33, %call34
-  %call36 = tail call double @exp(double %sub35) #4
-  %mul37 = fmul double %nu1.1, %call36
-  br label %return
+; <label>:35                                      ; preds = %29, %.preheader
+  %36 = phi <2 x double> [ %31, %29 ], [ %21, %.preheader ]
+  %37 = phi <2 x double> [ %34, %29 ], [ %26, %.preheader ]
+  %38 = extractelement <2 x double> %15, i32 1, !dbg !372
+  %39 = extractelement <2 x double> %37, i32 1, !dbg !372
+  %40 = fsub double %39, %38, !dbg !372
+  %41 = fdiv double %40, %39, !dbg !374
+  %42 = tail call double @fabs(double %41) #6, !dbg !375
+  %43 = fcmp olt double %42, 1.000000e-07, !dbg !376
+  tail call void @llvm.dbg.value(metadata double undef, i64 0, metadata !103, metadata !122), !dbg !377
+  %44 = add nuw nsw i32 %iter.01, 1, !dbg !378
+  tail call void @llvm.dbg.value(metadata i32 %44, i64 0, metadata !102, metadata !122), !dbg !379
+  br i1 %43, label %45, label %12, !dbg !380
 
-for.end:                                          ; preds = %for.cond
-  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([70 x i8]* @.str3, i64 0, i64 0)) #4
-  br label %return
+; <label>:45                                      ; preds = %35
+  %46 = tail call double @log(double %x) #6, !dbg !381
+  %47 = fmul double %46, %a, !dbg !382
+  %48 = fsub double %47, %x, !dbg !383
+  %49 = tail call double @Gammln(double %a) #8, !dbg !384
+  %50 = fsub double %48, %49, !dbg !385
+  %51 = tail call double @exp(double %50) #6, !dbg !386
+  %52 = fmul double %39, %51, !dbg !387
+  br label %78, !dbg !388
 
-if.else:                                          ; preds = %if.end3
-  %div39 = fdiv double 1.000000e+00, %a
-  br label %for.body43
+; <label>:53                                      ; preds = %12
+  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([70 x i8]* @.str3, i64 0, i64 0)) #7, !dbg !389
+  br label %78, !dbg !390
 
-for.cond40:                                       ; preds = %for.body43
-  %cmp41 = icmp slt i32 %inc64, 10000
-  br i1 %cmp41, label %for.body43, label %for.end65
+; <label>:54                                      ; preds = %6
+  %55 = fdiv double 1.000000e+00, %a, !dbg !391
+  tail call void @llvm.dbg.value(metadata double %55, i64 0, metadata !112, metadata !122), !dbg !392
+  tail call void @llvm.dbg.value(metadata double %55, i64 0, metadata !110, metadata !122), !dbg !393
+  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !102, metadata !122), !dbg !379
+  br label %58, !dbg !394
 
-for.body43:                                       ; preds = %if.else, %for.cond40
-  %val.0119 = phi double [ %div39, %if.else ], [ %mul47, %for.cond40 ]
-  %p.0118 = phi double [ %div39, %if.else ], [ %add48, %for.cond40 ]
-  %iter.1117 = phi i32 [ 1, %if.else ], [ %inc64, %for.cond40 ]
-  %conv44 = sitofp i32 %iter.1117 to double
-  %add45 = fadd double %conv44, %a
-  %div46 = fdiv double %x, %add45
-  %mul47 = fmul double %val.0119, %div46
-  %add48 = fadd double %p.0118, %mul47
-  %div49 = fdiv double %mul47, %add48
-  %call50 = tail call double @fabs(double %div49) #5
-  %cmp51 = fcmp olt double %call50, 1.000000e-07
-  %inc64 = add nsw i32 %iter.1117, 1
-  br i1 %cmp51, label %if.then53, label %for.cond40
+; <label>:56                                      ; preds = %58
+  %57 = icmp slt i32 %67, 10000, !dbg !396
+  br i1 %57, label %58, label %77, !dbg !394
 
-if.then53:                                        ; preds = %for.body43
-  %call54 = tail call double @log(double %x) #4
-  %mul55 = fmul double %call54, %a
-  %sub56 = fsub double %mul55, %x
-  %call57 = tail call double @Gammln(double %a) #6
-  %sub58 = fsub double %sub56, %call57
-  %call59 = tail call double @exp(double %sub58) #4
-  %mul60 = fmul double %add48, %call59
-  %sub61 = fsub double 1.000000e+00, %mul60
-  br label %return
+; <label>:58                                      ; preds = %54, %56
+  %val.08 = phi double [ %55, %54 ], [ %62, %56 ]
+  %p.07 = phi double [ %55, %54 ], [ %63, %56 ]
+  %iter.16 = phi i32 [ 1, %54 ], [ %67, %56 ]
+  %59 = sitofp i32 %iter.16 to double, !dbg !398
+  %60 = fadd double %59, %a, !dbg !400
+  %61 = fdiv double %x, %60, !dbg !401
+  %62 = fmul double %val.08, %61, !dbg !402
+  tail call void @llvm.dbg.value(metadata double %62, i64 0, metadata !112, metadata !122), !dbg !392
+  %63 = fadd double %p.07, %62, !dbg !403
+  tail call void @llvm.dbg.value(metadata double %63, i64 0, metadata !110, metadata !122), !dbg !393
+  %64 = fdiv double %62, %63, !dbg !404
+  %65 = tail call double @fabs(double %64) #6, !dbg !406
+  %66 = fcmp olt double %65, 1.000000e-07, !dbg !407
+  %67 = add nuw nsw i32 %iter.16, 1, !dbg !408
+  tail call void @llvm.dbg.value(metadata i32 %67, i64 0, metadata !102, metadata !122), !dbg !379
+  br i1 %66, label %68, label %56, !dbg !409
 
-for.end65:                                        ; preds = %for.cond40
-  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([58 x i8]* @.str4, i64 0, i64 0)) #4
-  br label %return
+; <label>:68                                      ; preds = %58
+  %69 = tail call double @log(double %x) #6, !dbg !410
+  %70 = fmul double %69, %a, !dbg !411
+  %71 = fsub double %70, %x, !dbg !412
+  %72 = tail call double @Gammln(double %a) #8, !dbg !413
+  %73 = fsub double %71, %72, !dbg !414
+  %74 = tail call double @exp(double %73) #6, !dbg !415
+  %75 = fmul double %63, %74, !dbg !416
+  %76 = fsub double 1.000000e+00, %75, !dbg !417
+  br label %78, !dbg !418
 
-return:                                           ; preds = %for.end, %for.end65, %if.then53, %if.then30
-  %retval.0 = phi double [ %mul37, %if.then30 ], [ %sub61, %if.then53 ], [ 0.000000e+00, %for.end65 ], [ 0.000000e+00, %for.end ]
-  ret double %retval.0
+; <label>:77                                      ; preds = %56
+  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([58 x i8]* @.str4, i64 0, i64 0)) #7, !dbg !419
+  br label %78
+
+; <label>:78                                      ; preds = %53, %77, %68, %45
+  %.0 = phi double [ %52, %45 ], [ %76, %68 ], [ 0.000000e+00, %77 ], [ 0.000000e+00, %53 ]
+  ret double %.0, !dbg !420
 }

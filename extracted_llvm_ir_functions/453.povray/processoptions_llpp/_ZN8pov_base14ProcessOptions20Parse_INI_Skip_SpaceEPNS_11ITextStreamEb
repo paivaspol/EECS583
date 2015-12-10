@@ -1,0 +1,71 @@
+define i32 @_ZN8pov_base14ProcessOptions20Parse_INI_Skip_SpaceEPNS_11ITextStreamEb(%"class.pov_base::ProcessOptions"* nocapture readnone %this, %"class.pov_base::ITextStream"* %file, i1 zeroext %countnewlines) #3 align 2 {
+  tail call void @llvm.dbg.value(metadata %"class.pov_base::ProcessOptions"* %this, i64 0, metadata !692, metadata !1305), !dbg !1500
+  tail call void @llvm.dbg.value(metadata %"class.pov_base::ITextStream"* %file, i64 0, metadata !693, metadata !1305), !dbg !1501
+  tail call void @llvm.dbg.value(metadata i1 %countnewlines, i64 0, metadata !694, metadata !1305), !dbg !1502
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !695, metadata !1305), !dbg !1503
+  %1 = tail call zeroext i1 @_ZN8pov_base11ITextStream3eofEv(%"class.pov_base::ITextStream"* %file) #10, !dbg !1504
+  br i1 %1, label %.loopexit, label %.lr.ph.lr.ph, !dbg !1505
+
+.lr.ph.lr.ph:                                     ; preds = %0
+  %countnewlines.not = xor i1 %countnewlines, true, !dbg !1506
+  br label %.lr.ph, !dbg !1505
+
+.lr.ph:                                           ; preds = %.lr.ph.lr.ph, %.outer.backedge
+  %linecount.0.ph11 = phi i32 [ 0, %.lr.ph.lr.ph ], [ %linecount.0.ph.be, %.outer.backedge ]
+  br label %2, !dbg !1505
+
+; <label>:2                                       ; preds = %.lr.ph, %.backedge
+  %3 = tail call i32 @_ZN8pov_base11ITextStream7getcharEv(%"class.pov_base::ITextStream"* %file) #10, !dbg !1507
+  tail call void @llvm.dbg.value(metadata i32 %3, i64 0, metadata !696, metadata !1305), !dbg !1508
+  %.not = icmp ne i32 %3, 10, !dbg !1506
+  %brmerge = or i1 %.not, %countnewlines.not, !dbg !1506
+  br i1 %brmerge, label %9, label %4, !dbg !1506
+
+; <label>:4                                       ; preds = %2
+  %5 = tail call i32 @_ZN8pov_base11ITextStream7getcharEv(%"class.pov_base::ITextStream"* %file) #10, !dbg !1509
+  tail call void @llvm.dbg.value(metadata i32 %5, i64 0, metadata !698, metadata !1305), !dbg !1510
+  %6 = icmp eq i32 %5, 13, !dbg !1511
+  br i1 %6, label %.outer.backedge, label %7, !dbg !1513
+
+; <label>:7                                       ; preds = %4
+  tail call void @_ZN8pov_base11ITextStream9ungetcharEi(%"class.pov_base::ITextStream"* %file, i32 %5) #10, !dbg !1514
+  br label %.outer.backedge, !dbg !1514
+
+.outer.backedge:                                  ; preds = %13, %10, %7, %4
+  %linecount.0.ph.be = add nuw nsw i32 %linecount.0.ph11, 1, !dbg !1515
+  %8 = tail call zeroext i1 @_ZN8pov_base11ITextStream3eofEv(%"class.pov_base::ITextStream"* %file) #10, !dbg !1504
+  br i1 %8, label %.loopexit, label %.lr.ph, !dbg !1505
+
+; <label>:9                                       ; preds = %2
+  %.not3 = icmp ne i32 %3, 13, !dbg !1516
+  %brmerge5 = or i1 %.not3, %countnewlines.not, !dbg !1516
+  br i1 %brmerge5, label %14, label %10, !dbg !1516
+
+; <label>:10                                      ; preds = %9
+  %11 = tail call i32 @_ZN8pov_base11ITextStream7getcharEv(%"class.pov_base::ITextStream"* %file) #10, !dbg !1517
+  tail call void @llvm.dbg.value(metadata i32 %11, i64 0, metadata !701, metadata !1305), !dbg !1518
+  %12 = icmp eq i32 %11, 10, !dbg !1519
+  br i1 %12, label %.outer.backedge, label %13, !dbg !1521
+
+; <label>:13                                      ; preds = %10
+  tail call void @_ZN8pov_base11ITextStream9ungetcharEi(%"class.pov_base::ITextStream"* %file, i32 %11) #10, !dbg !1522
+  br label %.outer.backedge, !dbg !1522
+
+; <label>:14                                      ; preds = %9
+  switch i32 %3, label %16 [
+    i32 32, label %.backedge
+    i32 9, label %.backedge
+  ], !dbg !1523
+
+.backedge:                                        ; preds = %14, %14
+  %15 = tail call zeroext i1 @_ZN8pov_base11ITextStream3eofEv(%"class.pov_base::ITextStream"* %file) #10, !dbg !1504
+  br i1 %15, label %.loopexit, label %2, !dbg !1505
+
+; <label>:16                                      ; preds = %14
+  tail call void @_ZN8pov_base11ITextStream9ungetcharEi(%"class.pov_base::ITextStream"* %file, i32 %3) #10, !dbg !1525
+  br label %.loopexit, !dbg !1527
+
+.loopexit:                                        ; preds = %.outer.backedge, %.backedge, %0, %16
+  %linecount.0.ph9 = phi i32 [ %linecount.0.ph11, %16 ], [ 0, %0 ], [ %linecount.0.ph11, %.backedge ], [ %linecount.0.ph.be, %.outer.backedge ]
+  ret i32 %linecount.0.ph9, !dbg !1528
+}

@@ -1,24 +1,26 @@
 define i32 @continuing(i8* %s) #3 {
-  tail call void @rtrim(i8* %s) #11
-  %1 = tail call i64 @strlen(i8* %s) #10
-  %2 = trunc i64 %1 to i32
-  %3 = icmp sgt i32 %2, 0
-  br i1 %3, label %4, label %11
+  tail call void @llvm.dbg.value(metadata i8* %s, i64 0, metadata !176, metadata !281), !dbg !435
+  tail call void @rtrim(i8* %s) #11, !dbg !436
+  %1 = tail call i64 @strlen(i8* %s) #10, !dbg !437
+  %2 = trunc i64 %1 to i32, !dbg !437
+  tail call void @llvm.dbg.value(metadata i32 %2, i64 0, metadata !177, metadata !281), !dbg !438
+  %3 = icmp sgt i32 %2, 0, !dbg !439
+  br i1 %3, label %4, label %11, !dbg !441
 
 ; <label>:4                                       ; preds = %0
-  %5 = shl i64 %1, 32
-  %sext = add i64 %5, -4294967296
-  %6 = ashr exact i64 %sext, 32
-  %7 = getelementptr inbounds i8* %s, i64 %6
-  %8 = load i8* %7, align 1, !tbaa !13
-  %9 = icmp eq i8 %8, 92
-  br i1 %9, label %10, label %11
+  %5 = shl i64 %1, 32, !dbg !442
+  %sext = add i64 %5, -4294967296, !dbg !442
+  %6 = ashr exact i64 %sext, 32, !dbg !442
+  %7 = getelementptr inbounds i8* %s, i64 %6, !dbg !442
+  %8 = load i8* %7, align 1, !dbg !442, !tbaa !309
+  %9 = icmp eq i8 %8, 92, !dbg !443
+  br i1 %9, label %10, label %11, !dbg !444
 
 ; <label>:10                                      ; preds = %4
-  store i8 0, i8* %7, align 1, !tbaa !13
-  br label %11
+  store i8 0, i8* %7, align 1, !dbg !445, !tbaa !309
+  br label %11, !dbg !447
 
 ; <label>:11                                      ; preds = %0, %4, %10
   %.0 = phi i32 [ 1, %10 ], [ 0, %4 ], [ 0, %0 ]
-  ret i32 %.0
+  ret i32 %.0, !dbg !448
 }

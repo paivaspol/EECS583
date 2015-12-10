@@ -1,36 +1,37 @@
 define i32 @ChvList_isCountZero(%struct._ChvList* %chvlist, i32 %ilist) #0 {
-entry:
-  %cmp = icmp eq %struct._ChvList* %chvlist, null
-  %cmp1 = icmp slt i32 %ilist, 0
-  %or.cond = or i1 %cmp, %cmp1
-  br i1 %or.cond, label %if.then, label %lor.lhs.false2
+  tail call void @llvm.dbg.value(metadata %struct._ChvList* %chvlist, i64 0, metadata !64, metadata !84), !dbg !110
+  tail call void @llvm.dbg.value(metadata i32 %ilist, i64 0, metadata !65, metadata !84), !dbg !111
+  %1 = icmp eq %struct._ChvList* %chvlist, null, !dbg !112
+  %2 = icmp slt i32 %ilist, 0, !dbg !114
+  %or.cond = or i1 %1, %2, !dbg !115
+  br i1 %or.cond, label %7, label %3, !dbg !115
 
-lor.lhs.false2:                                   ; preds = %entry
-  %nlist = getelementptr inbounds %struct._ChvList* %chvlist, i64 0, i32 0
-  %0 = load i32* %nlist, align 4, !tbaa !0
-  %cmp3 = icmp sgt i32 %0, %ilist
-  br i1 %cmp3, label %if.end, label %if.then
+; <label>:3                                       ; preds = %0
+  %4 = getelementptr inbounds %struct._ChvList* %chvlist, i64 0, i32 0, !dbg !116
+  %5 = load i32* %4, align 4, !dbg !116, !tbaa !92
+  %6 = icmp sgt i32 %5, %ilist, !dbg !117
+  br i1 %6, label %10, label %7, !dbg !118
 
-if.then:                                          ; preds = %lor.lhs.false2, %entry
-  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([56 x i8]* @.str1, i64 0, i64 0), %struct._ChvList* %chvlist, i32 %ilist) #4
-  br label %if.end
+; <label>:7                                       ; preds = %3, %0
+  %8 = load %struct.__sFILE** @__stderrp, align 8, !dbg !119, !tbaa !102
+  %9 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %8, i8* getelementptr inbounds ([56 x i8]* @.str1, i64 0, i64 0), %struct._ChvList* %chvlist, i32 %ilist) #5, !dbg !121
+  br label %10, !dbg !122
 
-if.end:                                           ; preds = %lor.lhs.false2, %if.then
-  %counts = getelementptr inbounds %struct._ChvList* %chvlist, i64 0, i32 2
-  %2 = load i32** %counts, align 8, !tbaa !3
-  %cmp4 = icmp eq i32* %2, null
-  br i1 %cmp4, label %return, label %if.else
+; <label>:10                                      ; preds = %3, %7
+  %11 = getelementptr inbounds %struct._ChvList* %chvlist, i64 0, i32 2, !dbg !123
+  %12 = load i32** %11, align 8, !dbg !123, !tbaa !125
+  %13 = icmp eq i32* %12, null, !dbg !126
+  br i1 %13, label %20, label %14, !dbg !127
 
-if.else:                                          ; preds = %if.end
-  %idxprom = sext i32 %ilist to i64
-  %arrayidx = getelementptr inbounds i32* %2, i64 %idxprom
-  %3 = load i32* %arrayidx, align 4, !tbaa !0
-  %cmp7 = icmp eq i32 %3, 0
-  %conv = zext i1 %cmp7 to i32
-  br label %return
+; <label>:14                                      ; preds = %10
+  %15 = sext i32 %ilist to i64, !dbg !128
+  %16 = getelementptr inbounds i32* %12, i64 %15, !dbg !128
+  %17 = load i32* %16, align 4, !dbg !128, !tbaa !130
+  %18 = icmp eq i32 %17, 0, !dbg !131
+  %19 = zext i1 %18 to i32, !dbg !131
+  br label %20, !dbg !132
 
-return:                                           ; preds = %if.end, %if.else
-  %retval.0 = phi i32 [ %conv, %if.else ], [ 1, %if.end ]
-  ret i32 %retval.0
+; <label>:20                                      ; preds = %10, %14
+  %.0 = phi i32 [ %19, %14 ], [ 1, %10 ]
+  ret i32 %.0, !dbg !133
 }

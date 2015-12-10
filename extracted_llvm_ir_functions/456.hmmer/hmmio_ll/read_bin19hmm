@@ -1,46 +1,54 @@
-define internal i32 @read_bin19hmm(%struct.hmmfile_s* nocapture %hmmfp, %struct.plan7_s** nocapture %ret_hmm) #0 {
-entry:
+define internal i32 @read_bin19hmm(%struct.hmmfile_s* nocapture readonly %hmmfp, %struct.plan7_s** nocapture %ret_hmm) #0 {
   %magic = alloca i32, align 4
   %hmm = alloca %struct.plan7_s*, align 8
-  %f = getelementptr inbounds %struct.hmmfile_s* %hmmfp, i64 0, i32 0
-  %0 = load %struct._IO_FILE** %f, align 8, !tbaa !3
-  %call = call i32 @feof(%struct._IO_FILE* %0) #6
-  %tobool = icmp eq i32 %call, 0
-  br i1 %tobool, label %if.end, label %return
+  tail call void @llvm.dbg.value(metadata %struct.hmmfile_s* %hmmfp, i64 0, metadata !318, metadata !464), !dbg !1352
+  tail call void @llvm.dbg.value(metadata %struct.plan7_s** %ret_hmm, i64 0, metadata !319, metadata !464), !dbg !1353
+  %1 = getelementptr inbounds %struct.hmmfile_s* %hmmfp, i64 0, i32 0, !dbg !1354
+  %2 = load %struct.__sFILE** %1, align 8, !dbg !1354, !tbaa !490
+  %3 = tail call i32 @feof(%struct.__sFILE* %2) #6, !dbg !1356
+  %4 = icmp eq i32 %3, 0, !dbg !1356
+  br i1 %4, label %5, label %26, !dbg !1357
 
-if.end:                                           ; preds = %entry
-  %1 = bitcast i32* %magic to i8*
-  %2 = load %struct._IO_FILE** %f, align 8, !tbaa !3
-  %call2 = call i64 @fread(i8* %1, i64 4, i64 1, %struct._IO_FILE* %2) #6
-  %tobool3 = icmp eq i64 %call2, 0
-  br i1 %tobool3, label %return, label %if.end5
+; <label>:5                                       ; preds = %0
+  %6 = bitcast i32* %magic to i8*, !dbg !1358
+  %7 = load %struct.__sFILE** %1, align 8, !dbg !1360, !tbaa !490
+  %8 = call i64 @fread(i8* %6, i64 4, i64 1, %struct.__sFILE* %7) #6, !dbg !1361
+  %9 = icmp eq i64 %8, 0, !dbg !1361
+  br i1 %9, label %26, label %10, !dbg !1362
 
-if.end5:                                          ; preds = %if.end
-  %3 = load %struct._IO_FILE** %f, align 8, !tbaa !3
-  %byteswap = getelementptr inbounds %struct.hmmfile_s* %hmmfp, i64 0, i32 4
-  %4 = load i32* %byteswap, align 4, !tbaa !0
-  %call7 = call fastcc %struct.plan9_s* @read_plan9_binhmm(%struct._IO_FILE* %3, i32 7, i32 %4) #8
-  %cmp = icmp eq %struct.plan9_s* %call7, null
-  br i1 %cmp, label %if.then8, label %if.end9
+; <label>:10                                      ; preds = %5
+  %11 = load %struct.__sFILE** %1, align 8, !dbg !1363, !tbaa !490
+  %12 = getelementptr inbounds %struct.hmmfile_s* %hmmfp, i64 0, i32 4, !dbg !1364
+  %13 = load i32* %12, align 4, !dbg !1364, !tbaa !566
+  %14 = tail call fastcc %struct.plan9_s* @read_plan9_binhmm(%struct.__sFILE* %11, i32 7, i32 %13) #7, !dbg !1365
+  tail call void @llvm.dbg.value(metadata %struct.plan9_s* %14, i64 0, metadata !322, metadata !464), !dbg !1366
+  %15 = icmp eq %struct.plan9_s* %14, null, !dbg !1367
+  br i1 %15, label %16, label %17, !dbg !1369
 
-if.then8:                                         ; preds = %if.end5
-  store %struct.plan7_s* null, %struct.plan7_s** %ret_hmm, align 8, !tbaa !3
-  br label %return
+; <label>:16                                      ; preds = %10
+  store %struct.plan7_s* null, %struct.plan7_s** %ret_hmm, align 8, !dbg !1370, !tbaa !511
+  br label %26, !dbg !1372
 
-if.end9:                                          ; preds = %if.end5
-  call void @Plan9toPlan7(%struct.plan9_s* %call7, %struct.plan7_s** %hmm) #6
-  %call10 = call i8* @Strdup(i8* getelementptr inbounds ([34 x i8]* @.str59, i64 0, i64 0)) #6
-  %5 = load %struct.plan7_s** %hmm, align 8, !tbaa !3
-  %comlog = getelementptr inbounds %struct.plan7_s* %5, i64 0, i32 6
-  store i8* %call10, i8** %comlog, align 8, !tbaa !3
-  %6 = load %struct.plan7_s** %hmm, align 8, !tbaa !3
-  call void @Plan7SetCtime(%struct.plan7_s* %6) #6
-  %call11 = call i32 @P9FreeHMM(%struct.plan9_s* %call7) #6
-  %7 = load %struct.plan7_s** %hmm, align 8, !tbaa !3
-  store %struct.plan7_s* %7, %struct.plan7_s** %ret_hmm, align 8, !tbaa !3
-  br label %return
+; <label>:17                                      ; preds = %10
+  tail call void @llvm.dbg.value(metadata %struct.plan7_s** %hmm, i64 0, metadata !321, metadata !464), !dbg !1373
+  call void @Plan9toPlan7(%struct.plan9_s* %14, %struct.plan7_s** %hmm) #6, !dbg !1374
+  %18 = call i8* @Strdup(i8* getelementptr inbounds ([34 x i8]* @.str84, i64 0, i64 0)) #6, !dbg !1375
+  call void @llvm.dbg.value(metadata %struct.plan7_s** %hmm, i64 0, metadata !321, metadata !464), !dbg !1373
+  %19 = load %struct.plan7_s** %hmm, align 8, !dbg !1376, !tbaa !511
+  %20 = getelementptr inbounds %struct.plan7_s* %19, i64 0, i32 6, !dbg !1377
+  store i8* %18, i8** %20, align 8, !dbg !1378, !tbaa !1379
+  call void @llvm.dbg.value(metadata %struct.plan7_s** %hmm, i64 0, metadata !321, metadata !464), !dbg !1373
+  %21 = load %struct.plan7_s** %hmm, align 8, !dbg !1380, !tbaa !511
+  call void @Plan7SetCtime(%struct.plan7_s* %21) #6, !dbg !1381
+  %22 = call i32 @P9FreeHMM(%struct.plan9_s* %14) #6, !dbg !1382
+  call void @llvm.dbg.value(metadata %struct.plan7_s** %hmm, i64 0, metadata !321, metadata !464), !dbg !1373
+  %23 = bitcast %struct.plan7_s** %hmm to i64*, !dbg !1383
+  %24 = load i64* %23, align 8, !dbg !1383, !tbaa !511
+  %25 = bitcast %struct.plan7_s** %ret_hmm to i64*, !dbg !1384
+  store i64 %24, i64* %25, align 8, !dbg !1384, !tbaa !511
+  br label %26, !dbg !1385
 
-return:                                           ; preds = %if.end, %entry, %if.end9, %if.then8
-  %retval.0 = phi i32 [ 1, %if.then8 ], [ 1, %if.end9 ], [ 0, %entry ], [ 0, %if.end ]
-  ret i32 %retval.0
+; <label>:26                                      ; preds = %5, %0, %17, %16
+  %.0 = phi i32 [ 1, %16 ], [ 1, %17 ], [ 0, %0 ], [ 0, %5 ]
+  ret i32 %.0, !dbg !1386
 }

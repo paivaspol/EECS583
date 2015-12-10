@@ -1,24 +1,27 @@
 define void @_Z9task_initjj(i32 %total_stack, i32 %main_stack) #6 {
   %tmp = alloca %struct._Task, align 8
-  %1 = bitcast %struct._Task* %tmp to i8*
-  call void @llvm.lifetime.start(i64 360, i8* %1) #2
-  %2 = getelementptr inbounds %struct._Task* %tmp, i64 0, i32 4
-  store i32 %total_stack, i32* %2, align 4, !tbaa !11
-  %3 = getelementptr inbounds %struct._Task* %tmp, i64 0, i32 5
-  store %struct._Task* null, %struct._Task** %3, align 8, !tbaa !13
-  %4 = getelementptr inbounds %struct._Task* %tmp, i64 0, i32 1, i64 0
-  %5 = call i32 @setjmp(i32* %4) #9
-  %6 = icmp eq i32 %5, 0
-  br i1 %6, label %7, label %8
+  call void @llvm.dbg.value(metadata i32 %total_stack, i64 0, metadata !56, metadata !99), !dbg !254
+  call void @llvm.dbg.value(metadata i32 %main_stack, i64 0, metadata !57, metadata !99), !dbg !255
+  %1 = bitcast %struct._Task* %tmp to i8*, !dbg !256
+  call void @llvm.lifetime.start(i64 360, i8* %1) #2, !dbg !256
+  %2 = getelementptr inbounds %struct._Task* %tmp, i64 0, i32 4, !dbg !257
+  store i32 %total_stack, i32* %2, align 4, !dbg !258, !tbaa !143
+  %3 = getelementptr inbounds %struct._Task* %tmp, i64 0, i32 5, !dbg !259
+  store %struct._Task* null, %struct._Task** %3, align 8, !dbg !260, !tbaa !152
+  %4 = getelementptr inbounds %struct._Task* %tmp, i64 0, i32 1, i64 0, !dbg !261
+  %5 = call i32 @setjmp(i32* %4) #10, !dbg !263
+  %6 = icmp eq i32 %5, 0, !dbg !264
+  br i1 %6, label %7, label %8, !dbg !265
 
 ; <label>:7                                       ; preds = %0
-  call void @_Z3eatP5_TaskjS0_(%struct._Task* %tmp, i32 %main_stack, %struct._Task* null) #8
+  call void @llvm.dbg.value(metadata %struct._Task* %tmp, i64 0, metadata !58, metadata !99), !dbg !266
+  call void @_Z3eatP5_TaskjS0_(%struct._Task* %tmp, i32 %main_stack, %struct._Task* null) #9, !dbg !267
   unreachable
 
 ; <label>:8                                       ; preds = %0
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* bitcast (%struct._Task* @main_task to i8*), i8* %1, i64 360, i32 8, i1 false), !tbaa.struct !18
-  store i32 1, i32* getelementptr inbounds (%struct._Task* @main_task, i64 0, i32 3), align 8, !tbaa !12
-  store %struct._Task* @main_task, %struct._Task** @current_task, align 8, !tbaa !17
-  call void @llvm.lifetime.end(i64 360, i8* %1) #2
-  ret void
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* bitcast (%struct._Task* @main_task to i8*), i8* %1, i64 360, i32 8, i1 false), !dbg !269, !tbaa.struct !270
+  store i32 1, i32* getelementptr inbounds (%struct._Task* @main_task, i64 0, i32 3), align 8, !dbg !274, !tbaa !150
+  store %struct._Task* @main_task, %struct._Task** @current_task, align 8, !dbg !275, !tbaa !245
+  call void @llvm.lifetime.end(i64 360, i8* %1) #2, !dbg !276
+  ret void, !dbg !276
 }

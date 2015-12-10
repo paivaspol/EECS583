@@ -1,19 +1,20 @@
 define void @Chv_setNbytesInWorkspace(%struct._Chv* %chv, i32 %nbytes) #0 {
-entry:
-  %cmp = icmp eq %struct._Chv* %chv, null
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata %struct._Chv* %chv, i64 0, metadata !55, metadata !105), !dbg !196
+  tail call void @llvm.dbg.value(metadata i32 %nbytes, i64 0, metadata !56, metadata !105), !dbg !197
+  %1 = icmp eq %struct._Chv* %chv, null, !dbg !198
+  br i1 %1, label %2, label %5, !dbg !200
 
-if.then:                                          ; preds = %entry
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([61 x i8]* @.str5, i64 0, i64 0), %struct._Chv* null, i32 %nbytes) #4
-  tail call void @exit(i32 -1) #5
-  unreachable
+; <label>:2                                       ; preds = %0
+  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !201, !tbaa !115
+  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([61 x i8]* @.str5, i64 0, i64 0), %struct._Chv* null, i32 %nbytes) #5, !dbg !203
+  tail call void @exit(i32 -1) #6, !dbg !204
+  unreachable, !dbg !204
 
-if.end:                                           ; preds = %entry
-  %wrkDV = getelementptr inbounds %struct._Chv* %chv, i64 0, i32 9
-  %conv = sext i32 %nbytes to i64
-  %div = lshr i64 %conv, 3
-  %conv1 = trunc i64 %div to i32
-  tail call void @DV_setSize(%struct._DV* %wrkDV, i32 %conv1) #4
-  ret void
+; <label>:5                                       ; preds = %0
+  %6 = getelementptr inbounds %struct._Chv* %chv, i64 0, i32 9, !dbg !205
+  %7 = sext i32 %nbytes to i64, !dbg !206
+  %8 = lshr i64 %7, 3, !dbg !207
+  %9 = trunc i64 %8 to i32, !dbg !206
+  tail call void @DV_setSize(%struct._DV* %6, i32 %9) #5, !dbg !208
+  ret void, !dbg !209
 }

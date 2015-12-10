@@ -1,51 +1,52 @@
 define void @MSAAddComment(%struct.msa_struct* nocapture %msa, i8* %s) #0 {
-entry:
-  %comment = getelementptr inbounds %struct.msa_struct* %msa, i64 0, i32 20
-  %0 = load i8*** %comment, align 8, !tbaa !0
-  %cmp = icmp eq i8** %0, null
-  br i1 %cmp, label %if.then, label %entry.if.end_crit_edge
+  tail call void @llvm.dbg.value(metadata %struct.msa_struct* %msa, i64 0, metadata !123, metadata !481), !dbg !959
+  tail call void @llvm.dbg.value(metadata i8* %s, i64 0, metadata !124, metadata !481), !dbg !960
+  %1 = getelementptr inbounds %struct.msa_struct* %msa, i64 0, i32 20, !dbg !961
+  %2 = load i8*** %1, align 8, !dbg !961, !tbaa !859
+  %3 = icmp eq i8** %2, null, !dbg !963
+  br i1 %3, label %5, label %._crit_edge, !dbg !964
 
-entry.if.end_crit_edge:                           ; preds = %entry
-  %alloc_ncomment2.phi.trans.insert = getelementptr inbounds %struct.msa_struct* %msa, i64 0, i32 22
-  %.pre = load i32* %alloc_ncomment2.phi.trans.insert, align 4, !tbaa !3
-  br label %if.end
+._crit_edge:                                      ; preds = %0
+  %4 = bitcast i8** %2 to i8*
+  %.phi.trans.insert = getelementptr inbounds %struct.msa_struct* %msa, i64 0, i32 22
+  %.pre = load i32* %.phi.trans.insert, align 4, !dbg !965, !tbaa !967
+  br label %9, !dbg !964
 
-if.then:                                          ; preds = %entry
-  %call = tail call i8* @sre_malloc(i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i32 362, i64 80) #6
-  %1 = bitcast i8* %call to i8**
-  store i8** %1, i8*** %comment, align 8, !tbaa !0
-  %alloc_ncomment = getelementptr inbounds %struct.msa_struct* %msa, i64 0, i32 22
-  store i32 10, i32* %alloc_ncomment, align 4, !tbaa !3
-  br label %if.end
+; <label>:5                                       ; preds = %0
+  %6 = tail call i8* @sre_malloc(i8* getelementptr inbounds ([61 x i8]* @.str, i64 0, i64 0), i32 362, i64 80) #7, !dbg !968
+  %7 = bitcast i8*** %1 to i8**, !dbg !970
+  store i8* %6, i8** %7, align 8, !dbg !970, !tbaa !859
+  %8 = getelementptr inbounds %struct.msa_struct* %msa, i64 0, i32 22, !dbg !971
+  store i32 10, i32* %8, align 4, !dbg !972, !tbaa !967
+  br label %9, !dbg !973
 
-if.end:                                           ; preds = %entry.if.end_crit_edge, %if.then
-  %2 = phi i32 [ 10, %if.then ], [ %.pre, %entry.if.end_crit_edge ]
-  %3 = phi i8** [ %1, %if.then ], [ %0, %entry.if.end_crit_edge ]
-  %ncomment = getelementptr inbounds %struct.msa_struct* %msa, i64 0, i32 21
-  %4 = load i32* %ncomment, align 4, !tbaa !3
-  %cmp3 = icmp eq i32 %4, %2
-  br i1 %cmp3, label %if.then4, label %if.end10
+; <label>:9                                       ; preds = %._crit_edge, %5
+  %.pre-phi = phi i32* [ %.phi.trans.insert, %._crit_edge ], [ %8, %5 ], !dbg !965
+  %10 = phi i8* [ %4, %._crit_edge ], [ %6, %5 ]
+  %11 = phi i32 [ %.pre, %._crit_edge ], [ 10, %5 ]
+  %12 = getelementptr inbounds %struct.msa_struct* %msa, i64 0, i32 21, !dbg !974
+  %13 = load i32* %12, align 4, !dbg !974, !tbaa !861
+  %14 = icmp eq i32 %13, %11, !dbg !975
+  br i1 %14, label %15, label %21, !dbg !976
 
-if.then4:                                         ; preds = %if.end
-  %alloc_ncomment2 = getelementptr inbounds %struct.msa_struct* %msa, i64 0, i32 22
-  %add = add nsw i32 %2, 10
-  store i32 %add, i32* %alloc_ncomment2, align 4, !tbaa !3
-  %5 = bitcast i8** %3 to i8*
-  %conv = sext i32 %add to i64
-  %mul = shl nsw i64 %conv, 3
-  %call8 = tail call i8* @sre_realloc(i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i32 367, i8* %5, i64 %mul) #6
-  %6 = bitcast i8* %call8 to i8**
-  store i8** %6, i8*** %comment, align 8, !tbaa !0
-  br label %if.end10
+; <label>:15                                      ; preds = %9
+  %16 = add nsw i32 %11, 10, !dbg !977
+  store i32 %16, i32* %.pre-phi, align 4, !dbg !977, !tbaa !967
+  %17 = bitcast i8*** %1 to i8**, !dbg !979
+  %18 = sext i32 %16 to i64, !dbg !979
+  %19 = shl nsw i64 %18, 3, !dbg !979
+  %20 = tail call i8* @sre_realloc(i8* getelementptr inbounds ([61 x i8]* @.str, i64 0, i64 0), i32 367, i8* %10, i64 %19) #7, !dbg !979
+  store i8* %20, i8** %17, align 8, !dbg !980, !tbaa !859
+  br label %21, !dbg !981
 
-if.end10:                                         ; preds = %if.then4, %if.end
-  %call11 = tail call i8* @sre_strdup(i8* %s, i32 -1) #6
-  %7 = load i32* %ncomment, align 4, !tbaa !3
-  %idxprom = sext i32 %7 to i64
-  %8 = load i8*** %comment, align 8, !tbaa !0
-  %arrayidx = getelementptr inbounds i8** %8, i64 %idxprom
-  store i8* %call11, i8** %arrayidx, align 8, !tbaa !0
-  %inc = add nsw i32 %7, 1
-  store i32 %inc, i32* %ncomment, align 4, !tbaa !3
-  ret void
+; <label>:21                                      ; preds = %15, %9
+  %22 = tail call i8* @sre_strdup(i8* %s, i32 -1) #7, !dbg !982
+  %23 = load i32* %12, align 4, !dbg !983, !tbaa !861
+  %24 = sext i32 %23 to i64, !dbg !984
+  %25 = load i8*** %1, align 8, !dbg !985, !tbaa !859
+  %26 = getelementptr inbounds i8** %25, i64 %24, !dbg !984
+  store i8* %22, i8** %26, align 8, !dbg !986, !tbaa !519
+  %27 = add nsw i32 %23, 1, !dbg !987
+  store i32 %27, i32* %12, align 4, !dbg !987, !tbaa !861
+  ret void, !dbg !988
 }

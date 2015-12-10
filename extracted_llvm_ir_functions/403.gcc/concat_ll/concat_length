@@ -1,51 +1,58 @@
-define i64 @concat_length(i8* %first, ...) #0 {
-entry:
+define i64 @concat_length(i8* readonly %first, ...) #0 {
   %args = alloca [1 x %struct.__va_list_tag], align 16
-  %arraydecay1 = bitcast [1 x %struct.__va_list_tag]* %args to i8*
-  call void @llvm.va_start(i8* %arraydecay1)
-  %tobool3.i = icmp eq i8* %first, null
-  br i1 %tobool3.i, label %vconcat_length.exit, label %for.body.lr.ph.i
+  tail call void @llvm.dbg.value(metadata i8* %first, i64 0, metadata !14, metadata !94), !dbg !95
+  tail call void @llvm.dbg.declare(metadata [1 x %struct.__va_list_tag]* %args, metadata !16, metadata !94), !dbg !96
+  %1 = bitcast [1 x %struct.__va_list_tag]* %args to i8*, !dbg !96
+  call void @llvm.va_start(i8* %1), !dbg !96
+  call void @llvm.dbg.value(metadata i8* %first, i64 0, metadata !71, metadata !94) #2, !dbg !97
+  call void @llvm.dbg.value(metadata i64 0, i64 0, metadata !73, metadata !94) #2, !dbg !100
+  call void @llvm.dbg.value(metadata i8* %first, i64 0, metadata !74, metadata !94) #2, !dbg !101
+  %2 = icmp eq i8* %first, null, !dbg !102
+  br i1 %2, label %vconcat_length.exit, label %.lr.ph.i, !dbg !102
 
-for.body.lr.ph.i:                                 ; preds = %entry
-  %gp_offset_p.i = getelementptr inbounds [1 x %struct.__va_list_tag]* %args, i64 0, i64 0, i32 0
-  %0 = getelementptr inbounds [1 x %struct.__va_list_tag]* %args, i64 0, i64 0, i32 3
-  %overflow_arg_area_p.i = getelementptr inbounds [1 x %struct.__va_list_tag]* %args, i64 0, i64 0, i32 2
-  %gp_offset.pre.i = load i32* %gp_offset_p.i, align 16
-  br label %for.body.i
+.lr.ph.i:                                         ; preds = %0
+  %3 = getelementptr inbounds [1 x %struct.__va_list_tag]* %args, i64 0, i64 0, i32 0, !dbg !104
+  %4 = getelementptr inbounds [1 x %struct.__va_list_tag]* %args, i64 0, i64 0, i32 3, !dbg !104
+  %5 = getelementptr inbounds [1 x %struct.__va_list_tag]* %args, i64 0, i64 0, i32 2, !dbg !104
+  %.pre.i = load i32* %3, align 16, !dbg !104
+  br label %6, !dbg !102
 
-for.body.i:                                       ; preds = %vaarg.end.i, %for.body.lr.ph.i
-  %gp_offset.i = phi i32 [ %gp_offset.pre.i, %for.body.lr.ph.i ], [ %gp_offset6.i, %vaarg.end.i ]
-  %arg.05.i = phi i8* [ %first, %for.body.lr.ph.i ], [ %4, %vaarg.end.i ]
-  %length.04.i = phi i64 [ 0, %for.body.lr.ph.i ], [ %add.i, %vaarg.end.i ]
-  %call.i = call i64 @strlen(i8* %arg.05.i) #5
-  %add.i = add i64 %call.i, %length.04.i
-  %fits_in_gp.i = icmp ult i32 %gp_offset.i, 41
-  br i1 %fits_in_gp.i, label %vaarg.in_reg.i, label %vaarg.in_mem.i
+; <label>:6                                       ; preds = %19, %.lr.ph.i
+  %7 = phi i32 [ %.pre.i, %.lr.ph.i ], [ %20, %19 ], !dbg !106
+  %arg.02.i = phi i8* [ %first, %.lr.ph.i ], [ %22, %19 ], !dbg !107
+  %length.01.i = phi i64 [ 0, %.lr.ph.i ], [ %9, %19 ], !dbg !107
+  %8 = call i64 @strlen(i8* %arg.02.i) #6, !dbg !106
+  %9 = add i64 %8, %length.01.i, !dbg !108
+  call void @llvm.dbg.value(metadata i64 %9, i64 0, metadata !73, metadata !94) #2, !dbg !100
+  %10 = icmp ult i32 %7, 41, !dbg !104
+  br i1 %10, label %11, label %16, !dbg !104
 
-vaarg.in_reg.i:                                   ; preds = %for.body.i
-  %reg_save_area.i = load i8** %0, align 16
-  %1 = sext i32 %gp_offset.i to i64
-  %2 = getelementptr i8* %reg_save_area.i, i64 %1
-  %3 = add i32 %gp_offset.i, 8
-  store i32 %3, i32* %gp_offset_p.i, align 16
-  br label %vaarg.end.i
+; <label>:11                                      ; preds = %6
+  %12 = load i8** %4, align 16, !dbg !104
+  %13 = sext i32 %7 to i64, !dbg !104
+  %14 = getelementptr i8* %12, i64 %13, !dbg !104
+  %15 = add i32 %7, 8, !dbg !104
+  store i32 %15, i32* %3, align 16, !dbg !104
+  br label %19, !dbg !104
 
-vaarg.in_mem.i:                                   ; preds = %for.body.i
-  %overflow_arg_area.i = load i8** %overflow_arg_area_p.i, align 8
-  %overflow_arg_area.next.i = getelementptr i8* %overflow_arg_area.i, i64 8
-  store i8* %overflow_arg_area.next.i, i8** %overflow_arg_area_p.i, align 8
-  br label %vaarg.end.i
+; <label>:16                                      ; preds = %6
+  %17 = load i8** %5, align 8, !dbg !104
+  %18 = getelementptr i8* %17, i64 8, !dbg !104
+  store i8* %18, i8** %5, align 8, !dbg !104
+  br label %19, !dbg !104
 
-vaarg.end.i:                                      ; preds = %vaarg.in_mem.i, %vaarg.in_reg.i
-  %gp_offset6.i = phi i32 [ %3, %vaarg.in_reg.i ], [ %gp_offset.i, %vaarg.in_mem.i ]
-  %vaarg.addr.in.i = phi i8* [ %2, %vaarg.in_reg.i ], [ %overflow_arg_area.i, %vaarg.in_mem.i ]
-  %vaarg.addr.i = bitcast i8* %vaarg.addr.in.i to i8**
-  %4 = load i8** %vaarg.addr.i, align 8
-  %tobool.i = icmp eq i8* %4, null
-  br i1 %tobool.i, label %vconcat_length.exit, label %for.body.i
+; <label>:19                                      ; preds = %16, %11
+  %20 = phi i32 [ %15, %11 ], [ %7, %16 ], !dbg !107
+  %.in.i = phi i8* [ %14, %11 ], [ %17, %16 ], !dbg !107
+  %21 = bitcast i8* %.in.i to i8**, !dbg !104
+  %22 = load i8** %21, align 8, !dbg !104
+  call void @llvm.dbg.value(metadata i8* %22, i64 0, metadata !74, metadata !94) #2, !dbg !101
+  %23 = icmp eq i8* %22, null, !dbg !102
+  br i1 %23, label %vconcat_length.exit, label %6, !dbg !102
 
-vconcat_length.exit:                              ; preds = %vaarg.end.i, %entry
-  %length.0.lcssa.i = phi i64 [ 0, %entry ], [ %add.i, %vaarg.end.i ]
-  call void @llvm.va_end(i8* %arraydecay1)
-  ret i64 %length.0.lcssa.i
+vconcat_length.exit:                              ; preds = %19, %0
+  %length.0.lcssa.i = phi i64 [ 0, %0 ], [ %9, %19 ], !dbg !107
+  call void @llvm.dbg.value(metadata i64 %length.0.lcssa.i, i64 0, metadata !15, metadata !94), !dbg !109
+  call void @llvm.va_end(i8* %1), !dbg !110
+  ret i64 %length.0.lcssa.i, !dbg !111
 }

@@ -1,36 +1,43 @@
-define signext i16 @searchcmap(i32 %n, %struct.t_mapping* nocapture readonly %map, i16 %c.coerce) #5 {
-  %1 = icmp sgt i32 %n, 0
-  br i1 %1, label %.lr.ph, label %.loopexit
+define signext i16 @searchcmap(i32 %n, %struct.t_mapping* nocapture readonly %map, i16 %c.coerce) #6 {
+  tail call void @llvm.dbg.value(metadata i16 %c.coerce, i64 0, metadata !145, metadata !477), !dbg !572
+  tail call void @llvm.dbg.value(metadata i32 %n, i64 0, metadata !143, metadata !477), !dbg !573
+  tail call void @llvm.dbg.value(metadata %struct.t_mapping* %map, i64 0, metadata !144, metadata !477), !dbg !574
+  tail call void @llvm.dbg.declare(metadata %struct.t_xpmelmt* undef, metadata !145, metadata !477), !dbg !572
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !146, metadata !477), !dbg !575
+  %1 = icmp sgt i32 %n, 0, !dbg !576
+  br i1 %1, label %.lr.ph, label %.loopexit, !dbg !579
 
 .lr.ph:                                           ; preds = %0
-  %2 = zext i16 %c.coerce to i32
-  %sext1.i = shl i32 %2, 24
-  %3 = sext i32 %n to i64
-  br label %4
+  %2 = zext i16 %c.coerce to i32, !dbg !580
+  %sext1.i = shl i32 %2, 24, !dbg !582
+  %3 = sext i32 %n to i64, !dbg !579
+  br label %4, !dbg !579
 
 ; <label>:4                                       ; preds = %.lr.ph, %.critedge
   %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %.critedge ]
-  %5 = getelementptr inbounds %struct.t_mapping* %map, i64 %indvars.iv, i32 0
-  %6 = bitcast %struct.t_xpmelmt* %5 to i16*
-  %7 = load i16* %6, align 1
-  %8 = zext i16 %7 to i32
-  %sext.i = shl i32 %8, 24
-  %9 = icmp eq i32 %sext.i, %sext1.i
+  %5 = getelementptr inbounds %struct.t_mapping* %map, i64 %indvars.iv, i32 0, !dbg !584
+  %6 = bitcast %struct.t_xpmelmt* %5 to i16*, !dbg !580
+  %7 = load i16* %6, align 1, !dbg !580
+  %8 = zext i16 %7 to i32, !dbg !580
+  tail call void @llvm.dbg.declare(metadata %struct.t_xpmelmt* undef, metadata !123, metadata !477), !dbg !585
+  tail call void @llvm.dbg.declare(metadata %struct.t_xpmelmt* undef, metadata !124, metadata !477), !dbg !586
+  %sext.i = shl i32 %8, 24, !dbg !587
+  %9 = icmp eq i32 %sext.i, %sext1.i, !dbg !588
   %.unshifted.i = xor i16 %7, %c.coerce
-  %10 = icmp ult i16 %.unshifted.i, 256
-  %or.cond = and i1 %10, %9
-  br i1 %or.cond, label %11, label %.critedge
+  %10 = icmp ult i16 %.unshifted.i, 256, !dbg !589
+  %or.cond = and i1 %10, %9, !dbg !590
+  br i1 %or.cond, label %11, label %.critedge, !dbg !590
 
 ; <label>:11                                      ; preds = %4
-  %12 = trunc i64 %indvars.iv to i16
-  br label %.loopexit
+  %12 = trunc i64 %indvars.iv to i16, !dbg !591
+  br label %.loopexit, !dbg !592
 
 .critedge:                                        ; preds = %4
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %13 = icmp slt i64 %indvars.iv.next, %3
-  br i1 %13, label %4, label %.loopexit
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !579
+  %13 = icmp slt i64 %indvars.iv.next, %3, !dbg !576
+  br i1 %13, label %4, label %.loopexit, !dbg !579
 
 .loopexit:                                        ; preds = %.critedge, %0, %11
   %.0 = phi i16 [ %12, %11 ], [ -1, %0 ], [ -1, %.critedge ]
-  ret i16 %.0
+  ret i16 %.0, !dbg !593
 }

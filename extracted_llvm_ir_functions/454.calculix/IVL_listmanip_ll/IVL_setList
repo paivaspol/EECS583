@@ -1,237 +1,244 @@
 define void @IVL_setList(%struct._IVL* %ivl, i32 %ilist, i32 %isize, i32* %ivec) #0 {
-entry:
-  %cmp = icmp eq %struct._IVL* %ivl, null
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata %struct._IVL* %ivl, i64 0, metadata !58, metadata !86), !dbg !207
+  tail call void @llvm.dbg.value(metadata i32 %ilist, i64 0, metadata !59, metadata !86), !dbg !208
+  tail call void @llvm.dbg.value(metadata i32 %isize, i64 0, metadata !60, metadata !86), !dbg !209
+  tail call void @llvm.dbg.value(metadata i32* %ivec, i64 0, metadata !61, metadata !86), !dbg !210
+  %1 = icmp eq %struct._IVL* %ivl, null, !dbg !211
+  br i1 %1, label %2, label %5, !dbg !213
 
-if.then:                                          ; preds = %entry
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([67 x i8]* @.str8, i64 0, i64 0), %struct._IVL* null, i32 %ilist, i32 %isize, i32* %ivec) #4
-  tail call void @exit(i32 -1) #5
-  unreachable
+; <label>:2                                       ; preds = %0
+  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !214, !tbaa !108
+  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([67 x i8]* @.str8, i64 0, i64 0), %struct._IVL* null, i32 %ilist, i32 %isize, i32* %ivec) #5, !dbg !216
+  tail call void @exit(i32 -1) #6, !dbg !217
+  unreachable, !dbg !217
 
-if.end:                                           ; preds = %entry
-  %cmp1 = icmp slt i32 %ilist, 0
-  br i1 %cmp1, label %if.then2, label %if.end4
+; <label>:5                                       ; preds = %0
+  %6 = icmp slt i32 %ilist, 0, !dbg !218
+  br i1 %6, label %7, label %10, !dbg !220
 
-if.then2:                                         ; preds = %if.end
-  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
-  %call3 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([64 x i8]* @.str9, i64 0, i64 0), %struct._IVL* %ivl, i32 %ilist, i32 %isize, i32* %ivec) #4
-  tail call void @exit(i32 -1) #5
-  unreachable
+; <label>:7                                       ; preds = %5
+  %8 = load %struct.__sFILE** @__stderrp, align 8, !dbg !221, !tbaa !108
+  %9 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %8, i8* getelementptr inbounds ([64 x i8]* @.str9, i64 0, i64 0), %struct._IVL* %ivl, i32 %ilist, i32 %isize, i32* %ivec) #5, !dbg !223
+  tail call void @exit(i32 -1) #6, !dbg !224
+  unreachable, !dbg !224
 
-if.end4:                                          ; preds = %if.end
-  %maxnlist = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 1
-  %2 = load i32* %maxnlist, align 4, !tbaa !0
-  %cmp5 = icmp sgt i32 %2, %ilist
-  br i1 %cmp5, label %if.end14, label %if.then6
+; <label>:10                                      ; preds = %5
+  %11 = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 1, !dbg !225
+  %12 = load i32* %11, align 4, !dbg !225, !tbaa !226
+  %13 = icmp sgt i32 %12, %ilist, !dbg !227
+  br i1 %13, label %18, label %14, !dbg !228
 
-if.then6:                                         ; preds = %if.end4
-  %cmp8 = icmp slt i32 %2, 10
-  %.mul = select i1 %cmp8, i32 10, i32 %2
-  %cmp11 = icmp sgt i32 %.mul, %ilist
-  %add = add nsw i32 %ilist, 1
-  %.mul.add = select i1 %cmp11, i32 %.mul, i32 %add
-  tail call void @IVL_setMaxnlist(%struct._IVL* %ivl, i32 %.mul.add) #4
-  br label %if.end14
+; <label>:14                                      ; preds = %10
+  tail call void @llvm.dbg.value(metadata i32 %12, i64 0, metadata !62, metadata !86), !dbg !229
+  %15 = icmp slt i32 %12, 10, !dbg !230
+  %. = select i1 %15, i32 10, i32 %12, !dbg !232
+  tail call void @llvm.dbg.value(metadata i32 %., i64 0, metadata !62, metadata !86), !dbg !229
+  %16 = icmp sgt i32 %., %ilist, !dbg !233
+  %17 = add nsw i32 %ilist, 1, !dbg !235
+  tail call void @llvm.dbg.value(metadata i32 %17, i64 0, metadata !62, metadata !86), !dbg !229
+  %.. = select i1 %16, i32 %., i32 %17, !dbg !237
+  tail call void @IVL_setMaxnlist(%struct._IVL* %ivl, i32 %..) #5, !dbg !238
+  br label %18, !dbg !239
 
-if.end14:                                         ; preds = %if.end4, %if.then6
-  %nlist = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 2
-  %3 = load i32* %nlist, align 4, !tbaa !0
-  %cmp15 = icmp sgt i32 %3, %ilist
-  br i1 %cmp15, label %if.end19, label %if.then16
+; <label>:18                                      ; preds = %10, %14
+  %19 = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 2, !dbg !240
+  %20 = load i32* %19, align 4, !dbg !240, !tbaa !96
+  %21 = icmp sgt i32 %20, %ilist, !dbg !242
+  br i1 %21, label %24, label %22, !dbg !243
 
-if.then16:                                        ; preds = %if.end14
-  %add17 = add nsw i32 %ilist, 1
-  store i32 %add17, i32* %nlist, align 4, !tbaa !0
-  br label %if.end19
+; <label>:22                                      ; preds = %18
+  %23 = add nsw i32 %ilist, 1, !dbg !244
+  store i32 %23, i32* %19, align 4, !dbg !246, !tbaa !96
+  br label %24, !dbg !247
 
-if.end19:                                         ; preds = %if.end14, %if.then16
-  %cmp20 = icmp eq i32 %isize, 0
-  %type = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 0
-  %4 = load i32* %type, align 4, !tbaa !0
-  br i1 %cmp20, label %if.then21, label %if.else
+; <label>:24                                      ; preds = %18, %22
+  %25 = icmp eq i32 %isize, 0, !dbg !248
+  %26 = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 0, !dbg !249
+  %27 = load i32* %26, align 4, !dbg !249, !tbaa !252
+  br i1 %25, label %28, label %47, !dbg !253
 
-if.then21:                                        ; preds = %if.end19
-  %cmp22 = icmp eq i32 %4, 2
-  %idxprom = sext i32 %ilist to i64
-  %p_vec = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 5
-  br i1 %cmp22, label %if.then23, label %if.end30
+; <label>:28                                      ; preds = %24
+  %29 = icmp eq i32 %27, 2, !dbg !254
+  %30 = sext i32 %ilist to i64, !dbg !255
+  %31 = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 5, !dbg !258
+  br i1 %29, label %32, label %._crit_edge, !dbg !259
 
-if.then23:                                        ; preds = %if.then21
-  %5 = load i32*** %p_vec, align 8, !tbaa !3
-  %arrayidx = getelementptr inbounds i32** %5, i64 %idxprom
-  %6 = load i32** %arrayidx, align 8, !tbaa !3
-  %cmp24 = icmp eq i32* %6, null
-  br i1 %cmp24, label %if.end30, label %if.then25
+; <label>:32                                      ; preds = %28
+  %33 = load i32*** %31, align 8, !dbg !258, !tbaa !126
+  %34 = getelementptr inbounds i32** %33, i64 %30, !dbg !255
+  %35 = load i32** %34, align 8, !dbg !255, !tbaa !108
+  %36 = icmp eq i32* %35, null, !dbg !260
+  br i1 %36, label %._crit_edge, label %37, !dbg !261
 
-if.then25:                                        ; preds = %if.then23
-  tail call void @IVfree(i32* %6) #4
-  br label %if.end30
+; <label>:37                                      ; preds = %32
+  tail call void @IVfree(i32* %35) #5, !dbg !262
+  br label %._crit_edge, !dbg !264
 
-if.end30:                                         ; preds = %if.then21, %if.then23, %if.then25
-  %sizes = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 4
-  %7 = load i32** %sizes, align 8, !tbaa !3
-  %arrayidx32 = getelementptr inbounds i32* %7, i64 %idxprom
-  %8 = load i32* %arrayidx32, align 4, !tbaa !0
-  %tsize = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 3
-  %9 = load i32* %tsize, align 4, !tbaa !0
-  %sub = sub nsw i32 %9, %8
-  store i32 %sub, i32* %tsize, align 4, !tbaa !0
-  store i32 0, i32* %arrayidx32, align 4, !tbaa !0
-  %10 = load i32*** %p_vec, align 8, !tbaa !3
-  %arrayidx38 = getelementptr inbounds i32** %10, i64 %idxprom
-  store i32* null, i32** %arrayidx38, align 8, !tbaa !3
-  br label %if.end128
+._crit_edge:                                      ; preds = %28, %32, %37
+  %38 = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 4, !dbg !265
+  %39 = load i32** %38, align 8, !dbg !265, !tbaa !122
+  %40 = getelementptr inbounds i32* %39, i64 %30, !dbg !266
+  %41 = load i32* %40, align 4, !dbg !266, !tbaa !123
+  %42 = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 3, !dbg !267
+  %43 = load i32* %42, align 4, !dbg !268, !tbaa !269
+  %44 = sub nsw i32 %43, %41, !dbg !268
+  store i32 %44, i32* %42, align 4, !dbg !268, !tbaa !269
+  store i32 0, i32* %40, align 4, !dbg !270, !tbaa !123
+  %45 = load i32*** %31, align 8, !dbg !271, !tbaa !126
+  %46 = getelementptr inbounds i32** %45, i64 %30, !dbg !272
+  store i32* null, i32** %46, align 8, !dbg !273, !tbaa !108
+  br label %139, !dbg !274
 
-if.else:                                          ; preds = %if.end19
-  %cmp40 = icmp eq i32 %4, 3
-  %idxprom42 = sext i32 %ilist to i64
-  %sizes43 = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 4
-  %11 = load i32** %sizes43, align 8, !tbaa !3
-  %arrayidx44 = getelementptr inbounds i32* %11, i64 %idxprom42
-  %12 = load i32* %arrayidx44, align 4, !tbaa !0
-  br i1 %cmp40, label %if.then41, label %if.else57
+; <label>:47                                      ; preds = %24
+  %48 = icmp eq i32 %27, 3, !dbg !275
+  %49 = sext i32 %ilist to i64, !dbg !276
+  %50 = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 4, !dbg !278
+  %51 = load i32** %50, align 8, !dbg !278, !tbaa !122
+  %52 = getelementptr inbounds i32* %51, i64 %49, !dbg !276
+  %53 = load i32* %52, align 4, !dbg !276, !tbaa !123
+  br i1 %48, label %54, label %64, !dbg !279
 
-if.then41:                                        ; preds = %if.else
-  %sub45 = sub i32 %isize, %12
-  %tsize46 = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 3
-  %13 = load i32* %tsize46, align 4, !tbaa !0
-  %add47 = add nsw i32 %sub45, %13
-  store i32 %add47, i32* %tsize46, align 4, !tbaa !0
-  store i32 %isize, i32* %arrayidx44, align 4, !tbaa !0
-  %cmp51 = icmp eq i32* %ivec, null
-  br i1 %cmp51, label %if.end128, label %if.then52
+; <label>:54                                      ; preds = %47
+  %55 = sub i32 %isize, %53, !dbg !280
+  %56 = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 3, !dbg !281
+  %57 = load i32* %56, align 4, !dbg !282, !tbaa !269
+  %58 = add nsw i32 %55, %57, !dbg !282
+  store i32 %58, i32* %56, align 4, !dbg !282, !tbaa !269
+  store i32 %isize, i32* %52, align 4, !dbg !283, !tbaa !123
+  %59 = icmp eq i32* %ivec, null, !dbg !284
+  br i1 %59, label %139, label %60, !dbg !286
 
-if.then52:                                        ; preds = %if.then41
-  %p_vec54 = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 5
-  %14 = load i32*** %p_vec54, align 8, !tbaa !3
-  %arrayidx55 = getelementptr inbounds i32** %14, i64 %idxprom42
-  store i32* %ivec, i32** %arrayidx55, align 8, !tbaa !3
-  br label %if.end128
+; <label>:60                                      ; preds = %54
+  %61 = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 5, !dbg !287
+  %62 = load i32*** %61, align 8, !dbg !287, !tbaa !126
+  %63 = getelementptr inbounds i32** %62, i64 %49, !dbg !289
+  store i32* %ivec, i32** %63, align 8, !dbg !290, !tbaa !108
+  br label %139, !dbg !291
 
-if.else57:                                        ; preds = %if.else
-  %cmp61 = icmp slt i32 %12, %isize
-  br i1 %cmp61, label %if.then62, label %if.end111
+; <label>:64                                      ; preds = %47
+  %65 = icmp slt i32 %53, %isize, !dbg !292
+  br i1 %65, label %66, label %125, !dbg !293
 
-if.then62:                                        ; preds = %if.else57
-  switch i32 %4, label %sw.default [
-    i32 2, label %sw.bb
-    i32 1, label %sw.bb77
-  ]
+; <label>:66                                      ; preds = %64
+  switch i32 %27, label %122 [
+    i32 2, label %67
+    i32 1, label %78
+  ], !dbg !294
 
-sw.bb:                                            ; preds = %if.then62
-  %p_vec65 = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 5
-  %15 = load i32*** %p_vec65, align 8, !tbaa !3
-  %arrayidx66 = getelementptr inbounds i32** %15, i64 %idxprom42
-  %16 = load i32** %arrayidx66, align 8, !tbaa !3
-  %cmp67 = icmp eq i32* %16, null
-  br i1 %cmp67, label %if.end72, label %if.then68
+; <label>:67                                      ; preds = %66
+  %68 = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 5, !dbg !295
+  %69 = load i32*** %68, align 8, !dbg !295, !tbaa !126
+  %70 = getelementptr inbounds i32** %69, i64 %49, !dbg !297
+  %71 = load i32** %70, align 8, !dbg !297, !tbaa !108
+  %72 = icmp eq i32* %71, null, !dbg !298
+  br i1 %72, label %74, label %73, !dbg !299
 
-if.then68:                                        ; preds = %sw.bb
-  tail call void @IVfree(i32* %16) #4
-  br label %if.end72
+; <label>:73                                      ; preds = %67
+  tail call void @IVfree(i32* %71) #5, !dbg !300
+  br label %74, !dbg !302
 
-if.end72:                                         ; preds = %sw.bb, %if.then68
-  %call73 = tail call i32* @IVinit(i32 %isize, i32 -1) #4
-  %17 = load i32*** %p_vec65, align 8, !tbaa !3
-  %arrayidx76 = getelementptr inbounds i32** %17, i64 %idxprom42
-  store i32* %call73, i32** %arrayidx76, align 8, !tbaa !3
-  br label %if.end111
+; <label>:74                                      ; preds = %67, %73
+  %75 = tail call i32* @IVinit(i32 %isize, i32 -1) #5, !dbg !303
+  %76 = load i32*** %68, align 8, !dbg !304, !tbaa !126
+  %77 = getelementptr inbounds i32** %76, i64 %49, !dbg !305
+  store i32* %75, i32** %77, align 8, !dbg !306, !tbaa !108
+  br label %125, !dbg !307
 
-sw.bb77:                                          ; preds = %if.then62
-  %chunk78 = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 7
-  %18 = load %struct._Ichunk** %chunk78, align 8, !tbaa !3
-  %cmp79 = icmp eq %struct._Ichunk* %18, null
-  br i1 %cmp79, label %if.then82, label %lor.lhs.false
+; <label>:78                                      ; preds = %66
+  %79 = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 7, !dbg !308
+  %80 = load %struct._Ichunk** %79, align 8, !dbg !308, !tbaa !310
+  tail call void @llvm.dbg.value(metadata %struct._Ichunk* %80, i64 0, metadata !65, metadata !86), !dbg !311
+  %81 = icmp eq %struct._Ichunk* %80, null, !dbg !312
+  br i1 %81, label %89, label %82, !dbg !313
 
-lor.lhs.false:                                    ; preds = %sw.bb77
-  %size = getelementptr inbounds %struct._Ichunk* %18, i64 0, i32 0
-  %19 = load i32* %size, align 4, !tbaa !0
-  %inuse = getelementptr inbounds %struct._Ichunk* %18, i64 0, i32 1
-  %20 = load i32* %inuse, align 4, !tbaa !0
-  %sub80 = sub nsw i32 %19, %20
-  %cmp81 = icmp slt i32 %sub80, %isize
-  br i1 %cmp81, label %if.then82, label %if.end101
+; <label>:82                                      ; preds = %78
+  %83 = getelementptr inbounds %struct._Ichunk* %80, i64 0, i32 0, !dbg !314
+  %84 = load i32* %83, align 4, !dbg !314, !tbaa !315
+  %85 = getelementptr inbounds %struct._Ichunk* %80, i64 0, i32 1, !dbg !317
+  %86 = load i32* %85, align 4, !dbg !317, !tbaa !318
+  %87 = sub nsw i32 %84, %86, !dbg !319
+  %88 = icmp slt i32 %87, %isize, !dbg !320
+  br i1 %88, label %89, label %111, !dbg !321
 
-if.then82:                                        ; preds = %lor.lhs.false, %sw.bb77
-  %call83 = tail call noalias i8* @malloc(i64 24) #4
-  %21 = bitcast i8* %call83 to %struct._Ichunk*
-  %cmp84 = icmp eq i8* %call83, null
-  br i1 %cmp84, label %if.then85, label %if.end88
+; <label>:89                                      ; preds = %82, %78
+  %90 = tail call i8* @malloc(i64 24) #5, !dbg !322
+  tail call void @llvm.dbg.value(metadata %struct._Ichunk* %96, i64 0, metadata !65, metadata !86), !dbg !311
+  %91 = icmp eq i8* %90, null, !dbg !322
+  br i1 %91, label %92, label %95, !dbg !327
 
-if.then85:                                        ; preds = %if.then82
-  %22 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
-  %call86 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %22, i8* getelementptr inbounds ([49 x i8]* @.str10, i64 0, i64 0), i64 24, i32 279, i8* getelementptr inbounds ([78 x i8]* @.str11, i64 0, i64 0)) #4
-  tail call void @exit(i32 -1) #5
-  unreachable
+; <label>:92                                      ; preds = %89
+  %93 = load %struct.__sFILE** @__stderrp, align 8, !dbg !328, !tbaa !108
+  %94 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %93, i8* getelementptr inbounds ([49 x i8]* @.str10, i64 0, i64 0), i64 24, i32 279, i8* getelementptr inbounds ([90 x i8]* @.str11, i64 0, i64 0)) #5, !dbg !328
+  tail call void @exit(i32 -1) #6, !dbg !328
+  unreachable, !dbg !328
 
-if.end88:                                         ; preds = %if.then82
-  %incr = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 6
-  %23 = load i32* %incr, align 4, !tbaa !0
-  %cmp89 = icmp sgt i32 %23, %isize
-  %size92 = bitcast i8* %call83 to i32*
-  %.isize = select i1 %cmp89, i32 %23, i32 %isize
-  store i32 %.isize, i32* %size92, align 4, !tbaa !0
-  %inuse96 = getelementptr inbounds i8* %call83, i64 4
-  %24 = bitcast i8* %inuse96 to i32*
-  store i32 0, i32* %24, align 4, !tbaa !0
-  %call98 = tail call i32* @IVinit(i32 %.isize, i32 -1) #4
-  %base = getelementptr inbounds i8* %call83, i64 8
-  %25 = bitcast i8* %base to i32**
-  store i32* %call98, i32** %25, align 8, !tbaa !3
-  %26 = load %struct._Ichunk** %chunk78, align 8, !tbaa !3
-  %next = getelementptr inbounds i8* %call83, i64 16
-  %27 = bitcast i8* %next to %struct._Ichunk**
-  store %struct._Ichunk* %26, %struct._Ichunk** %27, align 8, !tbaa !3
-  store %struct._Ichunk* %21, %struct._Ichunk** %chunk78, align 8, !tbaa !3
-  %inuse103.phi.trans.insert = getelementptr inbounds i8* %call83, i64 4
-  %28 = bitcast i8* %inuse103.phi.trans.insert to i32*
-  %.pre = load i32* %28, align 4, !tbaa !0
-  br label %if.end101
+; <label>:95                                      ; preds = %89
+  %96 = bitcast i8* %90 to %struct._Ichunk*, !dbg !322
+  %97 = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 6, !dbg !330
+  %98 = load i32* %97, align 4, !dbg !330, !tbaa !332
+  %99 = icmp sgt i32 %98, %isize, !dbg !333
+  %100 = bitcast i8* %90 to i32*, !dbg !334
+  %.isize = select i1 %99, i32 %98, i32 %isize, !dbg !336
+  store i32 %.isize, i32* %100, align 4, !dbg !337, !tbaa !315
+  %101 = getelementptr inbounds i8* %90, i64 4, !dbg !338
+  %102 = bitcast i8* %101 to i32*, !dbg !338
+  store i32 0, i32* %102, align 4, !dbg !339, !tbaa !318
+  %103 = tail call i32* @IVinit(i32 %.isize, i32 -1) #5, !dbg !340
+  %104 = getelementptr inbounds i8* %90, i64 8, !dbg !341
+  %105 = bitcast i8* %104 to i32**, !dbg !341
+  store i32* %103, i32** %105, align 8, !dbg !342, !tbaa !343
+  %106 = bitcast %struct._Ichunk** %79 to i64*, !dbg !344
+  %107 = load i64* %106, align 8, !dbg !344, !tbaa !310
+  %108 = getelementptr inbounds i8* %90, i64 16, !dbg !345
+  %109 = bitcast i8* %108 to i64*, !dbg !345
+  store i64 %107, i64* %109, align 8, !dbg !345, !tbaa !346
+  %110 = bitcast %struct._Ichunk** %79 to i8**, !dbg !347
+  store i8* %90, i8** %110, align 8, !dbg !347, !tbaa !310
+  br label %111, !dbg !348
 
-if.end101:                                        ; preds = %if.end88, %lor.lhs.false
-  %29 = phi i32 [ %.pre, %if.end88 ], [ %20, %lor.lhs.false ]
-  %chunk.0 = phi %struct._Ichunk* [ %21, %if.end88 ], [ %18, %lor.lhs.false ]
-  %base102 = getelementptr inbounds %struct._Ichunk* %chunk.0, i64 0, i32 2
-  %30 = load i32** %base102, align 8, !tbaa !3
-  %inuse103 = getelementptr inbounds %struct._Ichunk* %chunk.0, i64 0, i32 1
-  %idx.ext = sext i32 %29 to i64
-  %add.ptr = getelementptr inbounds i32* %30, i64 %idx.ext
-  %p_vec105 = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 5
-  %31 = load i32*** %p_vec105, align 8, !tbaa !3
-  %arrayidx106 = getelementptr inbounds i32** %31, i64 %idxprom42
-  store i32* %add.ptr, i32** %arrayidx106, align 8, !tbaa !3
-  %add108 = add nsw i32 %29, %isize
-  store i32 %add108, i32* %inuse103, align 4, !tbaa !0
-  br label %if.end111
+; <label>:111                                     ; preds = %95, %82
+  %112 = phi i32 [ 0, %95 ], [ %86, %82 ]
+  %chunk.0 = phi %struct._Ichunk* [ %96, %95 ], [ %80, %82 ]
+  %113 = getelementptr inbounds %struct._Ichunk* %chunk.0, i64 0, i32 2, !dbg !349
+  %114 = load i32** %113, align 8, !dbg !349, !tbaa !343
+  %115 = getelementptr inbounds %struct._Ichunk* %chunk.0, i64 0, i32 1, !dbg !350
+  %116 = sext i32 %112 to i64, !dbg !351
+  %117 = getelementptr inbounds i32* %114, i64 %116, !dbg !351
+  %118 = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 5, !dbg !352
+  %119 = load i32*** %118, align 8, !dbg !352, !tbaa !126
+  %120 = getelementptr inbounds i32** %119, i64 %49, !dbg !353
+  store i32* %117, i32** %120, align 8, !dbg !354, !tbaa !108
+  %121 = add nsw i32 %112, %isize, !dbg !355
+  store i32 %121, i32* %115, align 4, !dbg !355, !tbaa !318
+  br label %125, !dbg !356
 
-sw.default:                                       ; preds = %if.then62
-  %32 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
-  %call110 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %32, i8* getelementptr inbounds ([134 x i8]* @.str12, i64 0, i64 0), %struct._IVL* %ivl, i32 %ilist, i32 %isize, i32* %ivec, i32 %4) #4
-  tail call void @exit(i32 -1) #5
-  unreachable
+; <label>:122                                     ; preds = %66
+  %123 = load %struct.__sFILE** @__stderrp, align 8, !dbg !357, !tbaa !108
+  %124 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %123, i8* getelementptr inbounds ([134 x i8]* @.str12, i64 0, i64 0), %struct._IVL* %ivl, i32 %ilist, i32 %isize, i32* %ivec, i32 %27) #5, !dbg !358
+  tail call void @exit(i32 -1) #6, !dbg !359
+  unreachable, !dbg !359
 
-if.end111:                                        ; preds = %if.end72, %if.end101, %if.else57
-  %33 = load i32** %sizes43, align 8, !tbaa !3
-  %arrayidx114 = getelementptr inbounds i32* %33, i64 %idxprom42
-  %34 = load i32* %arrayidx114, align 4, !tbaa !0
-  %sub115 = sub i32 %isize, %34
-  %tsize116 = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 3
-  %35 = load i32* %tsize116, align 4, !tbaa !0
-  %add117 = add nsw i32 %sub115, %35
-  store i32 %add117, i32* %tsize116, align 4, !tbaa !0
-  store i32 %isize, i32* %arrayidx114, align 4, !tbaa !0
-  %cmp121 = icmp eq i32* %ivec, null
-  br i1 %cmp121, label %if.end128, label %if.then122
+; <label>:125                                     ; preds = %74, %111, %64
+  %126 = load i32** %50, align 8, !dbg !360, !tbaa !122
+  %127 = getelementptr inbounds i32* %126, i64 %49, !dbg !361
+  %128 = load i32* %127, align 4, !dbg !361, !tbaa !123
+  %129 = sub i32 %isize, %128, !dbg !362
+  %130 = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 3, !dbg !363
+  %131 = load i32* %130, align 4, !dbg !364, !tbaa !269
+  %132 = add nsw i32 %129, %131, !dbg !364
+  store i32 %132, i32* %130, align 4, !dbg !364, !tbaa !269
+  store i32 %isize, i32* %127, align 4, !dbg !365, !tbaa !123
+  %133 = icmp eq i32* %ivec, null, !dbg !366
+  br i1 %133, label %139, label %134, !dbg !368
 
-if.then122:                                       ; preds = %if.end111
-  %p_vec124 = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 5
-  %36 = load i32*** %p_vec124, align 8, !tbaa !3
-  %arrayidx125 = getelementptr inbounds i32** %36, i64 %idxprom42
-  %37 = load i32** %arrayidx125, align 8, !tbaa !3
-  tail call void @IVcopy(i32 %isize, i32* %37, i32* %ivec) #4
-  br label %if.end128
+; <label>:134                                     ; preds = %125
+  %135 = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 5, !dbg !369
+  %136 = load i32*** %135, align 8, !dbg !369, !tbaa !126
+  %137 = getelementptr inbounds i32** %136, i64 %49, !dbg !371
+  %138 = load i32** %137, align 8, !dbg !371, !tbaa !108
+  tail call void @IVcopy(i32 %isize, i32* %138, i32* %ivec) #5, !dbg !372
+  br label %139, !dbg !373
 
-if.end128:                                        ; preds = %if.then41, %if.end111, %if.then52, %if.then122, %if.end30
-  ret void
+; <label>:139                                     ; preds = %54, %125, %60, %134, %._crit_edge
+  ret void, !dbg !374
 }

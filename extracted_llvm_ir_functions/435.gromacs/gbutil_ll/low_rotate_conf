@@ -1,68 +1,81 @@
-define internal fastcc void @low_rotate_conf(i32 %natom, [3 x float]* nocapture %x, float %alfa, float %beta, float %gamma) #4 {
-  %1 = icmp sgt i32 %natom, 0
-  br i1 %1, label %.lr.ph, label %._crit_edge
+define internal fastcc void @low_rotate_conf(i32 %natom, [3 x float]* nocapture %x, float %alfa, float %beta, float %gamma) #5 {
+  tail call void @llvm.dbg.value(metadata i32 %natom, i64 0, metadata !250, metadata !280), !dbg !345
+  tail call void @llvm.dbg.value(metadata [3 x float]* %x, i64 0, metadata !251, metadata !280), !dbg !346
+  tail call void @llvm.dbg.value(metadata float %alfa, i64 0, metadata !252, metadata !280), !dbg !347
+  tail call void @llvm.dbg.value(metadata float %beta, i64 0, metadata !253, metadata !280), !dbg !348
+  tail call void @llvm.dbg.value(metadata float %gamma, i64 0, metadata !254, metadata !280), !dbg !349
+  tail call void @llvm.dbg.declare(metadata [3 x float]* undef, metadata !256, metadata !280), !dbg !350
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !255, metadata !280), !dbg !351
+  %1 = icmp sgt i32 %natom, 0, !dbg !352
+  br i1 %1, label %.lr.ph, label %._crit_edge, !dbg !355
 
 .lr.ph:                                           ; preds = %0
-  %2 = fpext float %alfa to double
-  %3 = tail call double @cos(double %2) #9
-  %4 = tail call double @sin(double %2) #9
-  %5 = fpext float %beta to double
-  %6 = tail call double @cos(double %5) #9
-  %7 = tail call double @sin(double %5) #9
-  %8 = fpext float %gamma to double
-  %9 = tail call double @cos(double %8) #9
-  %10 = tail call double @sin(double %8) #9
-  %11 = add i32 %natom, -1
-  br label %12
+  %2 = fpext float %alfa to double, !dbg !356
+  %3 = tail call double @cos(double %2) #10, !dbg !358
+  %4 = tail call double @sin(double %2) #10, !dbg !359
+  %5 = fpext float %beta to double, !dbg !360
+  %6 = tail call double @cos(double %5) #10, !dbg !361
+  %7 = tail call double @sin(double %5) #10, !dbg !362
+  %8 = fpext float %gamma to double, !dbg !363
+  %9 = tail call double @cos(double %8) #10, !dbg !364
+  %10 = tail call double @sin(double %8) #10, !dbg !365
+  %11 = add i32 %natom, -1, !dbg !355
+  br label %12, !dbg !355
 
 ; <label>:12                                      ; preds = %12, %.lr.ph
   %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %12 ]
-  %13 = getelementptr inbounds [3 x float]* %x, i64 %indvars.iv
-  %14 = getelementptr inbounds [3 x float]* %13, i64 0, i64 0
-  %15 = getelementptr inbounds [3 x float]* %13, i64 0, i64 0
-  %16 = load float* %15, align 4, !tbaa !14
-  %17 = getelementptr inbounds [3 x float]* %x, i64 %indvars.iv, i64 1
-  %18 = load float* %17, align 4, !tbaa !14
-  %19 = getelementptr inbounds [3 x float]* %x, i64 %indvars.iv, i64 2
-  %20 = load float* %19, align 4, !tbaa !14
-  %21 = fpext float %18 to double
-  %22 = fmul double %21, %3
-  %23 = fpext float %20 to double
-  %24 = fmul double %23, %4
-  %25 = fadd double %22, %24
-  %26 = fptrunc double %25 to float
-  %27 = fmul double %23, %3
-  %28 = fmul double %21, %4
-  %29 = fsub double %27, %28
-  %30 = fptrunc double %29 to float
-  %31 = fpext float %16 to double
-  %32 = fmul double %31, %6
-  %33 = fpext float %30 to double
-  %34 = fmul double %33, %7
-  %35 = fsub double %32, %34
-  %36 = fptrunc double %35 to float
-  %37 = fmul double %6, %33
-  %38 = fmul double %31, %7
-  %39 = fadd double %37, %38
-  %40 = fptrunc double %39 to float
-  %41 = fpext float %36 to double
-  %42 = fmul double %41, %9
-  %43 = fpext float %26 to double
-  %44 = fmul double %43, %10
-  %45 = fadd double %42, %44
-  %46 = fptrunc double %45 to float
-  store float %46, float* %14, align 4, !tbaa !14
-  %47 = fmul double %43, %9
-  %48 = fmul double %41, %10
-  %49 = fsub double %47, %48
-  %50 = fptrunc double %49 to float
-  store float %50, float* %17, align 4, !tbaa !14
-  store float %40, float* %19, align 4, !tbaa !14
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %11
-  br i1 %exitcond, label %._crit_edge, label %12
+  %13 = getelementptr inbounds [3 x float]* %x, i64 %indvars.iv, !dbg !366
+  %14 = getelementptr inbounds [3 x float]* %13, i64 0, i64 0, !dbg !366
+  tail call void @llvm.dbg.value(metadata float* %14, i64 0, metadata !263, metadata !280), !dbg !367
+  tail call void @llvm.dbg.value(metadata float* undef, i64 0, metadata !264, metadata !280), !dbg !369
+  %15 = getelementptr inbounds [3 x float]* %13, i64 0, i64 0, !dbg !370
+  %16 = load float* %15, align 4, !dbg !370, !tbaa !323
+  %17 = getelementptr inbounds [3 x float]* %x, i64 %indvars.iv, i64 1, !dbg !371
+  %18 = load float* %17, align 4, !dbg !371, !tbaa !323
+  %19 = getelementptr inbounds [3 x float]* %x, i64 %indvars.iv, i64 2, !dbg !372
+  %20 = load float* %19, align 4, !dbg !372, !tbaa !323
+  %21 = fpext float %18 to double, !dbg !373
+  %22 = fmul double %21, %3, !dbg !374
+  %23 = fpext float %20 to double, !dbg !375
+  %24 = fmul double %23, %4, !dbg !376
+  %25 = fadd double %22, %24, !dbg !377
+  %26 = fptrunc double %25 to float, !dbg !373
+  %27 = fmul double %23, %3, !dbg !378
+  %28 = fmul double %21, %4, !dbg !379
+  %29 = fsub double %27, %28, !dbg !380
+  %30 = fptrunc double %29 to float, !dbg !381
+  tail call void @llvm.dbg.value(metadata float* %14, i64 0, metadata !263, metadata !280), !dbg !382
+  tail call void @llvm.dbg.value(metadata float* undef, i64 0, metadata !264, metadata !280), !dbg !384
+  %31 = fpext float %16 to double, !dbg !385
+  %32 = fmul double %31, %6, !dbg !386
+  %33 = fpext float %30 to double, !dbg !387
+  %34 = fmul double %33, %7, !dbg !388
+  %35 = fsub double %32, %34, !dbg !389
+  %36 = fptrunc double %35 to float, !dbg !385
+  %37 = fmul double %6, %33, !dbg !390
+  %38 = fmul double %31, %7, !dbg !391
+  %39 = fadd double %37, %38, !dbg !392
+  %40 = fptrunc double %39 to float, !dbg !393
+  tail call void @llvm.dbg.value(metadata float* %14, i64 0, metadata !263, metadata !280), !dbg !394
+  tail call void @llvm.dbg.value(metadata float* undef, i64 0, metadata !264, metadata !280), !dbg !396
+  %41 = fpext float %36 to double, !dbg !397
+  %42 = fmul double %41, %9, !dbg !398
+  %43 = fpext float %26 to double, !dbg !399
+  %44 = fmul double %43, %10, !dbg !400
+  %45 = fadd double %42, %44, !dbg !401
+  %46 = fptrunc double %45 to float, !dbg !397
+  store float %46, float* %14, align 4, !dbg !402, !tbaa !323
+  %47 = fmul double %43, %9, !dbg !403
+  %48 = fmul double %41, %10, !dbg !404
+  %49 = fsub double %47, %48, !dbg !405
+  %50 = fptrunc double %49 to float, !dbg !406
+  store float %50, float* %17, align 4, !dbg !407, !tbaa !323
+  store float %40, float* %19, align 4, !dbg !408, !tbaa !323
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !355
+  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !355
+  %exitcond = icmp eq i32 %lftr.wideiv, %11, !dbg !355
+  br i1 %exitcond, label %._crit_edge, label %12, !dbg !355
 
 ._crit_edge:                                      ; preds = %12, %0
-  ret void
+  ret void, !dbg !409
 }

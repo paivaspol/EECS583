@@ -1,126 +1,131 @@
 define double @Drand_value(%struct._Drand* %drand) #0 {
-entry:
-  %cmp = icmp eq %struct._Drand* %drand, null
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata %struct._Drand* %drand, i64 0, metadata !26, metadata !57), !dbg !58
+  %1 = icmp eq %struct._Drand* %drand, null, !dbg !59
+  br i1 %1, label %2, label %5, !dbg !61
 
-if.then:                                          ; preds = %entry
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([45 x i8]* @.str, i64 0, i64 0), %struct._Drand* null) #3
-  tail call void @exit(i32 -1) #4
-  unreachable
+; <label>:2                                       ; preds = %0
+  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !62, !tbaa !64
+  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([45 x i8]* @.str, i64 0, i64 0), %struct._Drand* null) #5, !dbg !68
+  tail call void @exit(i32 -1) #6, !dbg !69
+  unreachable, !dbg !69
 
-if.end:                                           ; preds = %entry
-  %mode = getelementptr inbounds %struct._Drand* %drand, i64 0, i32 8
-  %1 = load i32* %mode, align 4, !tbaa !3
-  %cmp1 = icmp eq i32 %1, 1
-  %seed1 = getelementptr inbounds %struct._Drand* %drand, i64 0, i32 0
-  %2 = load double* %seed1, align 8, !tbaa !4
-  %mul = fmul double %2, 4.001400e+04
-  %base1 = getelementptr inbounds %struct._Drand* %drand, i64 0, i32 2
-  %3 = load double* %base1, align 8, !tbaa !4
-  %call3 = tail call double @fmod(double %mul, double %3) #3
-  store double %call3, double* %seed1, align 8, !tbaa !4
-  %seed2 = getelementptr inbounds %struct._Drand* %drand, i64 0, i32 1
-  %4 = load double* %seed2, align 8, !tbaa !4
-  %mul5 = fmul double %4, 4.069200e+04
-  %base2 = getelementptr inbounds %struct._Drand* %drand, i64 0, i32 3
-  %5 = load double* %base2, align 8, !tbaa !4
-  %call6 = tail call double @fmod(double %mul5, double %5) #3
-  store double %call6, double* %seed2, align 8, !tbaa !4
-  %6 = load double* %seed1, align 8, !tbaa !4
-  %sub = fsub double %6, %call6
-  %cmp10 = fcmp ole double %sub, 0.000000e+00
-  %7 = load double* %base1, align 8, !tbaa !4
-  br i1 %cmp1, label %if.then2, label %if.else
+; <label>:5                                       ; preds = %0
+  %6 = getelementptr inbounds %struct._Drand* %drand, i64 0, i32 8, !dbg !70
+  %7 = load i32* %6, align 4, !dbg !70, !tbaa !72
+  %8 = icmp eq i32 %7, 1, !dbg !76
+  %9 = getelementptr inbounds %struct._Drand* %drand, i64 0, i32 0, !dbg !77
+  %10 = load double* %9, align 8, !dbg !77, !tbaa !79
+  %11 = fmul double %10, 4.001400e+04, !dbg !80
+  %12 = getelementptr inbounds %struct._Drand* %drand, i64 0, i32 2, !dbg !81
+  %13 = load double* %12, align 8, !dbg !81, !tbaa !82
+  %14 = tail call double @fmod(double %11, double %13) #7, !dbg !83
+  store double %14, double* %9, align 8, !dbg !84, !tbaa !79
+  %15 = getelementptr inbounds %struct._Drand* %drand, i64 0, i32 1, !dbg !85
+  %16 = load double* %15, align 8, !dbg !85, !tbaa !86
+  %17 = fmul double %16, 4.069200e+04, !dbg !87
+  %18 = getelementptr inbounds %struct._Drand* %drand, i64 0, i32 3, !dbg !88
+  %19 = load double* %18, align 8, !dbg !88, !tbaa !89
+  %20 = tail call double @fmod(double %17, double %19) #7, !dbg !90
+  store double %20, double* %15, align 8, !dbg !91, !tbaa !86
+  %21 = fsub double %14, %20, !dbg !92
+  tail call void @llvm.dbg.value(metadata double %21, i64 0, metadata !28, metadata !57), !dbg !93
+  %22 = fcmp ole double %21, 0.000000e+00, !dbg !94
+  br i1 %8, label %23, label %36, !dbg !96
 
-if.then2:                                         ; preds = %if.end
-  br i1 %cmp10, label %if.then11, label %if.end14
+; <label>:23                                      ; preds = %5
+  br i1 %22, label %24, label %27, !dbg !97
 
-if.then11:                                        ; preds = %if.then2
-  %sub13 = fadd double %7, -1.000000e+00
-  %add = fadd double %sub, %sub13
-  br label %if.end14
+; <label>:24                                      ; preds = %23
+  %25 = fadd double %13, -1.000000e+00, !dbg !98
+  %26 = fadd double %21, %25, !dbg !100
+  tail call void @llvm.dbg.value(metadata double %26, i64 0, metadata !28, metadata !57), !dbg !93
+  br label %27, !dbg !101
 
-if.end14:                                         ; preds = %if.then2, %if.then11
-  %t.0 = phi double [ %add, %if.then11 ], [ %sub, %if.then2 ]
-  %lower = getelementptr inbounds %struct._Drand* %drand, i64 0, i32 4
-  %8 = load double* %lower, align 8, !tbaa !4
-  %div = fdiv double %t.0, %7
-  %upper = getelementptr inbounds %struct._Drand* %drand, i64 0, i32 5
-  %9 = load double* %upper, align 8, !tbaa !4
-  %sub17 = fsub double %9, %8
-  %mul18 = fmul double %div, %sub17
-  %add19 = fadd double %8, %mul18
-  br label %if.end89
+; <label>:27                                      ; preds = %24, %23
+  %t.0 = phi double [ %26, %24 ], [ %21, %23 ]
+  %28 = getelementptr inbounds %struct._Drand* %drand, i64 0, i32 4, !dbg !102
+  %29 = load double* %28, align 8, !dbg !102, !tbaa !103
+  %30 = fdiv double %t.0, %13, !dbg !104
+  %31 = getelementptr inbounds %struct._Drand* %drand, i64 0, i32 5, !dbg !105
+  %32 = load double* %31, align 8, !dbg !105, !tbaa !106
+  %33 = fsub double %32, %29, !dbg !107
+  %34 = fmul double %30, %33, !dbg !108
+  %35 = fadd double %29, %34, !dbg !109
+  tail call void @llvm.dbg.value(metadata double %35, i64 0, metadata !28, metadata !57), !dbg !93
+  br label %74, !dbg !110
 
-if.else:                                          ; preds = %if.end
-  br i1 %cmp10, label %if.then34, label %if.end38
+; <label>:36                                      ; preds = %5
+  br i1 %22, label %37, label %40, !dbg !111
 
-if.then34:                                        ; preds = %if.else
-  %sub36 = fadd double %7, -1.000000e+00
-  %add37 = fadd double %sub, %sub36
-  br label %if.end38
+; <label>:37                                      ; preds = %36
+  %38 = fadd double %13, -1.000000e+00, !dbg !113
+  %39 = fadd double %21, %38, !dbg !116
+  tail call void @llvm.dbg.value(metadata double %39, i64 0, metadata !28, metadata !57), !dbg !93
+  br label %40, !dbg !117
 
-if.end38:                                         ; preds = %if.else, %if.then34
-  %t.1 = phi double [ %add37, %if.then34 ], [ %sub, %if.else ]
-  %div40 = fdiv double %t.1, %7
-  %mul42 = fmul double %6, 4.001400e+04
-  %call44 = tail call double @fmod(double %mul42, double %7) #3
-  store double %call44, double* %seed1, align 8, !tbaa !4
-  %10 = load double* %seed2, align 8, !tbaa !4
-  %mul47 = fmul double %10, 4.069200e+04
-  %11 = load double* %base2, align 8, !tbaa !4
-  %call49 = tail call double @fmod(double %mul47, double %11) #3
-  store double %call49, double* %seed2, align 8, !tbaa !4
-  %12 = load double* %seed1, align 8, !tbaa !4
-  %sub53 = fsub double %12, %call49
-  %cmp54 = fcmp ugt double %sub53, 0.000000e+00
-  %.pre146 = load double* %base1, align 8, !tbaa !4
-  br i1 %cmp54, label %if.end59, label %if.then55
+; <label>:40                                      ; preds = %37, %36
+  %t.1 = phi double [ %39, %37 ], [ %21, %36 ]
+  %41 = fdiv double %t.1, %13, !dbg !118
+  tail call void @llvm.dbg.value(metadata double %41, i64 0, metadata !28, metadata !57), !dbg !93
+  tail call void @llvm.dbg.value(metadata double %41, i64 0, metadata !27, metadata !57), !dbg !119
+  %42 = fmul double %14, 4.001400e+04, !dbg !120
+  %43 = tail call double @fmod(double %42, double %13) #7, !dbg !121
+  store double %43, double* %9, align 8, !dbg !122, !tbaa !79
+  %44 = fmul double %20, 4.069200e+04, !dbg !123
+  %45 = tail call double @fmod(double %44, double %19) #7, !dbg !124
+  store double %45, double* %15, align 8, !dbg !125, !tbaa !86
+  %46 = fsub double %43, %45, !dbg !126
+  tail call void @llvm.dbg.value(metadata double %46, i64 0, metadata !28, metadata !57), !dbg !93
+  %47 = fcmp ugt double %46, 0.000000e+00, !dbg !127
+  br i1 %47, label %51, label %48, !dbg !129
 
-if.then55:                                        ; preds = %if.end38
-  %sub57 = fadd double %.pre146, -1.000000e+00
-  %add58 = fadd double %sub53, %sub57
-  br label %if.end59
+; <label>:48                                      ; preds = %40
+  %49 = fadd double %13, -1.000000e+00, !dbg !130
+  %50 = fadd double %46, %49, !dbg !132
+  tail call void @llvm.dbg.value(metadata double %50, i64 0, metadata !28, metadata !57), !dbg !93
+  br label %51, !dbg !133
 
-if.end59:                                         ; preds = %if.end38, %if.then55
-  %t.2 = phi double [ %add58, %if.then55 ], [ %sub53, %if.end38 ]
-  %div61 = fdiv double %t.2, %.pre146
-  %add62 = fadd double %div40, %div61
-  %mul64 = fmul double %12, 4.001400e+04
-  %call66 = tail call double @fmod(double %mul64, double %.pre146) #3
-  store double %call66, double* %seed1, align 8, !tbaa !4
-  %13 = load double* %seed2, align 8, !tbaa !4
-  %mul69 = fmul double %13, 4.069200e+04
-  %14 = load double* %base2, align 8, !tbaa !4
-  %call71 = tail call double @fmod(double %mul69, double %14) #3
-  store double %call71, double* %seed2, align 8, !tbaa !4
-  %15 = load double* %seed1, align 8, !tbaa !4
-  %sub75 = fsub double %15, %call71
-  %cmp76 = fcmp ugt double %sub75, 0.000000e+00
-  %.pre147 = load double* %base1, align 8, !tbaa !4
-  br i1 %cmp76, label %if.end81, label %if.then77
+; <label>:51                                      ; preds = %40, %48
+  %t.2 = phi double [ %50, %48 ], [ %46, %40 ]
+  %52 = fdiv double %t.2, %13, !dbg !134
+  tail call void @llvm.dbg.value(metadata double %52, i64 0, metadata !28, metadata !57), !dbg !93
+  %53 = fadd double %41, %52, !dbg !135
+  tail call void @llvm.dbg.value(metadata double %53, i64 0, metadata !27, metadata !57), !dbg !119
+  %54 = fmul double %43, 4.001400e+04, !dbg !136
+  %55 = tail call double @fmod(double %54, double %13) #7, !dbg !137
+  store double %55, double* %9, align 8, !dbg !138, !tbaa !79
+  %56 = fmul double %45, 4.069200e+04, !dbg !139
+  %57 = tail call double @fmod(double %56, double %19) #7, !dbg !140
+  store double %57, double* %15, align 8, !dbg !141, !tbaa !86
+  %58 = fsub double %55, %57, !dbg !142
+  tail call void @llvm.dbg.value(metadata double %58, i64 0, metadata !28, metadata !57), !dbg !93
+  %59 = fcmp ugt double %58, 0.000000e+00, !dbg !143
+  br i1 %59, label %63, label %60, !dbg !145
 
-if.then77:                                        ; preds = %if.end59
-  %sub79 = fadd double %.pre147, -1.000000e+00
-  %add80 = fadd double %sub75, %sub79
-  br label %if.end81
+; <label>:60                                      ; preds = %51
+  %61 = fadd double %13, -1.000000e+00, !dbg !146
+  %62 = fadd double %58, %61, !dbg !148
+  tail call void @llvm.dbg.value(metadata double %62, i64 0, metadata !28, metadata !57), !dbg !93
+  br label %63, !dbg !149
 
-if.end81:                                         ; preds = %if.end59, %if.then77
-  %t.3 = phi double [ %add80, %if.then77 ], [ %sub75, %if.end59 ]
-  %div83 = fdiv double %t.3, %.pre147
-  %add84 = fadd double %add62, %div83
-  %mean = getelementptr inbounds %struct._Drand* %drand, i64 0, i32 6
-  %16 = load double* %mean, align 8, !tbaa !4
-  %sigma = getelementptr inbounds %struct._Drand* %drand, i64 0, i32 7
-  %17 = load double* %sigma, align 8, !tbaa !4
-  %mul85 = fmul double %add84, 2.000000e+00
-  %sub86 = fadd double %mul85, -3.000000e+00
-  %mul87 = fmul double %17, %sub86
-  %add88 = fadd double %16, %mul87
-  br label %if.end89
+; <label>:63                                      ; preds = %51, %60
+  %t.3 = phi double [ %62, %60 ], [ %58, %51 ]
+  %64 = fdiv double %t.3, %13, !dbg !150
+  tail call void @llvm.dbg.value(metadata double %64, i64 0, metadata !28, metadata !57), !dbg !93
+  %65 = fadd double %53, %64, !dbg !151
+  tail call void @llvm.dbg.value(metadata double %65, i64 0, metadata !27, metadata !57), !dbg !119
+  %66 = getelementptr inbounds %struct._Drand* %drand, i64 0, i32 6, !dbg !152
+  %67 = load double* %66, align 8, !dbg !152, !tbaa !153
+  %68 = getelementptr inbounds %struct._Drand* %drand, i64 0, i32 7, !dbg !154
+  %69 = load double* %68, align 8, !dbg !154, !tbaa !155
+  %70 = fmul double %65, 2.000000e+00, !dbg !156
+  %71 = fadd double %70, -3.000000e+00, !dbg !157
+  %72 = fmul double %69, %71, !dbg !158
+  %73 = fadd double %67, %72, !dbg !159
+  tail call void @llvm.dbg.value(metadata double %73, i64 0, metadata !28, metadata !57), !dbg !93
+  br label %74
 
-if.end89:                                         ; preds = %if.end81, %if.end14
-  %t.4 = phi double [ %add19, %if.end14 ], [ %add88, %if.end81 ]
-  ret double %t.4
+; <label>:74                                      ; preds = %63, %27
+  %t.4 = phi double [ %35, %27 ], [ %73, %63 ]
+  ret double %t.4, !dbg !160
 }

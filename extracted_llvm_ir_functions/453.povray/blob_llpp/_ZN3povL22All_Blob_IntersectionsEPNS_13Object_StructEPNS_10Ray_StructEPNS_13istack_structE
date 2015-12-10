@@ -1,0 +1,1366 @@
+define internal i32 @_ZN3povL22All_Blob_IntersectionsEPNS_13Object_StructEPNS_10Ray_StructEPNS_13istack_structE(%"struct.pov::Object_Struct"* %Object, %"struct.pov::Ray_Struct"* %Ray, %"struct.pov::istack_struct"* %Depth_Stack) #0 {
+  %cnt.i = alloca i32, align 4
+  %size.i = alloca i32, align 4
+  %t0.i = alloca double, align 8
+  %t1.i = alloca double, align 8
+  %coeffs = alloca [5 x double], align 16
+  %roots = alloca [4 x double], align 16
+  %P = alloca [3 x double], align 16
+  %D = alloca [3 x double], align 16
+  %PP = alloca [3 x double], align 16
+  %DD = alloca [3 x double], align 16
+  %IPoint = alloca [3 x double], align 16
+  tail call void @llvm.dbg.value(metadata %"struct.pov::Object_Struct"* %Object, i64 0, metadata !1079, metadata !1893), !dbg !1894
+  tail call void @llvm.dbg.value(metadata %"struct.pov::Ray_Struct"* %Ray, i64 0, metadata !1080, metadata !1893), !dbg !1895
+  tail call void @llvm.dbg.value(metadata %"struct.pov::istack_struct"* %Depth_Stack, i64 0, metadata !1081, metadata !1893), !dbg !1896
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !1087, metadata !1893), !dbg !1897
+  %1 = bitcast [5 x double]* %coeffs to i8*, !dbg !1898
+  call void @llvm.lifetime.start(i64 40, i8* %1) #5, !dbg !1898
+  tail call void @llvm.dbg.declare(metadata [5 x double]* %coeffs, metadata !1098, metadata !1893), !dbg !1899
+  tail call void @llvm.dbg.declare(metadata [4 x double]* %roots, metadata !1099, metadata !1893), !dbg !1900
+  tail call void @llvm.dbg.declare(metadata [3 x double]* %P, metadata !1102, metadata !1893), !dbg !1901
+  tail call void @llvm.dbg.declare(metadata [3 x double]* %D, metadata !1103, metadata !1893), !dbg !1902
+  tail call void @llvm.dbg.declare(metadata [3 x double]* undef, metadata !1104, metadata !1893), !dbg !1903
+  tail call void @llvm.dbg.declare(metadata [3 x double]* %PP, metadata !1105, metadata !1893), !dbg !1904
+  tail call void @llvm.dbg.declare(metadata [3 x double]* %DD, metadata !1106, metadata !1893), !dbg !1905
+  tail call void @llvm.dbg.declare(metadata [3 x double]* %IPoint, metadata !1107, metadata !1893), !dbg !1906
+  %2 = bitcast %"struct.pov::Object_Struct"* %Object to %"struct.pov::Blob_Struct"*, !dbg !1907
+  tail call void @llvm.dbg.value(metadata %"struct.pov::Blob_Struct"* %2, i64 0, metadata !1110, metadata !1893), !dbg !1908
+  tail call void @llvm.dbg.declare(metadata [5 x double]* undef, metadata !1111, metadata !1893), !dbg !1909
+  tail call void @llvm.dbg.declare(metadata [5 x double]* undef, metadata !1112, metadata !1893), !dbg !1910
+  tail call void @llvm.dbg.value(metadata i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 12), i64 0, metadata !1122, metadata !1893), !dbg !1911
+  %3 = load i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 12), align 8, !dbg !1913, !tbaa !1914
+  %4 = add nsw i64 %3, 1, !dbg !1913
+  store i64 %4, i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 12), align 8, !dbg !1913, !tbaa !1914
+  %5 = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 0, i32 10, !dbg !1918
+  %6 = load %"struct.pov::Transform_Struct"** %5, align 8, !dbg !1918, !tbaa !1920
+  %7 = icmp eq %"struct.pov::Transform_Struct"* %6, null, !dbg !1926
+  %8 = getelementptr inbounds [3 x double]* %P, i64 0, i64 0, !dbg !1927
+  br i1 %7, label %32, label %9, !dbg !1929
+
+; <label>:9                                       ; preds = %0
+  %10 = getelementptr inbounds %"struct.pov::Ray_Struct"* %Ray, i64 0, i32 0, i64 0, !dbg !1930
+  call void @_ZN3pov14MInvTransPointEPdS0_PNS_16Transform_StructE(double* %8, double* %10, %"struct.pov::Transform_Struct"* %6) #6, !dbg !1931
+  %11 = getelementptr inbounds [3 x double]* %D, i64 0, i64 0, !dbg !1932
+  %12 = getelementptr inbounds %"struct.pov::Ray_Struct"* %Ray, i64 0, i32 1, i64 0, !dbg !1933
+  %13 = load %"struct.pov::Transform_Struct"** %5, align 8, !dbg !1934, !tbaa !1920
+  call void @_ZN3pov18MInvTransDirectionEPdS0_PNS_16Transform_StructE(double* %11, double* %12, %"struct.pov::Transform_Struct"* %13) #6, !dbg !1935
+  call void @llvm.dbg.value(metadata double* %11, i64 0, metadata !1131, metadata !1893) #5, !dbg !1936
+  %14 = bitcast [3 x double]* %D to <2 x double>*, !dbg !1938
+  %15 = load <2 x double>* %14, align 16, !dbg !1938, !tbaa !1939
+  %16 = extractelement <2 x double> %15, i32 0, !dbg !1941
+  %17 = fmul double %16, %16, !dbg !1941
+  %18 = extractelement <2 x double> %15, i32 1, !dbg !1942
+  %19 = fmul double %18, %18, !dbg !1942
+  %20 = fadd double %17, %19, !dbg !1943
+  %21 = getelementptr inbounds [3 x double]* %D, i64 0, i64 2, !dbg !1944
+  %22 = load double* %21, align 16, !dbg !1944, !tbaa !1939
+  %23 = fmul double %22, %22, !dbg !1945
+  %24 = fadd double %20, %23, !dbg !1946
+  %25 = call double @sqrt(double %24) #7, !dbg !1947
+  call void @llvm.dbg.value(metadata double %25, i64 0, metadata !1130, metadata !1893), !dbg !1948
+  call void @llvm.dbg.value(metadata double %25, i64 0, metadata !1095, metadata !1893), !dbg !1949
+  call void @llvm.dbg.value(metadata double %25, i64 0, metadata !1095, metadata !1893), !dbg !1949
+  call void @llvm.dbg.value(metadata double %25, i64 0, metadata !1095, metadata !1893), !dbg !1949
+  tail call void @llvm.dbg.value(metadata double* %11, i64 0, metadata !1136, metadata !1893), !dbg !1950
+  tail call void @llvm.dbg.value(metadata double %25, i64 0, metadata !1137, metadata !1893), !dbg !1952
+  %26 = fdiv double 1.000000e+00, %25, !dbg !1953
+  tail call void @llvm.dbg.value(metadata double %26, i64 0, metadata !1138, metadata !1893), !dbg !1954
+  %27 = insertelement <2 x double> undef, double %26, i32 0, !dbg !1955
+  %28 = insertelement <2 x double> %27, double %26, i32 1, !dbg !1955
+  %29 = fmul <2 x double> %28, %15, !dbg !1955
+  %30 = bitcast [3 x double]* %D to <2 x double>*, !dbg !1955
+  store <2 x double> %29, <2 x double>* %30, align 16, !dbg !1955, !tbaa !1939
+  %31 = fmul double %26, %22, !dbg !1956
+  store double %31, double* %21, align 16, !dbg !1956, !tbaa !1939
+  br label %50, !dbg !1957
+
+; <label>:32                                      ; preds = %0
+  tail call void @llvm.dbg.value(metadata double* %8, i64 0, metadata !1471, metadata !1893), !dbg !1958
+  tail call void @llvm.dbg.value(metadata double* %10, i64 0, metadata !1472, metadata !1893), !dbg !1961
+  %33 = bitcast %"struct.pov::Ray_Struct"* %Ray to <2 x i64>*, !dbg !1962
+  %34 = load <2 x i64>* %33, align 8, !dbg !1962, !tbaa !1939
+  %35 = bitcast [3 x double]* %P to <2 x i64>*, !dbg !1963
+  store <2 x i64> %34, <2 x i64>* %35, align 16, !dbg !1963, !tbaa !1939
+  %36 = getelementptr inbounds %"struct.pov::Ray_Struct"* %Ray, i64 0, i32 0, i64 2, !dbg !1964
+  %37 = bitcast double* %36 to i64*, !dbg !1964
+  %38 = load i64* %37, align 8, !dbg !1964, !tbaa !1939
+  %39 = getelementptr inbounds [3 x double]* %P, i64 0, i64 2, !dbg !1965
+  %40 = bitcast double* %39 to i64*, !dbg !1966
+  store i64 %38, i64* %40, align 16, !dbg !1966, !tbaa !1939
+  %41 = getelementptr inbounds %"struct.pov::Ray_Struct"* %Ray, i64 0, i32 1, i64 0, !dbg !1967
+  tail call void @llvm.dbg.value(metadata double* %41, i64 0, metadata !1472, metadata !1893), !dbg !1968
+  %42 = bitcast double* %41 to <2 x i64>*, !dbg !1970
+  %43 = load <2 x i64>* %42, align 8, !dbg !1970, !tbaa !1939
+  %44 = bitcast [3 x double]* %D to <2 x i64>*, !dbg !1971
+  store <2 x i64> %43, <2 x i64>* %44, align 16, !dbg !1971, !tbaa !1939
+  %45 = getelementptr inbounds %"struct.pov::Ray_Struct"* %Ray, i64 0, i32 1, i64 2, !dbg !1972
+  %46 = bitcast double* %45 to i64*, !dbg !1972
+  %47 = load i64* %46, align 8, !dbg !1972, !tbaa !1939
+  %48 = getelementptr inbounds [3 x double]* %D, i64 0, i64 2, !dbg !1973
+  %49 = bitcast double* %48 to i64*, !dbg !1974
+  store i64 %47, i64* %49, align 16, !dbg !1974, !tbaa !1939
+  tail call void @llvm.dbg.value(metadata double 1.000000e+00, i64 0, metadata !1095, metadata !1893), !dbg !1949
+  tail call void @llvm.dbg.value(metadata double 1.000000e+00, i64 0, metadata !1130, metadata !1893), !dbg !1948
+  tail call void @llvm.dbg.value(metadata double 1.000000e+00, i64 0, metadata !1095, metadata !1893), !dbg !1949
+  tail call void @llvm.dbg.value(metadata double 1.000000e+00, i64 0, metadata !1095, metadata !1893), !dbg !1949
+  tail call void @llvm.dbg.value(metadata double 1.000000e+00, i64 0, metadata !1095, metadata !1893), !dbg !1949
+  %.pre72 = getelementptr inbounds [3 x double]* %D, i64 0, i64 0, !dbg !1975
+  br label %50
+
+; <label>:50                                      ; preds = %32, %9
+  %.pre-phi = phi double* [ %.pre72, %32 ], [ %11, %9 ], !dbg !1975
+  %51 = phi double [ 1.000000e+00, %32 ], [ %25, %9 ]
+  %52 = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 1, !dbg !1977
+  %53 = bitcast %"struct.pov::Object_Struct"* %52 to %"struct.pov::Blob_Data_Struct"**, !dbg !1977
+  %54 = load %"struct.pov::Blob_Data_Struct"** %53, align 8, !dbg !1977, !tbaa !1978
+  %55 = getelementptr inbounds %"struct.pov::Blob_Data_Struct"* %54, i64 0, i32 4, !dbg !1979
+  %56 = load %"struct.pov::Blob_Interval_Struct"** %55, align 8, !dbg !1979, !tbaa !1980
+  call void @llvm.dbg.value(metadata %"struct.pov::Blob_Interval_Struct"* %56, i64 0, metadata !1108, metadata !1893), !dbg !1982
+  %57 = bitcast i32* %cnt.i to i8*, !dbg !1983
+  call void @llvm.lifetime.start(i64 4, i8* %57), !dbg !1983
+  %58 = bitcast i32* %size.i to i8*, !dbg !1983
+  call void @llvm.lifetime.start(i64 4, i8* %58), !dbg !1983
+  %59 = bitcast double* %t0.i to i8*, !dbg !1983
+  call void @llvm.lifetime.start(i64 8, i8* %59), !dbg !1983
+  %60 = bitcast double* %t1.i to i8*, !dbg !1983
+  call void @llvm.lifetime.start(i64 8, i8* %60), !dbg !1983
+  call void @llvm.dbg.value(metadata double 1.000000e-02, i64 0, metadata !1146, metadata !1893), !dbg !1983
+  call void @llvm.dbg.declare(metadata [3 x double]* undef, metadata !1155, metadata !1893), !dbg !1985
+  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !1149, metadata !1893), !dbg !1986
+  store i32 0, i32* %cnt.i, align 4, !dbg !1987, !tbaa !1988
+  %61 = getelementptr inbounds %"struct.pov::Blob_Data_Struct"* %54, i64 0, i32 5, !dbg !1989
+  %62 = load %"struct.pov::BSphere_Tree_Struct"** %61, align 8, !dbg !1989, !tbaa !1991
+  %63 = icmp eq %"struct.pov::BSphere_Tree_Struct"* %62, null, !dbg !1992
+  br i1 %63, label %.preheader.i, label %.lr.ph7.i, !dbg !1993
+
+.preheader.i:                                     ; preds = %50
+  %64 = getelementptr inbounds %"struct.pov::Blob_Data_Struct"* %54, i64 0, i32 1, !dbg !1994
+  %65 = load i32* %64, align 4, !dbg !1994, !tbaa !1998
+  %66 = icmp sgt i32 %65, 0, !dbg !1999
+  br i1 %66, label %.lr.ph.i, label %_ZN3povL20determine_influencesEPdS0_PNS_11Blob_StructEdPNS_20Blob_Interval_StructE.exit, !dbg !2000
+
+.lr.ph.i:                                         ; preds = %.preheader.i, %80
+  %indvars.iv.i = phi i64 [ %indvars.iv.next.i, %80 ], [ 0, %.preheader.i ], !dbg !2001
+  %67 = phi %"struct.pov::Blob_Data_Struct"* [ %81, %80 ], [ %54, %.preheader.i ], !dbg !2001
+  %68 = getelementptr inbounds %"struct.pov::Blob_Data_Struct"* %67, i64 0, i32 3, !dbg !2002
+  %69 = load %"struct.pov::Blob_Element_Struct"** %68, align 8, !dbg !2002, !tbaa !2005
+  %70 = getelementptr inbounds %"struct.pov::Blob_Element_Struct"* %69, i64 %indvars.iv.i, !dbg !2006
+  call void @llvm.dbg.value(metadata double* %t0.i, i64 0, metadata !1153, metadata !1893), !dbg !2007
+  call void @llvm.dbg.value(metadata double* %t1.i, i64 0, metadata !1154, metadata !1893), !dbg !2008
+  %71 = call fastcc i32 @_ZN3povL17intersect_elementEPdS0_PNS_19Blob_Element_StructEdS0_S0_(double* %8, double* %.pre-phi, %"struct.pov::Blob_Element_Struct"* %70, double* %t0.i, double* %t1.i) #6, !dbg !2009
+  %72 = icmp eq i32 %71, 0, !dbg !2009
+  br i1 %72, label %80, label %73, !dbg !2010
+
+; <label>:73                                      ; preds = %.lr.ph.i
+  %74 = load %"struct.pov::Blob_Data_Struct"** %53, align 8, !dbg !2011, !tbaa !1978
+  %75 = getelementptr inbounds %"struct.pov::Blob_Data_Struct"* %74, i64 0, i32 3, !dbg !2013
+  %76 = load %"struct.pov::Blob_Element_Struct"** %75, align 8, !dbg !2013, !tbaa !2005
+  %77 = getelementptr inbounds %"struct.pov::Blob_Element_Struct"* %76, i64 %indvars.iv.i, !dbg !2014
+  call void @llvm.dbg.value(metadata double* %t0.i, i64 0, metadata !1153, metadata !1893), !dbg !2007
+  %78 = load double* %t0.i, align 8, !dbg !2015, !tbaa !1939
+  call void @llvm.dbg.value(metadata double* %t1.i, i64 0, metadata !1154, metadata !1893), !dbg !2008
+  %79 = load double* %t1.i, align 8, !dbg !2016, !tbaa !1939
+  call void @llvm.dbg.value(metadata i32* %cnt.i, i64 0, metadata !1149, metadata !1893), !dbg !1986
+  call fastcc void @_ZN3povL10insert_hitEPNS_19Blob_Element_StructEddPNS_20Blob_Interval_StructEPj(%"struct.pov::Blob_Element_Struct"* %77, double %78, double %79, %"struct.pov::Blob_Interval_Struct"* %56, i32* %cnt.i) #6, !dbg !2017
+  br label %80, !dbg !2018
+
+; <label>:80                                      ; preds = %73, %.lr.ph.i
+  %indvars.iv.next.i = add nuw nsw i64 %indvars.iv.i, 1, !dbg !2000
+  %81 = load %"struct.pov::Blob_Data_Struct"** %53, align 8, !dbg !2019, !tbaa !1978
+  %82 = getelementptr inbounds %"struct.pov::Blob_Data_Struct"* %81, i64 0, i32 1, !dbg !1994
+  %83 = load i32* %82, align 4, !dbg !1994, !tbaa !1998
+  %84 = sext i32 %83 to i64, !dbg !1999
+  %85 = icmp slt i64 %indvars.iv.next.i, %84, !dbg !1999
+  br i1 %85, label %.lr.ph.i, label %_ZN3povL20determine_influencesEPdS0_PNS_11Blob_StructEdPNS_20Blob_Interval_StructE.exit, !dbg !2000
+
+.lr.ph7.i:                                        ; preds = %50
+  %86 = ptrtoint %"struct.pov::BSphere_Tree_Struct"* %62 to i64, !dbg !2001
+  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !1150, metadata !1893), !dbg !2020
+  call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !1150, metadata !1893), !dbg !2020
+  store i32 1, i32* %size.i, align 4, !dbg !2021, !tbaa !1988
+  %87 = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 1, i32 2, !dbg !2023
+  %88 = bitcast %"struct.pov::Object_Struct"** %87 to %"struct.pov::BSphere_Tree_Struct"***, !dbg !2023
+  %89 = bitcast %"struct.pov::Object_Struct"** %87 to i64**, !dbg !2023
+  %90 = load i64** %89, align 8, !dbg !2023, !tbaa !2024
+  store i64 %86, i64* %90, align 8, !dbg !2025, !tbaa !2026
+  call void @llvm.dbg.value(metadata i32* %size.i, i64 0, metadata !1150, metadata !1893), !dbg !2020
+  %91 = getelementptr inbounds [3 x double]* %P, i64 0, i64 1, !dbg !2027
+  %92 = getelementptr inbounds [3 x double]* %P, i64 0, i64 2, !dbg !2035
+  %93 = getelementptr inbounds [3 x double]* %D, i64 0, i64 1, !dbg !2036
+  %94 = getelementptr inbounds [3 x double]* %D, i64 0, i64 2, !dbg !2038
+  br label %95, !dbg !2039
+
+..loopexit2_crit_edge.i:                          ; preds = %156
+  %.pre11.pre.i = load i32* %size.i, align 4, !dbg !2040, !tbaa !1988
+  br label %.backedge.i, !dbg !2041
+
+; <label>:95                                      ; preds = %.backedge.i, %.lr.ph7.i
+  %96 = phi i32 [ 1, %.lr.ph7.i ], [ %115, %.backedge.i ], !dbg !2001
+  %97 = add i32 %96, -1, !dbg !2042
+  call void @llvm.dbg.value(metadata i32 %97, i64 0, metadata !1150, metadata !1893), !dbg !2020
+  store i32 %97, i32* %size.i, align 4, !dbg !2042, !tbaa !1988
+  %98 = zext i32 %97 to i64, !dbg !2043
+  %99 = load %"struct.pov::BSphere_Tree_Struct"*** %88, align 8, !dbg !2044, !tbaa !2024
+  %100 = getelementptr inbounds %"struct.pov::BSphere_Tree_Struct"** %99, i64 %98, !dbg !2043
+  %101 = load %"struct.pov::BSphere_Tree_Struct"** %100, align 8, !dbg !2043, !tbaa !2026
+  call void @llvm.dbg.value(metadata %"struct.pov::BSphere_Tree_Struct"* %101, i64 0, metadata !1156, metadata !1893), !dbg !2045
+  %102 = getelementptr inbounds %"struct.pov::BSphere_Tree_Struct"* %101, i64 0, i32 0, !dbg !2046
+  %103 = load i16* %102, align 2, !dbg !2046, !tbaa !2047
+  %104 = icmp slt i16 %103, 1, !dbg !2050
+  %105 = getelementptr inbounds %"struct.pov::BSphere_Tree_Struct"* %101, i64 0, i32 3, !dbg !2051
+  br i1 %104, label %106, label %.lr.ph6.i, !dbg !2054
+
+; <label>:106                                     ; preds = %95
+  %107 = bitcast %"struct.pov::BSphere_Tree_Struct"*** %105 to %"struct.pov::Blob_Element_Struct"**, !dbg !2051
+  %108 = load %"struct.pov::Blob_Element_Struct"** %107, align 8, !dbg !2051, !tbaa !2055
+  call void @llvm.dbg.value(metadata double* %t0.i, i64 0, metadata !1153, metadata !1893), !dbg !2007
+  call void @llvm.dbg.value(metadata double* %t1.i, i64 0, metadata !1154, metadata !1893), !dbg !2008
+  %109 = call fastcc i32 @_ZN3povL17intersect_elementEPdS0_PNS_19Blob_Element_StructEdS0_S0_(double* %8, double* %.pre-phi, %"struct.pov::Blob_Element_Struct"* %108, double* %t0.i, double* %t1.i) #6, !dbg !2056
+  %110 = icmp eq i32 %109, 0, !dbg !2056
+  br i1 %110, label %.backedge.i, label %111, !dbg !2057
+
+; <label>:111                                     ; preds = %106
+  %112 = load %"struct.pov::Blob_Element_Struct"** %107, align 8, !dbg !2058, !tbaa !2055
+  call void @llvm.dbg.value(metadata double* %t0.i, i64 0, metadata !1153, metadata !1893), !dbg !2007
+  %113 = load double* %t0.i, align 8, !dbg !2060, !tbaa !1939
+  call void @llvm.dbg.value(metadata double* %t1.i, i64 0, metadata !1154, metadata !1893), !dbg !2008
+  %114 = load double* %t1.i, align 8, !dbg !2061, !tbaa !1939
+  call void @llvm.dbg.value(metadata i32* %cnt.i, i64 0, metadata !1149, metadata !1893), !dbg !1986
+  call fastcc void @_ZN3povL10insert_hitEPNS_19Blob_Element_StructEddPNS_20Blob_Interval_StructEPj(%"struct.pov::Blob_Element_Struct"* %112, double %113, double %114, %"struct.pov::Blob_Interval_Struct"* %56, i32* %cnt.i) #6, !dbg !2062
+  br label %.backedge.i, !dbg !2063
+
+.backedge.i:                                      ; preds = %111, %106, %..loopexit2_crit_edge.i
+  %115 = phi i32 [ %97, %111 ], [ %97, %106 ], [ %.pre11.pre.i, %..loopexit2_crit_edge.i ], !dbg !2001
+  call void @llvm.dbg.value(metadata i32* %size.i, i64 0, metadata !1150, metadata !1893), !dbg !2020
+  %116 = icmp eq i32 %115, 0, !dbg !2064
+  br i1 %116, label %_ZN3povL20determine_influencesEPdS0_PNS_11Blob_StructEdPNS_20Blob_Interval_StructE.exit, label %95, !dbg !2039
+
+.lr.ph6.i:                                        ; preds = %95, %156
+  %117 = phi i16 [ %157, %156 ], [ %103, %95 ], !dbg !2001
+  %indvars.iv8.i = phi i64 [ %indvars.iv.next9.i, %156 ], [ 0, %95 ], !dbg !2001
+  call void @llvm.dbg.value(metadata i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 16), i64 0, metadata !1122, metadata !1893), !dbg !2065
+  %118 = load i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 16), align 8, !dbg !2067, !tbaa !1914
+  %119 = add nsw i64 %118, 1, !dbg !2067
+  store i64 %119, i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 16), align 8, !dbg !2067, !tbaa !1914
+  %120 = load %"struct.pov::BSphere_Tree_Struct"*** %105, align 8, !dbg !2068, !tbaa !2055
+  %121 = getelementptr inbounds %"struct.pov::BSphere_Tree_Struct"** %120, i64 %indvars.iv8.i, !dbg !2069
+  %122 = load %"struct.pov::BSphere_Tree_Struct"** %121, align 8, !dbg !2069, !tbaa !2026
+  %123 = getelementptr inbounds %"struct.pov::BSphere_Tree_Struct"* %122, i64 0, i32 1, i64 0, !dbg !2069
+  call void @llvm.dbg.value(metadata double* undef, i64 0, metadata !1477, metadata !1893), !dbg !2070
+  call void @llvm.dbg.value(metadata double* %123, i64 0, metadata !1478, metadata !1893), !dbg !2071
+  call void @llvm.dbg.value(metadata double* %8, i64 0, metadata !1479, metadata !1893), !dbg !2072
+  %124 = load double* %123, align 8, !dbg !2073, !tbaa !1939
+  %125 = load double* %8, align 16, !dbg !2074, !tbaa !1939
+  %126 = fsub double %124, %125, !dbg !2075
+  call void @llvm.dbg.value(metadata double %126, i64 0, metadata !1155, metadata !2076), !dbg !1985
+  %127 = getelementptr inbounds %"struct.pov::BSphere_Tree_Struct"* %122, i64 0, i32 1, i64 1, !dbg !2077
+  %128 = load double* %127, align 8, !dbg !2077, !tbaa !1939
+  %129 = load double* %91, align 8, !dbg !2027, !tbaa !1939
+  %130 = fsub double %128, %129, !dbg !2078
+  call void @llvm.dbg.value(metadata double %130, i64 0, metadata !1155, metadata !2079), !dbg !1985
+  %131 = getelementptr inbounds %"struct.pov::BSphere_Tree_Struct"* %122, i64 0, i32 1, i64 2, !dbg !2080
+  %132 = load double* %131, align 8, !dbg !2080, !tbaa !1939
+  %133 = load double* %92, align 16, !dbg !2035, !tbaa !1939
+  %134 = fsub double %132, %133, !dbg !2081
+  call void @llvm.dbg.value(metadata double %134, i64 0, metadata !1155, metadata !2082), !dbg !1985
+  call void @llvm.dbg.value(metadata double* undef, i64 0, metadata !1485, metadata !1893), !dbg !2083
+  call void @llvm.dbg.value(metadata double* %.pre-phi, i64 0, metadata !1486, metadata !1893), !dbg !2084
+  %135 = load double* %.pre-phi, align 16, !dbg !2085, !tbaa !1939
+  %136 = fmul double %126, %135, !dbg !2086
+  %137 = load double* %93, align 8, !dbg !2036, !tbaa !1939
+  %138 = fmul double %130, %137, !dbg !2087
+  %139 = fadd double %136, %138, !dbg !2088
+  %140 = load double* %94, align 16, !dbg !2038, !tbaa !1939
+  %141 = fmul double %134, %140, !dbg !2089
+  %142 = fadd double %139, %141, !dbg !2090
+  call void @llvm.dbg.value(metadata double %142, i64 0, metadata !1484, metadata !1893), !dbg !2091
+  call void @llvm.dbg.value(metadata double %142, i64 0, metadata !1151, metadata !1893), !dbg !2092
+  call void @llvm.dbg.value(metadata double %142, i64 0, metadata !1151, metadata !1893), !dbg !2092
+  call void @llvm.dbg.value(metadata double* undef, i64 0, metadata !1485, metadata !1893), !dbg !2093
+  call void @llvm.dbg.value(metadata double* undef, i64 0, metadata !1486, metadata !1893), !dbg !2095
+  %143 = fmul double %126, %126, !dbg !2096
+  %144 = fmul double %130, %130, !dbg !2097
+  %145 = fadd double %143, %144, !dbg !2098
+  %146 = fmul double %134, %134, !dbg !2099
+  %147 = fadd double %145, %146, !dbg !2100
+  call void @llvm.dbg.value(metadata double %147, i64 0, metadata !1484, metadata !1893), !dbg !2101
+  call void @llvm.dbg.value(metadata double %147, i64 0, metadata !1152, metadata !1893), !dbg !2102
+  call void @llvm.dbg.value(metadata double %147, i64 0, metadata !1152, metadata !1893), !dbg !2102
+  call void @llvm.dbg.value(metadata double %142, i64 0, metadata !1512, metadata !1893), !dbg !2103
+  %148 = fmul double %142, %142, !dbg !2106
+  %149 = fsub double %147, %148, !dbg !2107
+  %150 = getelementptr inbounds %"struct.pov::BSphere_Tree_Struct"* %122, i64 0, i32 2, !dbg !2108
+  %151 = load double* %150, align 8, !dbg !2108, !tbaa !2109
+  %152 = fcmp ugt double %149, %151, !dbg !2110
+  br i1 %152, label %156, label %153, !dbg !2111
+
+; <label>:153                                     ; preds = %.lr.ph6.i
+  call void @llvm.dbg.value(metadata i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 17), i64 0, metadata !1122, metadata !1893), !dbg !2112
+  %154 = load i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 17), align 8, !dbg !2115, !tbaa !1914
+  %155 = add nsw i64 %154, 1, !dbg !2115
+  store i64 %155, i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 17), align 8, !dbg !2115, !tbaa !1914
+  call void @llvm.dbg.value(metadata i32* %size.i, i64 0, metadata !1150, metadata !1893), !dbg !2020
+  call fastcc void @_ZN3povL11insert_nodeEPNS_11Blob_StructEPNS_19BSphere_Tree_StructEPj(%"struct.pov::Blob_Struct"* %2, %"struct.pov::BSphere_Tree_Struct"* %122, i32* %size.i) #6, !dbg !2116
+  %.pre.i = load i16* %102, align 2, !dbg !2117, !tbaa !2047
+  br label %156, !dbg !2118
+
+; <label>:156                                     ; preds = %153, %.lr.ph6.i
+  %157 = phi i16 [ %117, %.lr.ph6.i ], [ %.pre.i, %153 ], !dbg !2041
+  %indvars.iv.next9.i = add nuw nsw i64 %indvars.iv8.i, 1, !dbg !2041
+  %158 = sext i16 %157 to i64, !dbg !2119
+  %159 = icmp slt i64 %indvars.iv.next9.i, %158, !dbg !2119
+  br i1 %159, label %.lr.ph6.i, label %..loopexit2_crit_edge.i, !dbg !2041
+
+_ZN3povL20determine_influencesEPdS0_PNS_11Blob_StructEdPNS_20Blob_Interval_StructE.exit: ; preds = %.backedge.i, %80, %.preheader.i
+  call void @llvm.dbg.value(metadata i32* %cnt.i, i64 0, metadata !1149, metadata !1893), !dbg !1986
+  %160 = load i32* %cnt.i, align 4, !dbg !2120, !tbaa !1988
+  call void @llvm.lifetime.end(i64 4, i8* %57), !dbg !2121
+  call void @llvm.lifetime.end(i64 4, i8* %58), !dbg !2121
+  call void @llvm.lifetime.end(i64 8, i8* %59), !dbg !2121
+  call void @llvm.lifetime.end(i64 8, i8* %60), !dbg !2121
+  call void @llvm.dbg.value(metadata i32 %160, i64 0, metadata !1084, metadata !1893), !dbg !2122
+  %161 = icmp eq i32 %160, 0, !dbg !2123
+  br i1 %161, label %._crit_edge24.thread, label %162, !dbg !2124
+
+; <label>:162                                     ; preds = %_ZN3povL20determine_influencesEPdS0_PNS_11Blob_StructEdPNS_20Blob_Interval_StructE.exit
+  %163 = getelementptr inbounds %"struct.pov::Blob_Interval_Struct"* %56, i64 0, i32 1, !dbg !2125
+  %164 = load double* %163, align 8, !dbg !2125, !tbaa !2127
+  call void @llvm.dbg.value(metadata double %164, i64 0, metadata !1096, metadata !1893), !dbg !2129
+  %165 = fcmp olt double %164, 1.000000e-03, !dbg !2130
+  call void @llvm.dbg.value(metadata double 0.000000e+00, i64 0, metadata !1096, metadata !1893), !dbg !2129
+  %start_dist.0 = select i1 %165, double 0.000000e+00, double %164, !dbg !2131
+  %166 = icmp sgt i32 %160, 0, !dbg !2132
+  br i1 %166, label %.lr.ph39, label %._crit_edge40, !dbg !2135
+
+.lr.ph39:                                         ; preds = %162
+  %167 = add i32 %160, -1, !dbg !2135
+  %168 = getelementptr inbounds %"struct.pov::Blob_Interval_Struct"* %56, i64 0, i32 1, !dbg !2136
+  %169 = fsub double %164, %start_dist.0, !dbg !2138
+  store double %169, double* %168, align 8, !dbg !2138, !tbaa !2127
+  %exitcond6081 = icmp eq i32 %167, 0, !dbg !2135
+  br i1 %exitcond6081, label %._crit_edge40, label %._crit_edge61, !dbg !2135
+
+._crit_edge61:                                    ; preds = %.lr.ph39, %._crit_edge61
+  %indvars.iv.next5882 = phi i64 [ %indvars.iv.next58, %._crit_edge61 ], [ 1, %.lr.ph39 ]
+  %.phi.trans.insert = getelementptr inbounds %"struct.pov::Blob_Interval_Struct"* %56, i64 %indvars.iv.next5882, i32 1
+  %.pre = load double* %.phi.trans.insert, align 8, !dbg !2138, !tbaa !2127
+  %170 = getelementptr inbounds %"struct.pov::Blob_Interval_Struct"* %56, i64 %indvars.iv.next5882, i32 1, !dbg !2136
+  %171 = fsub double %.pre, %start_dist.0, !dbg !2138
+  store double %171, double* %170, align 8, !dbg !2138, !tbaa !2127
+  %indvars.iv.next58 = add nuw nsw i64 %indvars.iv.next5882, 1, !dbg !2135
+  %lftr.wideiv59 = trunc i64 %indvars.iv.next5882 to i32, !dbg !2135
+  %exitcond60 = icmp eq i32 %lftr.wideiv59, %167, !dbg !2135
+  br i1 %exitcond60, label %._crit_edge40, label %._crit_edge61, !dbg !2135
+
+._crit_edge40:                                    ; preds = %.lr.ph39, %._crit_edge61, %162
+  tail call void @llvm.dbg.value(metadata double* %8, i64 0, metadata !1245, metadata !1893), !dbg !2139
+  tail call void @llvm.dbg.value(metadata double %start_dist.0, i64 0, metadata !1246, metadata !1893), !dbg !2141
+  tail call void @llvm.dbg.value(metadata double* %.pre-phi, i64 0, metadata !1247, metadata !1893), !dbg !2142
+  %172 = load double* %.pre-phi, align 16, !dbg !2143, !tbaa !1939
+  %173 = getelementptr inbounds [3 x double]* %D, i64 0, i64 1, !dbg !2144
+  %174 = getelementptr inbounds [3 x double]* %D, i64 0, i64 2, !dbg !2145
+  %175 = bitcast double* %173 to <2 x double>*, !dbg !2144
+  %176 = load <2 x double>* %175, align 8, !dbg !2144, !tbaa !1939
+  %177 = insertelement <2 x double> undef, double %start_dist.0, i32 0, !dbg !2146
+  %178 = insertelement <2 x double> %177, double %start_dist.0, i32 1, !dbg !2146
+  %179 = insertelement <2 x double> undef, double %172, i32 0, !dbg !2146
+  %180 = shufflevector <2 x double> %179, <2 x double> %176, <2 x i32> <i32 0, i32 2>, !dbg !2146
+  %181 = fmul <2 x double> %178, %180, !dbg !2146
+  %182 = getelementptr inbounds [3 x double]* %P, i64 0, i64 1, !dbg !2147
+  %183 = bitcast [3 x double]* %P to <2 x double>*, !dbg !2148
+  %184 = load <2 x double>* %183, align 16, !dbg !2148, !tbaa !1939
+  %185 = fadd <2 x double> %184, %181, !dbg !2148
+  %186 = bitcast [3 x double]* %P to <2 x double>*, !dbg !2148
+  store <2 x double> %185, <2 x double>* %186, align 16, !dbg !2148, !tbaa !1939
+  %187 = extractelement <2 x double> %176, i32 1, !dbg !2149
+  %188 = fmul double %start_dist.0, %187, !dbg !2149
+  %189 = getelementptr inbounds [3 x double]* %P, i64 0, i64 2, !dbg !2150
+  %190 = load double* %189, align 16, !dbg !2151, !tbaa !1939
+  %191 = fadd double %190, %188, !dbg !2151
+  store double %191, double* %189, align 16, !dbg !2151, !tbaa !1939
+  %192 = load double* %163, align 8, !dbg !2152, !tbaa !2127
+  call void @llvm.dbg.value(metadata double %192, i64 0, metadata !1113, metadata !1893), !dbg !2153
+  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !1082, metadata !1893), !dbg !2154
+  br i1 %166, label %.lr.ph34, label %._crit_edge35, !dbg !2155
+
+.lr.ph34:                                         ; preds = %._crit_edge40
+  %193 = add i32 %160, -1, !dbg !2155
+  call void @llvm.dbg.value(metadata double %192, i64 0, metadata !1113, metadata !1893), !dbg !2153
+  %exitcond5678 = icmp eq i32 %193, 0, !dbg !2155
+  br i1 %exitcond5678, label %._crit_edge35, label %._crit_edge62, !dbg !2155
+
+._crit_edge62:                                    ; preds = %.lr.ph34, %._crit_edge62
+  %indvars.iv.next5480 = phi i64 [ %indvars.iv.next54, %._crit_edge62 ], [ 1, %.lr.ph34 ]
+  %max_bound.179 = phi double [ %max_bound.1, %._crit_edge62 ], [ %192, %.lr.ph34 ]
+  %.phi.trans.insert63 = getelementptr inbounds %"struct.pov::Blob_Interval_Struct"* %56, i64 %indvars.iv.next5480, i32 1
+  %.pre64 = load double* %.phi.trans.insert63, align 8, !dbg !2157, !tbaa !2127
+  %194 = fcmp ogt double %.pre64, %max_bound.179, !dbg !2161
+  call void @llvm.dbg.value(metadata double %.pre64, i64 0, metadata !1113, metadata !1893), !dbg !2153
+  %max_bound.1 = select i1 %194, double %.pre64, double %max_bound.179, !dbg !2162
+  %indvars.iv.next54 = add nuw nsw i64 %indvars.iv.next5480, 1, !dbg !2155
+  %lftr.wideiv55 = trunc i64 %indvars.iv.next5480 to i32, !dbg !2155
+  %exitcond56 = icmp eq i32 %lftr.wideiv55, %193, !dbg !2155
+  br i1 %exitcond56, label %._crit_edge35, label %._crit_edge62, !dbg !2155
+
+._crit_edge35:                                    ; preds = %.lr.ph34, %._crit_edge62, %._crit_edge40
+  %max_bound.0.lcssa = phi double [ %192, %._crit_edge40 ], [ %192, %.lr.ph34 ], [ %max_bound.1, %._crit_edge62 ]
+  %195 = fcmp une double %max_bound.0.lcssa, 0.000000e+00, !dbg !2163
+  br i1 %195, label %196, label %.loopexit12, !dbg !2165
+
+; <label>:196                                     ; preds = %._crit_edge35
+  tail call void @llvm.dbg.value(metadata double* %.pre-phi, i64 0, metadata !1506, metadata !1893), !dbg !2166
+  tail call void @llvm.dbg.value(metadata double %max_bound.1, i64 0, metadata !1507, metadata !1893), !dbg !2169
+  %197 = fmul double %max_bound.0.lcssa, %172, !dbg !2170
+  store double %197, double* %.pre-phi, align 16, !dbg !2170, !tbaa !1939
+  %198 = insertelement <2 x double> undef, double %max_bound.0.lcssa, i32 0, !dbg !2171
+  %199 = insertelement <2 x double> %198, double %max_bound.0.lcssa, i32 1, !dbg !2171
+  %200 = fmul <2 x double> %176, %199, !dbg !2171
+  %201 = bitcast double* %173 to <2 x double>*, !dbg !2171
+  store <2 x double> %200, <2 x double>* %201, align 8, !dbg !2171, !tbaa !1939
+  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !1082, metadata !1893), !dbg !2154
+  br i1 %166, label %.lr.ph30, label %.loopexit12, !dbg !2172
+
+.lr.ph30:                                         ; preds = %196
+  %202 = add i32 %160, -1, !dbg !2172
+  br label %203, !dbg !2172
+
+; <label>:203                                     ; preds = %203, %.lr.ph30
+  %indvars.iv49 = phi i64 [ 0, %.lr.ph30 ], [ %indvars.iv.next50, %203 ]
+  %204 = getelementptr inbounds %"struct.pov::Blob_Interval_Struct"* %56, i64 %indvars.iv49, i32 1, !dbg !2174
+  %205 = load double* %204, align 8, !dbg !2176, !tbaa !2127
+  %206 = fdiv double %205, %max_bound.0.lcssa, !dbg !2176
+  store double %206, double* %204, align 8, !dbg !2176, !tbaa !2127
+  %indvars.iv.next50 = add nuw nsw i64 %indvars.iv49, 1, !dbg !2172
+  %lftr.wideiv51 = trunc i64 %indvars.iv49 to i32, !dbg !2172
+  %exitcond52 = icmp eq i32 %lftr.wideiv51, %202, !dbg !2172
+  br i1 %exitcond52, label %.loopexit12, label %203, !dbg !2172
+
+.loopexit12:                                      ; preds = %203, %196, %._crit_edge35
+  %max_bound.2 = phi double [ 1.000000e+00, %._crit_edge35 ], [ %max_bound.0.lcssa, %196 ], [ %max_bound.0.lcssa, %203 ]
+  %207 = getelementptr inbounds [5 x double]* %coeffs, i64 0, i64 3, !dbg !2177
+  %208 = getelementptr inbounds [5 x double]* %coeffs, i64 0, i64 2, !dbg !2178
+  %209 = getelementptr inbounds [5 x double]* %coeffs, i64 0, i64 1, !dbg !2179
+  %210 = getelementptr inbounds [5 x double]* %coeffs, i64 0, i64 0, !dbg !2180
+  %211 = bitcast [5 x double]* %coeffs to i8*, !dbg !2181
+  call void @llvm.memset.p0i8.i64(i8* %211, i8 0, i64 32, i32 16, i1 false), !dbg !2182
+  %212 = load %"struct.pov::Blob_Data_Struct"** %53, align 8, !dbg !2181, !tbaa !1978
+  %213 = getelementptr inbounds %"struct.pov::Blob_Data_Struct"* %212, i64 0, i32 2, !dbg !2183
+  %214 = load double* %213, align 8, !dbg !2183, !tbaa !2184
+  %215 = fsub double -0.000000e+00, %214, !dbg !2185
+  %216 = getelementptr inbounds [5 x double]* %coeffs, i64 0, i64 4, !dbg !2186
+  store double %215, double* %216, align 16, !dbg !2187, !tbaa !1939
+  call void @llvm.dbg.value(metadata double* null, i64 0, metadata !1097, metadata !1893), !dbg !2188
+  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !1086, metadata !1893), !dbg !2189
+  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !1082, metadata !1893), !dbg !2154
+  br i1 %166, label %.lr.ph23, label %._crit_edge24.thread, !dbg !2190
+
+.lr.ph23:                                         ; preds = %.loopexit12
+  %217 = fmul double %max_bound.2, %max_bound.2, !dbg !2192
+  %218 = getelementptr inbounds [3 x double]* %PP, i64 0, i64 0, !dbg !2198
+  %219 = getelementptr inbounds [3 x double]* %DD, i64 0, i64 0, !dbg !2199
+  %220 = getelementptr inbounds [3 x double]* %PP, i64 0, i64 1, !dbg !2200
+  %221 = getelementptr inbounds [3 x double]* %PP, i64 0, i64 2, !dbg !2202
+  %222 = getelementptr inbounds [3 x double]* %DD, i64 0, i64 1, !dbg !2203
+  %223 = getelementptr inbounds [3 x double]* %DD, i64 0, i64 2, !dbg !2205
+  %224 = getelementptr inbounds [4 x double]* %roots, i64 0, i64 0, !dbg !2206
+  %225 = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 0, i32 13, !dbg !2207
+  %226 = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 0, i32 1, !dbg !2208
+  %227 = getelementptr inbounds [3 x double]* %IPoint, i64 0, i64 0, !dbg !2210
+  %228 = getelementptr inbounds %"struct.pov::Ray_Struct"* %Ray, i64 0, i32 1, i64 0, !dbg !2218
+  %229 = getelementptr inbounds [3 x double]* %IPoint, i64 0, i64 1, !dbg !2219
+  %230 = getelementptr inbounds %"struct.pov::Ray_Struct"* %Ray, i64 0, i32 0, i64 2, !dbg !2221
+  %231 = getelementptr inbounds %"struct.pov::Ray_Struct"* %Ray, i64 0, i32 1, i64 2, !dbg !2222
+  %232 = getelementptr inbounds [3 x double]* %IPoint, i64 0, i64 2, !dbg !2223
+  %233 = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 0, i32 7, !dbg !2224
+  %234 = getelementptr inbounds %"struct.pov::istack_struct"* %Depth_Stack, i64 0, i32 3, !dbg !2226
+  %235 = getelementptr inbounds %"struct.pov::istack_struct"* %Depth_Stack, i64 0, i32 1, !dbg !2230
+  %236 = bitcast [3 x double]* %IPoint to i64*, !dbg !2231
+  %237 = bitcast double* %229 to i64*, !dbg !2233
+  %238 = bitcast double* %232 to i64*, !dbg !2234
+  %239 = sext i32 %160 to i64, !dbg !2190
+  %240 = insertelement <2 x double> undef, double %217, i32 0, !dbg !2235
+  %241 = insertelement <2 x double> %240, double %217, i32 1, !dbg !2235
+  %242 = insertelement <2 x double> undef, double %217, i32 0, !dbg !2236
+  br label %243, !dbg !2190
+
+; <label>:243                                     ; preds = %.lr.ph23, %672
+  %indvars.iv47 = phi i64 [ 0, %.lr.ph23 ], [ %indvars.iv.next48.pre-phi, %672 ]
+  %in_flag.020 = phi i32 [ 0, %.lr.ph23 ], [ %in_flag.2, %672 ]
+  %Intersection_Found.019 = phi i32 [ 0, %.lr.ph23 ], [ %Intersection_Found.3, %672 ]
+  %fcoeffs.018 = phi double* [ null, %.lr.ph23 ], [ %fcoeffs.3, %672 ]
+  %244 = getelementptr inbounds %"struct.pov::Blob_Interval_Struct"* %56, i64 %indvars.iv47, i32 0, !dbg !2237
+  %245 = load i32* %244, align 4, !dbg !2237, !tbaa !2238
+  %246 = and i32 %245, 1, !dbg !2239
+  %247 = icmp eq i32 %246, 0, !dbg !2240
+  br i1 %247, label %248, label %519, !dbg !2241
+
+; <label>:248                                     ; preds = %243
+  %249 = add nsw i32 %in_flag.020, 1, !dbg !2242
+  call void @llvm.dbg.value(metadata i32 %249, i64 0, metadata !1086, metadata !1893), !dbg !2189
+  %250 = getelementptr inbounds %"struct.pov::Blob_Interval_Struct"* %56, i64 %indvars.iv47, i32 2, !dbg !2243
+  %251 = load %"struct.pov::Blob_Element_Struct"** %250, align 8, !dbg !2243, !tbaa !2244
+  call void @llvm.dbg.value(metadata %"struct.pov::Blob_Element_Struct"* %251, i64 0, metadata !1109, metadata !1893), !dbg !2245
+  %252 = getelementptr inbounds %"struct.pov::Blob_Element_Struct"* %251, i64 0, i32 0, !dbg !2246
+  %253 = load i16* %252, align 2, !dbg !2246, !tbaa !2247
+  %254 = sext i16 %253 to i32, !dbg !2249
+  switch i32 %254, label %510 [
+    i32 2, label %255
+    i32 8, label %313
+    i32 16, label %385
+    i32 32, label %385
+    i32 4, label %456
+  ], !dbg !2250
+
+; <label>:255                                     ; preds = %248
+  %256 = getelementptr inbounds %"struct.pov::Blob_Element_Struct"* %251, i64 0, i32 2, i64 0, !dbg !2251
+  tail call void @llvm.dbg.value(metadata double* undef, i64 0, metadata !1477, metadata !1893), !dbg !2252
+  tail call void @llvm.dbg.value(metadata double* %8, i64 0, metadata !1478, metadata !1893), !dbg !2254
+  tail call void @llvm.dbg.value(metadata double* %256, i64 0, metadata !1479, metadata !1893), !dbg !2255
+  %257 = load double* %8, align 16, !dbg !2256, !tbaa !1939
+  %258 = load double* %256, align 8, !dbg !2257, !tbaa !1939
+  %259 = fsub double %257, %258, !dbg !2258
+  call void @llvm.dbg.value(metadata double %259, i64 0, metadata !1104, metadata !2076), !dbg !1903
+  %260 = load double* %182, align 8, !dbg !2259, !tbaa !1939
+  %261 = getelementptr inbounds %"struct.pov::Blob_Element_Struct"* %251, i64 0, i32 2, i64 1, !dbg !2260
+  %262 = load double* %261, align 8, !dbg !2260, !tbaa !1939
+  %263 = fsub double %260, %262, !dbg !2261
+  call void @llvm.dbg.value(metadata double %263, i64 0, metadata !1104, metadata !2079), !dbg !1903
+  %264 = load double* %189, align 16, !dbg !2262, !tbaa !1939
+  %265 = getelementptr inbounds %"struct.pov::Blob_Element_Struct"* %251, i64 0, i32 2, i64 2, !dbg !2263
+  %266 = load double* %265, align 8, !dbg !2263, !tbaa !1939
+  %267 = fsub double %264, %266, !dbg !2264
+  call void @llvm.dbg.value(metadata double %267, i64 0, metadata !1104, metadata !2082), !dbg !1903
+  tail call void @llvm.dbg.value(metadata double* undef, i64 0, metadata !1485, metadata !1893), !dbg !2265
+  tail call void @llvm.dbg.value(metadata double* undef, i64 0, metadata !1486, metadata !1893), !dbg !2267
+  %268 = fmul double %259, %259, !dbg !2268
+  %269 = fmul double %263, %263, !dbg !2269
+  %270 = fadd double %268, %269, !dbg !2270
+  %271 = fmul double %267, %267, !dbg !2271
+  %272 = fadd double %270, %271, !dbg !2272
+  call void @llvm.dbg.value(metadata double %272, i64 0, metadata !1484, metadata !1893), !dbg !2273
+  call void @llvm.dbg.value(metadata double %272, i64 0, metadata !1484, metadata !1893), !dbg !2274
+  call void @llvm.dbg.value(metadata double %272, i64 0, metadata !1484, metadata !1893), !dbg !2276
+  call void @llvm.dbg.value(metadata double %272, i64 0, metadata !1088, metadata !1893), !dbg !2278
+  call void @llvm.dbg.value(metadata double %272, i64 0, metadata !1088, metadata !1893), !dbg !2278
+  call void @llvm.dbg.value(metadata double %272, i64 0, metadata !1088, metadata !1893), !dbg !2278
+  call void @llvm.dbg.value(metadata double %272, i64 0, metadata !1088, metadata !1893), !dbg !2278
+  call void @llvm.dbg.value(metadata double %272, i64 0, metadata !1088, metadata !1893), !dbg !2278
+  call void @llvm.dbg.value(metadata double %272, i64 0, metadata !1088, metadata !1893), !dbg !2278
+  call void @llvm.dbg.value(metadata double %272, i64 0, metadata !1088, metadata !1893), !dbg !2278
+  call void @llvm.dbg.value(metadata double %272, i64 0, metadata !1088, metadata !1893), !dbg !2278
+  call void @llvm.dbg.value(metadata double %272, i64 0, metadata !1088, metadata !1893), !dbg !2278
+  call void @llvm.dbg.value(metadata double %272, i64 0, metadata !1088, metadata !1893), !dbg !2278
+  call void @llvm.dbg.value(metadata double %272, i64 0, metadata !1088, metadata !1893), !dbg !2278
+  call void @llvm.dbg.value(metadata double %272, i64 0, metadata !1088, metadata !1893), !dbg !2278
+  call void @llvm.dbg.value(metadata double %272, i64 0, metadata !1088, metadata !1893), !dbg !2278
+  call void @llvm.dbg.value(metadata double %272, i64 0, metadata !1088, metadata !1893), !dbg !2278
+  call void @llvm.dbg.value(metadata double %272, i64 0, metadata !1088, metadata !1893), !dbg !2278
+  tail call void @llvm.dbg.value(metadata double* undef, i64 0, metadata !1485, metadata !1893), !dbg !2279
+  tail call void @llvm.dbg.value(metadata double* %.pre-phi, i64 0, metadata !1486, metadata !1893), !dbg !2281
+  %273 = load double* %.pre-phi, align 16, !dbg !2282, !tbaa !1939
+  %274 = fmul double %259, %273, !dbg !2283
+  %275 = load double* %173, align 8, !dbg !2284, !tbaa !1939
+  %276 = fmul double %263, %275, !dbg !2285
+  %277 = fadd double %274, %276, !dbg !2286
+  %278 = load double* %174, align 16, !dbg !2287, !tbaa !1939
+  %279 = fmul double %267, %278, !dbg !2288
+  %280 = fadd double %277, %279, !dbg !2289
+  call void @llvm.dbg.value(metadata double %280, i64 0, metadata !1484, metadata !1893), !dbg !2290
+  call void @llvm.dbg.value(metadata double %280, i64 0, metadata !1484, metadata !1893), !dbg !2291
+  call void @llvm.dbg.value(metadata double %280, i64 0, metadata !1484, metadata !1893), !dbg !2292
+  call void @llvm.dbg.value(metadata double %280, i64 0, metadata !1089, metadata !1893), !dbg !2294
+  call void @llvm.dbg.value(metadata double %280, i64 0, metadata !1089, metadata !1893), !dbg !2294
+  call void @llvm.dbg.value(metadata double %280, i64 0, metadata !1089, metadata !1893), !dbg !2294
+  call void @llvm.dbg.value(metadata double %280, i64 0, metadata !1089, metadata !1893), !dbg !2294
+  call void @llvm.dbg.value(metadata double %280, i64 0, metadata !1089, metadata !1893), !dbg !2294
+  call void @llvm.dbg.value(metadata double %280, i64 0, metadata !1089, metadata !1893), !dbg !2294
+  call void @llvm.dbg.value(metadata double %280, i64 0, metadata !1089, metadata !1893), !dbg !2294
+  call void @llvm.dbg.value(metadata double %280, i64 0, metadata !1089, metadata !1893), !dbg !2294
+  call void @llvm.dbg.value(metadata double %280, i64 0, metadata !1089, metadata !1893), !dbg !2294
+  call void @llvm.dbg.value(metadata double %280, i64 0, metadata !1089, metadata !1893), !dbg !2294
+  call void @llvm.dbg.value(metadata double %280, i64 0, metadata !1089, metadata !1893), !dbg !2294
+  call void @llvm.dbg.value(metadata double %280, i64 0, metadata !1089, metadata !1893), !dbg !2294
+  call void @llvm.dbg.value(metadata double %280, i64 0, metadata !1089, metadata !1893), !dbg !2294
+  call void @llvm.dbg.value(metadata double %280, i64 0, metadata !1089, metadata !1893), !dbg !2294
+  call void @llvm.dbg.value(metadata double %280, i64 0, metadata !1089, metadata !1893), !dbg !2294
+  call void @llvm.dbg.value(metadata double %217, i64 0, metadata !1090, metadata !1893), !dbg !2295
+  call void @llvm.dbg.value(metadata double %217, i64 0, metadata !1484, metadata !1893), !dbg !2296
+  call void @llvm.dbg.value(metadata double %217, i64 0, metadata !1484, metadata !1893), !dbg !2298
+  call void @llvm.dbg.value(metadata double %217, i64 0, metadata !1090, metadata !1893), !dbg !2295
+  call void @llvm.dbg.value(metadata double %217, i64 0, metadata !1090, metadata !1893), !dbg !2295
+  call void @llvm.dbg.value(metadata double %217, i64 0, metadata !1090, metadata !1893), !dbg !2295
+  call void @llvm.dbg.value(metadata double %217, i64 0, metadata !1090, metadata !1893), !dbg !2295
+  call void @llvm.dbg.value(metadata double %217, i64 0, metadata !1090, metadata !1893), !dbg !2295
+  call void @llvm.dbg.value(metadata double %217, i64 0, metadata !1090, metadata !1893), !dbg !2295
+  call void @llvm.dbg.value(metadata double %217, i64 0, metadata !1090, metadata !1893), !dbg !2295
+  call void @llvm.dbg.value(metadata double %217, i64 0, metadata !1090, metadata !1893), !dbg !2295
+  call void @llvm.dbg.value(metadata double %217, i64 0, metadata !1090, metadata !1893), !dbg !2295
+  call void @llvm.dbg.value(metadata double %217, i64 0, metadata !1090, metadata !1893), !dbg !2295
+  call void @llvm.dbg.value(metadata double %217, i64 0, metadata !1090, metadata !1893), !dbg !2295
+  call void @llvm.dbg.value(metadata double %217, i64 0, metadata !1090, metadata !1893), !dbg !2295
+  %281 = getelementptr inbounds %"struct.pov::Blob_Element_Struct"* %251, i64 0, i32 5, i64 0, !dbg !2300
+  %282 = load double* %281, align 8, !dbg !2300, !tbaa !1939
+  call void @llvm.dbg.value(metadata double %282, i64 0, metadata !1091, metadata !1893), !dbg !2301
+  %283 = getelementptr inbounds %"struct.pov::Blob_Element_Struct"* %251, i64 0, i32 5, i64 1, !dbg !2302
+  %284 = load double* %283, align 8, !dbg !2302, !tbaa !1939
+  call void @llvm.dbg.value(metadata double %284, i64 0, metadata !1092, metadata !1893), !dbg !2303
+  %285 = getelementptr inbounds %"struct.pov::Blob_Element_Struct"* %251, i64 0, i32 5, i64 2, !dbg !2304
+  %286 = load double* %285, align 8, !dbg !2304, !tbaa !1939
+  call void @llvm.dbg.value(metadata double %286, i64 0, metadata !1093, metadata !1893), !dbg !2305
+  %287 = getelementptr inbounds %"struct.pov::Blob_Element_Struct"* %251, i64 0, i32 6, i64 0, !dbg !2306
+  call void @llvm.dbg.value(metadata double* %287, i64 0, metadata !1097, metadata !1893), !dbg !2188
+  %288 = fmul double %282, 4.000000e+00, !dbg !2307
+  %289 = insertelement <2 x double> %242, double %288, i32 1, !dbg !2236
+  %290 = insertelement <2 x double> undef, double %282, i32 0, !dbg !2236
+  %291 = insertelement <2 x double> %290, double %280, i32 1, !dbg !2236
+  %292 = fmul <2 x double> %289, %291, !dbg !2236
+  %293 = fmul <2 x double> %241, %292, !dbg !2235
+  %294 = bitcast double* %287 to <2 x double>*, !dbg !2308
+  store <2 x double> %293, <2 x double>* %294, align 8, !dbg !2308, !tbaa !1939
+  %295 = fmul double %282, 2.000000e+00, !dbg !2309
+  %296 = fmul double %280, 2.000000e+00, !dbg !2310
+  %297 = fmul double %280, %296, !dbg !2311
+  %298 = fmul double %217, %272, !dbg !2312
+  %299 = fadd double %298, %297, !dbg !2313
+  %300 = fmul double %295, %299, !dbg !2314
+  %301 = fmul double %217, %284, !dbg !2315
+  %302 = fadd double %301, %300, !dbg !2316
+  %303 = getelementptr inbounds %"struct.pov::Blob_Element_Struct"* %251, i64 0, i32 6, i64 2, !dbg !2317
+  store double %302, double* %303, align 8, !dbg !2318, !tbaa !1939
+  %304 = fmul double %272, %295, !dbg !2319
+  %305 = fadd double %284, %304, !dbg !2320
+  %306 = fmul double %296, %305, !dbg !2321
+  %307 = getelementptr inbounds %"struct.pov::Blob_Element_Struct"* %251, i64 0, i32 6, i64 3, !dbg !2322
+  store double %306, double* %307, align 8, !dbg !2323, !tbaa !1939
+  %308 = fmul double %272, %282, !dbg !2324
+  %309 = fadd double %308, %284, !dbg !2325
+  %310 = fmul double %272, %309, !dbg !2326
+  %311 = fadd double %286, %310, !dbg !2327
+  %312 = getelementptr inbounds %"struct.pov::Blob_Element_Struct"* %251, i64 0, i32 6, i64 4, !dbg !2328
+  store double %311, double* %312, align 8, !dbg !2329, !tbaa !1939
+  br label %512, !dbg !2330
+
+; <label>:313                                     ; preds = %248
+  %314 = getelementptr inbounds %"struct.pov::Blob_Element_Struct"* %251, i64 0, i32 8, !dbg !2331
+  %315 = load %"struct.pov::Transform_Struct"** %314, align 8, !dbg !2331, !tbaa !2332
+  call void @_ZN3pov14MInvTransPointEPdS0_PNS_16Transform_StructE(double* %218, double* %8, %"struct.pov::Transform_Struct"* %315) #6, !dbg !2333
+  %316 = load %"struct.pov::Transform_Struct"** %314, align 8, !dbg !2334, !tbaa !2332
+  call void @_ZN3pov18MInvTransDirectionEPdS0_PNS_16Transform_StructE(double* %219, double* %.pre-phi, %"struct.pov::Transform_Struct"* %316) #6, !dbg !2335
+  %317 = getelementptr inbounds %"struct.pov::Blob_Element_Struct"* %251, i64 0, i32 2, i64 0, !dbg !2336
+  tail call void @llvm.dbg.value(metadata double* undef, i64 0, metadata !1477, metadata !1893), !dbg !2337
+  tail call void @llvm.dbg.value(metadata double* %218, i64 0, metadata !1478, metadata !1893), !dbg !2338
+  tail call void @llvm.dbg.value(metadata double* %317, i64 0, metadata !1479, metadata !1893), !dbg !2339
+  %318 = load double* %218, align 16, !dbg !2340, !tbaa !1939
+  %319 = load double* %317, align 8, !dbg !2341, !tbaa !1939
+  %320 = fsub double %318, %319, !dbg !2342
+  call void @llvm.dbg.value(metadata double %320, i64 0, metadata !1104, metadata !2076), !dbg !1903
+  %321 = load double* %220, align 8, !dbg !2200, !tbaa !1939
+  %322 = getelementptr inbounds %"struct.pov::Blob_Element_Struct"* %251, i64 0, i32 2, i64 1, !dbg !2343
+  %323 = load double* %322, align 8, !dbg !2343, !tbaa !1939
+  %324 = fsub double %321, %323, !dbg !2344
+  call void @llvm.dbg.value(metadata double %324, i64 0, metadata !1104, metadata !2079), !dbg !1903
+  %325 = load double* %221, align 16, !dbg !2202, !tbaa !1939
+  %326 = getelementptr inbounds %"struct.pov::Blob_Element_Struct"* %251, i64 0, i32 2, i64 2, !dbg !2345
+  %327 = load double* %326, align 8, !dbg !2345, !tbaa !1939
+  %328 = fsub double %325, %327, !dbg !2346
+  call void @llvm.dbg.value(metadata double %328, i64 0, metadata !1104, metadata !2082), !dbg !1903
+  tail call void @llvm.dbg.value(metadata double* undef, i64 0, metadata !1485, metadata !1893), !dbg !2347
+  tail call void @llvm.dbg.value(metadata double* undef, i64 0, metadata !1486, metadata !1893), !dbg !2348
+  %329 = fmul double %320, %320, !dbg !2349
+  %330 = fmul double %324, %324, !dbg !2350
+  %331 = fadd double %329, %330, !dbg !2351
+  %332 = fmul double %328, %328, !dbg !2352
+  %333 = fadd double %331, %332, !dbg !2353
+  call void @llvm.dbg.value(metadata double %333, i64 0, metadata !1484, metadata !1893), !dbg !2273
+  call void @llvm.dbg.value(metadata double %333, i64 0, metadata !1484, metadata !1893), !dbg !2274
+  call void @llvm.dbg.value(metadata double %333, i64 0, metadata !1484, metadata !1893), !dbg !2276
+  call void @llvm.dbg.value(metadata double %333, i64 0, metadata !1088, metadata !1893), !dbg !2278
+  call void @llvm.dbg.value(metadata double %333, i64 0, metadata !1088, metadata !1893), !dbg !2278
+  call void @llvm.dbg.value(metadata double %333, i64 0, metadata !1088, metadata !1893), !dbg !2278
+  call void @llvm.dbg.value(metadata double %333, i64 0, metadata !1088, metadata !1893), !dbg !2278
+  call void @llvm.dbg.value(metadata double %333, i64 0, metadata !1088, metadata !1893), !dbg !2278
+  call void @llvm.dbg.value(metadata double %333, i64 0, metadata !1088, metadata !1893), !dbg !2278
+  call void @llvm.dbg.value(metadata double %333, i64 0, metadata !1088, metadata !1893), !dbg !2278
+  call void @llvm.dbg.value(metadata double %333, i64 0, metadata !1088, metadata !1893), !dbg !2278
+  call void @llvm.dbg.value(metadata double %333, i64 0, metadata !1088, metadata !1893), !dbg !2278
+  call void @llvm.dbg.value(metadata double %333, i64 0, metadata !1088, metadata !1893), !dbg !2278
+  call void @llvm.dbg.value(metadata double %333, i64 0, metadata !1088, metadata !1893), !dbg !2278
+  call void @llvm.dbg.value(metadata double %333, i64 0, metadata !1088, metadata !1893), !dbg !2278
+  call void @llvm.dbg.value(metadata double %333, i64 0, metadata !1088, metadata !1893), !dbg !2278
+  call void @llvm.dbg.value(metadata double %333, i64 0, metadata !1088, metadata !1893), !dbg !2278
+  call void @llvm.dbg.value(metadata double %333, i64 0, metadata !1088, metadata !1893), !dbg !2278
+  tail call void @llvm.dbg.value(metadata double* undef, i64 0, metadata !1485, metadata !1893), !dbg !2354
+  tail call void @llvm.dbg.value(metadata double* %219, i64 0, metadata !1486, metadata !1893), !dbg !2355
+  %334 = load double* %219, align 16, !dbg !2356, !tbaa !1939
+  %335 = load double* %222, align 8, !dbg !2203, !tbaa !1939
+  %336 = load double* %223, align 16, !dbg !2205, !tbaa !1939
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1484, metadata !1893), !dbg !2290
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1484, metadata !1893), !dbg !2291
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1484, metadata !1893), !dbg !2292
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1089, metadata !1893), !dbg !2294
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1089, metadata !1893), !dbg !2294
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1089, metadata !1893), !dbg !2294
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1089, metadata !1893), !dbg !2294
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1089, metadata !1893), !dbg !2294
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1089, metadata !1893), !dbg !2294
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1089, metadata !1893), !dbg !2294
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1089, metadata !1893), !dbg !2294
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1089, metadata !1893), !dbg !2294
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1089, metadata !1893), !dbg !2294
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1089, metadata !1893), !dbg !2294
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1089, metadata !1893), !dbg !2294
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1089, metadata !1893), !dbg !2294
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1089, metadata !1893), !dbg !2294
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1089, metadata !1893), !dbg !2294
+  tail call void @llvm.dbg.value(metadata double* %219, i64 0, metadata !1485, metadata !1893), !dbg !2357
+  tail call void @llvm.dbg.value(metadata double* %219, i64 0, metadata !1486, metadata !1893), !dbg !2358
+  %337 = insertelement <2 x double> undef, double %334, i32 0, !dbg !2359
+  %338 = insertelement <2 x double> %337, double %320, i32 1, !dbg !2359
+  %339 = insertelement <2 x double> %337, double %334, i32 1, !dbg !2359
+  %340 = fmul <2 x double> %338, %339, !dbg !2359
+  %341 = insertelement <2 x double> undef, double %335, i32 0, !dbg !2360
+  %342 = insertelement <2 x double> %341, double %324, i32 1, !dbg !2360
+  %343 = insertelement <2 x double> %341, double %335, i32 1, !dbg !2360
+  %344 = fmul <2 x double> %342, %343, !dbg !2360
+  %345 = fadd <2 x double> %340, %344, !dbg !2361
+  %346 = insertelement <2 x double> undef, double %336, i32 0, !dbg !2362
+  %347 = insertelement <2 x double> %346, double %328, i32 1, !dbg !2362
+  %348 = insertelement <2 x double> %346, double %336, i32 1, !dbg !2362
+  %349 = fmul <2 x double> %347, %348, !dbg !2362
+  %350 = fadd <2 x double> %345, %349, !dbg !2363
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1484, metadata !1893), !dbg !2296
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1484, metadata !1893), !dbg !2298
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1090, metadata !1893), !dbg !2295
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1090, metadata !1893), !dbg !2295
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1090, metadata !1893), !dbg !2295
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1090, metadata !1893), !dbg !2295
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1090, metadata !1893), !dbg !2295
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1090, metadata !1893), !dbg !2295
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1090, metadata !1893), !dbg !2295
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1090, metadata !1893), !dbg !2295
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1090, metadata !1893), !dbg !2295
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1090, metadata !1893), !dbg !2295
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1090, metadata !1893), !dbg !2295
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1090, metadata !1893), !dbg !2295
+  %351 = getelementptr inbounds %"struct.pov::Blob_Element_Struct"* %251, i64 0, i32 5, i64 0, !dbg !2364
+  %352 = load double* %351, align 8, !dbg !2364, !tbaa !1939
+  call void @llvm.dbg.value(metadata double %352, i64 0, metadata !1091, metadata !1893), !dbg !2301
+  %353 = getelementptr inbounds %"struct.pov::Blob_Element_Struct"* %251, i64 0, i32 5, i64 1, !dbg !2365
+  %354 = load double* %353, align 8, !dbg !2365, !tbaa !1939
+  call void @llvm.dbg.value(metadata double %354, i64 0, metadata !1092, metadata !1893), !dbg !2303
+  %355 = getelementptr inbounds %"struct.pov::Blob_Element_Struct"* %251, i64 0, i32 5, i64 2, !dbg !2366
+  %356 = load double* %355, align 8, !dbg !2366, !tbaa !1939
+  call void @llvm.dbg.value(metadata double %356, i64 0, metadata !1093, metadata !1893), !dbg !2305
+  %357 = getelementptr inbounds %"struct.pov::Blob_Element_Struct"* %251, i64 0, i32 6, i64 0, !dbg !2367
+  call void @llvm.dbg.value(metadata double* %357, i64 0, metadata !1097, metadata !1893), !dbg !2188
+  %358 = fmul double %352, 4.000000e+00, !dbg !2368
+  %359 = insertelement <2 x double> undef, double %352, i32 0, !dbg !2369
+  %360 = insertelement <2 x double> %359, double %358, i32 1, !dbg !2369
+  %361 = extractelement <2 x double> %350, i32 0, !dbg !2369
+  %362 = extractelement <2 x double> %350, i32 1, !dbg !2369
+  %363 = fmul <2 x double> %360, %350, !dbg !2369
+  %364 = shufflevector <2 x double> %350, <2 x double> undef, <2 x i32> zeroinitializer, !dbg !2370
+  %365 = fmul <2 x double> %364, %363, !dbg !2370
+  %366 = bitcast double* %357 to <2 x double>*, !dbg !2371
+  store <2 x double> %365, <2 x double>* %366, align 8, !dbg !2371, !tbaa !1939
+  %367 = fmul double %352, 2.000000e+00, !dbg !2372
+  %368 = fmul double %362, 2.000000e+00, !dbg !2373
+  %369 = fmul double %362, %368, !dbg !2374
+  %370 = fmul double %333, %361, !dbg !2375
+  %371 = fadd double %370, %369, !dbg !2376
+  %372 = fmul double %367, %371, !dbg !2377
+  %373 = fmul double %354, %361, !dbg !2378
+  %374 = fadd double %373, %372, !dbg !2379
+  %375 = getelementptr inbounds %"struct.pov::Blob_Element_Struct"* %251, i64 0, i32 6, i64 2, !dbg !2380
+  store double %374, double* %375, align 8, !dbg !2381, !tbaa !1939
+  %376 = fmul double %333, %367, !dbg !2382
+  %377 = fadd double %354, %376, !dbg !2383
+  %378 = fmul double %368, %377, !dbg !2384
+  %379 = getelementptr inbounds %"struct.pov::Blob_Element_Struct"* %251, i64 0, i32 6, i64 3, !dbg !2385
+  store double %378, double* %379, align 8, !dbg !2386, !tbaa !1939
+  %380 = fmul double %333, %352, !dbg !2387
+  %381 = fadd double %380, %354, !dbg !2388
+  %382 = fmul double %333, %381, !dbg !2389
+  %383 = fadd double %356, %382, !dbg !2390
+  %384 = getelementptr inbounds %"struct.pov::Blob_Element_Struct"* %251, i64 0, i32 6, i64 4, !dbg !2391
+  store double %383, double* %384, align 8, !dbg !2392, !tbaa !1939
+  br label %512, !dbg !2393
+
+; <label>:385                                     ; preds = %248, %248
+  %386 = getelementptr inbounds %"struct.pov::Blob_Element_Struct"* %251, i64 0, i32 8, !dbg !2394
+  %387 = load %"struct.pov::Transform_Struct"** %386, align 8, !dbg !2394, !tbaa !2332
+  call void @_ZN3pov14MInvTransPointEPdS0_PNS_16Transform_StructE(double* %218, double* %8, %"struct.pov::Transform_Struct"* %387) #6, !dbg !2395
+  %388 = load %"struct.pov::Transform_Struct"** %386, align 8, !dbg !2396, !tbaa !2332
+  call void @_ZN3pov18MInvTransDirectionEPdS0_PNS_16Transform_StructE(double* %219, double* %.pre-phi, %"struct.pov::Transform_Struct"* %388) #6, !dbg !2397
+  %389 = load i16* %252, align 2, !dbg !2398, !tbaa !2247
+  %390 = icmp eq i16 %389, 32, !dbg !2400
+  br i1 %390, label %391, label %._crit_edge65, !dbg !2401
+
+._crit_edge65:                                    ; preds = %385
+  %.pre66 = load double* %221, align 16, !dbg !2402, !tbaa !1939
+  br label %396, !dbg !2401
+
+; <label>:391                                     ; preds = %385
+  %392 = getelementptr inbounds %"struct.pov::Blob_Element_Struct"* %251, i64 0, i32 3, !dbg !2403
+  %393 = load double* %392, align 8, !dbg !2403, !tbaa !2405
+  %394 = load double* %221, align 16, !dbg !2406, !tbaa !1939
+  %395 = fsub double %394, %393, !dbg !2406
+  store double %395, double* %221, align 16, !dbg !2406, !tbaa !1939
+  br label %396, !dbg !2407
+
+; <label>:396                                     ; preds = %._crit_edge65, %391
+  %397 = phi double [ %.pre66, %._crit_edge65 ], [ %395, %391 ]
+  tail call void @llvm.dbg.value(metadata double* %218, i64 0, metadata !1485, metadata !1893), !dbg !2408
+  tail call void @llvm.dbg.value(metadata double* %218, i64 0, metadata !1486, metadata !1893), !dbg !2409
+  %398 = load double* %218, align 16, !dbg !2410, !tbaa !1939
+  %399 = fmul double %398, %398, !dbg !2411
+  %400 = load double* %220, align 8, !dbg !2412, !tbaa !1939
+  %401 = fmul double %400, %400, !dbg !2413
+  %402 = fadd double %399, %401, !dbg !2414
+  %403 = fmul double %397, %397, !dbg !2415
+  %404 = fadd double %402, %403, !dbg !2416
+  call void @llvm.dbg.value(metadata double %404, i64 0, metadata !1484, metadata !1893), !dbg !2273
+  call void @llvm.dbg.value(metadata double %404, i64 0, metadata !1484, metadata !1893), !dbg !2274
+  call void @llvm.dbg.value(metadata double %404, i64 0, metadata !1484, metadata !1893), !dbg !2276
+  call void @llvm.dbg.value(metadata double %404, i64 0, metadata !1088, metadata !1893), !dbg !2278
+  call void @llvm.dbg.value(metadata double %404, i64 0, metadata !1088, metadata !1893), !dbg !2278
+  call void @llvm.dbg.value(metadata double %404, i64 0, metadata !1088, metadata !1893), !dbg !2278
+  call void @llvm.dbg.value(metadata double %404, i64 0, metadata !1088, metadata !1893), !dbg !2278
+  call void @llvm.dbg.value(metadata double %404, i64 0, metadata !1088, metadata !1893), !dbg !2278
+  call void @llvm.dbg.value(metadata double %404, i64 0, metadata !1088, metadata !1893), !dbg !2278
+  call void @llvm.dbg.value(metadata double %404, i64 0, metadata !1088, metadata !1893), !dbg !2278
+  call void @llvm.dbg.value(metadata double %404, i64 0, metadata !1088, metadata !1893), !dbg !2278
+  call void @llvm.dbg.value(metadata double %404, i64 0, metadata !1088, metadata !1893), !dbg !2278
+  call void @llvm.dbg.value(metadata double %404, i64 0, metadata !1088, metadata !1893), !dbg !2278
+  call void @llvm.dbg.value(metadata double %404, i64 0, metadata !1088, metadata !1893), !dbg !2278
+  call void @llvm.dbg.value(metadata double %404, i64 0, metadata !1088, metadata !1893), !dbg !2278
+  call void @llvm.dbg.value(metadata double %404, i64 0, metadata !1088, metadata !1893), !dbg !2278
+  call void @llvm.dbg.value(metadata double %404, i64 0, metadata !1088, metadata !1893), !dbg !2278
+  call void @llvm.dbg.value(metadata double %404, i64 0, metadata !1088, metadata !1893), !dbg !2278
+  tail call void @llvm.dbg.value(metadata double* %218, i64 0, metadata !1485, metadata !1893), !dbg !2417
+  tail call void @llvm.dbg.value(metadata double* %219, i64 0, metadata !1486, metadata !1893), !dbg !2418
+  %405 = load double* %219, align 16, !dbg !2419, !tbaa !1939
+  %406 = load double* %222, align 8, !dbg !2420, !tbaa !1939
+  %407 = load double* %223, align 16, !dbg !2421, !tbaa !1939
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1484, metadata !1893), !dbg !2290
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1484, metadata !1893), !dbg !2291
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1484, metadata !1893), !dbg !2292
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1089, metadata !1893), !dbg !2294
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1089, metadata !1893), !dbg !2294
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1089, metadata !1893), !dbg !2294
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1089, metadata !1893), !dbg !2294
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1089, metadata !1893), !dbg !2294
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1089, metadata !1893), !dbg !2294
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1089, metadata !1893), !dbg !2294
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1089, metadata !1893), !dbg !2294
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1089, metadata !1893), !dbg !2294
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1089, metadata !1893), !dbg !2294
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1089, metadata !1893), !dbg !2294
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1089, metadata !1893), !dbg !2294
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1089, metadata !1893), !dbg !2294
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1089, metadata !1893), !dbg !2294
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1089, metadata !1893), !dbg !2294
+  tail call void @llvm.dbg.value(metadata double* %219, i64 0, metadata !1485, metadata !1893), !dbg !2422
+  tail call void @llvm.dbg.value(metadata double* %219, i64 0, metadata !1486, metadata !1893), !dbg !2423
+  %408 = insertelement <2 x double> undef, double %405, i32 0, !dbg !2424
+  %409 = insertelement <2 x double> %408, double %405, i32 1, !dbg !2424
+  %410 = insertelement <2 x double> %408, double %398, i32 1, !dbg !2424
+  %411 = fmul <2 x double> %409, %410, !dbg !2424
+  %412 = insertelement <2 x double> undef, double %406, i32 0, !dbg !2425
+  %413 = insertelement <2 x double> %412, double %406, i32 1, !dbg !2425
+  %414 = insertelement <2 x double> %412, double %400, i32 1, !dbg !2425
+  %415 = fmul <2 x double> %413, %414, !dbg !2425
+  %416 = fadd <2 x double> %411, %415, !dbg !2426
+  %417 = insertelement <2 x double> undef, double %407, i32 0, !dbg !2427
+  %418 = insertelement <2 x double> %417, double %397, i32 1, !dbg !2427
+  %419 = insertelement <2 x double> %417, double %407, i32 1, !dbg !2427
+  %420 = fmul <2 x double> %418, %419, !dbg !2427
+  %421 = fadd <2 x double> %416, %420, !dbg !2428
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1484, metadata !1893), !dbg !2296
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1484, metadata !1893), !dbg !2298
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1090, metadata !1893), !dbg !2295
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1090, metadata !1893), !dbg !2295
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1090, metadata !1893), !dbg !2295
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1090, metadata !1893), !dbg !2295
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1090, metadata !1893), !dbg !2295
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1090, metadata !1893), !dbg !2295
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1090, metadata !1893), !dbg !2295
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1090, metadata !1893), !dbg !2295
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1090, metadata !1893), !dbg !2295
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1090, metadata !1893), !dbg !2295
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1090, metadata !1893), !dbg !2295
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1090, metadata !1893), !dbg !2295
+  %422 = getelementptr inbounds %"struct.pov::Blob_Element_Struct"* %251, i64 0, i32 5, i64 0, !dbg !2429
+  %423 = load double* %422, align 8, !dbg !2429, !tbaa !1939
+  call void @llvm.dbg.value(metadata double %423, i64 0, metadata !1091, metadata !1893), !dbg !2301
+  %424 = getelementptr inbounds %"struct.pov::Blob_Element_Struct"* %251, i64 0, i32 5, i64 1, !dbg !2430
+  %425 = load double* %424, align 8, !dbg !2430, !tbaa !1939
+  call void @llvm.dbg.value(metadata double %425, i64 0, metadata !1092, metadata !1893), !dbg !2303
+  %426 = getelementptr inbounds %"struct.pov::Blob_Element_Struct"* %251, i64 0, i32 5, i64 2, !dbg !2431
+  %427 = load double* %426, align 8, !dbg !2431, !tbaa !1939
+  call void @llvm.dbg.value(metadata double %427, i64 0, metadata !1093, metadata !1893), !dbg !2305
+  %428 = getelementptr inbounds %"struct.pov::Blob_Element_Struct"* %251, i64 0, i32 6, i64 0, !dbg !2432
+  call void @llvm.dbg.value(metadata double* %428, i64 0, metadata !1097, metadata !1893), !dbg !2188
+  %429 = fmul double %423, 4.000000e+00, !dbg !2433
+  %430 = insertelement <2 x double> undef, double %423, i32 0, !dbg !2434
+  %431 = insertelement <2 x double> %430, double %429, i32 1, !dbg !2434
+  %432 = extractelement <2 x double> %421, i32 0, !dbg !2434
+  %433 = extractelement <2 x double> %421, i32 1, !dbg !2434
+  %434 = fmul <2 x double> %431, %421, !dbg !2434
+  %435 = shufflevector <2 x double> %421, <2 x double> undef, <2 x i32> zeroinitializer, !dbg !2435
+  %436 = fmul <2 x double> %435, %434, !dbg !2435
+  %437 = bitcast double* %428 to <2 x double>*, !dbg !2436
+  store <2 x double> %436, <2 x double>* %437, align 8, !dbg !2436, !tbaa !1939
+  %438 = fmul double %423, 2.000000e+00, !dbg !2437
+  %439 = fmul double %433, 2.000000e+00, !dbg !2438
+  %440 = fmul double %433, %439, !dbg !2439
+  %441 = fmul double %404, %432, !dbg !2440
+  %442 = fadd double %441, %440, !dbg !2441
+  %443 = fmul double %438, %442, !dbg !2442
+  %444 = fmul double %425, %432, !dbg !2443
+  %445 = fadd double %444, %443, !dbg !2444
+  %446 = getelementptr inbounds %"struct.pov::Blob_Element_Struct"* %251, i64 0, i32 6, i64 2, !dbg !2445
+  store double %445, double* %446, align 8, !dbg !2446, !tbaa !1939
+  %447 = fmul double %404, %438, !dbg !2447
+  %448 = fadd double %425, %447, !dbg !2448
+  %449 = fmul double %439, %448, !dbg !2449
+  %450 = getelementptr inbounds %"struct.pov::Blob_Element_Struct"* %251, i64 0, i32 6, i64 3, !dbg !2450
+  store double %449, double* %450, align 8, !dbg !2451, !tbaa !1939
+  %451 = fmul double %404, %423, !dbg !2452
+  %452 = fadd double %451, %425, !dbg !2453
+  %453 = fmul double %404, %452, !dbg !2454
+  %454 = fadd double %427, %453, !dbg !2455
+  %455 = getelementptr inbounds %"struct.pov::Blob_Element_Struct"* %251, i64 0, i32 6, i64 4, !dbg !2456
+  store double %454, double* %455, align 8, !dbg !2457, !tbaa !1939
+  br label %512, !dbg !2458
+
+; <label>:456                                     ; preds = %248
+  %457 = getelementptr inbounds %"struct.pov::Blob_Element_Struct"* %251, i64 0, i32 8, !dbg !2459
+  %458 = load %"struct.pov::Transform_Struct"** %457, align 8, !dbg !2459, !tbaa !2332
+  call void @_ZN3pov14MInvTransPointEPdS0_PNS_16Transform_StructE(double* %218, double* %8, %"struct.pov::Transform_Struct"* %458) #6, !dbg !2460
+  %459 = load %"struct.pov::Transform_Struct"** %457, align 8, !dbg !2461, !tbaa !2332
+  call void @_ZN3pov18MInvTransDirectionEPdS0_PNS_16Transform_StructE(double* %219, double* %.pre-phi, %"struct.pov::Transform_Struct"* %459) #6, !dbg !2462
+  %460 = load double* %218, align 16, !dbg !2463, !tbaa !1939
+  %461 = fmul double %460, %460, !dbg !2464
+  %462 = load double* %220, align 8, !dbg !2465, !tbaa !1939
+  %463 = fmul double %462, %462, !dbg !2466
+  %464 = fadd double %461, %463, !dbg !2467
+  call void @llvm.dbg.value(metadata double %464, i64 0, metadata !1088, metadata !1893), !dbg !2278
+  call void @llvm.dbg.value(metadata double %464, i64 0, metadata !1484, metadata !1893), !dbg !2273
+  call void @llvm.dbg.value(metadata double %464, i64 0, metadata !1484, metadata !1893), !dbg !2274
+  call void @llvm.dbg.value(metadata double %464, i64 0, metadata !1484, metadata !1893), !dbg !2276
+  call void @llvm.dbg.value(metadata double %464, i64 0, metadata !1088, metadata !1893), !dbg !2278
+  call void @llvm.dbg.value(metadata double %464, i64 0, metadata !1088, metadata !1893), !dbg !2278
+  call void @llvm.dbg.value(metadata double %464, i64 0, metadata !1088, metadata !1893), !dbg !2278
+  call void @llvm.dbg.value(metadata double %464, i64 0, metadata !1088, metadata !1893), !dbg !2278
+  call void @llvm.dbg.value(metadata double %464, i64 0, metadata !1088, metadata !1893), !dbg !2278
+  call void @llvm.dbg.value(metadata double %464, i64 0, metadata !1088, metadata !1893), !dbg !2278
+  call void @llvm.dbg.value(metadata double %464, i64 0, metadata !1088, metadata !1893), !dbg !2278
+  call void @llvm.dbg.value(metadata double %464, i64 0, metadata !1088, metadata !1893), !dbg !2278
+  call void @llvm.dbg.value(metadata double %464, i64 0, metadata !1088, metadata !1893), !dbg !2278
+  call void @llvm.dbg.value(metadata double %464, i64 0, metadata !1088, metadata !1893), !dbg !2278
+  call void @llvm.dbg.value(metadata double %464, i64 0, metadata !1088, metadata !1893), !dbg !2278
+  call void @llvm.dbg.value(metadata double %464, i64 0, metadata !1088, metadata !1893), !dbg !2278
+  call void @llvm.dbg.value(metadata double %464, i64 0, metadata !1088, metadata !1893), !dbg !2278
+  call void @llvm.dbg.value(metadata double %464, i64 0, metadata !1088, metadata !1893), !dbg !2278
+  call void @llvm.dbg.value(metadata double %464, i64 0, metadata !1088, metadata !1893), !dbg !2278
+  %465 = load double* %219, align 16, !dbg !2468, !tbaa !1939
+  %466 = load double* %222, align 8, !dbg !2469, !tbaa !1939
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1089, metadata !1893), !dbg !2294
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1484, metadata !1893), !dbg !2290
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1484, metadata !1893), !dbg !2291
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1484, metadata !1893), !dbg !2292
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1089, metadata !1893), !dbg !2294
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1089, metadata !1893), !dbg !2294
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1089, metadata !1893), !dbg !2294
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1089, metadata !1893), !dbg !2294
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1089, metadata !1893), !dbg !2294
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1089, metadata !1893), !dbg !2294
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1089, metadata !1893), !dbg !2294
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1089, metadata !1893), !dbg !2294
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1089, metadata !1893), !dbg !2294
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1089, metadata !1893), !dbg !2294
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1089, metadata !1893), !dbg !2294
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1089, metadata !1893), !dbg !2294
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1089, metadata !1893), !dbg !2294
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1089, metadata !1893), !dbg !2294
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1089, metadata !1893), !dbg !2294
+  %467 = insertelement <2 x double> undef, double %465, i32 0, !dbg !2470
+  %468 = insertelement <2 x double> %467, double %465, i32 1, !dbg !2470
+  %469 = insertelement <2 x double> %467, double %460, i32 1, !dbg !2470
+  %470 = fmul <2 x double> %468, %469, !dbg !2470
+  %471 = insertelement <2 x double> undef, double %466, i32 0, !dbg !2471
+  %472 = insertelement <2 x double> %471, double %466, i32 1, !dbg !2471
+  %473 = insertelement <2 x double> %471, double %462, i32 1, !dbg !2471
+  %474 = fmul <2 x double> %472, %473, !dbg !2471
+  %475 = fadd <2 x double> %470, %474, !dbg !2472
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1090, metadata !1893), !dbg !2295
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1484, metadata !1893), !dbg !2296
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1484, metadata !1893), !dbg !2298
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1090, metadata !1893), !dbg !2295
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1090, metadata !1893), !dbg !2295
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1090, metadata !1893), !dbg !2295
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1090, metadata !1893), !dbg !2295
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1090, metadata !1893), !dbg !2295
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1090, metadata !1893), !dbg !2295
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1090, metadata !1893), !dbg !2295
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1090, metadata !1893), !dbg !2295
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1090, metadata !1893), !dbg !2295
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1090, metadata !1893), !dbg !2295
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1090, metadata !1893), !dbg !2295
+  call void @llvm.dbg.value(metadata double undef, i64 0, metadata !1090, metadata !1893), !dbg !2295
+  %476 = getelementptr inbounds %"struct.pov::Blob_Element_Struct"* %251, i64 0, i32 5, i64 0, !dbg !2473
+  %477 = load double* %476, align 8, !dbg !2473, !tbaa !1939
+  call void @llvm.dbg.value(metadata double %477, i64 0, metadata !1091, metadata !1893), !dbg !2301
+  %478 = getelementptr inbounds %"struct.pov::Blob_Element_Struct"* %251, i64 0, i32 5, i64 1, !dbg !2474
+  %479 = load double* %478, align 8, !dbg !2474, !tbaa !1939
+  call void @llvm.dbg.value(metadata double %479, i64 0, metadata !1092, metadata !1893), !dbg !2303
+  %480 = getelementptr inbounds %"struct.pov::Blob_Element_Struct"* %251, i64 0, i32 5, i64 2, !dbg !2475
+  %481 = load double* %480, align 8, !dbg !2475, !tbaa !1939
+  call void @llvm.dbg.value(metadata double %481, i64 0, metadata !1093, metadata !1893), !dbg !2305
+  %482 = getelementptr inbounds %"struct.pov::Blob_Element_Struct"* %251, i64 0, i32 6, i64 0, !dbg !2476
+  call void @llvm.dbg.value(metadata double* %482, i64 0, metadata !1097, metadata !1893), !dbg !2188
+  %483 = fmul double %477, 4.000000e+00, !dbg !2477
+  %484 = insertelement <2 x double> undef, double %477, i32 0, !dbg !2478
+  %485 = insertelement <2 x double> %484, double %483, i32 1, !dbg !2478
+  %486 = extractelement <2 x double> %475, i32 0, !dbg !2478
+  %487 = extractelement <2 x double> %475, i32 1, !dbg !2478
+  %488 = fmul <2 x double> %485, %475, !dbg !2478
+  %489 = shufflevector <2 x double> %475, <2 x double> undef, <2 x i32> zeroinitializer, !dbg !2479
+  %490 = fmul <2 x double> %489, %488, !dbg !2479
+  %491 = bitcast double* %482 to <2 x double>*, !dbg !2480
+  store <2 x double> %490, <2 x double>* %491, align 8, !dbg !2480, !tbaa !1939
+  %492 = fmul double %477, 2.000000e+00, !dbg !2481
+  %493 = fmul double %487, 2.000000e+00, !dbg !2482
+  %494 = fmul double %487, %493, !dbg !2483
+  %495 = fmul double %464, %486, !dbg !2484
+  %496 = fadd double %495, %494, !dbg !2485
+  %497 = fmul double %492, %496, !dbg !2486
+  %498 = fmul double %479, %486, !dbg !2487
+  %499 = fadd double %498, %497, !dbg !2488
+  %500 = getelementptr inbounds %"struct.pov::Blob_Element_Struct"* %251, i64 0, i32 6, i64 2, !dbg !2489
+  store double %499, double* %500, align 8, !dbg !2490, !tbaa !1939
+  %501 = fmul double %464, %492, !dbg !2491
+  %502 = fadd double %479, %501, !dbg !2492
+  %503 = fmul double %493, %502, !dbg !2493
+  %504 = getelementptr inbounds %"struct.pov::Blob_Element_Struct"* %251, i64 0, i32 6, i64 3, !dbg !2494
+  store double %503, double* %504, align 8, !dbg !2495, !tbaa !1939
+  %505 = fmul double %464, %477, !dbg !2496
+  %506 = fadd double %505, %479, !dbg !2497
+  %507 = fmul double %464, %506, !dbg !2498
+  %508 = fadd double %481, %507, !dbg !2499
+  %509 = getelementptr inbounds %"struct.pov::Blob_Element_Struct"* %251, i64 0, i32 6, i64 4, !dbg !2500
+  store double %508, double* %509, align 8, !dbg !2501, !tbaa !1939
+  br label %512, !dbg !2502
+
+; <label>:510                                     ; preds = %248
+  %511 = call i32 (i8*, ...)* @_ZN3pov5ErrorEPKcz(i8* getelementptr inbounds ([52 x i8]* @.str11, i64 0, i64 0)) #6, !dbg !2503
+  br label %512, !dbg !2504
+
+; <label>:512                                     ; preds = %510, %456, %396, %313, %255
+  %fcoeffs.1 = phi double* [ %fcoeffs.018, %510 ], [ %482, %456 ], [ %428, %396 ], [ %357, %313 ], [ %287, %255 ]
+  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !1083, metadata !1893), !dbg !2505
+  br label %513, !dbg !2506
+
+; <label>:513                                     ; preds = %513, %512
+  %indvars.iv41 = phi i64 [ 0, %512 ], [ %indvars.iv.next42, %513 ]
+  %514 = getelementptr inbounds double* %fcoeffs.1, i64 %indvars.iv41, !dbg !2508
+  %515 = load double* %514, align 8, !dbg !2508, !tbaa !1939
+  %516 = getelementptr inbounds [5 x double]* %coeffs, i64 0, i64 %indvars.iv41, !dbg !2511
+  %517 = load double* %516, align 8, !dbg !2512, !tbaa !1939
+  %518 = fadd double %515, %517, !dbg !2512
+  store double %518, double* %516, align 8, !dbg !2512, !tbaa !1939
+  %indvars.iv.next42 = add nuw nsw i64 %indvars.iv41, 1, !dbg !2506
+  %exitcond43 = icmp eq i64 %indvars.iv.next42, 5, !dbg !2506
+  br i1 %exitcond43, label %.loopexit, label %513, !dbg !2506
+
+; <label>:519                                     ; preds = %243
+  %520 = getelementptr inbounds %"struct.pov::Blob_Interval_Struct"* %56, i64 %indvars.iv47, i32 2, !dbg !2513
+  %521 = load %"struct.pov::Blob_Element_Struct"** %520, align 8, !dbg !2513, !tbaa !2244
+  call void @llvm.dbg.value(metadata double* %529, i64 0, metadata !1097, metadata !1893), !dbg !2188
+  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !1083, metadata !1893), !dbg !2505
+  br label %522, !dbg !2515
+
+; <label>:522                                     ; preds = %522, %519
+  %indvars.iv = phi i64 [ 0, %519 ], [ %indvars.iv.next, %522 ]
+  %523 = getelementptr inbounds %"struct.pov::Blob_Element_Struct"* %521, i64 0, i32 6, i64 %indvars.iv, !dbg !2517
+  %524 = load double* %523, align 8, !dbg !2517, !tbaa !1939
+  %525 = getelementptr inbounds [5 x double]* %coeffs, i64 0, i64 %indvars.iv, !dbg !2520
+  %526 = load double* %525, align 8, !dbg !2521, !tbaa !1939
+  %527 = fsub double %526, %524, !dbg !2521
+  store double %527, double* %525, align 8, !dbg !2521, !tbaa !1939
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !2515
+  %exitcond = icmp eq i64 %indvars.iv.next, 5, !dbg !2515
+  br i1 %exitcond, label %528, label %522, !dbg !2515
+
+; <label>:528                                     ; preds = %522
+  %529 = getelementptr inbounds %"struct.pov::Blob_Element_Struct"* %521, i64 0, i32 6, i64 0, !dbg !2522
+  %530 = add nsw i32 %in_flag.020, -1, !dbg !2523
+  call void @llvm.dbg.value(metadata i32 %530, i64 0, metadata !1086, metadata !1893), !dbg !2189
+  %531 = icmp eq i32 %530, 0, !dbg !2525
+  br i1 %531, label %._crit_edge75, label %.loopexit, !dbg !2526
+
+._crit_edge75:                                    ; preds = %528
+  %.pre76 = add nuw nsw i64 %indvars.iv47, 1, !dbg !2190
+  br label %672, !dbg !2526
+
+.loopexit:                                        ; preds = %513, %528
+  %fcoeffs.2 = phi double* [ %529, %528 ], [ %fcoeffs.1, %513 ]
+  %in_flag.1 = phi i32 [ %530, %528 ], [ %249, %513 ]
+  %532 = add nuw nsw i64 %indvars.iv47, 1, !dbg !2527
+  %533 = icmp slt i64 %532, %239, !dbg !2529
+  %534 = getelementptr inbounds %"struct.pov::Blob_Interval_Struct"* %56, i64 %indvars.iv47, i32 1, !dbg !2530
+  %535 = load double* %534, align 8, !dbg !2530, !tbaa !2127
+  %536 = getelementptr inbounds %"struct.pov::Blob_Interval_Struct"* %56, i64 %532, i32 1, !dbg !2531
+  %537 = load double* %536, align 8, !dbg !2531, !tbaa !2127
+  br i1 %533, label %538, label %._crit_edge67, !dbg !2532
+
+; <label>:538                                     ; preds = %.loopexit
+  %539 = fsub double %535, %537, !dbg !2533
+  %540 = call double @fabs(double %539) #7, !dbg !2534
+  %541 = fcmp olt double %540, 1.000000e-07, !dbg !2535
+  br i1 %541, label %672, label %._crit_edge67, !dbg !2536
+
+._crit_edge67:                                    ; preds = %.loopexit, %538
+  call void @llvm.dbg.value(metadata double %535, i64 0, metadata !1114, metadata !1893), !dbg !2537
+  %542 = fsub double %537, %535, !dbg !2538
+  call void @llvm.dbg.value(metadata double %542, i64 0, metadata !1115, metadata !1893), !dbg !2539
+  %543 = load double* %210, align 16, !dbg !2540, !tbaa !1939
+  %544 = fmul double %543, %542, !dbg !2541
+  %545 = fmul double %542, %544, !dbg !2542
+  %546 = fmul double %542, %545, !dbg !2543
+  %547 = fmul double %542, %546, !dbg !2544
+  call void @llvm.dbg.value(metadata double %547, i64 0, metadata !1111, metadata !2076), !dbg !1909
+  %548 = load double* %209, align 8, !dbg !2545, !tbaa !1939
+  %549 = fmul double %543, 4.000000e+00, !dbg !2546
+  %550 = fmul double %535, %549, !dbg !2547
+  %551 = fadd double %548, %550, !dbg !2548
+  %552 = fmul double %542, %551, !dbg !2549
+  %553 = fmul double %542, %552, !dbg !2550
+  %554 = fmul double %542, %553, !dbg !2551
+  call void @llvm.dbg.value(metadata double %554, i64 0, metadata !1111, metadata !2079), !dbg !1909
+  %555 = fmul double %535, 3.000000e+00, !dbg !2552
+  %556 = fmul double %543, 2.000000e+00, !dbg !2553
+  %557 = fmul double %535, %556, !dbg !2554
+  %558 = fadd double %548, %557, !dbg !2555
+  %559 = fmul double %555, %558, !dbg !2556
+  %560 = load double* %208, align 16, !dbg !2557, !tbaa !1939
+  %561 = fadd double %560, %559, !dbg !2558
+  %562 = fmul double %542, %561, !dbg !2559
+  %563 = fmul double %542, %562, !dbg !2560
+  call void @llvm.dbg.value(metadata double %563, i64 0, metadata !1111, metadata !2082), !dbg !1909
+  %564 = fmul double %535, 2.000000e+00, !dbg !2561
+  %565 = fmul double %535, %543, !dbg !2562
+  %566 = fmul double %548, 7.500000e-01, !dbg !2563
+  %567 = fadd double %565, %566, !dbg !2564
+  %568 = fmul double %564, %567, !dbg !2565
+  %569 = fadd double %560, %568, !dbg !2566
+  %570 = fmul double %564, %569, !dbg !2567
+  %571 = load double* %207, align 8, !dbg !2568, !tbaa !1939
+  %572 = fadd double %571, %570, !dbg !2569
+  %573 = fmul double %542, %572, !dbg !2570
+  call void @llvm.dbg.value(metadata double %573, i64 0, metadata !1111, metadata !2571), !dbg !1909
+  %574 = fadd double %565, %548, !dbg !2572
+  %575 = fmul double %535, %574, !dbg !2573
+  %576 = fadd double %560, %575, !dbg !2574
+  %577 = fmul double %535, %576, !dbg !2575
+  %578 = fadd double %571, %577, !dbg !2576
+  %579 = fmul double %535, %578, !dbg !2577
+  %580 = load double* %216, align 16, !dbg !2578, !tbaa !1939
+  %581 = fadd double %580, %579, !dbg !2579
+  call void @llvm.dbg.value(metadata double %581, i64 0, metadata !1111, metadata !2580), !dbg !1909
+  call void @llvm.dbg.value(metadata double %581, i64 0, metadata !1112, metadata !2076), !dbg !1910
+  %582 = fmul double %573, 2.500000e-01, !dbg !2581
+  %583 = fadd double %581, %582, !dbg !2582
+  call void @llvm.dbg.value(metadata double %583, i64 0, metadata !1112, metadata !2079), !dbg !1910
+  %584 = fdiv double %563, 3.000000e+00, !dbg !2583
+  %585 = fadd double %584, %573, !dbg !2584
+  %586 = fmul double %585, 5.000000e-01, !dbg !2585
+  %587 = fadd double %581, %586, !dbg !2586
+  call void @llvm.dbg.value(metadata double %587, i64 0, metadata !1112, metadata !2082), !dbg !1910
+  %588 = fmul double %573, 1.500000e+00, !dbg !2587
+  %589 = fadd double %563, %588, !dbg !2588
+  %590 = fmul double %554, 5.000000e-01, !dbg !2589
+  %591 = fadd double %590, %589, !dbg !2590
+  %592 = fmul double %591, 5.000000e-01, !dbg !2591
+  %593 = fadd double %581, %592, !dbg !2592
+  call void @llvm.dbg.value(metadata double %593, i64 0, metadata !1112, metadata !2571), !dbg !1910
+  %594 = fadd double %581, %573, !dbg !2593
+  %595 = fadd double %563, %594, !dbg !2594
+  %596 = fadd double %554, %595, !dbg !2595
+  %597 = fadd double %547, %596, !dbg !2596
+  call void @llvm.dbg.value(metadata double %597, i64 0, metadata !1112, metadata !2580), !dbg !1910
+  %598 = fcmp ult double %581, 0.000000e+00, !dbg !2597
+  %599 = fcmp ult double %583, 0.000000e+00, !dbg !2599
+  %or.cond4 = or i1 %598, %599, !dbg !2600
+  %600 = fcmp ult double %587, 0.000000e+00, !dbg !2601
+  %or.cond5 = or i1 %or.cond4, %600, !dbg !2600
+  %601 = fcmp ult double %593, 0.000000e+00, !dbg !2602
+  %or.cond6 = or i1 %or.cond5, %601, !dbg !2600
+  %602 = fcmp ult double %597, 0.000000e+00, !dbg !2603
+  %or.cond7 = or i1 %602, %or.cond6, !dbg !2600
+  br i1 %or.cond7, label %603, label %672, !dbg !2600
+
+; <label>:603                                     ; preds = %._crit_edge67
+  %604 = fcmp ugt double %581, 0.000000e+00, !dbg !2604
+  %605 = fcmp ugt double %583, 0.000000e+00, !dbg !2605
+  %or.cond8 = or i1 %604, %605, !dbg !2606
+  %606 = fcmp ugt double %587, 0.000000e+00, !dbg !2607
+  %or.cond9 = or i1 %or.cond8, %606, !dbg !2606
+  %607 = fcmp ugt double %593, 0.000000e+00, !dbg !2608
+  %or.cond10 = or i1 %or.cond9, %607, !dbg !2606
+  %608 = fcmp ugt double %597, 0.000000e+00, !dbg !2609
+  %or.cond11 = or i1 %608, %or.cond10, !dbg !2606
+  br i1 %or.cond11, label %609, label %672, !dbg !2606
+
+; <label>:609                                     ; preds = %603
+  %610 = load i32* %225, align 4, !dbg !2207, !tbaa !2610
+  %611 = and i32 %610, 64, !dbg !2207
+  %612 = call i32 @_ZN3pov16Solve_PolynomialEiPdS0_id(i32 4, double* %210, double* %224, i32 %611, double 1.000000e-11) #6, !dbg !2611
+  call void @llvm.dbg.value(metadata i32 %612, i64 0, metadata !1085, metadata !1893), !dbg !2612
+  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !1083, metadata !1893), !dbg !2505
+  %613 = icmp sgt i32 %612, 0, !dbg !2613
+  br i1 %613, label %.lr.ph, label %._crit_edge, !dbg !2614
+
+.lr.ph:                                           ; preds = %609
+  %614 = add i32 %612, -1, !dbg !2614
+  br label %615, !dbg !2614
+
+; <label>:615                                     ; preds = %667, %.lr.ph
+  %indvars.iv44 = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next45, %667 ]
+  %Intersection_Found.116 = phi i32 [ %Intersection_Found.019, %.lr.ph ], [ %Intersection_Found.2, %667 ]
+  %616 = getelementptr inbounds [4 x double]* %roots, i64 0, i64 %indvars.iv44, !dbg !2615
+  %617 = load double* %616, align 8, !dbg !2615, !tbaa !1939
+  call void @llvm.dbg.value(metadata double %617, i64 0, metadata !1094, metadata !1893), !dbg !2616
+  %618 = load double* %534, align 8, !dbg !2617, !tbaa !2127
+  %619 = fcmp ult double %617, %618, !dbg !2618
+  br i1 %619, label %667, label %620, !dbg !2619
+
+; <label>:620                                     ; preds = %615
+  %621 = load double* %536, align 8, !dbg !2620, !tbaa !2127
+  %622 = fcmp ugt double %617, %621, !dbg !2621
+  br i1 %622, label %667, label %623, !dbg !2622
+
+; <label>:623                                     ; preds = %620
+  %624 = fmul double %max_bound.2, %617, !dbg !2623
+  %625 = fadd double %start_dist.0, %624, !dbg !2624
+  %626 = fdiv double %625, %51, !dbg !2625
+  call void @llvm.dbg.value(metadata double %626, i64 0, metadata !1094, metadata !1893), !dbg !2616
+  %627 = fcmp ogt double %626, 1.000000e-02, !dbg !2626
+  %628 = fcmp olt double %626, 1.000000e+07, !dbg !2627
+  %or.cond = and i1 %627, %628, !dbg !2628
+  br i1 %or.cond, label %629, label %667, !dbg !2628
+
+; <label>:629                                     ; preds = %623
+  tail call void @llvm.dbg.value(metadata double* %227, i64 0, metadata !1252, metadata !1893), !dbg !2629
+  tail call void @llvm.dbg.value(metadata double* %10, i64 0, metadata !1253, metadata !1893), !dbg !2630
+  tail call void @llvm.dbg.value(metadata double %626, i64 0, metadata !1254, metadata !1893), !dbg !2631
+  tail call void @llvm.dbg.value(metadata double* %228, i64 0, metadata !1255, metadata !1893), !dbg !2632
+  %630 = bitcast %"struct.pov::Ray_Struct"* %Ray to <2 x double>*, !dbg !2633
+  %631 = load <2 x double>* %630, align 8, !dbg !2633, !tbaa !1939
+  %632 = bitcast double* %228 to <2 x double>*, !dbg !2634
+  %633 = load <2 x double>* %632, align 8, !dbg !2634, !tbaa !1939
+  %634 = insertelement <2 x double> undef, double %626, i32 0, !dbg !2635
+  %635 = insertelement <2 x double> %634, double %626, i32 1, !dbg !2635
+  %636 = fmul <2 x double> %635, %633, !dbg !2635
+  %637 = fadd <2 x double> %631, %636, !dbg !2636
+  %638 = bitcast [3 x double]* %IPoint to <2 x double>*, !dbg !2637
+  store <2 x double> %637, <2 x double>* %638, align 16, !dbg !2637, !tbaa !1939
+  %639 = load double* %230, align 8, !dbg !2221, !tbaa !1939
+  %640 = load double* %231, align 8, !dbg !2222, !tbaa !1939
+  %641 = fmul double %626, %640, !dbg !2638
+  %642 = fadd double %639, %641, !dbg !2639
+  store double %642, double* %232, align 16, !dbg !2640, !tbaa !1939
+  %643 = load %"struct.pov::Object_Struct"** %233, align 8, !dbg !2224, !tbaa !2641
+  %644 = call zeroext i1 @_ZN3pov13Point_In_ClipEPdPNS_13Object_StructE(double* %227, %"struct.pov::Object_Struct"* %643) #6, !dbg !2643
+  br i1 %644, label %645, label %667, !dbg !2644
+
+; <label>:645                                     ; preds = %629
+  call void @llvm.dbg.value(metadata double %626, i64 0, metadata !1260, metadata !1893), !dbg !2645
+  call void @llvm.dbg.value(metadata double* %227, i64 0, metadata !1261, metadata !1893), !dbg !2646
+  call void @llvm.dbg.value(metadata %"struct.pov::Object_Struct"* %Object, i64 0, metadata !1262, metadata !1893), !dbg !2647
+  call void @llvm.dbg.value(metadata %"struct.pov::istack_struct"* %Depth_Stack, i64 0, metadata !1263, metadata !1893), !dbg !2648
+  call void @llvm.dbg.value(metadata %"struct.pov::istack_struct"* %Depth_Stack, i64 0, metadata !1269, metadata !1893), !dbg !2649
+  %646 = load i32* %234, align 4, !dbg !2226, !tbaa !2650
+  %647 = zext i32 %646 to i64, !dbg !2652
+  %648 = load %"struct.pov::istk_entry"** %235, align 8, !dbg !2230, !tbaa !2653
+  %649 = getelementptr inbounds %"struct.pov::istk_entry"* %648, i64 %647, i32 0, !dbg !2654
+  store double %626, double* %649, align 8, !dbg !2655, !tbaa !2656
+  call void @llvm.dbg.value(metadata %"struct.pov::istack_struct"* %Depth_Stack, i64 0, metadata !1269, metadata !1893), !dbg !2658
+  %650 = getelementptr inbounds %"struct.pov::istk_entry"* %648, i64 %647, i32 5, !dbg !2660
+  store %"struct.pov::Object_Struct"* %Object, %"struct.pov::Object_Struct"** %650, align 8, !dbg !2661, !tbaa !2662
+  call void @llvm.dbg.value(metadata %"struct.pov::istack_struct"* %Depth_Stack, i64 0, metadata !1269, metadata !1893), !dbg !2663
+  %651 = getelementptr inbounds %"struct.pov::istk_entry"* %648, i64 %647, i32 1, i64 0, !dbg !2665
+  call void @llvm.dbg.value(metadata double* %651, i64 0, metadata !1471, metadata !1893), !dbg !2666
+  call void @llvm.dbg.value(metadata double* %227, i64 0, metadata !1472, metadata !1893), !dbg !2667
+  %652 = load i64* %236, align 16, !dbg !2231, !tbaa !1939
+  %653 = bitcast double* %651 to i64*, !dbg !2668
+  store i64 %652, i64* %653, align 8, !dbg !2668, !tbaa !1939
+  %654 = load i64* %237, align 8, !dbg !2233, !tbaa !1939
+  %655 = getelementptr inbounds %"struct.pov::istk_entry"* %648, i64 %647, i32 1, i64 1, !dbg !2669
+  %656 = bitcast double* %655 to i64*, !dbg !2670
+  store i64 %654, i64* %656, align 8, !dbg !2670, !tbaa !1939
+  %657 = load i64* %238, align 16, !dbg !2234, !tbaa !1939
+  %658 = getelementptr inbounds %"struct.pov::istk_entry"* %648, i64 %647, i32 1, i64 2, !dbg !2671
+  %659 = bitcast double* %658 to i64*, !dbg !2672
+  store i64 %657, i64* %659, align 8, !dbg !2672, !tbaa !1939
+  call void @llvm.dbg.value(metadata %"struct.pov::istack_struct"* %Depth_Stack, i64 0, metadata !1269, metadata !1893), !dbg !2673
+  %660 = getelementptr inbounds %"struct.pov::istk_entry"* %648, i64 %647, i32 4, i64 0, !dbg !2675
+  call void @llvm.dbg.value(metadata double* %660, i64 0, metadata !1274, metadata !1893), !dbg !2676
+  call void @llvm.dbg.value(metadata double* %227, i64 0, metadata !1275, metadata !1893), !dbg !2678
+  %661 = load i64* %236, align 16, !dbg !2679, !tbaa !1939
+  %662 = bitcast double* %660 to i64*, !dbg !2680
+  store i64 %661, i64* %662, align 8, !dbg !2680, !tbaa !1939
+  %663 = load i64* %237, align 8, !dbg !2681, !tbaa !1939
+  %664 = getelementptr inbounds %"struct.pov::istk_entry"* %648, i64 %647, i32 4, i64 1, !dbg !2682
+  %665 = bitcast double* %664 to i64*, !dbg !2683
+  store i64 %663, i64* %665, align 8, !dbg !2683, !tbaa !1939
+  call void @llvm.dbg.value(metadata %"struct.pov::istack_struct"* %Depth_Stack, i64 0, metadata !1269, metadata !1893), !dbg !2684
+  %666 = getelementptr inbounds %"struct.pov::istk_entry"* %648, i64 %647, i32 18, !dbg !2686
+  store i8* null, i8** %666, align 8, !dbg !2687, !tbaa !2688
+  call void @_ZN3pov8incstackEPNS_13istack_structE(%"struct.pov::istack_struct"* %Depth_Stack) #6, !dbg !2689
+  call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !1087, metadata !1893), !dbg !1897
+  br label %667, !dbg !2690
+
+; <label>:667                                     ; preds = %620, %615, %629, %645, %623
+  %Intersection_Found.2 = phi i32 [ 1, %645 ], [ %Intersection_Found.116, %629 ], [ %Intersection_Found.116, %623 ], [ %Intersection_Found.116, %620 ], [ %Intersection_Found.116, %615 ]
+  %indvars.iv.next45 = add nuw nsw i64 %indvars.iv44, 1, !dbg !2614
+  %lftr.wideiv = trunc i64 %indvars.iv44 to i32, !dbg !2614
+  %exitcond46 = icmp eq i32 %lftr.wideiv, %614, !dbg !2614
+  br i1 %exitcond46, label %._crit_edge, label %615, !dbg !2614
+
+._crit_edge:                                      ; preds = %667, %609
+  %Intersection_Found.1.lcssa = phi i32 [ %Intersection_Found.019, %609 ], [ %Intersection_Found.2, %667 ]
+  %668 = load i32* %226, align 4, !dbg !2208, !tbaa !2691
+  %669 = and i32 %668, 256, !dbg !2692
+  %670 = icmp eq i32 %669, 0, !dbg !2693
+  %671 = icmp ne i32 %Intersection_Found.1.lcssa, 0, !dbg !2694
+  %or.cond3 = and i1 %671, %670, !dbg !2695
+  br i1 %or.cond3, label %._crit_edge24, label %672, !dbg !2695
+
+; <label>:672                                     ; preds = %._crit_edge75, %603, %._crit_edge67, %._crit_edge, %538
+  %indvars.iv.next48.pre-phi = phi i64 [ %.pre76, %._crit_edge75 ], [ %532, %603 ], [ %532, %._crit_edge67 ], [ %532, %._crit_edge ], [ %532, %538 ], !dbg !2190
+  %fcoeffs.3 = phi double* [ %529, %._crit_edge75 ], [ %fcoeffs.2, %603 ], [ %fcoeffs.2, %._crit_edge67 ], [ %fcoeffs.2, %._crit_edge ], [ %fcoeffs.2, %538 ]
+  %Intersection_Found.3 = phi i32 [ %Intersection_Found.019, %._crit_edge75 ], [ %Intersection_Found.019, %603 ], [ %Intersection_Found.019, %._crit_edge67 ], [ %Intersection_Found.1.lcssa, %._crit_edge ], [ %Intersection_Found.019, %538 ]
+  %in_flag.2 = phi i32 [ 0, %._crit_edge75 ], [ %in_flag.1, %603 ], [ %in_flag.1, %._crit_edge67 ], [ %in_flag.1, %._crit_edge ], [ %in_flag.1, %538 ]
+  %673 = icmp slt i64 %indvars.iv.next48.pre-phi, %239, !dbg !2696
+  br i1 %673, label %243, label %._crit_edge24, !dbg !2190
+
+._crit_edge24:                                    ; preds = %672, %._crit_edge
+  %Intersection_Found.4 = phi i32 [ %Intersection_Found.1.lcssa, %._crit_edge ], [ %Intersection_Found.3, %672 ]
+  %674 = icmp eq i32 %Intersection_Found.4, 0, !dbg !2697
+  br i1 %674, label %._crit_edge24.thread, label %675, !dbg !2699
+
+; <label>:675                                     ; preds = %._crit_edge24
+  tail call void @llvm.dbg.value(metadata i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 13), i64 0, metadata !1122, metadata !1893), !dbg !2700
+  %676 = load i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 13), align 8, !dbg !2703, !tbaa !1914
+  %677 = add nsw i64 %676, 1, !dbg !2703
+  store i64 %677, i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 13), align 8, !dbg !2703, !tbaa !1914
+  br label %._crit_edge24.thread, !dbg !2704
+
+._crit_edge24.thread:                             ; preds = %.loopexit12, %675, %._crit_edge24, %_ZN3povL20determine_influencesEPdS0_PNS_11Blob_StructEdPNS_20Blob_Interval_StructE.exit
+  %.0 = phi i32 [ 0, %_ZN3povL20determine_influencesEPdS0_PNS_11Blob_StructEdPNS_20Blob_Interval_StructE.exit ], [ 0, %._crit_edge24 ], [ %Intersection_Found.4, %675 ], [ 0, %.loopexit12 ]
+  call void @llvm.lifetime.end(i64 40, i8* %1) #5, !dbg !2705
+  ret i32 %.0, !dbg !2705
+}

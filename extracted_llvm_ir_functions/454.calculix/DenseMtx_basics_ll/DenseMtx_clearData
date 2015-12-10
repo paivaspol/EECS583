@@ -1,17 +1,17 @@
 define void @DenseMtx_clearData(%struct._DenseMtx* %mtx) #0 {
-entry:
-  %cmp = icmp eq %struct._DenseMtx* %mtx, null
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata %struct._DenseMtx* %mtx, i64 0, metadata !51, metadata !63), !dbg !104
+  %1 = icmp eq %struct._DenseMtx* %mtx, null, !dbg !105
+  br i1 %1, label %2, label %5, !dbg !107
 
-if.then:                                          ; preds = %entry
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([52 x i8]* @.str3, i64 0, i64 0), %struct._DenseMtx* null) #5
-  tail call void @exit(i32 -1) #6
-  unreachable
+; <label>:2                                       ; preds = %0
+  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !108, !tbaa !68
+  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([52 x i8]* @.str3, i64 0, i64 0), %struct._DenseMtx* null) #6, !dbg !110
+  tail call void @exit(i32 -1) #7, !dbg !111
+  unreachable, !dbg !111
 
-if.end:                                           ; preds = %entry
-  %wrkDV = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 10
-  tail call void @DV_clearData(%struct._DV* %wrkDV) #5
-  tail call void @DenseMtx_setDefaultFields(%struct._DenseMtx* %mtx) #7
-  ret void
+; <label>:5                                       ; preds = %0
+  %6 = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 10, !dbg !112
+  tail call void @DV_clearData(%struct._DV* %6) #6, !dbg !113
+  tail call void @DenseMtx_setDefaultFields(%struct._DenseMtx* %mtx) #8, !dbg !114
+  ret void, !dbg !115
 }

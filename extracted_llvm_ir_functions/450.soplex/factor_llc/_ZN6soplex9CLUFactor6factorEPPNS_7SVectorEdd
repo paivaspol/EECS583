@@ -1,0 +1,77 @@
+define void @_ZN6soplex9CLUFactor6factorEPPNS_7SVectorEdd(%"class.soplex::CLUFactor"* %this, %"class.soplex::SVector"** nocapture readonly %vec, double %threshold, double %eps) #2 align 2 {
+  tail call void @llvm.dbg.value(metadata %"class.soplex::CLUFactor"* %this, i64 0, metadata !2692, metadata !3824), !dbg !6973
+  tail call void @llvm.dbg.value(metadata %"class.soplex::SVector"** %vec, i64 0, metadata !2693, metadata !3824), !dbg !6974
+  tail call void @llvm.dbg.value(metadata double %threshold, i64 0, metadata !2694, metadata !3824), !dbg !6975
+  tail call void @llvm.dbg.value(metadata double %eps, i64 0, metadata !2695, metadata !3824), !dbg !6976
+  %1 = getelementptr inbounds %"class.soplex::CLUFactor"* %this, i64 0, i32 0, !dbg !6977
+  store i32 0, i32* %1, align 4, !dbg !6978, !tbaa !4807
+  %2 = getelementptr inbounds %"class.soplex::CLUFactor"* %this, i64 0, i32 10, i32 6, !dbg !6979
+  %3 = load i32** %2, align 8, !dbg !6979, !tbaa !5355
+  store i32 0, i32* %3, align 4, !dbg !6980, !tbaa !4222
+  %4 = getelementptr inbounds %"class.soplex::CLUFactor"* %this, i64 0, i32 10, i32 4, !dbg !6981
+  store i32 0, i32* %4, align 4, !dbg !6982, !tbaa !6661
+  %5 = getelementptr inbounds %"class.soplex::CLUFactor"* %this, i64 0, i32 10, i32 5, !dbg !6983
+  store i32 0, i32* %5, align 4, !dbg !6984, !tbaa !5358
+  %6 = getelementptr inbounds %"class.soplex::CLUFactor"* %this, i64 0, i32 16, !dbg !6985
+  %7 = getelementptr inbounds %"class.soplex::CLUFactor"* %this, i64 0, i32 1, !dbg !6986
+  %8 = load i32* %7, align 4, !dbg !6986, !tbaa !4200
+  tail call void @_ZN6soplex9CLUFactor4Temp4initEi(%"class.soplex::CLUFactor::Temp"* %6, i32 %8) #10, !dbg !6985
+  tail call void @_ZN6soplex9CLUFactor8initPermEv(%"class.soplex::CLUFactor"* %this) #10, !dbg !6987
+  tail call void @_ZN6soplex9CLUFactor16initFactorMatrixEPPNS_7SVectorEd(%"class.soplex::CLUFactor"* %this, %"class.soplex::SVector"** %vec, double %eps) #10, !dbg !6988
+  %9 = load i32* %1, align 4, !dbg !6989, !tbaa !4807
+  %10 = icmp eq i32 %9, 0, !dbg !6989
+  br i1 %10, label %11, label %.thread, !dbg !6991
+
+; <label>:11                                      ; preds = %0
+  tail call void @_ZN6soplex9CLUFactor13colSingletonsEv(%"class.soplex::CLUFactor"* %this) #10, !dbg !6992
+  %12 = load i32* %1, align 4, !dbg !6993, !tbaa !4807
+  %13 = icmp eq i32 %12, 0, !dbg !6995
+  br i1 %13, label %14, label %.thread, !dbg !6996
+
+; <label>:14                                      ; preds = %11
+  tail call void @_ZN6soplex9CLUFactor13rowSingletonsEv(%"class.soplex::CLUFactor"* %this) #10, !dbg !6997
+  %15 = load i32* %1, align 4, !dbg !6998, !tbaa !4807
+  %16 = icmp eq i32 %15, 0, !dbg !7000
+  br i1 %16, label %17, label %.thread, !dbg !7001
+
+; <label>:17                                      ; preds = %14
+  %18 = getelementptr inbounds %"class.soplex::CLUFactor"* %this, i64 0, i32 16, i32 3, !dbg !7002
+  %19 = load i32* %18, align 4, !dbg !7002, !tbaa !4885
+  %20 = load i32* %7, align 4, !dbg !7004, !tbaa !4200
+  %21 = icmp slt i32 %19, %20, !dbg !7005
+  br i1 %21, label %24, label %.thread1, !dbg !7006
+
+.thread1:                                         ; preds = %17
+  %22 = load i32* %5, align 4, !dbg !7007, !tbaa !5358
+  store i32 %22, i32* %4, align 4, !dbg !7008, !tbaa !6661
+  br label %27, !dbg !7009
+
+.thread:                                          ; preds = %14, %11, %0
+  %23 = load i32* %5, align 4, !dbg !7007, !tbaa !5358
+  store i32 %23, i32* %4, align 4, !dbg !7008, !tbaa !6661
+  br label %30, !dbg !7009
+
+; <label>:24                                      ; preds = %17
+  tail call void @_ZN6soplex9CLUFactor15initFactorRingsEv(%"class.soplex::CLUFactor"* %this) #10, !dbg !7010
+  tail call void @_ZN6soplex9CLUFactor16eliminateNucleusEdd(%"class.soplex::CLUFactor"* %this, double %eps, double %threshold) #10, !dbg !7012
+  tail call void @_ZN6soplex9CLUFactor15freeFactorRingsEv(%"class.soplex::CLUFactor"* %this) #10, !dbg !7013
+  %.pre = load i32* %1, align 4, !dbg !7014, !tbaa !4807
+  %25 = load i32* %5, align 4, !dbg !7007, !tbaa !5358
+  store i32 %25, i32* %4, align 4, !dbg !7008, !tbaa !6661
+  %26 = icmp eq i32 %.pre, 0, !dbg !7016
+  br i1 %26, label %27, label %30, !dbg !7009
+
+; <label>:27                                      ; preds = %.thread1, %24
+  tail call void @_ZN6soplex9CLUFactor12setupRowValsEv(%"class.soplex::CLUFactor"* %this) #10, !dbg !7017
+  %28 = tail call i32 @_ZN6soplex9CLUFactor12setupColValsEv(%"class.soplex::CLUFactor"* %this) #10, !dbg !7019
+  %29 = getelementptr inbounds %"class.soplex::CLUFactor"* %this, i64 0, i32 2, !dbg !7020
+  store i32 %28, i32* %29, align 4, !dbg !7021, !tbaa !7022
+  br label %30, !dbg !7023
+
+; <label>:30                                      ; preds = %.thread, %27, %24
+  %31 = getelementptr inbounds %"class.soplex::CLUFactor"* %this, i64 0, i32 15, !dbg !7024
+  %32 = load i32* %31, align 4, !dbg !7025, !tbaa !7026
+  %33 = add nsw i32 %32, 1, !dbg !7025
+  store i32 %33, i32* %31, align 4, !dbg !7025, !tbaa !7026
+  ret void, !dbg !7027
+}

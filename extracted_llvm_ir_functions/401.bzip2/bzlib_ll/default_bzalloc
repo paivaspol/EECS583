@@ -1,7 +1,10 @@
-define internal noalias i8* @default_bzalloc(i8* nocapture %opaque, i32 %items, i32 %size) #4 {
-entry:
-  %mul = mul nsw i32 %size, %items
-  %conv = sext i32 %mul to i64
-  %call = tail call noalias i8* @malloc(i64 %conv) #11
-  ret i8* %call
+define internal noalias i8* @default_bzalloc(i8* nocapture readnone %opaque, i32 %items, i32 %size) #5 {
+  tail call void @llvm.dbg.value(metadata i8* %opaque, i64 0, metadata !491, metadata !626), !dbg !792
+  tail call void @llvm.dbg.value(metadata i32 %items, i64 0, metadata !492, metadata !626), !dbg !793
+  tail call void @llvm.dbg.value(metadata i32 %size, i64 0, metadata !493, metadata !626), !dbg !794
+  %1 = mul nsw i32 %size, %items, !dbg !795
+  %2 = sext i32 %1 to i64, !dbg !796
+  %3 = tail call i8* @malloc(i64 %2) #10, !dbg !797
+  tail call void @llvm.dbg.value(metadata i8* %3, i64 0, metadata !494, metadata !626), !dbg !798
+  ret i8* %3, !dbg !799
 }

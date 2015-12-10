@@ -1,50 +1,52 @@
 define void @P7CountSymbol(float* nocapture %counters, i8 signext %symidx, float %wt) #0 {
-entry:
-  %conv = sext i8 %symidx to i32
-  %0 = load i32* @Alphabet_size, align 4, !tbaa !3
-  %cmp = icmp slt i32 %conv, %0
-  br i1 %cmp, label %if.then, label %for.cond.preheader
+  tail call void @llvm.dbg.value(metadata float* %counters, i64 0, metadata !136, metadata !167), !dbg !410
+  tail call void @llvm.dbg.value(metadata i8 %symidx, i64 0, metadata !137, metadata !167), !dbg !411
+  tail call void @llvm.dbg.value(metadata float %wt, i64 0, metadata !138, metadata !167), !dbg !412
+  %1 = sext i8 %symidx to i32, !dbg !413
+  %2 = load i32* @Alphabet_size, align 4, !dbg !415, !tbaa !224
+  %3 = icmp slt i32 %1, %2, !dbg !416
+  br i1 %3, label %8, label %.preheader, !dbg !417
 
-for.cond.preheader:                               ; preds = %entry
-  %cmp327 = icmp sgt i32 %0, 0
-  br i1 %cmp327, label %for.body.lr.ph, label %if.end18
+.preheader:                                       ; preds = %0
+  %4 = icmp sgt i32 %2, 0, !dbg !418
+  br i1 %4, label %.lr.ph, label %.loopexit, !dbg !421
 
-for.body.lr.ph:                                   ; preds = %for.cond.preheader
-  %idxprom7 = sext i8 %symidx to i64
-  %arrayidx13 = getelementptr inbounds [24 x i32]* @DegenCount, i64 0, i64 %idxprom7
-  br label %for.body
+.lr.ph:                                           ; preds = %.preheader
+  %5 = sext i8 %symidx to i64, !dbg !422
+  %6 = getelementptr inbounds [24 x i32]* @DegenCount, i64 0, i64 %5, !dbg !425
+  %7 = sext i32 %2 to i64, !dbg !421
+  br label %13, !dbg !421
 
-if.then:                                          ; preds = %entry
-  %idxprom = sext i8 %symidx to i64
-  %arrayidx = getelementptr inbounds float* %counters, i64 %idxprom
-  %1 = load float* %arrayidx, align 4, !tbaa !4
-  %add = fadd float %1, %wt
-  store float %add, float* %arrayidx, align 4, !tbaa !4
-  br label %if.end18
+; <label>:8                                       ; preds = %0
+  %9 = sext i8 %symidx to i64, !dbg !426
+  %10 = getelementptr inbounds float* %counters, i64 %9, !dbg !426
+  %11 = load float* %10, align 4, !dbg !427, !tbaa !428
+  %12 = fadd float %11, %wt, !dbg !427
+  store float %12, float* %10, align 4, !dbg !427, !tbaa !428
+  br label %.loopexit, !dbg !426
 
-for.body:                                         ; preds = %for.body.lr.ph, %for.inc
-  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.inc ]
-  %arrayidx9 = getelementptr inbounds [24 x [20 x i8]]* @Degenerate, i64 0, i64 %idxprom7, i64 %indvars.iv
-  %2 = load i8* %arrayidx9, align 1, !tbaa !1
-  %tobool = icmp eq i8 %2, 0
-  br i1 %tobool, label %for.inc, label %if.then10
+; <label>:13                                      ; preds = %.lr.ph, %24
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %24 ]
+  %14 = getelementptr inbounds [24 x [20 x i8]]* @Degenerate, i64 0, i64 %5, i64 %indvars.iv, !dbg !422
+  %15 = load i8* %14, align 1, !dbg !422, !tbaa !255
+  %16 = icmp eq i8 %15, 0, !dbg !422
+  br i1 %16, label %24, label %17, !dbg !430
 
-if.then10:                                        ; preds = %for.body
-  %3 = load i32* %arrayidx13, align 4, !tbaa !3
-  %conv14 = sitofp i32 %3 to float
-  %div = fdiv float %wt, %conv14
-  %arrayidx16 = getelementptr inbounds float* %counters, i64 %indvars.iv
-  %4 = load float* %arrayidx16, align 4, !tbaa !4
-  %add17 = fadd float %div, %4
-  store float %add17, float* %arrayidx16, align 4, !tbaa !4
-  br label %for.inc
+; <label>:17                                      ; preds = %13
+  %18 = load i32* %6, align 4, !dbg !425, !tbaa !224
+  %19 = sitofp i32 %18 to float, !dbg !431
+  %20 = fdiv float %wt, %19, !dbg !432
+  %21 = getelementptr inbounds float* %counters, i64 %indvars.iv, !dbg !433
+  %22 = load float* %21, align 4, !dbg !434, !tbaa !428
+  %23 = fadd float %20, %22, !dbg !434
+  store float %23, float* %21, align 4, !dbg !434, !tbaa !428
+  br label %24, !dbg !433
 
-for.inc:                                          ; preds = %for.body, %if.then10
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %5 = trunc i64 %indvars.iv.next to i32
-  %cmp3 = icmp slt i32 %5, %0
-  br i1 %cmp3, label %for.body, label %if.end18
+; <label>:24                                      ; preds = %13, %17
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !421
+  %25 = icmp slt i64 %indvars.iv.next, %7, !dbg !418
+  br i1 %25, label %13, label %.loopexit, !dbg !421
 
-if.end18:                                         ; preds = %for.cond.preheader, %for.inc, %if.then
-  ret void
+.loopexit:                                        ; preds = %24, %.preheader, %8
+  ret void, !dbg !435
 }

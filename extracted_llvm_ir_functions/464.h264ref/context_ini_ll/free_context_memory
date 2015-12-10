@@ -1,54 +1,50 @@
 define void @free_context_memory() #0 {
-entry:
-  br label %for.cond1.preheader
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !35, metadata !728), !dbg !843
+  br label %.preheader, !dbg !844
 
-for.cond1.preheader:                              ; preds = %for.end, %entry
-  %indvars.iv27 = phi i64 [ 0, %entry ], [ %indvars.iv.next28, %for.end ]
-  br label %for.body3
+.preheader:                                       ; preds = %14, %0
+  %indvars.iv3 = phi i64 [ 0, %0 ], [ %indvars.iv.next4, %14 ]
+  br label %1, !dbg !846
 
-for.body3:                                        ; preds = %for.body3, %for.cond1.preheader
-  %indvars.iv = phi i64 [ 0, %for.cond1.preheader ], [ %indvars.iv.next, %for.body3 ]
-  %0 = load i32**** @initialized, align 8, !tbaa !0
-  %arrayidx = getelementptr inbounds i32*** %0, i64 %indvars.iv27
-  %1 = load i32*** %arrayidx, align 8, !tbaa !0
-  %arrayidx5 = getelementptr inbounds i32** %1, i64 %indvars.iv
-  %2 = load i32** %arrayidx5, align 8, !tbaa !0
-  %3 = bitcast i32* %2 to i8*
-  tail call void @free(i8* %3) #4
-  %4 = load i32**** @model_number, align 8, !tbaa !0
-  %arrayidx8 = getelementptr inbounds i32*** %4, i64 %indvars.iv27
-  %5 = load i32*** %arrayidx8, align 8, !tbaa !0
-  %arrayidx9 = getelementptr inbounds i32** %5, i64 %indvars.iv
-  %6 = load i32** %arrayidx9, align 8, !tbaa !0
-  %7 = bitcast i32* %6 to i8*
-  tail call void @free(i8* %7) #4
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, 4
-  br i1 %exitcond, label %for.end, label %for.body3
+; <label>:1                                       ; preds = %1, %.preheader
+  %indvars.iv = phi i64 [ 0, %.preheader ], [ %indvars.iv.next, %1 ]
+  %2 = load i32**** @initialized, align 8, !dbg !850, !tbaa !718
+  %3 = getelementptr inbounds i32*** %2, i64 %indvars.iv3, !dbg !850
+  %4 = load i32*** %3, align 8, !dbg !850, !tbaa !718
+  %5 = getelementptr inbounds i32** %4, i64 %indvars.iv, !dbg !850
+  %6 = bitcast i32** %5 to i8**, !dbg !850
+  %7 = load i8** %6, align 8, !dbg !850, !tbaa !718
+  tail call void @free(i8* %7) #8, !dbg !853
+  %8 = load i32**** @model_number, align 8, !dbg !854, !tbaa !718
+  %9 = getelementptr inbounds i32*** %8, i64 %indvars.iv3, !dbg !854
+  %10 = load i32*** %9, align 8, !dbg !854, !tbaa !718
+  %11 = getelementptr inbounds i32** %10, i64 %indvars.iv, !dbg !854
+  %12 = bitcast i32** %11 to i8**, !dbg !854
+  %13 = load i8** %12, align 8, !dbg !854, !tbaa !718
+  tail call void @free(i8* %13) #8, !dbg !855
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !846
+  %exitcond = icmp eq i64 %indvars.iv.next, 4, !dbg !846
+  br i1 %exitcond, label %14, label %1, !dbg !846
 
-for.end:                                          ; preds = %for.body3
-  %8 = load i32**** @initialized, align 8, !tbaa !0
-  %arrayidx11 = getelementptr inbounds i32*** %8, i64 %indvars.iv27
-  %9 = load i32*** %arrayidx11, align 8, !tbaa !0
-  %10 = bitcast i32** %9 to i8*
-  tail call void @free(i8* %10) #4
-  %11 = load i32**** @model_number, align 8, !tbaa !0
-  %arrayidx13 = getelementptr inbounds i32*** %11, i64 %indvars.iv27
-  %12 = load i32*** %arrayidx13, align 8, !tbaa !0
-  %13 = bitcast i32** %12 to i8*
-  tail call void @free(i8* %13) #4
-  %indvars.iv.next28 = add i64 %indvars.iv27, 1
-  %lftr.wideiv29 = trunc i64 %indvars.iv.next28 to i32
-  %exitcond30 = icmp eq i32 %lftr.wideiv29, 3
-  br i1 %exitcond30, label %for.end16, label %for.cond1.preheader
+; <label>:14                                      ; preds = %1
+  %15 = load i32**** @initialized, align 8, !dbg !856, !tbaa !718
+  %16 = getelementptr inbounds i32*** %15, i64 %indvars.iv3, !dbg !856
+  %17 = bitcast i32*** %16 to i8**, !dbg !856
+  %18 = load i8** %17, align 8, !dbg !856, !tbaa !718
+  tail call void @free(i8* %18) #8, !dbg !857
+  %19 = load i32**** @model_number, align 8, !dbg !858, !tbaa !718
+  %20 = getelementptr inbounds i32*** %19, i64 %indvars.iv3, !dbg !858
+  %21 = bitcast i32*** %20 to i8**, !dbg !858
+  %22 = load i8** %21, align 8, !dbg !858, !tbaa !718
+  tail call void @free(i8* %22) #8, !dbg !859
+  %indvars.iv.next4 = add nuw nsw i64 %indvars.iv3, 1, !dbg !844
+  %exitcond5 = icmp eq i64 %indvars.iv.next4, 3, !dbg !844
+  br i1 %exitcond5, label %23, label %.preheader, !dbg !844
 
-for.end16:                                        ; preds = %for.end
-  %14 = load i32**** @initialized, align 8, !tbaa !0
-  %15 = bitcast i32*** %14 to i8*
-  tail call void @free(i8* %15) #4
-  %16 = load i32**** @model_number, align 8, !tbaa !0
-  %17 = bitcast i32*** %16 to i8*
-  tail call void @free(i8* %17) #4
-  ret void
+; <label>:23                                      ; preds = %14
+  %24 = load i8** bitcast (i32**** @initialized to i8**), align 8, !dbg !860, !tbaa !718
+  tail call void @free(i8* %24) #8, !dbg !861
+  %25 = load i8** bitcast (i32**** @model_number to i8**), align 8, !dbg !862, !tbaa !718
+  tail call void @free(i8* %25) #8, !dbg !863
+  ret void, !dbg !864
 }

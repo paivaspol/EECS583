@@ -1,0 +1,168 @@
+define void @_ZN8pov_base16TextStreamBuffer9printfileEP7__sFILEi(%"class.pov_base::TextStreamBuffer"* %this, %struct.__sFILE* %file, i32 %lines) #0 align 2 {
+  tail call void @llvm.dbg.value(metadata %"class.pov_base::TextStreamBuffer"* %this, i64 0, metadata !236, metadata !819), !dbg !1136
+  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %file, i64 0, metadata !237, metadata !819), !dbg !1137
+  tail call void @llvm.dbg.value(metadata i32 %lines, i64 0, metadata !238, metadata !819), !dbg !1138
+  %1 = icmp eq %struct.__sFILE* %file, null, !dbg !1139
+  br i1 %1, label %.loopexit, label %2, !dbg !1140
+
+; <label>:2                                       ; preds = %0
+  %3 = icmp slt i32 %lines, 0, !dbg !1141
+  %4 = tail call i64 @ftell(%struct.__sFILE* %file) #8, !dbg !1142
+  tail call void @llvm.dbg.value(metadata i64 %4, i64 0, metadata !242, metadata !819), !dbg !1143
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !243, metadata !819), !dbg !1144
+  br i1 %3, label %5, label %.preheader, !dbg !1145
+
+; <label>:5                                       ; preds = %2
+  tail call void @llvm.dbg.value(metadata i32 %lines, i64 0, metadata !244, metadata !819), !dbg !1146
+  %6 = tail call i64 @ftell(%struct.__sFILE* %file) #8, !dbg !1147
+  br label %.outer22, !dbg !1148
+
+.outer22:                                         ; preds = %17, %5
+  %lineoffset.0.ph = phi i32 [ %18, %17 ], [ %lines, %5 ]
+  %pos.0.in.ph = phi i64 [ %pos.0, %17 ], [ %6, %5 ]
+  %7 = icmp slt i32 %lineoffset.0.ph, 1, !dbg !1149
+  br label %8
+
+; <label>:8                                       ; preds = %.outer22, %10
+  %pos.0.in = phi i64 [ %pos.0, %10 ], [ %pos.0.in.ph, %.outer22 ]
+  %pos.0 = add nsw i64 %pos.0.in, -1, !dbg !1151
+  %9 = icmp sgt i64 %pos.0.in, 0, !dbg !1152
+  %or.cond13 = and i1 %7, %9, !dbg !1153
+  br i1 %or.cond13, label %10, label %.critedge, !dbg !1153
+
+; <label>:10                                      ; preds = %8
+  %11 = tail call i32 @fseek(%struct.__sFILE* %file, i64 %pos.0, i32 0) #8, !dbg !1154
+  %12 = tail call i32 @fgetc(%struct.__sFILE* %file) #8, !dbg !1156
+  tail call void @llvm.dbg.value(metadata i32 %12, i64 0, metadata !243, metadata !819), !dbg !1144
+  switch i32 %12, label %8 [
+    i32 13, label %13
+    i32 10, label %13
+    i32 -1, label %.critedge.thread
+  ], !dbg !1157
+
+; <label>:13                                      ; preds = %10, %10
+  %14 = tail call i32 @fgetc(%struct.__sFILE* %file) #8, !dbg !1159
+  tail call void @llvm.dbg.value(metadata i32 %14, i64 0, metadata !243, metadata !819), !dbg !1144
+  switch i32 %14, label %15 [
+    i32 13, label %17
+    i32 10, label %17
+  ], !dbg !1161
+
+; <label>:15                                      ; preds = %13
+  %16 = tail call i32 @ungetc(i32 %14, %struct.__sFILE* %file) #8, !dbg !1163
+  br label %17, !dbg !1163
+
+; <label>:17                                      ; preds = %13, %13, %15
+  %18 = add nsw i32 %lineoffset.0.ph, 1, !dbg !1164
+  tail call void @llvm.dbg.value(metadata i32 %18, i64 0, metadata !244, metadata !819), !dbg !1146
+  br label %.outer22, !dbg !1165
+
+.critedge:                                        ; preds = %8
+  br i1 %7, label %.critedge.thread, label %.preheader20, !dbg !1166
+
+.critedge.thread:                                 ; preds = %10, %.critedge
+  %19 = tail call i32 @fseek(%struct.__sFILE* %file, i64 0, i32 0) #8, !dbg !1167
+  br label %.preheader20, !dbg !1167
+
+.preheader20:                                     ; preds = %.critedge.thread, %.critedge
+  %.old1428 = icmp sgt i32 %lineoffset.0.ph, 0, !dbg !1169
+  br i1 %.old1428, label %.preheader18, label %.loopexit19, !dbg !1170
+
+.preheader18:                                     ; preds = %.preheader20, %26
+  %lineoffset.229 = phi i32 [ %27, %26 ], [ %lineoffset.0.ph, %.preheader20 ]
+  br label %20, !dbg !1171
+
+; <label>:20                                      ; preds = %20, %.preheader18
+  %21 = tail call i32 @fgetc(%struct.__sFILE* %file) #8, !dbg !1171
+  tail call void @llvm.dbg.value(metadata i32 %21, i64 0, metadata !243, metadata !819), !dbg !1144
+  switch i32 %21, label %20 [
+    i32 13, label %22
+    i32 10, label %22
+    i32 -1, label %.loopexit19
+  ], !dbg !1173
+
+; <label>:22                                      ; preds = %20, %20
+  %23 = tail call i32 @fgetc(%struct.__sFILE* %file) #8, !dbg !1175
+  tail call void @llvm.dbg.value(metadata i32 %23, i64 0, metadata !243, metadata !819), !dbg !1144
+  switch i32 %23, label %24 [
+    i32 13, label %26
+    i32 10, label %26
+  ], !dbg !1177
+
+; <label>:24                                      ; preds = %22
+  %25 = tail call i32 @ungetc(i32 %23, %struct.__sFILE* %file) #8, !dbg !1179
+  br label %26, !dbg !1179
+
+; <label>:26                                      ; preds = %22, %22, %24
+  %27 = add nsw i32 %lineoffset.229, -1, !dbg !1180
+  tail call void @llvm.dbg.value(metadata i32 %27, i64 0, metadata !244, metadata !819), !dbg !1146
+  %.old14 = icmp sgt i32 %lineoffset.229, 1, !dbg !1169
+  br i1 %.old14, label %.preheader18, label %.loopexit19, !dbg !1170
+
+.loopexit19:                                      ; preds = %26, %20, %.preheader20
+  %28 = sub nsw i32 0, %lines, !dbg !1181
+  tail call void @llvm.dbg.value(metadata i32 %28, i64 0, metadata !238, metadata !819), !dbg !1138
+  br label %.preheader, !dbg !1182
+
+.preheader:                                       ; preds = %.loopexit19, %2
+  %.0.ph = phi i32 [ %lines, %2 ], [ %28, %.loopexit19 ]
+  %29 = icmp sgt i32 %.0.ph, 0, !dbg !1183
+  br i1 %29, label %.lr.ph, label %.loopexit, !dbg !1184
+
+.lr.ph:                                           ; preds = %.preheader, %.outer
+  %.0.ph1627 = phi i32 [ %46, %.outer ], [ %.0.ph, %.preheader ]
+  br label %30, !dbg !1184
+
+; <label>:30                                      ; preds = %48, %.lr.ph
+  %31 = tail call i32 @fgetc(%struct.__sFILE* %file) #8, !dbg !1185
+  tail call void @llvm.dbg.value(metadata i32 %31, i64 0, metadata !243, metadata !819), !dbg !1144
+  br i1 %3, label %32, label %36, !dbg !1187
+
+; <label>:32                                      ; preds = %30
+  %33 = tail call i64 @ftell(%struct.__sFILE* %file) #8, !dbg !1189
+  %34 = add nsw i64 %33, -1, !dbg !1190
+  %35 = icmp eq i64 %4, %34, !dbg !1191
+  br i1 %35, label %.loopexit, label %36, !dbg !1192
+
+; <label>:36                                      ; preds = %32, %30
+  switch i32 %31, label %48 [
+    i32 13, label %37
+    i32 10, label %37
+    i32 -1, label %.loopexit
+  ], !dbg !1193
+
+; <label>:37                                      ; preds = %36, %36
+  %38 = tail call i32 @fgetc(%struct.__sFILE* %file) #8, !dbg !1195
+  tail call void @llvm.dbg.value(metadata i32 %38, i64 0, metadata !243, metadata !819), !dbg !1144
+  switch i32 %38, label %39 [
+    i32 13, label %41
+    i32 10, label %41
+  ], !dbg !1197
+
+; <label>:39                                      ; preds = %37
+  %40 = tail call i32 @ungetc(i32 %38, %struct.__sFILE* %file) #8, !dbg !1199
+  br label %.outer, !dbg !1199
+
+; <label>:41                                      ; preds = %37, %37
+  br i1 %3, label %42, label %.outer, !dbg !1200
+
+; <label>:42                                      ; preds = %41
+  %43 = tail call i64 @ftell(%struct.__sFILE* %file) #8, !dbg !1203
+  %44 = add nsw i64 %43, -1, !dbg !1204
+  %45 = icmp eq i64 %4, %44, !dbg !1205
+  br i1 %45, label %.loopexit, label %.outer, !dbg !1206
+
+.outer:                                           ; preds = %41, %42, %39
+  tail call void (%"class.pov_base::TextStreamBuffer"*, i8*, ...)* @_ZN8pov_base16TextStreamBuffer6printfEPKcz(%"class.pov_base::TextStreamBuffer"* %this, i8* getelementptr inbounds ([2 x i8]* @.str4, i64 0, i64 0)) #8, !dbg !1207
+  %46 = add nsw i32 %.0.ph1627, -1, !dbg !1208
+  tail call void @llvm.dbg.value(metadata i32 %46, i64 0, metadata !238, metadata !819), !dbg !1138
+  %47 = icmp sgt i32 %.0.ph1627, 1, !dbg !1183
+  br i1 %47, label %.lr.ph, label %.loopexit, !dbg !1184
+
+; <label>:48                                      ; preds = %36
+  tail call void (%"class.pov_base::TextStreamBuffer"*, i8*, ...)* @_ZN8pov_base16TextStreamBuffer6printfEPKcz(%"class.pov_base::TextStreamBuffer"* %this, i8* getelementptr inbounds ([3 x i8]* @.str2, i64 0, i64 0), i32 %31) #8, !dbg !1209
+  br label %30, !dbg !1184
+
+.loopexit:                                        ; preds = %.outer, %42, %32, %36, %.preheader, %0
+  ret void, !dbg !1211
+}

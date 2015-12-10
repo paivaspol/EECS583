@@ -1,22 +1,22 @@
 define i32* @ETree_par(%struct._ETree* %etree) #0 {
-entry:
-  %cmp = icmp eq %struct._ETree* %etree, null
-  br i1 %cmp, label %if.then, label %lor.lhs.false
+  tail call void @llvm.dbg.value(metadata %struct._ETree* %etree, i64 0, metadata !58, metadata !117), !dbg !172
+  %1 = icmp eq %struct._ETree* %etree, null, !dbg !173
+  br i1 %1, label %6, label %2, !dbg !175
 
-lor.lhs.false:                                    ; preds = %entry
-  %tree = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 2
-  %0 = load %struct._Tree** %tree, align 8, !tbaa !0
-  %cmp1 = icmp eq %struct._Tree* %0, null
-  br i1 %cmp1, label %if.then, label %if.end
+; <label>:2                                       ; preds = %0
+  %3 = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 2, !dbg !176
+  %4 = load %struct._Tree** %3, align 8, !dbg !176, !tbaa !155
+  %5 = icmp eq %struct._Tree* %4, null, !dbg !177
+  br i1 %5, label %6, label %9, !dbg !178
 
-if.then:                                          ; preds = %lor.lhs.false, %entry
-  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([43 x i8]* @.str4, i64 0, i64 0), %struct._ETree* %etree) #4
-  tail call void @exit(i32 -1) #5
-  unreachable
+; <label>:6                                       ; preds = %2, %0
+  %7 = load %struct.__sFILE** @__stderrp, align 8, !dbg !179, !tbaa !124
+  %8 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %7, i8* getelementptr inbounds ([43 x i8]* @.str4, i64 0, i64 0), %struct._ETree* %etree) #5, !dbg !181
+  tail call void @exit(i32 -1) #6, !dbg !182
+  unreachable, !dbg !182
 
-if.end:                                           ; preds = %lor.lhs.false
-  %par = getelementptr inbounds %struct._Tree* %0, i64 0, i32 2
-  %2 = load i32** %par, align 8, !tbaa !0
-  ret i32* %2
+; <label>:9                                       ; preds = %2
+  %10 = getelementptr inbounds %struct._Tree* %4, i64 0, i32 2, !dbg !183
+  %11 = load i32** %10, align 8, !dbg !183, !tbaa !184
+  ret i32* %11, !dbg !185
 }

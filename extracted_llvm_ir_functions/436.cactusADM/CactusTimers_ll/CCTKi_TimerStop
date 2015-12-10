@@ -1,34 +1,36 @@
 define internal fastcc void @CCTKi_TimerStop(i32 %this_timer, %struct.t_Timer* readonly %timer) #1 {
-  %1 = icmp eq %struct.t_Timer* %timer, null
-  br i1 %1, label %.loopexit, label %2
+  tail call void @llvm.dbg.value(metadata i32 %this_timer, i64 0, metadata !307, metadata !354), !dbg !702
+  tail call void @llvm.dbg.value(metadata %struct.t_Timer* %timer, i64 0, metadata !308, metadata !354), !dbg !703
+  %1 = icmp eq %struct.t_Timer* %timer, null, !dbg !704
+  br i1 %1, label %.loopexit, label %2, !dbg !706
 
 ; <label>:2                                       ; preds = %0
-  %3 = getelementptr inbounds %struct.t_Timer* %timer, i64 0, i32 0
-  %4 = load i8*** %3, align 8, !tbaa !12
-  %5 = icmp ne i8** %4, null
+  %3 = getelementptr inbounds %struct.t_Timer* %timer, i64 0, i32 0, !dbg !707
+  %4 = load i8*** %3, align 8, !dbg !707, !tbaa !398
+  %5 = icmp ne i8** %4, null, !dbg !708
   %6 = load i32* @n_clocks, align 4
-  %7 = icmp sgt i32 %6, 0
-  %or.cond = and i1 %5, %7
-  br i1 %or.cond, label %.lr.ph, label %.loopexit
+  %7 = icmp sgt i32 %6, 0, !dbg !709
+  %or.cond = and i1 %5, %7, !dbg !713
+  br i1 %or.cond, label %.lr.ph, label %.loopexit, !dbg !713
 
 .lr.ph:                                           ; preds = %2, %.lr.ph
   %indvars.iv = phi i64 [ %indvars.iv.next, %.lr.ph ], [ 0, %2 ]
-  %8 = load %struct.cHandledData** @clocks, align 8, !tbaa !9
-  %9 = trunc i64 %indvars.iv to i32
-  %10 = tail call i8* @Util_GetHandledData(%struct.cHandledData* %8, i32 %9) #7
-  %11 = getelementptr inbounds i8* %10, i64 40
-  %12 = bitcast i8* %11 to void (i32, i8*)**
-  %13 = load void (i32, i8*)** %12, align 8, !tbaa !17
-  %14 = load i8*** %3, align 8, !tbaa !12
-  %15 = getelementptr inbounds i8** %14, i64 %indvars.iv
-  %16 = load i8** %15, align 8, !tbaa !9
-  tail call void %13(i32 %this_timer, i8* %16) #7
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %17 = load i32* @n_clocks, align 4, !tbaa !11
-  %18 = sext i32 %17 to i64
-  %19 = icmp slt i64 %indvars.iv.next, %18
-  br i1 %19, label %.lr.ph, label %.loopexit
+  %8 = load %struct.cHandledData** @clocks, align 8, !dbg !714, !tbaa !376
+  %9 = trunc i64 %indvars.iv to i32, !dbg !716
+  %10 = tail call i8* @Util_GetHandledData(%struct.cHandledData* %8, i32 %9) #8, !dbg !716
+  %11 = getelementptr inbounds i8* %10, i64 40, !dbg !717
+  %12 = bitcast i8* %11 to void (i32, i8*)**, !dbg !717
+  %13 = load void (i32, i8*)** %12, align 8, !dbg !717, !tbaa !718
+  %14 = load i8*** %3, align 8, !dbg !719, !tbaa !398
+  %15 = getelementptr inbounds i8** %14, i64 %indvars.iv, !dbg !720
+  %16 = load i8** %15, align 8, !dbg !720, !tbaa !376
+  tail call void %13(i32 %this_timer, i8* %16) #8, !dbg !721
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !722
+  %17 = load i32* @n_clocks, align 4, !dbg !723, !tbaa !388
+  %18 = sext i32 %17 to i64, !dbg !709
+  %19 = icmp slt i64 %indvars.iv.next, %18, !dbg !709
+  br i1 %19, label %.lr.ph, label %.loopexit, !dbg !722
 
 .loopexit:                                        ; preds = %.lr.ph, %2, %0
-  ret void
+  ret void, !dbg !724
 }

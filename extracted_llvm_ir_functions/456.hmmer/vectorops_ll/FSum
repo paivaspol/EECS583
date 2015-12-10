@@ -1,20 +1,28 @@
-define float @FSum(float* nocapture %vec, i32 %n) #1 {
-entry:
-  %cmp4 = icmp sgt i32 %n, 0
-  br i1 %cmp4, label %for.body, label %for.end
+define float @FSum(float* nocapture readonly %vec, i32 %n) #1 {
+  tail call void @llvm.dbg.value(metadata float* %vec, i64 0, metadata !50, metadata !206), !dbg !268
+  tail call void @llvm.dbg.value(metadata i32 %n, i64 0, metadata !51, metadata !206), !dbg !269
+  tail call void @llvm.dbg.value(metadata float 0.000000e+00, i64 0, metadata !52, metadata !206), !dbg !270
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !53, metadata !206), !dbg !271
+  %1 = icmp sgt i32 %n, 0, !dbg !272
+  br i1 %1, label %.lr.ph, label %._crit_edge, !dbg !275
 
-for.body:                                         ; preds = %entry, %for.body
-  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %entry ]
-  %sum.05 = phi float [ %add, %for.body ], [ 0.000000e+00, %entry ]
-  %arrayidx = getelementptr inbounds float* %vec, i64 %indvars.iv
-  %0 = load float* %arrayidx, align 4, !tbaa !3
-  %add = fadd float %sum.05, %0
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %n
-  br i1 %exitcond, label %for.end, label %for.body
+.lr.ph:                                           ; preds = %0
+  %2 = add i32 %n, -1, !dbg !275
+  br label %3, !dbg !275
 
-for.end:                                          ; preds = %for.body, %entry
-  %sum.0.lcssa = phi float [ 0.000000e+00, %entry ], [ %add, %for.body ]
-  ret float %sum.0.lcssa
+; <label>:3                                       ; preds = %3, %.lr.ph
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %3 ]
+  %sum.01 = phi float [ 0.000000e+00, %.lr.ph ], [ %6, %3 ]
+  %4 = getelementptr inbounds float* %vec, i64 %indvars.iv, !dbg !276
+  %5 = load float* %4, align 4, !dbg !276, !tbaa !232
+  %6 = fadd float %sum.01, %5, !dbg !277
+  tail call void @llvm.dbg.value(metadata float %6, i64 0, metadata !52, metadata !206), !dbg !270
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !275
+  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !275
+  %exitcond = icmp eq i32 %lftr.wideiv, %2, !dbg !275
+  br i1 %exitcond, label %._crit_edge, label %3, !dbg !275
+
+._crit_edge:                                      ; preds = %3, %0
+  %sum.0.lcssa = phi float [ 0.000000e+00, %0 ], [ %6, %3 ]
+  ret float %sum.0.lcssa, !dbg !278
 }

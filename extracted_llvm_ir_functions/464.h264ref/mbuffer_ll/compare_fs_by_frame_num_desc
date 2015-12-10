@@ -1,22 +1,23 @@
-define internal i32 @compare_fs_by_frame_num_desc(i8* nocapture %arg1, i8* nocapture %arg2) #4 {
-entry:
-  %0 = bitcast i8* %arg1 to %struct.frame_store**
-  %1 = load %struct.frame_store** %0, align 8, !tbaa !0
-  %frame_num_wrap = getelementptr inbounds %struct.frame_store* %1, i64 0, i32 6
-  %2 = load i32* %frame_num_wrap, align 4, !tbaa !3
-  %3 = bitcast i8* %arg2 to %struct.frame_store**
-  %4 = load %struct.frame_store** %3, align 8, !tbaa !0
-  %frame_num_wrap1 = getelementptr inbounds %struct.frame_store* %4, i64 0, i32 6
-  %5 = load i32* %frame_num_wrap1, align 4, !tbaa !3
-  %cmp = icmp slt i32 %2, %5
-  br i1 %cmp, label %return, label %if.end
+define internal i32 @compare_fs_by_frame_num_desc(i8* nocapture readonly %arg1, i8* nocapture readonly %arg2) #4 {
+  tail call void @llvm.dbg.value(metadata i8* %arg1, i64 0, metadata !863, metadata !1408), !dbg !2537
+  tail call void @llvm.dbg.value(metadata i8* %arg2, i64 0, metadata !864, metadata !1408), !dbg !2538
+  %1 = bitcast i8* %arg1 to %struct.frame_store**, !dbg !2539
+  %2 = load %struct.frame_store** %1, align 8, !dbg !2541, !tbaa !1389
+  %3 = getelementptr inbounds %struct.frame_store* %2, i64 0, i32 6, !dbg !2542
+  %4 = load i32* %3, align 4, !dbg !2542, !tbaa !1944
+  %5 = bitcast i8* %arg2 to %struct.frame_store**, !dbg !2543
+  %6 = load %struct.frame_store** %5, align 8, !dbg !2544, !tbaa !1389
+  %7 = getelementptr inbounds %struct.frame_store* %6, i64 0, i32 6, !dbg !2545
+  %8 = load i32* %7, align 4, !dbg !2545, !tbaa !1944
+  %9 = icmp slt i32 %4, %8, !dbg !2546
+  br i1 %9, label %12, label %10, !dbg !2547
 
-if.end:                                           ; preds = %entry
-  %cmp4 = icmp sgt i32 %2, %5
-  %. = sext i1 %cmp4 to i32
-  br label %return
+; <label>:10                                      ; preds = %0
+  %11 = icmp sgt i32 %4, %8, !dbg !2548
+  %. = sext i1 %11 to i32, !dbg !2550
+  br label %12, !dbg !2550
 
-return:                                           ; preds = %if.end, %entry
-  %retval.0 = phi i32 [ 1, %entry ], [ %., %if.end ]
-  ret i32 %retval.0
+; <label>:12                                      ; preds = %10, %0
+  %.0 = phi i32 [ 1, %0 ], [ %., %10 ]
+  ret i32 %.0, !dbg !2551
 }

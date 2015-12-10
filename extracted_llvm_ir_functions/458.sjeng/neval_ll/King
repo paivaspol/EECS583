@@ -1,41 +1,46 @@
-define i32 @King(i32 %sq, i32 %c) #1 {
-entry:
-  %idxprom = sext i32 %sq to i64
-  %arrayidx = getelementptr inbounds [144 x i32]* @Xfile, i64 0, i64 %idxprom
-  %0 = load i32* %arrayidx, align 4, !tbaa !0
-  %cmp = icmp sgt i32 %0, 5
-  br i1 %cmp, label %land.lhs.true14, label %if.end30
+define i32 @King(i32 %sq, i32 %c) #2 {
+  tail call void @llvm.dbg.value(metadata i32 %sq, i64 0, metadata !23, metadata !176), !dbg !223
+  tail call void @llvm.dbg.value(metadata i32 %c, i64 0, metadata !24, metadata !176), !dbg !224
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !25, metadata !176), !dbg !225
+  %1 = sext i32 %sq to i64, !dbg !226
+  %2 = getelementptr inbounds [144 x i32]* @Xfile, i64 0, i64 %1, !dbg !226
+  %3 = load i32* %2, align 4, !dbg !226, !tbaa !183
+  %4 = icmp sgt i32 %3, 5, !dbg !228
+  br i1 %4, label %5, label %.thread, !dbg !229
 
-land.lhs.true14:                                  ; preds = %entry
-  %sub = add nsw i32 %sq, -1
-  %idxprom1 = sext i32 %sub to i64
-  %arrayidx2 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom1
-  %1 = load i32* %arrayidx2, align 4, !tbaa !0
-  %add = add nsw i32 %1, 1
-  %shr.mask = and i32 %add, -2
-  %cmp3 = icmp eq i32 %shr.mask, 8
-  %and = and i32 %add, 1
-  %cmp9 = icmp eq i32 %and, %c
-  %or.cond = and i1 %cmp3, %cmp9
-  %. = select i1 %or.cond, i32 2, i32 0
-  %add15 = add nsw i32 %sq, 1
-  %idxprom16 = sext i32 %add15 to i64
-  %arrayidx17 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom16
-  %2 = load i32* %arrayidx17, align 4, !tbaa !0
-  %add18 = add nsw i32 %2, 1
-  %shr19.mask = and i32 %add18, -2
-  %cmp20 = icmp eq i32 %shr19.mask, 8
-  %and26 = and i32 %add18, 1
-  %cmp27 = icmp eq i32 %and26, %c
-  %or.cond45 = and i1 %cmp20, %cmp27
-  %add29 = add nsw i32 %., 2
-  %add29.s.0 = select i1 %or.cond45, i32 %add29, i32 %.
-  br label %if.end30
+; <label>:5                                       ; preds = %0
+  %6 = add nsw i32 %sq, -1, !dbg !230
+  %7 = sext i32 %6 to i64, !dbg !230
+  %8 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %7, !dbg !230
+  %9 = load i32* %8, align 4, !dbg !230, !tbaa !183
+  %10 = add nsw i32 %9, 1, !dbg !230
+  %.mask1 = and i32 %10, -2, !dbg !231
+  %11 = icmp eq i32 %.mask1, 8, !dbg !231
+  %12 = and i32 %10, 1
+  %13 = icmp eq i32 %12, %c, !dbg !232
+  %or.cond = and i1 %11, %13, !dbg !233
+  tail call void @llvm.dbg.value(metadata i32 2, i64 0, metadata !25, metadata !176), !dbg !225
+  %. = select i1 %or.cond, i32 2, i32 0, !dbg !233
+  %14 = add nsw i32 %sq, 1, !dbg !234
+  %15 = sext i32 %14 to i64, !dbg !234
+  %16 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %15, !dbg !234
+  %17 = load i32* %16, align 4, !dbg !234, !tbaa !183
+  %18 = add nsw i32 %17, 1, !dbg !234
+  %.mask = and i32 %18, -2, !dbg !236
+  %19 = icmp eq i32 %.mask, 8, !dbg !236
+  %20 = and i32 %18, 1
+  %21 = icmp eq i32 %20, %c, !dbg !237
+  %or.cond4 = and i1 %19, %21, !dbg !238
+  %22 = add nuw nsw i32 %., 2, !dbg !239
+  tail call void @llvm.dbg.value(metadata i32 %22, i64 0, metadata !25, metadata !176), !dbg !225
+  %.s.0 = select i1 %or.cond4, i32 %22, i32 %., !dbg !238
+  br label %.thread, !dbg !238
 
-if.end30:                                         ; preds = %entry, %land.lhs.true14
-  %s.1 = phi i32 [ %add29.s.0, %land.lhs.true14 ], [ 0, %entry ]
-  %cmp31 = icmp eq i32 %c, 1
-  %sub33 = sub nsw i32 0, %s.1
-  %sub33.s.1 = select i1 %cmp31, i32 %sub33, i32 %s.1
-  ret i32 %sub33.s.1
+.thread:                                          ; preds = %0, %5
+  %s.1 = phi i32 [ %.s.0, %5 ], [ 0, %0 ]
+  %23 = icmp eq i32 %c, 1, !dbg !241
+  %24 = sub nsw i32 0, %s.1, !dbg !243
+  tail call void @llvm.dbg.value(metadata i32 %24, i64 0, metadata !25, metadata !176), !dbg !225
+  %.s.1 = select i1 %23, i32 %24, i32 %s.1, !dbg !244
+  ret i32 %.s.1, !dbg !245
 }

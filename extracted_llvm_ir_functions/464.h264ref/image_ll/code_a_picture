@@ -1,180 +1,192 @@
 define void @code_a_picture(%struct.Picture* %pic) #0 {
-entry:
-  %0 = load %struct.ImageParameters** @img, align 8, !tbaa !0
-  %currentPicture = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 49
-  store %struct.Picture* %pic, %struct.Picture** %currentPicture, align 8, !tbaa !0
-  %1 = load %struct.ImageParameters** @img, align 8, !tbaa !0
-  %number = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 0
-  %2 = load i32* %number, align 4, !tbaa !3
-  %3 = load i32* @start_frame_no_in_this_IGOP, align 4, !tbaa !3
-  %tobool = icmp eq i32 %2, %3
-  br i1 %tobool, label %land.lhs.true, label %lor.rhs
+  tail call void @llvm.dbg.value(metadata %struct.Picture* %pic, i64 0, metadata !250, metadata !1134), !dbg !1316
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !251, metadata !1134), !dbg !1317
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !252, metadata !1134), !dbg !1318
+  %1 = load %struct.ImageParameters** @img, align 8, !dbg !1319, !tbaa !1137
+  %2 = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 49, !dbg !1320
+  store %struct.Picture* %pic, %struct.Picture** %2, align 8, !dbg !1321, !tbaa !1322
+  %3 = load %struct.ImageParameters** @img, align 8, !dbg !1323, !tbaa !1137
+  %4 = getelementptr inbounds %struct.ImageParameters* %3, i64 0, i32 0, !dbg !1323
+  %5 = load i32* %4, align 4, !dbg !1323, !tbaa !1324
+  %6 = load i32* @start_frame_no_in_this_IGOP, align 4, !dbg !1323, !tbaa !1187
+  %7 = icmp eq i32 %5, %6, !dbg !1323
+  br i1 %7, label %8, label %12, !dbg !1325
 
-land.lhs.true:                                    ; preds = %entry
-  %structure = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 7
-  %4 = load i32* %structure, align 4, !tbaa !3
-  %cmp = icmp eq i32 %4, 2
-  br i1 %cmp, label %lor.rhs, label %lor.end
+; <label>:8                                       ; preds = %0
+  %9 = getelementptr inbounds %struct.ImageParameters* %3, i64 0, i32 7, !dbg !1326
+  %10 = load i32* %9, align 4, !dbg !1326, !tbaa !1327
+  %11 = icmp eq i32 %10, 2, !dbg !1328
+  br i1 %11, label %12, label %24, !dbg !1329
 
-lor.rhs:                                          ; preds = %entry, %land.lhs.true
-  %5 = load %struct.InputParameters** @input, align 8, !tbaa !0
-  %idr_enable = getelementptr inbounds %struct.InputParameters* %5, i64 0, i32 32
-  %6 = load i32* %idr_enable, align 4, !tbaa !3
-  %tobool1 = icmp eq i32 %6, 0
-  br i1 %tobool1, label %lor.end, label %land.lhs.true2
+; <label>:12                                      ; preds = %0, %8
+  %13 = load %struct.InputParameters** @input, align 8, !dbg !1330, !tbaa !1137
+  %14 = getelementptr inbounds %struct.InputParameters* %13, i64 0, i32 32, !dbg !1331
+  %15 = load i32* %14, align 4, !dbg !1331, !tbaa !1332
+  %16 = icmp eq i32 %15, 0, !dbg !1330
+  br i1 %16, label %24, label %17, !dbg !1334
 
-land.lhs.true2:                                   ; preds = %lor.rhs
-  %type = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 6
-  %7 = load i32* %type, align 4, !tbaa !3
-  %.off = add i32 %7, -2
-  %switch = icmp ult i32 %.off, 3
-  br i1 %switch, label %land.rhs, label %lor.end
+; <label>:17                                      ; preds = %12
+  %18 = getelementptr inbounds %struct.ImageParameters* %3, i64 0, i32 6, !dbg !1335
+  %19 = load i32* %18, align 4, !dbg !1335, !tbaa !1336
+  %.off = add i32 %19, -2, !dbg !1337
+  %switch = icmp ult i32 %.off, 3, !dbg !1337
+  br i1 %switch, label %20, label %24, !dbg !1337
 
-land.rhs:                                         ; preds = %land.lhs.true2
-  %structure9 = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 7
-  %8 = load i32* %structure9, align 4, !tbaa !3
-  %lnot = icmp ne i32 %8, 2
-  br label %lor.end
+; <label>:20                                      ; preds = %17
+  %21 = getelementptr inbounds %struct.ImageParameters* %3, i64 0, i32 7, !dbg !1338
+  %22 = load i32* %21, align 4, !dbg !1338, !tbaa !1327
+  %23 = icmp ne i32 %22, 2, !dbg !1339
+  br label %24
 
-lor.end:                                          ; preds = %land.lhs.true2, %lor.rhs, %land.rhs, %land.lhs.true
-  %9 = phi i1 [ true, %land.lhs.true ], [ false, %lor.rhs ], [ %lnot, %land.rhs ], [ false, %land.lhs.true2 ]
-  %lor.ext = zext i1 %9 to i32
-  %currentPicture11 = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 49
-  %10 = load %struct.Picture** %currentPicture11, align 8, !tbaa !0
-  %idr_flag = getelementptr inbounds %struct.Picture* %10, i64 0, i32 1
-  store i32 %lor.ext, i32* %idr_flag, align 4, !tbaa !3
-  %no_slices = getelementptr inbounds %struct.Picture* %pic, i64 0, i32 0
-  store i32 0, i32* %no_slices, align 4, !tbaa !3
-  %distortion_y = getelementptr inbounds %struct.Picture* %pic, i64 0, i32 4
-  store float 0.000000e+00, float* %distortion_y, align 4, !tbaa !5
-  %distortion_v = getelementptr inbounds %struct.Picture* %pic, i64 0, i32 6
-  store float 0.000000e+00, float* %distortion_v, align 4, !tbaa !5
-  %distortion_u = getelementptr inbounds %struct.Picture* %pic, i64 0, i32 5
-  store float 0.000000e+00, float* %distortion_u, align 4, !tbaa !5
-  tail call void (...)* @RandomIntraNewPicture() #7
-  %11 = load %struct.ImageParameters** @img, align 8, !tbaa !0
-  %slice_group_change_cycle = getelementptr inbounds %struct.ImageParameters* %11, i64 0, i32 147
-  store i32 1, i32* %slice_group_change_cycle, align 4, !tbaa !3
-  %12 = load %struct.pic_parameter_set_rbsp_t** @active_pps, align 8, !tbaa !0
-  %13 = load %struct.seq_parameter_set_rbsp_t** @active_sps, align 8, !tbaa !0
-  %call = tail call i32 @FmoInit(%struct.ImageParameters* %11, %struct.pic_parameter_set_rbsp_t* %12, %struct.seq_parameter_set_rbsp_t* %13) #7
-  %call12 = tail call i32 (...)* @FmoStartPicture() #7
-  tail call void (...)* @CalculateQuantParam() #7
-  tail call void (...)* @CalculateOffsetParam() #7
-  %14 = load %struct.InputParameters** @input, align 8, !tbaa !0
-  %AllowTransform8x8 = getelementptr inbounds %struct.InputParameters* %14, i64 0, i32 123
-  %15 = load i32* %AllowTransform8x8, align 4, !tbaa !3
-  %tobool13 = icmp eq i32 %15, 0
-  br i1 %tobool13, label %while.cond.preheader, label %if.then
+; <label>:24                                      ; preds = %17, %12, %20, %8
+  %25 = phi i1 [ true, %8 ], [ false, %12 ], [ %23, %20 ], [ false, %17 ]
+  %26 = zext i1 %25 to i32, !dbg !1329
+  %27 = getelementptr inbounds %struct.ImageParameters* %3, i64 0, i32 49, !dbg !1340
+  %28 = load %struct.Picture** %27, align 8, !dbg !1340, !tbaa !1322
+  %29 = getelementptr inbounds %struct.Picture* %28, i64 0, i32 1, !dbg !1341
+  store i32 %26, i32* %29, align 4, !dbg !1342, !tbaa !1343
+  %30 = getelementptr inbounds %struct.Picture* %pic, i64 0, i32 0, !dbg !1345
+  store i32 0, i32* %30, align 4, !dbg !1346, !tbaa !1347
+  %31 = getelementptr inbounds %struct.Picture* %pic, i64 0, i32 4, !dbg !1348
+  store float 0.000000e+00, float* %31, align 4, !dbg !1349, !tbaa !1350
+  %32 = getelementptr inbounds %struct.Picture* %pic, i64 0, i32 6, !dbg !1351
+  store float 0.000000e+00, float* %32, align 4, !dbg !1352, !tbaa !1353
+  %33 = getelementptr inbounds %struct.Picture* %pic, i64 0, i32 5, !dbg !1354
+  store float 0.000000e+00, float* %33, align 4, !dbg !1355, !tbaa !1356
+  tail call void (...)* @RandomIntraNewPicture() #8, !dbg !1357
+  %34 = load %struct.ImageParameters** @img, align 8, !dbg !1358, !tbaa !1137
+  %35 = getelementptr inbounds %struct.ImageParameters* %34, i64 0, i32 147, !dbg !1359
+  store i32 1, i32* %35, align 4, !dbg !1360, !tbaa !1361
+  %36 = load %struct.pic_parameter_set_rbsp_t** @active_pps, align 8, !dbg !1362, !tbaa !1137
+  %37 = load %struct.seq_parameter_set_rbsp_t** @active_sps, align 8, !dbg !1363, !tbaa !1137
+  %38 = tail call i32 @FmoInit(%struct.ImageParameters* %34, %struct.pic_parameter_set_rbsp_t* %36, %struct.seq_parameter_set_rbsp_t* %37) #8, !dbg !1364
+  %39 = tail call i32 (...)* @FmoStartPicture() #8, !dbg !1365
+  tail call void (...)* @CalculateQuantParam() #8, !dbg !1366
+  tail call void (...)* @CalculateOffsetParam() #8, !dbg !1367
+  %40 = load %struct.InputParameters** @input, align 8, !dbg !1368, !tbaa !1137
+  %41 = getelementptr inbounds %struct.InputParameters* %40, i64 0, i32 123, !dbg !1370
+  %42 = load i32* %41, align 4, !dbg !1370, !tbaa !1371
+  %43 = icmp eq i32 %42, 0, !dbg !1368
+  br i1 %43, label %.preheader2, label %44, !dbg !1372
 
-if.then:                                          ; preds = %lor.end
-  tail call void (...)* @CalculateQuant8Param() #7
-  tail call void (...)* @CalculateOffset8Param() #7
-  br label %while.cond.preheader
+; <label>:44                                      ; preds = %24
+  tail call void (...)* @CalculateQuant8Param() #8, !dbg !1373
+  tail call void (...)* @CalculateOffset8Param() #8, !dbg !1375
+  br label %.preheader2, !dbg !1376
 
-while.cond.preheader:                             ; preds = %if.then, %lor.end
-  %16 = load %struct.ImageParameters** @img, align 8, !tbaa !0
-  %total_number_mb50 = getelementptr inbounds %struct.ImageParameters* %16, i64 0, i32 4
-  %17 = load i32* %total_number_mb50, align 4, !tbaa !3
-  %cmp1451 = icmp sgt i32 %17, 0
-  br i1 %cmp1451, label %while.cond15.preheader, label %while.end22
+.preheader2:                                      ; preds = %44, %24
+  %45 = load %struct.ImageParameters** @img, align 8, !dbg !1377, !tbaa !1137
+  %46 = getelementptr inbounds %struct.ImageParameters* %45, i64 0, i32 4, !dbg !1378
+  %47 = load i32* %46, align 4, !dbg !1378, !tbaa !1379
+  %48 = icmp sgt i32 %47, 0, !dbg !1380
+  br i1 %48, label %.preheader1, label %._crit_edge8, !dbg !1381
 
-while.cond15.preheader:                           ; preds = %while.cond.preheader, %while.end
-  %SliceGroup.053 = phi i32 [ %inc21, %while.end ], [ 0, %while.cond.preheader ]
-  %NumberOfCodedMBs.052 = phi i32 [ %NumberOfCodedMBs.1.lcssa, %while.end ], [ 0, %while.cond.preheader ]
-  %call1647 = tail call i32 @FmoSliceGroupCompletelyCoded(i32 %SliceGroup.053) #7
-  %lnot1848 = icmp eq i32 %call1647, 0
-  br i1 %lnot1848, label %while.body19, label %while.end
+.preheader1:                                      ; preds = %.preheader2, %._crit_edge
+  %SliceGroup.07 = phi i32 [ %64, %._crit_edge ], [ 0, %.preheader2 ]
+  %NumberOfCodedMBs.06 = phi i32 [ %NumberOfCodedMBs.1.lcssa, %._crit_edge ], [ 0, %.preheader2 ]
+  %49 = tail call i32 @FmoSliceGroupCompletelyCoded(i32 %SliceGroup.07) #8, !dbg !1382
+  %50 = icmp eq i32 %49, 0, !dbg !1384
+  br i1 %50, label %.lr.ph5, label %._crit_edge, !dbg !1385
 
-while.body19:                                     ; preds = %while.cond15.preheader, %while.body19
-  %NumberOfCodedMBs.149 = phi i32 [ %add, %while.body19 ], [ %NumberOfCodedMBs.052, %while.cond15.preheader ]
-  %call20 = tail call i32 @encode_one_slice(i32 %SliceGroup.053, %struct.Picture* %pic) #7
-  %add = add nsw i32 %call20, %NumberOfCodedMBs.149
-  %18 = load %struct.ImageParameters** @img, align 8, !tbaa !0
-  %current_mb_nr = getelementptr inbounds %struct.ImageParameters* %18, i64 0, i32 3
-  %19 = load i32* %current_mb_nr, align 4, !tbaa !3
-  tail call void @FmoSetLastMacroblockInSlice(i32 %19) #7
-  %20 = load %struct.ImageParameters** @img, align 8, !tbaa !0
-  %current_slice_nr = getelementptr inbounds %struct.ImageParameters* %20, i64 0, i32 5
-  %21 = load i32* %current_slice_nr, align 4, !tbaa !3
-  %inc = add nsw i32 %21, 1
-  store i32 %inc, i32* %current_slice_nr, align 4, !tbaa !3
-  %22 = load %struct.StatParameters** @stats, align 8, !tbaa !0
-  %bit_slice = getelementptr inbounds %struct.StatParameters* %22, i64 0, i32 6
-  store i32 0, i32* %bit_slice, align 4, !tbaa !3
-  %call16 = tail call i32 @FmoSliceGroupCompletelyCoded(i32 %SliceGroup.053) #7
-  %lnot18 = icmp eq i32 %call16, 0
-  br i1 %lnot18, label %while.body19, label %while.end
+.lr.ph5:                                          ; preds = %.preheader1, %.lr.ph5
+  %NumberOfCodedMBs.14 = phi i32 [ %52, %.lr.ph5 ], [ %NumberOfCodedMBs.06, %.preheader1 ]
+  %51 = tail call i32 @encode_one_slice(i32 %SliceGroup.07, %struct.Picture* %pic) #8, !dbg !1386
+  %52 = add nsw i32 %51, %NumberOfCodedMBs.14, !dbg !1388
+  tail call void @llvm.dbg.value(metadata i32 %52, i64 0, metadata !251, metadata !1134), !dbg !1317
+  %53 = load %struct.ImageParameters** @img, align 8, !dbg !1389, !tbaa !1137
+  %54 = getelementptr inbounds %struct.ImageParameters* %53, i64 0, i32 3, !dbg !1390
+  %55 = load i32* %54, align 4, !dbg !1390, !tbaa !1391
+  tail call void @FmoSetLastMacroblockInSlice(i32 %55) #8, !dbg !1392
+  %56 = load %struct.ImageParameters** @img, align 8, !dbg !1393, !tbaa !1137
+  %57 = getelementptr inbounds %struct.ImageParameters* %56, i64 0, i32 5, !dbg !1394
+  %58 = load i32* %57, align 4, !dbg !1395, !tbaa !1396
+  %59 = add nsw i32 %58, 1, !dbg !1395
+  store i32 %59, i32* %57, align 4, !dbg !1395, !tbaa !1396
+  %60 = load %struct.StatParameters** @stats, align 8, !dbg !1397, !tbaa !1137
+  %61 = getelementptr inbounds %struct.StatParameters* %60, i64 0, i32 6, !dbg !1398
+  store i32 0, i32* %61, align 4, !dbg !1399, !tbaa !1400
+  %62 = tail call i32 @FmoSliceGroupCompletelyCoded(i32 %SliceGroup.07) #8, !dbg !1382
+  %63 = icmp eq i32 %62, 0, !dbg !1384
+  br i1 %63, label %.lr.ph5, label %._crit_edge, !dbg !1385
 
-while.end:                                        ; preds = %while.body19, %while.cond15.preheader
-  %NumberOfCodedMBs.1.lcssa = phi i32 [ %NumberOfCodedMBs.052, %while.cond15.preheader ], [ %add, %while.body19 ]
-  %inc21 = add nsw i32 %SliceGroup.053, 1
-  %23 = load %struct.ImageParameters** @img, align 8, !tbaa !0
-  %total_number_mb = getelementptr inbounds %struct.ImageParameters* %23, i64 0, i32 4
-  %24 = load i32* %total_number_mb, align 4, !tbaa !3
-  %cmp14 = icmp slt i32 %NumberOfCodedMBs.1.lcssa, %24
-  br i1 %cmp14, label %while.cond15.preheader, label %while.end22
+._crit_edge:                                      ; preds = %.lr.ph5, %.preheader1
+  %NumberOfCodedMBs.1.lcssa = phi i32 [ %NumberOfCodedMBs.06, %.preheader1 ], [ %52, %.lr.ph5 ]
+  %64 = add nuw nsw i32 %SliceGroup.07, 1, !dbg !1402
+  tail call void @llvm.dbg.value(metadata i32 %64, i64 0, metadata !252, metadata !1134), !dbg !1318
+  %65 = load %struct.ImageParameters** @img, align 8, !dbg !1377, !tbaa !1137
+  %66 = getelementptr inbounds %struct.ImageParameters* %65, i64 0, i32 4, !dbg !1378
+  %67 = load i32* %66, align 4, !dbg !1378, !tbaa !1379
+  %68 = icmp slt i32 %NumberOfCodedMBs.1.lcssa, %67, !dbg !1380
+  br i1 %68, label %.preheader1, label %._crit_edge8, !dbg !1381
 
-while.end22:                                      ; preds = %while.end, %while.cond.preheader
-  %call23 = tail call i32 (...)* @FmoEndPicture() #7
-  %25 = load %struct.InputParameters** @input, align 8, !tbaa !0
-  %rdopt = getelementptr inbounds %struct.InputParameters* %25, i64 0, i32 85
-  %26 = load i32* %rdopt, align 4, !tbaa !3
-  %cmp24 = icmp eq i32 %26, 2
-  br i1 %cmp24, label %land.lhs.true25, label %if.end31
+._crit_edge8:                                     ; preds = %._crit_edge, %.preheader2
+  %69 = tail call i32 (...)* @FmoEndPicture() #8, !dbg !1403
+  %70 = load %struct.InputParameters** @input, align 8, !dbg !1404, !tbaa !1137
+  %71 = getelementptr inbounds %struct.InputParameters* %70, i64 0, i32 85, !dbg !1406
+  %72 = load i32* %71, align 4, !dbg !1406, !tbaa !1407
+  %73 = icmp eq i32 %72, 2, !dbg !1408
+  br i1 %73, label %74, label %.loopexit, !dbg !1409
 
-land.lhs.true25:                                  ; preds = %while.end22
-  %27 = load %struct.ImageParameters** @img, align 8, !tbaa !0
-  %type26 = getelementptr inbounds %struct.ImageParameters* %27, i64 0, i32 6
-  %28 = load i32* %type26, align 4, !tbaa !3
-  %cmp27 = icmp eq i32 %28, 1
-  br i1 %cmp27, label %if.end31, label %for.cond.preheader
+; <label>:74                                      ; preds = %._crit_edge8
+  %75 = load %struct.ImageParameters** @img, align 8, !dbg !1410, !tbaa !1137
+  %76 = getelementptr inbounds %struct.ImageParameters* %75, i64 0, i32 6, !dbg !1411
+  %77 = load i32* %76, align 4, !dbg !1411, !tbaa !1336
+  %78 = icmp eq i32 %77, 1, !dbg !1412
+  br i1 %78, label %.loopexit, label %.preheader, !dbg !1413
 
-for.cond.preheader:                               ; preds = %land.lhs.true25
-  %NoOfDecoders44 = getelementptr inbounds %struct.InputParameters* %25, i64 0, i32 97
-  %29 = load i32* %NoOfDecoders44, align 4, !tbaa !3
-  %cmp2945 = icmp sgt i32 %29, 0
-  br i1 %cmp2945, label %for.body, label %if.end31
+.preheader:                                       ; preds = %74
+  %79 = getelementptr inbounds %struct.InputParameters* %70, i64 0, i32 97, !dbg !1414
+  %80 = load i32* %79, align 4, !dbg !1414, !tbaa !1417
+  %81 = icmp sgt i32 %80, 0, !dbg !1418
+  br i1 %81, label %.lr.ph.preheader, label %.loopexit, !dbg !1419
 
-for.body:                                         ; preds = %for.cond.preheader, %for.body.for.body_crit_edge
-  %30 = phi %struct.ImageParameters* [ %.pre, %for.body.for.body_crit_edge ], [ %27, %for.cond.preheader ]
-  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body.for.body_crit_edge ], [ 0, %for.cond.preheader ]
-  %31 = load %struct.Decoders** @decs, align 8, !tbaa !0
-  %decY_best = getelementptr inbounds %struct.Decoders* %31, i64 0, i32 3
-  %32 = load i16**** %decY_best, align 8, !tbaa !0
-  %arrayidx = getelementptr inbounds i16*** %32, i64 %indvars.iv
-  %33 = load i16*** %arrayidx, align 8, !tbaa !0
-  tail call void @DeblockFrame(%struct.ImageParameters* %30, i16** %33, i16*** null) #7
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %34 = load %struct.InputParameters** @input, align 8, !tbaa !0
-  %NoOfDecoders = getelementptr inbounds %struct.InputParameters* %34, i64 0, i32 97
-  %35 = load i32* %NoOfDecoders, align 4, !tbaa !3
-  %36 = trunc i64 %indvars.iv.next to i32
-  %cmp29 = icmp slt i32 %36, %35
-  br i1 %cmp29, label %for.body.for.body_crit_edge, label %if.end31
+.lr.ph.preheader:                                 ; preds = %.preheader
+  %82 = load %struct.Decoders** @decs, align 8, !dbg !1420, !tbaa !1137
+  %83 = getelementptr inbounds %struct.Decoders* %82, i64 0, i32 3, !dbg !1421
+  %84 = load i16**** %83, align 8, !dbg !1421, !tbaa !1422
+  %85 = load i16*** %84, align 8, !dbg !1420, !tbaa !1137
+  tail call void @DeblockFrame(%struct.ImageParameters* %75, i16** %85, i16*** null) #8, !dbg !1424
+  %86 = load %struct.InputParameters** @input, align 8, !dbg !1425, !tbaa !1137
+  %87 = getelementptr inbounds %struct.InputParameters* %86, i64 0, i32 97, !dbg !1414
+  %88 = load i32* %87, align 4, !dbg !1414, !tbaa !1417
+  %89 = icmp sgt i32 %88, 1, !dbg !1418
+  br i1 %89, label %._crit_edge9, label %.loopexit, !dbg !1419
 
-for.body.for.body_crit_edge:                      ; preds = %for.body
-  %.pre = load %struct.ImageParameters** @img, align 8, !tbaa !0
-  br label %for.body
+._crit_edge9:                                     ; preds = %.lr.ph.preheader, %._crit_edge9
+  %indvars.iv.next10 = phi i64 [ %indvars.iv.next, %._crit_edge9 ], [ 1, %.lr.ph.preheader ]
+  %.pre = load %struct.ImageParameters** @img, align 8, !dbg !1426, !tbaa !1137
+  %90 = load %struct.Decoders** @decs, align 8, !dbg !1420, !tbaa !1137
+  %91 = getelementptr inbounds %struct.Decoders* %90, i64 0, i32 3, !dbg !1421
+  %92 = load i16**** %91, align 8, !dbg !1421, !tbaa !1422
+  %93 = getelementptr inbounds i16*** %92, i64 %indvars.iv.next10, !dbg !1420
+  %94 = load i16*** %93, align 8, !dbg !1420, !tbaa !1137
+  tail call void @DeblockFrame(%struct.ImageParameters* %.pre, i16** %94, i16*** null) #8, !dbg !1424
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv.next10, 1, !dbg !1419
+  %95 = load %struct.InputParameters** @input, align 8, !dbg !1425, !tbaa !1137
+  %96 = getelementptr inbounds %struct.InputParameters* %95, i64 0, i32 97, !dbg !1414
+  %97 = load i32* %96, align 4, !dbg !1414, !tbaa !1417
+  %98 = sext i32 %97 to i64, !dbg !1418
+  %99 = icmp slt i64 %indvars.iv.next, %98, !dbg !1418
+  br i1 %99, label %._crit_edge9, label %.loopexit, !dbg !1419
 
-if.end31:                                         ; preds = %for.cond.preheader, %for.body, %while.end22, %land.lhs.true25
-  %37 = load %struct.ImageParameters** @img, align 8, !tbaa !0
-  %38 = load %struct.storable_picture** @enc_picture, align 8, !tbaa !0
-  %imgY = getelementptr inbounds %struct.storable_picture* %38, i64 0, i32 25
-  %39 = load i16*** %imgY, align 8, !tbaa !0
-  %imgUV = getelementptr inbounds %struct.storable_picture* %38, i64 0, i32 30
-  %40 = load i16**** %imgUV, align 8, !tbaa !0
-  tail call void @DeblockFrame(%struct.ImageParameters* %37, i16** %39, i16*** %40) #7
-  %41 = load %struct.ImageParameters** @img, align 8, !tbaa !0
-  %MbaffFrameFlag = getelementptr inbounds %struct.ImageParameters* %41, i64 0, i32 90
-  %42 = load i32* %MbaffFrameFlag, align 4, !tbaa !3
-  %tobool32 = icmp eq i32 %42, 0
-  br i1 %tobool32, label %if.end34, label %if.then33
+.loopexit:                                        ; preds = %.lr.ph.preheader, %._crit_edge9, %.preheader, %74, %._crit_edge8
+  %100 = load %struct.ImageParameters** @img, align 8, !dbg !1427, !tbaa !1137
+  %101 = load %struct.storable_picture** @enc_picture, align 8, !dbg !1428, !tbaa !1137
+  %102 = getelementptr inbounds %struct.storable_picture* %101, i64 0, i32 25, !dbg !1429
+  %103 = load i16*** %102, align 8, !dbg !1429, !tbaa !1142
+  %104 = getelementptr inbounds %struct.storable_picture* %101, i64 0, i32 30, !dbg !1430
+  %105 = load i16**** %104, align 8, !dbg !1430, !tbaa !1147
+  tail call void @DeblockFrame(%struct.ImageParameters* %100, i16** %103, i16*** %105) #8, !dbg !1431
+  %106 = load %struct.ImageParameters** @img, align 8, !dbg !1432, !tbaa !1137
+  %107 = getelementptr inbounds %struct.ImageParameters* %106, i64 0, i32 90, !dbg !1434
+  %108 = load i32* %107, align 4, !dbg !1434, !tbaa !1435
+  %109 = icmp eq i32 %108, 0, !dbg !1432
+  br i1 %109, label %111, label %110, !dbg !1436
 
-if.then33:                                        ; preds = %if.end31
-  tail call void @MbAffPostProc() #8
-  br label %if.end34
+; <label>:110                                     ; preds = %.loopexit
+  tail call void @MbAffPostProc() #9, !dbg !1437
+  br label %111, !dbg !1437
 
-if.end34:                                         ; preds = %if.end31, %if.then33
-  ret void
+; <label>:111                                     ; preds = %.loopexit, %110
+  ret void, !dbg !1438
 }

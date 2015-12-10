@@ -1,26 +1,29 @@
 define internal fastcc i32 @Name2eo(i8* nocapture readonly %s) #4 {
-  br label %1
+  tail call void @llvm.dbg.value(metadata i8* %s, i64 0, metadata !705, metadata !780), !dbg !1771
+  tail call void @llvm.dbg.value(metadata i32 -1, i64 0, metadata !707, metadata !780), !dbg !1772
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !706, metadata !780), !dbg !1773
+  br label %1, !dbg !1774
 
 ; <label>:1                                       ; preds = %0, %10
   %indvars.iv = phi i64 [ 0, %0 ], [ %indvars.iv.next, %10 ]
-  %2 = getelementptr inbounds [17 x i8*]* @eoNames, i64 0, i64 %indvars.iv
-  %3 = load i8** %2, align 8, !tbaa !22
-  %4 = tail call i32 @strcasecmp(i8* %s, i8* %3) #9
-  %5 = icmp eq i32 %4, 0
-  br i1 %5, label %6, label %10
+  %2 = getelementptr inbounds [17 x i8*]* @eoNames, i64 0, i64 %indvars.iv, !dbg !1776
+  %3 = load i8** %2, align 8, !dbg !1776, !tbaa !957
+  %4 = tail call i32 @strcasecmp(i8* %s, i8* %3) #9, !dbg !1779
+  %5 = icmp eq i32 %4, 0, !dbg !1780
+  br i1 %5, label %6, label %10, !dbg !1781
 
 ; <label>:6                                       ; preds = %1
-  %7 = trunc i64 %indvars.iv to i32
-  %8 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !22
-  %9 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %8, i8* getelementptr inbounds ([32 x i8]* @.str70, i64 0, i64 0), i32 %7, i8* %3) #9
-  br label %.loopexit
+  %7 = trunc i64 %indvars.iv to i32, !dbg !1772
+  %8 = load %struct.__sFILE** @__stderrp, align 8, !dbg !1782, !tbaa !957
+  %9 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %8, i8* getelementptr inbounds ([32 x i8]* @.str70, i64 0, i64 0), i32 %7, i8* %3) #9, !dbg !1784
+  br label %.loopexit, !dbg !1785
 
 ; <label>:10                                      ; preds = %1
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %11 = icmp slt i64 %indvars.iv.next, 17
-  br i1 %11, label %1, label %.loopexit
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !1774
+  %11 = icmp slt i64 %indvars.iv.next, 17, !dbg !1786
+  br i1 %11, label %1, label %.loopexit, !dbg !1774
 
 .loopexit:                                        ; preds = %10, %6
   %res.0 = phi i32 [ %7, %6 ], [ -1, %10 ]
-  ret i32 %res.0
+  ret i32 %res.0, !dbg !1787
 }

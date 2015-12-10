@@ -1,65 +1,71 @@
 define internal fastcc void @set_factor_matrix(i32 %ntypes, float* nocapture %f, float %fmult, i32 %ati, i32 %atj) #4 {
-  %1 = fpext float %fmult to double
-  %2 = fcmp olt double %1, 9.500000e-01
-  br i1 %2, label %.critedge, label %3
+  tail call void @llvm.dbg.value(metadata i32 %ntypes, i64 0, metadata !1002, metadata !1073), !dbg !2579
+  tail call void @llvm.dbg.value(metadata float* %f, i64 0, metadata !1003, metadata !1073), !dbg !2580
+  tail call void @llvm.dbg.value(metadata float %fmult, i64 0, metadata !1004, metadata !1073), !dbg !2581
+  tail call void @llvm.dbg.value(metadata i32 %ati, i64 0, metadata !1005, metadata !1073), !dbg !2582
+  tail call void @llvm.dbg.value(metadata i32 %atj, i64 0, metadata !1006, metadata !1073), !dbg !2583
+  %1 = fpext float %fmult to double, !dbg !2584
+  %2 = fcmp olt double %1, 9.500000e-01, !dbg !2584
+  br i1 %2, label %.critedge, label %3, !dbg !2584
 
 ; <label>:3                                       ; preds = %0
-  %phitmp = fcmp ogt double %1, 1.050000e+00
-  %.mux.fmult = select i1 %phitmp, float 0x3FF0CCCCC0000000, float %fmult
-  br label %.critedge
+  %phitmp = fcmp ogt double %1, 1.050000e+00, !dbg !2584
+  %.mux.fmult = select i1 %phitmp, float 0x3FF0CCCCC0000000, float %fmult, !dbg !2584
+  br label %.critedge, !dbg !2584
 
 .critedge:                                        ; preds = %3, %0
   %4 = phi float [ 0x3FEE666660000000, %0 ], [ %.mux.fmult, %3 ]
-  %5 = icmp eq i32 %atj, -1
-  br i1 %5, label %.preheader, label %12
+  tail call void @llvm.dbg.value(metadata float %4, i64 0, metadata !1004, metadata !1073), !dbg !2581
+  %5 = icmp eq i32 %atj, -1, !dbg !2585
+  br i1 %5, label %.preheader, label %12, !dbg !2587
 
 .preheader:                                       ; preds = %.critedge
-  %6 = icmp sgt i32 %ntypes, 0
-  br i1 %6, label %.lr.ph, label %.loopexit
+  %6 = icmp sgt i32 %ntypes, 0, !dbg !2588
+  br i1 %6, label %.lr.ph, label %.loopexit, !dbg !2592
 
 .lr.ph:                                           ; preds = %.preheader
-  %7 = mul nsw i32 %ati, %ntypes
-  %8 = sext i32 %ntypes to i64
-  %9 = sext i32 %ati to i64
-  %10 = sext i32 %7 to i64
-  %11 = add i32 %ntypes, -1
-  br label %25
+  %7 = mul nsw i32 %ati, %ntypes, !dbg !2593
+  %8 = sext i32 %ntypes to i64, !dbg !2592
+  %9 = sext i32 %ati to i64, !dbg !2592
+  %10 = sext i32 %7 to i64, !dbg !2592
+  %11 = add i32 %ntypes, -1, !dbg !2592
+  br label %25, !dbg !2592
 
 ; <label>:12                                      ; preds = %.critedge
-  %13 = mul nsw i32 %ati, %ntypes
-  %14 = add nsw i32 %13, %atj
-  %15 = sext i32 %14 to i64
-  %16 = getelementptr inbounds float* %f, i64 %15
-  %17 = load float* %16, align 4, !tbaa !14
-  %18 = fmul float %4, %17
-  store float %18, float* %16, align 4, !tbaa !14
-  %19 = mul nsw i32 %atj, %ntypes
-  %20 = add nsw i32 %19, %ati
-  %21 = sext i32 %20 to i64
-  %22 = getelementptr inbounds float* %f, i64 %21
-  %23 = load float* %22, align 4, !tbaa !14
-  %24 = fmul float %4, %23
-  store float %24, float* %22, align 4, !tbaa !14
-  br label %.loopexit
+  %13 = mul nsw i32 %ati, %ntypes, !dbg !2595
+  %14 = add nsw i32 %13, %atj, !dbg !2597
+  %15 = sext i32 %14 to i64, !dbg !2598
+  %16 = getelementptr inbounds float* %f, i64 %15, !dbg !2598
+  %17 = load float* %16, align 4, !dbg !2599, !tbaa !1201
+  %18 = fmul float %4, %17, !dbg !2599
+  store float %18, float* %16, align 4, !dbg !2599, !tbaa !1201
+  %19 = mul nsw i32 %atj, %ntypes, !dbg !2600
+  %20 = add nsw i32 %19, %ati, !dbg !2601
+  %21 = sext i32 %20 to i64, !dbg !2602
+  %22 = getelementptr inbounds float* %f, i64 %21, !dbg !2602
+  %23 = load float* %22, align 4, !dbg !2603, !tbaa !1201
+  %24 = fmul float %4, %23, !dbg !2603
+  store float %24, float* %22, align 4, !dbg !2603, !tbaa !1201
+  br label %.loopexit, !dbg !2604
 
 ; <label>:25                                      ; preds = %25, %.lr.ph
   %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %25 ]
-  %26 = add nsw i64 %indvars.iv, %10
-  %27 = getelementptr inbounds float* %f, i64 %26
-  %28 = load float* %27, align 4, !tbaa !14
-  %29 = fmul float %4, %28
-  store float %29, float* %27, align 4, !tbaa !14
-  %30 = mul nsw i64 %indvars.iv, %8
-  %31 = add nsw i64 %30, %9
-  %32 = getelementptr inbounds float* %f, i64 %31
-  %33 = load float* %32, align 4, !tbaa !14
-  %34 = fmul float %4, %33
-  store float %34, float* %32, align 4, !tbaa !14
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %11
-  br i1 %exitcond, label %.loopexit, label %25
+  %26 = add nsw i64 %indvars.iv, %10, !dbg !2605
+  %27 = getelementptr inbounds float* %f, i64 %26, !dbg !2606
+  %28 = load float* %27, align 4, !dbg !2607, !tbaa !1201
+  %29 = fmul float %4, %28, !dbg !2607
+  store float %29, float* %27, align 4, !dbg !2607, !tbaa !1201
+  %30 = mul nsw i64 %indvars.iv, %8, !dbg !2608
+  %31 = add nsw i64 %30, %9, !dbg !2609
+  %32 = getelementptr inbounds float* %f, i64 %31, !dbg !2610
+  %33 = load float* %32, align 4, !dbg !2611, !tbaa !1201
+  %34 = fmul float %4, %33, !dbg !2611
+  store float %34, float* %32, align 4, !dbg !2611, !tbaa !1201
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !2592
+  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !2592
+  %exitcond = icmp eq i32 %lftr.wideiv, %11, !dbg !2592
+  br i1 %exitcond, label %.loopexit, label %25, !dbg !2592
 
 .loopexit:                                        ; preds = %25, %.preheader, %12
-  ret void
+  ret void, !dbg !2612
 }

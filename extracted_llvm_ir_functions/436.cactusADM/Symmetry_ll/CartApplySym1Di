@@ -1,36 +1,45 @@
 define i32 @CartApplySym1Di(%struct.cGH* nocapture readnone %GH, i32* nocapture readonly %doSym, i32* nocapture readonly %cntstag, i32* nocapture readnone %lssh, i32* nocapture readonly %ghostz, i32* nocapture readonly %sym, double* nocapture %var) #1 {
-  %1 = load i32* %doSym, align 4, !tbaa !2
-  %2 = icmp eq i32 %1, 1
-  br i1 %2, label %.preheader, label %.loopexit
+  tail call void @llvm.dbg.value(metadata %struct.cGH* %GH, i64 0, metadata !75, metadata !90), !dbg !261
+  tail call void @llvm.dbg.value(metadata i32* %doSym, i64 0, metadata !76, metadata !90), !dbg !262
+  tail call void @llvm.dbg.value(metadata i32* %cntstag, i64 0, metadata !77, metadata !90), !dbg !263
+  tail call void @llvm.dbg.value(metadata i32* %lssh, i64 0, metadata !78, metadata !90), !dbg !264
+  tail call void @llvm.dbg.value(metadata i32* %ghostz, i64 0, metadata !79, metadata !90), !dbg !265
+  tail call void @llvm.dbg.value(metadata i32* %sym, i64 0, metadata !80, metadata !90), !dbg !266
+  tail call void @llvm.dbg.value(metadata double* %var, i64 0, metadata !81, metadata !90), !dbg !267
+  tail call void @llvm.dbg.value(metadata %struct.cGH* %GH, i64 0, metadata !75, metadata !90), !dbg !261
+  tail call void @llvm.dbg.value(metadata i32* %lssh, i64 0, metadata !78, metadata !90), !dbg !264
+  %1 = load i32* %doSym, align 4, !dbg !268, !tbaa !100
+  %2 = icmp eq i32 %1, 1, !dbg !270
+  br i1 %2, label %.preheader, label %.loopexit, !dbg !271
 
 .preheader:                                       ; preds = %0
-  %3 = load i32* %ghostz, align 4, !tbaa !2
-  %4 = icmp sgt i32 %3, 0
-  br i1 %4, label %.lr.ph, label %.loopexit
+  %3 = load i32* %ghostz, align 4, !dbg !272, !tbaa !100
+  %4 = icmp sgt i32 %3, 0, !dbg !276
+  br i1 %4, label %.lr.ph, label %.loopexit, !dbg !277
 
 .lr.ph:                                           ; preds = %.preheader
-  %5 = load i32* %sym, align 4, !tbaa !2
-  %6 = sitofp i32 %5 to double
-  %7 = load i32* %cntstag, align 4, !tbaa !2
-  %8 = sext i32 %3 to i64
-  br label %9
+  %5 = load i32* %sym, align 4, !dbg !278, !tbaa !100
+  %6 = sitofp i32 %5 to double, !dbg !278
+  %7 = load i32* %cntstag, align 4, !dbg !280, !tbaa !100
+  %8 = sext i32 %3 to i64, !dbg !277
+  br label %9, !dbg !277
 
 ; <label>:9                                       ; preds = %.lr.ph, %9
   %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %9 ]
-  %10 = shl nsw i32 %3, 1
-  %11 = trunc i64 %indvars.iv to i32
-  %12 = sub i32 %10, %11
-  %13 = sub i32 %12, %7
-  %14 = sext i32 %13 to i64
-  %15 = getelementptr inbounds double* %var, i64 %14
-  %16 = load double* %15, align 8, !tbaa !10
-  %17 = fmul double %6, %16
-  %18 = getelementptr inbounds double* %var, i64 %indvars.iv
-  store double %17, double* %18, align 8, !tbaa !10
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %19 = icmp slt i64 %indvars.iv.next, %8
-  br i1 %19, label %9, label %.loopexit
+  %10 = shl nsw i32 %3, 1, !dbg !280
+  %11 = trunc i64 %indvars.iv to i32, !dbg !280
+  %12 = sub i32 %10, %11, !dbg !280
+  %13 = sub i32 %12, %7, !dbg !280
+  %14 = sext i32 %13 to i64, !dbg !281
+  %15 = getelementptr inbounds double* %var, i64 %14, !dbg !281
+  %16 = load double* %15, align 8, !dbg !281, !tbaa !132
+  %17 = fmul double %6, %16, !dbg !282
+  %18 = getelementptr inbounds double* %var, i64 %indvars.iv, !dbg !283
+  store double %17, double* %18, align 8, !dbg !284, !tbaa !132
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !277
+  %19 = icmp slt i64 %indvars.iv.next, %8, !dbg !276
+  br i1 %19, label %9, label %.loopexit, !dbg !277
 
 .loopexit:                                        ; preds = %9, %.preheader, %0
-  ret i32 0
+  ret i32 0, !dbg !285
 }

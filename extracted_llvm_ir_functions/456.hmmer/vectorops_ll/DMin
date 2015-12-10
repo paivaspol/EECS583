@@ -1,22 +1,30 @@
-define double @DMin(double* nocapture %vec, i32 %n) #1 {
-entry:
-  %0 = load double* %vec, align 8, !tbaa !0
-  %cmp11 = icmp sgt i32 %n, 1
-  br i1 %cmp11, label %for.body, label %for.end
+define double @DMin(double* nocapture readonly %vec, i32 %n) #1 {
+  tail call void @llvm.dbg.value(metadata double* %vec, i64 0, metadata !114, metadata !206), !dbg !383
+  tail call void @llvm.dbg.value(metadata i32 %n, i64 0, metadata !115, metadata !206), !dbg !384
+  %1 = load double* %vec, align 8, !dbg !385, !tbaa !217
+  tail call void @llvm.dbg.value(metadata double %1, i64 0, metadata !117, metadata !206), !dbg !386
+  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !116, metadata !206), !dbg !387
+  %2 = icmp sgt i32 %n, 1, !dbg !388
+  br i1 %2, label %.lr.ph, label %._crit_edge, !dbg !391
 
-for.body:                                         ; preds = %entry, %for.body
-  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 1, %entry ]
-  %best.013 = phi double [ %best.1, %for.body ], [ %0, %entry ]
-  %arrayidx1 = getelementptr inbounds double* %vec, i64 %indvars.iv
-  %1 = load double* %arrayidx1, align 8, !tbaa !0
-  %cmp2 = fcmp olt double %1, %best.013
-  %best.1 = select i1 %cmp2, double %1, double %best.013
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %n
-  br i1 %exitcond, label %for.end, label %for.body
+.lr.ph:                                           ; preds = %0
+  %3 = add i32 %n, -1, !dbg !391
+  br label %4, !dbg !391
 
-for.end:                                          ; preds = %for.body, %entry
-  %best.0.lcssa = phi double [ %0, %entry ], [ %best.1, %for.body ]
-  ret double %best.0.lcssa
+; <label>:4                                       ; preds = %4, %.lr.ph
+  %indvars.iv = phi i64 [ 1, %.lr.ph ], [ %indvars.iv.next, %4 ]
+  %best.02 = phi double [ %1, %.lr.ph ], [ %best.1, %4 ]
+  %5 = getelementptr inbounds double* %vec, i64 %indvars.iv, !dbg !392
+  %6 = load double* %5, align 8, !dbg !392, !tbaa !217
+  %7 = fcmp olt double %6, %best.02, !dbg !394
+  tail call void @llvm.dbg.value(metadata double %6, i64 0, metadata !117, metadata !206), !dbg !386
+  %best.1 = select i1 %7, double %6, double %best.02, !dbg !395
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !391
+  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !391
+  %exitcond = icmp eq i32 %lftr.wideiv, %3, !dbg !391
+  br i1 %exitcond, label %._crit_edge, label %4, !dbg !391
+
+._crit_edge:                                      ; preds = %4, %0
+  %best.0.lcssa = phi double [ %1, %0 ], [ %best.1, %4 ]
+  ret double %best.0.lcssa, !dbg !396
 }

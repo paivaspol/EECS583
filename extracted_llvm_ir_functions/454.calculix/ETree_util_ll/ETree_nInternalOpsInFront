@@ -1,81 +1,89 @@
 define double @ETree_nInternalOpsInFront(%struct._ETree* %etree, i32 %type, i32 %symflag, i32 %J) #0 {
-entry:
-  %cmp = icmp eq %struct._ETree* %etree, null
-  br i1 %cmp, label %if.then, label %lor.lhs.false
+  tail call void @llvm.dbg.value(metadata %struct._ETree* %etree, i64 0, metadata !89, metadata !258), !dbg !442
+  tail call void @llvm.dbg.value(metadata i32 %type, i64 0, metadata !90, metadata !258), !dbg !443
+  tail call void @llvm.dbg.value(metadata i32 %symflag, i64 0, metadata !91, metadata !258), !dbg !444
+  tail call void @llvm.dbg.value(metadata i32 %J, i64 0, metadata !92, metadata !258), !dbg !445
+  %1 = icmp eq %struct._ETree* %etree, null, !dbg !446
+  br i1 %1, label %6, label %2, !dbg !448
 
-lor.lhs.false:                                    ; preds = %entry
-  %nfront = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 0
-  %0 = load i32* %nfront, align 4, !tbaa !3
-  %notlhs = icmp sgt i32 %0, 0
-  %notrhs = icmp sgt i32 %J, -1
-  %or.cond.not = and i1 %notrhs, %notlhs
-  %cmp6 = icmp sgt i32 %0, %J
-  %or.cond62 = and i1 %or.cond.not, %cmp6
-  br i1 %or.cond62, label %if.end, label %if.then
+; <label>:2                                       ; preds = %0
+  %3 = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 0, !dbg !449
+  %4 = load i32* %3, align 4, !dbg !449, !tbaa !316
+  %notlhs = icmp sgt i32 %4, 0, !dbg !450
+  %notrhs = icmp sgt i32 %J, -1, !dbg !450
+  %or.cond.not = and i1 %notrhs, %notlhs, !dbg !450
+  %5 = icmp sgt i32 %4, %J, !dbg !451
+  %or.cond2 = and i1 %5, %or.cond.not, !dbg !450
+  br i1 %or.cond2, label %9, label %6, !dbg !450
 
-if.then:                                          ; preds = %lor.lhs.false, %entry
-  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([68 x i8]* @.str6, i64 0, i64 0), %struct._ETree* %etree, i32 %type, i32 %symflag, i32 %J) #4
-  tail call void @exit(i32 -1) #5
-  unreachable
+; <label>:6                                       ; preds = %2, %0
+  %7 = load %struct.__sFILE** @__stderrp, align 8, !dbg !452, !tbaa !265
+  %8 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %7, i8* getelementptr inbounds ([68 x i8]* @.str6, i64 0, i64 0), %struct._ETree* %etree, i32 %type, i32 %symflag, i32 %J) #5, !dbg !454
+  tail call void @exit(i32 -1) #6, !dbg !455
+  unreachable, !dbg !455
 
-if.end:                                           ; preds = %lor.lhs.false
-  %call7 = tail call i32 @ETree_frontSize(%struct._ETree* %etree, i32 %J) #4
-  %conv = sitofp i32 %call7 to double
-  %call8 = tail call i32 @ETree_frontBoundarySize(%struct._ETree* %etree, i32 %J) #4
-  %conv9 = sitofp i32 %call8 to double
-  switch i32 %symflag, label %sw.default [
-    i32 0, label %sw.bb
-    i32 1, label %sw.bb
-    i32 2, label %sw.bb16
-  ]
+; <label>:9                                       ; preds = %2
+  %10 = tail call i32 @ETree_frontSize(%struct._ETree* %etree, i32 %J) #5, !dbg !456
+  %11 = sitofp i32 %10 to double, !dbg !456
+  tail call void @llvm.dbg.value(metadata double %11, i64 0, metadata !93, metadata !258), !dbg !457
+  %12 = tail call i32 @ETree_frontBoundarySize(%struct._ETree* %etree, i32 %J) #5, !dbg !458
+  %13 = sitofp i32 %12 to double, !dbg !458
+  tail call void @llvm.dbg.value(metadata double %13, i64 0, metadata !94, metadata !258), !dbg !459
+  switch i32 %symflag, label %34 [
+    i32 0, label %14
+    i32 1, label %14
+    i32 2, label %24
+  ], !dbg !460
 
-sw.bb:                                            ; preds = %if.end, %if.end
-  %add = fadd double %conv, 1.000000e+00
-  %mul = fmul double %conv, %add
-  %mul10 = fmul double %conv, 2.000000e+00
-  %add11 = fadd double %mul10, 1.000000e+00
-  %mul12 = fmul double %mul, %add11
-  %div = fdiv double %mul12, 6.000000e+00
-  %mul13 = fmul double %conv, %conv9
-  %mul14 = fmul double %conv, %mul13
-  %add15 = fadd double %mul14, %div
-  br label %sw.epilog
+; <label>:14                                      ; preds = %9, %9
+  %15 = fadd double %11, 1.000000e+00, !dbg !461
+  %16 = fmul double %11, %15, !dbg !463
+  %17 = fmul double %11, 2.000000e+00, !dbg !464
+  %18 = fadd double %17, 1.000000e+00, !dbg !465
+  %19 = fmul double %16, %18, !dbg !466
+  %20 = fdiv double %19, 6.000000e+00, !dbg !467
+  %21 = fmul double %11, %13, !dbg !468
+  %22 = fmul double %11, %21, !dbg !469
+  %23 = fadd double %22, %20, !dbg !470
+  tail call void @llvm.dbg.value(metadata double %23, i64 0, metadata !95, metadata !258), !dbg !471
+  br label %37, !dbg !472
 
-sw.bb16:                                          ; preds = %if.end
-  %mul17 = fmul double %conv, 2.000000e+00
-  %mul18 = fmul double %conv, %mul17
-  %add19 = fadd double %mul18, 1.000000e+00
-  %mul20 = fmul double %conv, %add19
-  %div21 = fdiv double %mul20, 3.000000e+00
-  %mul22 = fmul double %conv9, 2.000000e+00
-  %mul23 = fmul double %conv, %mul22
-  %mul24 = fmul double %conv, %mul23
-  %add25 = fadd double %mul24, %div21
-  br label %sw.epilog
+; <label>:24                                      ; preds = %9
+  %25 = fmul double %11, 2.000000e+00, !dbg !473
+  %26 = fmul double %11, %25, !dbg !474
+  %27 = fadd double %26, 1.000000e+00, !dbg !475
+  %28 = fmul double %11, %27, !dbg !476
+  %29 = fdiv double %28, 3.000000e+00, !dbg !477
+  %30 = fmul double %13, 2.000000e+00, !dbg !478
+  %31 = fmul double %11, %30, !dbg !479
+  %32 = fmul double %11, %31, !dbg !480
+  %33 = fadd double %32, %29, !dbg !481
+  tail call void @llvm.dbg.value(metadata double %33, i64 0, metadata !95, metadata !258), !dbg !471
+  br label %37, !dbg !482
 
-sw.default:                                       ; preds = %if.end
-  %2 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call26 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([70 x i8]* @.str7, i64 0, i64 0), %struct._ETree* %etree, i32 %type, i32 %symflag, i32 %J) #4
-  br label %sw.epilog
+; <label>:34                                      ; preds = %9
+  %35 = load %struct.__sFILE** @__stderrp, align 8, !dbg !483, !tbaa !265
+  %36 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %35, i8* getelementptr inbounds ([70 x i8]* @.str7, i64 0, i64 0), %struct._ETree* %etree, i32 %type, i32 %symflag, i32 %J) #5, !dbg !484
+  br label %37, !dbg !485
 
-sw.epilog:                                        ; preds = %sw.default, %sw.bb16, %sw.bb
-  %ops.0 = phi double [ undef, %sw.default ], [ %add25, %sw.bb16 ], [ %add15, %sw.bb ]
-  switch i32 %type, label %sw.default29 [
-    i32 1, label %sw.epilog31
-    i32 2, label %sw.bb27
-  ]
+; <label>:37                                      ; preds = %34, %24, %14
+  %ops.0 = phi double [ undef, %34 ], [ %33, %24 ], [ %23, %14 ]
+  switch i32 %type, label %40 [
+    i32 1, label %43
+    i32 2, label %38
+  ], !dbg !486
 
-sw.bb27:                                          ; preds = %sw.epilog
-  %mul28 = fmul double %ops.0, 4.000000e+00
-  br label %sw.epilog31
+; <label>:38                                      ; preds = %37
+  %39 = fmul double %ops.0, 4.000000e+00, !dbg !487
+  tail call void @llvm.dbg.value(metadata double %39, i64 0, metadata !95, metadata !258), !dbg !471
+  br label %43, !dbg !489
 
-sw.default29:                                     ; preds = %sw.epilog
-  %3 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call30 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([67 x i8]* @.str8, i64 0, i64 0), %struct._ETree* %etree, i32 %type, i32 %symflag, i32 %J) #4
-  br label %sw.epilog31
+; <label>:40                                      ; preds = %37
+  %41 = load %struct.__sFILE** @__stderrp, align 8, !dbg !490, !tbaa !265
+  %42 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %41, i8* getelementptr inbounds ([67 x i8]* @.str8, i64 0, i64 0), %struct._ETree* %etree, i32 %type, i32 %symflag, i32 %J) #5, !dbg !491
+  br label %43, !dbg !492
 
-sw.epilog31:                                      ; preds = %sw.default29, %sw.bb27, %sw.epilog
-  %ops.1 = phi double [ %ops.0, %sw.default29 ], [ %mul28, %sw.bb27 ], [ %ops.0, %sw.epilog ]
-  ret double %ops.1
+; <label>:43                                      ; preds = %40, %38, %37
+  %ops.1 = phi double [ %ops.0, %40 ], [ %39, %38 ], [ %ops.0, %37 ]
+  ret double %ops.1, !dbg !493
 }

@@ -1,95 +1,100 @@
 define %struct._IP* @IP_mergeUp(%struct._IP* %ip1, %struct._IP* %ip2) #0 {
-entry:
-  %cmp = icmp eq %struct._IP* %ip1, null
-  br i1 %cmp, label %if.end28, label %if.else
+  tail call void @llvm.dbg.value(metadata %struct._IP* %ip1, i64 0, metadata !123, metadata !176), !dbg !309
+  tail call void @llvm.dbg.value(metadata %struct._IP* %ip2, i64 0, metadata !124, metadata !176), !dbg !310
+  %1 = icmp eq %struct._IP* %ip1, null, !dbg !311
+  br i1 %1, label %37, label %2, !dbg !313
 
-if.else:                                          ; preds = %entry
-  %cmp1 = icmp eq %struct._IP* %ip2, null
-  br i1 %cmp1, label %if.end28, label %if.else3
+; <label>:2                                       ; preds = %0
+  %3 = icmp eq %struct._IP* %ip2, null, !dbg !314
+  br i1 %3, label %37, label %4, !dbg !316
 
-if.else3:                                         ; preds = %if.else
-  %val = getelementptr inbounds %struct._IP* %ip2, i64 0, i32 0
-  %0 = load i32* %val, align 4, !tbaa !0
-  %val4 = getelementptr inbounds %struct._IP* %ip1, i64 0, i32 0
-  %1 = load i32* %val4, align 4, !tbaa !0
-  %cmp5 = icmp slt i32 %0, %1
-  br i1 %cmp5, label %if.then6, label %if.else7
+; <label>:4                                       ; preds = %2
+  %5 = getelementptr inbounds %struct._IP* %ip2, i64 0, i32 0, !dbg !317
+  %6 = load i32* %5, align 4, !dbg !317, !tbaa !188
+  %7 = getelementptr inbounds %struct._IP* %ip1, i64 0, i32 0, !dbg !320
+  %8 = load i32* %7, align 4, !dbg !320, !tbaa !188
+  %9 = icmp slt i32 %6, %8, !dbg !321
+  br i1 %9, label %10, label %13, !dbg !322
 
-if.then6:                                         ; preds = %if.else3
-  %next = getelementptr inbounds %struct._IP* %ip2, i64 0, i32 1
-  %2 = load %struct._IP** %next, align 8, !tbaa !3
-  br label %while.cond.preheader
+; <label>:10                                      ; preds = %4
+  tail call void @llvm.dbg.value(metadata %struct._IP* %ip2, i64 0, metadata !126, metadata !176), !dbg !323
+  tail call void @llvm.dbg.value(metadata %struct._IP* %ip2, i64 0, metadata !125, metadata !176), !dbg !324
+  %11 = getelementptr inbounds %struct._IP* %ip2, i64 0, i32 1, !dbg !325
+  %12 = load %struct._IP** %11, align 8, !dbg !325, !tbaa !196
+  tail call void @llvm.dbg.value(metadata %struct._IP* %12, i64 0, metadata !124, metadata !176), !dbg !310
+  br label %.preheader, !dbg !327
 
-if.else7:                                         ; preds = %if.else3
-  %next8 = getelementptr inbounds %struct._IP* %ip1, i64 0, i32 1
-  %3 = load %struct._IP** %next8, align 8, !tbaa !3
-  br label %while.cond.preheader
+; <label>:13                                      ; preds = %4
+  tail call void @llvm.dbg.value(metadata %struct._IP* %ip1, i64 0, metadata !126, metadata !176), !dbg !323
+  tail call void @llvm.dbg.value(metadata %struct._IP* %ip1, i64 0, metadata !125, metadata !176), !dbg !324
+  %14 = getelementptr inbounds %struct._IP* %ip1, i64 0, i32 1, !dbg !328
+  %15 = load %struct._IP** %14, align 8, !dbg !328, !tbaa !196
+  tail call void @llvm.dbg.value(metadata %struct._IP* %15, i64 0, metadata !123, metadata !176), !dbg !309
+  br label %.preheader
 
-while.cond.preheader:                             ; preds = %if.else7, %if.then6
-  %ip1.addr.0.ph = phi %struct._IP* [ %ip1, %if.then6 ], [ %3, %if.else7 ]
-  %ip2.addr.0.ph = phi %struct._IP* [ %2, %if.then6 ], [ %ip2, %if.else7 ]
-  %head.0.ph = phi %struct._IP* [ %ip2, %if.then6 ], [ %ip1, %if.else7 ]
-  %cmp971 = icmp eq %struct._IP* %ip1.addr.0.ph, null
-  %cmp105972 = icmp eq %struct._IP* %ip2.addr.0.ph, null
-  %or.cond6073 = or i1 %cmp971, %cmp105972
-  br i1 %or.cond6073, label %while.end, label %while.body.lr.ph
+.preheader:                                       ; preds = %13, %10
+  %.02.ph = phi %struct._IP* [ %15, %13 ], [ %ip1, %10 ]
+  %.0.ph = phi %struct._IP* [ %ip2, %13 ], [ %12, %10 ]
+  %head.0.ph = phi %struct._IP* [ %ip1, %13 ], [ %ip2, %10 ]
+  %16 = icmp ne %struct._IP* %.02.ph, null, !dbg !330
+  %17 = icmp ne %struct._IP* %.0.ph, null, !dbg !331
+  %or.cond917 = and i1 %16, %17, !dbg !332
+  br i1 %or.cond917, label %.lr.ph, label %.critedge, !dbg !332
 
-while.body.lr.ph:                                 ; preds = %while.cond.preheader, %if.else17
-  %tail.0.ph5576 = phi %struct._IP* [ %ip1.addr.0.ph5274, %if.else17 ], [ %head.0.ph, %while.cond.preheader ]
-  %ip2.addr.0.ph5375 = phi %struct._IP* [ %ip2.addr.061, %if.else17 ], [ %ip2.addr.0.ph, %while.cond.preheader ]
-  %ip1.addr.0.ph5274 = phi %struct._IP* [ %7, %if.else17 ], [ %ip1.addr.0.ph, %while.cond.preheader ]
-  %val12 = getelementptr inbounds %struct._IP* %ip1.addr.0.ph5274, i64 0, i32 0
-  %4 = load i32* %val12, align 4, !tbaa !0
-  br label %while.body
+.lr.ph:                                           ; preds = %.preheader, %.outer
+  %tail.0.ph620 = phi %struct._IP* [ %.02.ph318, %.outer ], [ %head.0.ph, %.preheader ]
+  %.0.ph419 = phi %struct._IP* [ %.010, %.outer ], [ %.0.ph, %.preheader ]
+  %.02.ph318 = phi %struct._IP* [ %30, %.outer ], [ %.02.ph, %.preheader ]
+  %18 = getelementptr inbounds %struct._IP* %.02.ph318, i64 0, i32 0, !dbg !333
+  %19 = load i32* %18, align 4, !dbg !333, !tbaa !188
+  br label %20, !dbg !332
 
-while.body:                                       ; preds = %while.body.lr.ph, %if.then14
-  %tail.062 = phi %struct._IP* [ %tail.0.ph5576, %while.body.lr.ph ], [ %ip2.addr.061, %if.then14 ]
-  %ip2.addr.061 = phi %struct._IP* [ %ip2.addr.0.ph5375, %while.body.lr.ph ], [ %6, %if.then14 ]
-  %val11 = getelementptr inbounds %struct._IP* %ip2.addr.061, i64 0, i32 0
-  %5 = load i32* %val11, align 4, !tbaa !0
-  %cmp13 = icmp slt i32 %5, %4
-  %next15 = getelementptr inbounds %struct._IP* %tail.062, i64 0, i32 1
-  br i1 %cmp13, label %if.then14, label %if.else17
+; <label>:20                                      ; preds = %25, %.lr.ph
+  %tail.011 = phi %struct._IP* [ %tail.0.ph620, %.lr.ph ], [ %.010, %25 ]
+  %.010 = phi %struct._IP* [ %.0.ph419, %.lr.ph ], [ %27, %25 ]
+  %21 = getelementptr inbounds %struct._IP* %.010, i64 0, i32 0, !dbg !336
+  %22 = load i32* %21, align 4, !dbg !336, !tbaa !188
+  %23 = icmp slt i32 %22, %19, !dbg !337
+  %24 = getelementptr inbounds %struct._IP* %tail.011, i64 0, i32 1, !dbg !338
+  br i1 %23, label %25, label %.outer, !dbg !340
 
-if.then14:                                        ; preds = %while.body
-  store %struct._IP* %ip2.addr.061, %struct._IP** %next15, align 8, !tbaa !3
-  %next16 = getelementptr inbounds %struct._IP* %ip2.addr.061, i64 0, i32 1
-  %6 = load %struct._IP** %next16, align 8, !tbaa !3
-  %cmp10 = icmp eq %struct._IP* %6, null
-  br i1 %cmp10, label %while.end.thread, label %while.body
+; <label>:25                                      ; preds = %20
+  store %struct._IP* %.010, %struct._IP** %24, align 8, !dbg !341, !tbaa !196
+  tail call void @llvm.dbg.value(metadata %struct._IP* %27, i64 0, metadata !126, metadata !176), !dbg !323
+  %26 = getelementptr inbounds %struct._IP* %.010, i64 0, i32 1, !dbg !342
+  %27 = load %struct._IP** %26, align 8, !dbg !342, !tbaa !196
+  tail call void @llvm.dbg.value(metadata %struct._IP* %27, i64 0, metadata !124, metadata !176), !dbg !310
+  %28 = icmp eq %struct._IP* %27, null, !dbg !331
+  br i1 %28, label %.critedge, label %20, !dbg !332
 
-while.end.thread:                                 ; preds = %if.then14
-  %next2388 = getelementptr inbounds %struct._IP* %ip2.addr.061, i64 0, i32 1
-  br label %if.else24
+.outer:                                           ; preds = %20
+  store %struct._IP* %.02.ph318, %struct._IP** %24, align 8, !dbg !343, !tbaa !196
+  tail call void @llvm.dbg.value(metadata %struct._IP* %30, i64 0, metadata !126, metadata !176), !dbg !323
+  %29 = getelementptr inbounds %struct._IP* %.02.ph318, i64 0, i32 1, !dbg !345
+  %30 = load %struct._IP** %29, align 8, !dbg !345, !tbaa !196
+  tail call void @llvm.dbg.value(metadata %struct._IP* %30, i64 0, metadata !123, metadata !176), !dbg !309
+  %31 = icmp ne %struct._IP* %30, null, !dbg !330
+  %32 = icmp ne %struct._IP* %.010, null, !dbg !331
+  %or.cond9 = and i1 %31, %32, !dbg !332
+  br i1 %or.cond9, label %.lr.ph, label %.critedge, !dbg !332
 
-if.else17:                                        ; preds = %while.body
-  store %struct._IP* %ip1.addr.0.ph5274, %struct._IP** %next15, align 8, !tbaa !3
-  %next19 = getelementptr inbounds %struct._IP* %ip1.addr.0.ph5274, i64 0, i32 1
-  %7 = load %struct._IP** %next19, align 8, !tbaa !3
-  %cmp9 = icmp eq %struct._IP* %7, null
-  %cmp1059 = icmp eq %struct._IP* %ip2.addr.061, null
-  %or.cond60 = or i1 %cmp9, %cmp1059
-  br i1 %or.cond60, label %while.end, label %while.body.lr.ph
+.critedge:                                        ; preds = %.outer, %25, %.preheader
+  %.02.ph3.lcssa = phi %struct._IP* [ %.02.ph, %.preheader ], [ %.02.ph318, %25 ], [ %30, %.outer ]
+  %tail.0.lcssa = phi %struct._IP* [ %head.0.ph, %.preheader ], [ %.010, %25 ], [ %.02.ph318, %.outer ]
+  %.0.lcssa = phi %struct._IP* [ %.0.ph, %.preheader ], [ null, %25 ], [ %.010, %.outer ]
+  %33 = icmp eq %struct._IP* %.02.ph3.lcssa, null, !dbg !346
+  %34 = getelementptr inbounds %struct._IP* %tail.0.lcssa, i64 0, i32 1, !dbg !348
+  br i1 %33, label %35, label %36, !dbg !350
 
-while.end:                                        ; preds = %while.cond.preheader, %if.else17
-  %ip1.addr.0.ph5266 = phi %struct._IP* [ %ip1.addr.0.ph, %while.cond.preheader ], [ %7, %if.else17 ]
-  %cmp9.lcssa = phi i1 [ %cmp971, %while.cond.preheader ], [ %cmp9, %if.else17 ]
-  %tail.0.lcssa = phi %struct._IP* [ %head.0.ph, %while.cond.preheader ], [ %ip1.addr.0.ph5274, %if.else17 ]
-  %ip2.addr.0.lcssa = phi %struct._IP* [ %ip2.addr.0.ph, %while.cond.preheader ], [ %ip2.addr.061, %if.else17 ]
-  %next23 = getelementptr inbounds %struct._IP* %tail.0.lcssa, i64 0, i32 1
-  br i1 %cmp9.lcssa, label %if.then22, label %if.else24
+; <label>:35                                      ; preds = %.critedge
+  store %struct._IP* %.0.lcssa, %struct._IP** %34, align 8, !dbg !351, !tbaa !196
+  br label %37, !dbg !352
 
-if.then22:                                        ; preds = %while.end
-  store %struct._IP* %ip2.addr.0.lcssa, %struct._IP** %next23, align 8, !tbaa !3
-  br label %if.end28
+; <label>:36                                      ; preds = %.critedge
+  store %struct._IP* %.02.ph3.lcssa, %struct._IP** %34, align 8, !dbg !353, !tbaa !196
+  br label %37
 
-if.else24:                                        ; preds = %while.end.thread, %while.end
-  %next2390 = phi %struct._IP** [ %next2388, %while.end.thread ], [ %next23, %while.end ]
-  %ip1.addr.0.ph526689 = phi %struct._IP* [ %ip1.addr.0.ph5274, %while.end.thread ], [ %ip1.addr.0.ph5266, %while.end ]
-  store %struct._IP* %ip1.addr.0.ph526689, %struct._IP** %next2390, align 8, !tbaa !3
-  br label %if.end28
-
-if.end28:                                         ; preds = %if.else, %entry, %if.else24, %if.then22
-  %head.1 = phi %struct._IP* [ %head.0.ph, %if.then22 ], [ %head.0.ph, %if.else24 ], [ %ip2, %entry ], [ %ip1, %if.else ]
-  ret %struct._IP* %head.1
+; <label>:37                                      ; preds = %2, %0, %36, %35
+  %head.1 = phi %struct._IP* [ %head.0.ph, %35 ], [ %head.0.ph, %36 ], [ %ip2, %0 ], [ %ip1, %2 ]
+  ret %struct._IP* %head.1, !dbg !355
 }

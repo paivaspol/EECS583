@@ -1,25 +1,30 @@
-define %struct.__sFILE* @uncompress(i8* %fn, i8* %mode) #1 {
+define %struct.__sFILE* @uncompress(i8* %fn, i8* %mode) #2 {
   %buf = alloca [256 x i8], align 16
-  %1 = getelementptr inbounds [256 x i8]* %buf, i64 0, i64 0
-  call void @llvm.lifetime.start(i64 256, i8* %1) #5
-  %2 = call i32 (i8*, i32, i64, i8*, ...)* @__sprintf_chk(i8* %1, i32 0, i64 256, i8* getelementptr inbounds ([19 x i8]* @.str4, i64 0, i64 0), i8* %fn) #8
-  %3 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !8
-  %4 = call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([23 x i8]* @.str5, i64 0, i64 0), i8* %1) #8
-  %5 = call %struct.__sFILE* @"\01_popen"(i8* %1, i8* %mode) #8
-  %6 = icmp eq %struct.__sFILE* %5, null
-  br i1 %6, label %7, label %8
+  tail call void @llvm.dbg.value(metadata i8* %fn, i64 0, metadata !110, metadata !235), !dbg !269
+  tail call void @llvm.dbg.value(metadata i8* %mode, i64 0, metadata !111, metadata !235), !dbg !270
+  %1 = getelementptr inbounds [256 x i8]* %buf, i64 0, i64 0, !dbg !271
+  call void @llvm.lifetime.start(i64 256, i8* %1) #6, !dbg !271
+  tail call void @llvm.dbg.declare(metadata [256 x i8]* %buf, metadata !113, metadata !235), !dbg !272
+  %2 = call i32 (i8*, i32, i64, i8*, ...)* @__sprintf_chk(i8* %1, i32 0, i64 256, i8* getelementptr inbounds ([19 x i8]* @.str4, i64 0, i64 0), i8* %fn) #8, !dbg !273
+  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !274, !tbaa !275
+  %4 = call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([23 x i8]* @.str5, i64 0, i64 0), i8* %1) #8, !dbg !276
+  %5 = call %struct.__sFILE* @"\01_popen"(i8* %1, i8* %mode) #8, !dbg !277
+  call void @llvm.dbg.value(metadata %struct.__sFILE* %5, i64 0, metadata !112, metadata !235), !dbg !279
+  %6 = icmp eq %struct.__sFILE* %5, null, !dbg !280
+  br i1 %6, label %7, label %8, !dbg !281
 
 ; <label>:7                                       ; preds = %0
-  call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([18 x i8]* @.str6, i64 0, i64 0), i8* %fn) #8
-  br label %8
+  call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([18 x i8]* @.str6, i64 0, i64 0), i8* %fn) #8, !dbg !282
+  br label %8, !dbg !282
 
 ; <label>:8                                       ; preds = %7, %0
-  %9 = call i8* @save_calloc(i8* getelementptr inbounds ([3 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str1, i64 0, i64 0), i32 84, i32 1, i32 16) #8
-  %10 = bitcast i8* %9 to %struct.__sFILE**
-  store %struct.__sFILE* %5, %struct.__sFILE** %10, align 8, !tbaa !2
-  %11 = getelementptr inbounds i8* %9, i64 8
-  %12 = bitcast i8* %11 to %struct.t_pstack**
-  store %struct.t_pstack* null, %struct.t_pstack** %12, align 8, !tbaa !7
-  call void @llvm.lifetime.end(i64 256, i8* %1) #5
-  ret %struct.__sFILE* %5
+  call void @llvm.dbg.value(metadata %struct.__sFILE* %5, i64 0, metadata !82, metadata !235) #6, !dbg !283
+  %9 = call i8* @save_calloc(i8* getelementptr inbounds ([3 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str1, i64 0, i64 0), i32 84, i32 1, i32 16) #8, !dbg !285
+  %10 = bitcast i8* %9 to %struct.__sFILE**, !dbg !286
+  store %struct.__sFILE* %5, %struct.__sFILE** %10, align 8, !dbg !287, !tbaa !247
+  %11 = getelementptr inbounds i8* %9, i64 8, !dbg !288
+  %12 = bitcast i8* %11 to %struct.t_pstack**, !dbg !288
+  store %struct.t_pstack* null, %struct.t_pstack** %12, align 8, !dbg !289, !tbaa !254
+  call void @llvm.lifetime.end(i64 256, i8* %1) #6, !dbg !290
+  ret %struct.__sFILE* %5, !dbg !290
 }

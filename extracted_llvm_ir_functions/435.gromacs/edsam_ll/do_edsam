@@ -1,231 +1,266 @@
 define void @do_edsam(%struct.__sFILE* nocapture %log, %struct.t_topology* nocapture readonly %top, %struct.t_inputrec* nocapture readonly %ir, i32 %step, %struct.t_mdatoms* nocapture readnone %md, i32 %start, i32 %homenr, [3 x float]* nocapture %x, [3 x float]* nocapture readonly %xold, [3 x float]* nocapture readonly %x_unc, [3 x float]* nocapture readonly %force, [3 x float]* nocapture readnone %box, %struct.t_edsamyn* nocapture readnone %edyn, %struct.t_edpar* %edi, i32 %bHave_force) #4 {
   %rotmat = alloca [3 x [3 x float]], align 16
-  %1 = getelementptr inbounds %struct.t_edpar* %edi, i64 0, i32 2
-  %2 = load i32* %1, align 4, !tbaa !21
-  %3 = bitcast [3 x [3 x float]]* %rotmat to i8*
-  call void @llvm.lifetime.start(i64 36, i8* %3) #6
-  %4 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 15
-  %5 = load float* %4, align 4, !tbaa !88
-  %6 = fdiv float 1.000000e+00, %5
-  %7 = fmul float %5, %5
-  %8 = fdiv float 1.000000e+00, %7
+  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %log, i64 0, metadata !906, metadata !1112), !dbg !2635
+  tail call void @llvm.dbg.value(metadata %struct.t_topology* %top, i64 0, metadata !907, metadata !1112), !dbg !2636
+  tail call void @llvm.dbg.value(metadata %struct.t_inputrec* %ir, i64 0, metadata !908, metadata !1112), !dbg !2637
+  tail call void @llvm.dbg.value(metadata i32 %step, i64 0, metadata !909, metadata !1112), !dbg !2638
+  tail call void @llvm.dbg.value(metadata %struct.t_mdatoms* %md, i64 0, metadata !910, metadata !1112), !dbg !2639
+  tail call void @llvm.dbg.value(metadata i32 %start, i64 0, metadata !911, metadata !1112), !dbg !2640
+  tail call void @llvm.dbg.value(metadata i32 %homenr, i64 0, metadata !912, metadata !1112), !dbg !2641
+  tail call void @llvm.dbg.value(metadata [3 x float]* %x, i64 0, metadata !913, metadata !1112), !dbg !2642
+  tail call void @llvm.dbg.value(metadata [3 x float]* %xold, i64 0, metadata !914, metadata !1112), !dbg !2643
+  tail call void @llvm.dbg.value(metadata [3 x float]* %x_unc, i64 0, metadata !915, metadata !1112), !dbg !2644
+  tail call void @llvm.dbg.value(metadata [3 x float]* %force, i64 0, metadata !916, metadata !1112), !dbg !2645
+  tail call void @llvm.dbg.value(metadata [3 x float]* %box, i64 0, metadata !917, metadata !1112), !dbg !2646
+  tail call void @llvm.dbg.value(metadata %struct.t_edsamyn* %edyn, i64 0, metadata !918, metadata !1112), !dbg !2647
+  tail call void @llvm.dbg.value(metadata %struct.t_edpar* %edi, i64 0, metadata !919, metadata !1112), !dbg !2648
+  tail call void @llvm.dbg.value(metadata i32 %bHave_force, i64 0, metadata !920, metadata !1112), !dbg !2649
+  %1 = getelementptr inbounds %struct.t_edpar* %edi, i64 0, i32 2, !dbg !2650
+  %2 = load i32* %1, align 4, !dbg !2650, !tbaa !1287
+  tail call void @llvm.dbg.value(metadata i32 %2, i64 0, metadata !923, metadata !1112), !dbg !2651
+  tail call void @llvm.dbg.value(metadata i32 %step, i64 0, metadata !924, metadata !1112), !dbg !2652
+  tail call void @llvm.dbg.value(metadata i32 500, i64 0, metadata !925, metadata !1112), !dbg !2653
+  tail call void @llvm.dbg.value(metadata [3 x float]* null, i64 0, metadata !927, metadata !1112), !dbg !2654
+  tail call void @llvm.dbg.value(metadata [3 x float]* null, i64 0, metadata !928, metadata !1112), !dbg !2655
+  %3 = bitcast [3 x [3 x float]]* %rotmat to i8*, !dbg !2656
+  call void @llvm.lifetime.start(i64 36, i8* %3) #6, !dbg !2656
+  tail call void @llvm.dbg.declare(metadata [3 x [3 x float]]* %rotmat, metadata !929, metadata !1112), !dbg !2657
+  %4 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 15, !dbg !2658
+  %5 = load float* %4, align 4, !dbg !2658, !tbaa !2659
+  tail call void @llvm.dbg.value(metadata float %5, i64 0, metadata !933, metadata !1112), !dbg !2662
+  %6 = fdiv float 1.000000e+00, %5, !dbg !2663
+  tail call void @llvm.dbg.value(metadata float %6, i64 0, metadata !934, metadata !1112), !dbg !2664
+  %7 = fmul float %5, %5, !dbg !2665
+  %8 = fdiv float 1.000000e+00, %7, !dbg !2666
+  tail call void @llvm.dbg.value(metadata float %8, i64 0, metadata !935, metadata !1112), !dbg !2667
   %.b = load i1* @do_edsam.bFirst, align 1
-  br i1 %.b, label %12, label %9
+  br i1 %.b, label %12, label %9, !dbg !2668
 
 ; <label>:9                                       ; preds = %0
-  %10 = getelementptr inbounds %struct.t_edpar* %edi, i64 0, i32 9, i32 4
-  %11 = tail call float @calc_radius(%struct.t_eigvec* %10) #12
-  store float %11, float* @do_edsam.oldrad, align 4, !tbaa !2
+  %10 = getelementptr inbounds %struct.t_edpar* %edi, i64 0, i32 9, i32 4, !dbg !2669
+  %11 = tail call float @calc_radius(%struct.t_eigvec* %10) #12, !dbg !2672
+  store float %11, float* @do_edsam.oldrad, align 4, !dbg !2673, !tbaa !1208
   store i1 true, i1* @do_edsam.bFirst, align 1
-  br label %12
+  br label %12, !dbg !2674
 
 ; <label>:12                                      ; preds = %0, %9
-  %13 = getelementptr inbounds %struct.t_edpar* %edi, i64 0, i32 4
-  %14 = load i32* %13, align 4, !tbaa !54
-  %15 = tail call i32 @do_per_step(i32 %step, i32 %14) #11
-  %16 = icmp ne i32 %15, 0
-  %17 = icmp ne i32 %bHave_force, 0
-  %or.cond = and i1 %17, %16
-  br i1 %or.cond, label %18, label %.loopexit
+  %13 = getelementptr inbounds %struct.t_edpar* %edi, i64 0, i32 4, !dbg !2675
+  %14 = load i32* %13, align 4, !dbg !2675, !tbaa !1616
+  %15 = tail call i32 @do_per_step(i32 %step, i32 %14) #11, !dbg !2677
+  %16 = icmp ne i32 %15, 0, !dbg !2677
+  %17 = icmp ne i32 %bHave_force, 0, !dbg !2678
+  %or.cond = and i1 %17, %16, !dbg !2679
+  br i1 %or.cond, label %18, label %.loopexit, !dbg !2679
 
 ; <label>:18                                      ; preds = %12
-  %19 = tail call i8* @save_calloc(i8* getelementptr inbounds ([5 x i8]* @.str50, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str3, i64 0, i64 0), i32 666, i32 %2, i32 12) #11
-  %20 = bitcast i8* %19 to [3 x float]*
-  %21 = icmp sgt i32 %2, 0
-  br i1 %21, label %.preheader.lr.ph, label %._crit_edge.thread
+  %19 = tail call i8* @save_calloc(i8* getelementptr inbounds ([5 x i8]* @.str50, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str3, i64 0, i64 0), i32 666, i32 %2, i32 12) #11, !dbg !2680
+  %20 = bitcast i8* %19 to [3 x float]*, !dbg !2680
+  tail call void @llvm.dbg.value(metadata [3 x float]* %20, i64 0, metadata !927, metadata !1112), !dbg !2654
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !921, metadata !1112), !dbg !2682
+  %21 = icmp sgt i32 %2, 0, !dbg !2683
+  br i1 %21, label %.preheader.lr.ph, label %._crit_edge.thread, !dbg !2686
 
 ._crit_edge.thread:                               ; preds = %18
-  %22 = tail call i8* @save_calloc(i8* getelementptr inbounds ([5 x i8]* @.str51, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str3, i64 0, i64 0), i32 671, i32 %2, i32 12) #11
-  %23 = bitcast i8* %22 to [3 x float]*
-  br label %.loopexit
+  %22 = tail call i8* @save_calloc(i8* getelementptr inbounds ([5 x i8]* @.str51, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str3, i64 0, i64 0), i32 671, i32 %2, i32 12) #11, !dbg !2687
+  %23 = bitcast i8* %22 to [3 x float]*, !dbg !2687
+  tail call void @llvm.dbg.value(metadata [3 x float]* %35, i64 0, metadata !928, metadata !1112), !dbg !2655
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !921, metadata !1112), !dbg !2682
+  br label %.loopexit, !dbg !2688
 
 .preheader.lr.ph:                                 ; preds = %18
-  %24 = add i32 %2, -1
-  br label %.preheader
+  %24 = add i32 %2, -1, !dbg !2686
+  br label %.preheader, !dbg !2686
 
 .preheader:                                       ; preds = %33, %.preheader.lr.ph
   %indvars.iv18 = phi i64 [ 0, %.preheader.lr.ph ], [ %indvars.iv.next19, %33 ]
-  br label %25
+  br label %25, !dbg !2690
 
 ; <label>:25                                      ; preds = %25, %.preheader
   %indvars.iv15 = phi i64 [ 0, %.preheader ], [ %indvars.iv.next16, %25 ]
-  %26 = getelementptr inbounds [3 x float]* %x, i64 %indvars.iv18, i64 %indvars.iv15
-  %27 = load float* %26, align 4, !tbaa !2
-  %28 = getelementptr inbounds [3 x float]* %xold, i64 %indvars.iv18, i64 %indvars.iv15
-  %29 = load float* %28, align 4, !tbaa !2
-  %30 = fsub float %27, %29
-  %31 = fmul float %6, %30
-  %32 = getelementptr inbounds [3 x float]* %20, i64 %indvars.iv18, i64 %indvars.iv15
-  store float %31, float* %32, align 4, !tbaa !2
-  %indvars.iv.next16 = add nuw nsw i64 %indvars.iv15, 1
-  %exitcond17 = icmp eq i64 %indvars.iv.next16, 3
-  br i1 %exitcond17, label %33, label %25
+  %26 = getelementptr inbounds [3 x float]* %x, i64 %indvars.iv18, i64 %indvars.iv15, !dbg !2693
+  %27 = load float* %26, align 4, !dbg !2693, !tbaa !1208
+  %28 = getelementptr inbounds [3 x float]* %xold, i64 %indvars.iv18, i64 %indvars.iv15, !dbg !2695
+  %29 = load float* %28, align 4, !dbg !2695, !tbaa !1208
+  %30 = fsub float %27, %29, !dbg !2696
+  %31 = fmul float %6, %30, !dbg !2697
+  %32 = getelementptr inbounds [3 x float]* %20, i64 %indvars.iv18, i64 %indvars.iv15, !dbg !2698
+  store float %31, float* %32, align 4, !dbg !2699, !tbaa !1208
+  %indvars.iv.next16 = add nuw nsw i64 %indvars.iv15, 1, !dbg !2690
+  %exitcond17 = icmp eq i64 %indvars.iv.next16, 3, !dbg !2690
+  br i1 %exitcond17, label %33, label %25, !dbg !2690
 
 ; <label>:33                                      ; preds = %25
-  %indvars.iv.next19 = add nuw nsw i64 %indvars.iv18, 1
-  %lftr.wideiv20 = trunc i64 %indvars.iv18 to i32
-  %exitcond21 = icmp eq i32 %lftr.wideiv20, %24
-  br i1 %exitcond21, label %._crit_edge, label %.preheader
+  %indvars.iv.next19 = add nuw nsw i64 %indvars.iv18, 1, !dbg !2686
+  %lftr.wideiv20 = trunc i64 %indvars.iv18 to i32, !dbg !2686
+  %exitcond21 = icmp eq i32 %lftr.wideiv20, %24, !dbg !2686
+  br i1 %exitcond21, label %._crit_edge, label %.preheader, !dbg !2686
 
 ._crit_edge:                                      ; preds = %33
-  %34 = tail call i8* @save_calloc(i8* getelementptr inbounds ([5 x i8]* @.str51, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str3, i64 0, i64 0), i32 671, i32 %2, i32 12) #11
-  %35 = bitcast i8* %34 to [3 x float]*
-  br i1 %21, label %.lr.ph, label %.loopexit
+  %34 = tail call i8* @save_calloc(i8* getelementptr inbounds ([5 x i8]* @.str51, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str3, i64 0, i64 0), i32 671, i32 %2, i32 12) #11, !dbg !2687
+  %35 = bitcast i8* %34 to [3 x float]*, !dbg !2687
+  tail call void @llvm.dbg.value(metadata [3 x float]* %35, i64 0, metadata !928, metadata !1112), !dbg !2655
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !921, metadata !1112), !dbg !2682
+  br i1 %21, label %.lr.ph, label %.loopexit, !dbg !2688
 
 .lr.ph:                                           ; preds = %._crit_edge
-  %36 = getelementptr inbounds %struct.t_topology* %top, i64 0, i32 2, i32 1
-  %37 = load %struct.t_atom** %36, align 8, !tbaa !33
-  %38 = add i32 %2, -1
-  br label %39
+  %36 = getelementptr inbounds %struct.t_topology* %top, i64 0, i32 2, i32 1, !dbg !2700
+  %37 = load %struct.t_atom** %36, align 8, !dbg !2700, !tbaa !1323
+  %38 = add i32 %2, -1, !dbg !2688
+  br label %39, !dbg !2688
 
 ; <label>:39                                      ; preds = %54, %.lr.ph
   %indvars.iv12 = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next13, %54 ]
-  %40 = getelementptr inbounds %struct.t_atom* %37, i64 %indvars.iv12, i32 0
-  %41 = load float* %40, align 4, !tbaa !35
-  br label %42
+  %40 = getelementptr inbounds %struct.t_atom* %37, i64 %indvars.iv12, i32 0, !dbg !2703
+  %41 = load float* %40, align 4, !dbg !2703, !tbaa !1330
+  tail call void @llvm.dbg.value(metadata float %41, i64 0, metadata !931, metadata !1112), !dbg !2704
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !922, metadata !1112), !dbg !2705
+  br label %42, !dbg !2706
 
 ; <label>:42                                      ; preds = %42, %39
   %indvars.iv = phi i64 [ 0, %39 ], [ %indvars.iv.next, %42 ]
-  %43 = getelementptr inbounds [3 x float]* %force, i64 %indvars.iv12, i64 %indvars.iv
-  %44 = load float* %43, align 4, !tbaa !2
-  %45 = getelementptr inbounds [3 x float]* %x, i64 %indvars.iv12, i64 %indvars.iv
-  %46 = load float* %45, align 4, !tbaa !2
-  %47 = getelementptr inbounds [3 x float]* %x_unc, i64 %indvars.iv12, i64 %indvars.iv
-  %48 = load float* %47, align 4, !tbaa !2
-  %49 = fsub float %46, %48
-  %50 = fmul float %8, %49
-  %51 = fmul float %41, %50
-  %52 = fadd float %44, %51
-  %53 = getelementptr inbounds [3 x float]* %35, i64 %indvars.iv12, i64 %indvars.iv
-  store float %52, float* %53, align 4, !tbaa !2
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %exitcond = icmp eq i64 %indvars.iv.next, 3
-  br i1 %exitcond, label %54, label %42
+  %43 = getelementptr inbounds [3 x float]* %force, i64 %indvars.iv12, i64 %indvars.iv, !dbg !2708
+  %44 = load float* %43, align 4, !dbg !2708, !tbaa !1208
+  %45 = getelementptr inbounds [3 x float]* %x, i64 %indvars.iv12, i64 %indvars.iv, !dbg !2710
+  %46 = load float* %45, align 4, !dbg !2710, !tbaa !1208
+  %47 = getelementptr inbounds [3 x float]* %x_unc, i64 %indvars.iv12, i64 %indvars.iv, !dbg !2711
+  %48 = load float* %47, align 4, !dbg !2711, !tbaa !1208
+  %49 = fsub float %46, %48, !dbg !2712
+  %50 = fmul float %8, %49, !dbg !2713
+  %51 = fmul float %41, %50, !dbg !2714
+  %52 = fadd float %44, %51, !dbg !2715
+  %53 = getelementptr inbounds [3 x float]* %35, i64 %indvars.iv12, i64 %indvars.iv, !dbg !2716
+  store float %52, float* %53, align 4, !dbg !2717, !tbaa !1208
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !2706
+  %exitcond = icmp eq i64 %indvars.iv.next, 3, !dbg !2706
+  br i1 %exitcond, label %54, label %42, !dbg !2706
 
 ; <label>:54                                      ; preds = %42
-  %indvars.iv.next13 = add nuw nsw i64 %indvars.iv12, 1
-  %lftr.wideiv = trunc i64 %indvars.iv12 to i32
-  %exitcond14 = icmp eq i32 %lftr.wideiv, %38
-  br i1 %exitcond14, label %.loopexit, label %39
+  %indvars.iv.next13 = add nuw nsw i64 %indvars.iv12, 1, !dbg !2688
+  %lftr.wideiv = trunc i64 %indvars.iv12 to i32, !dbg !2688
+  %exitcond14 = icmp eq i32 %lftr.wideiv, %38, !dbg !2688
+  br i1 %exitcond14, label %.loopexit, label %39, !dbg !2688
 
 .loopexit:                                        ; preds = %54, %._crit_edge, %._crit_edge.thread, %12
   %fdum.0 = phi [3 x float]* [ null, %12 ], [ %23, %._crit_edge.thread ], [ %35, %._crit_edge ], [ %35, %54 ]
   %vdum.0 = phi [3 x float]* [ null, %12 ], [ %20, %._crit_edge.thread ], [ %20, %._crit_edge ], [ %20, %54 ]
-  %55 = tail call i8* @save_calloc(i8* getelementptr inbounds ([9 x i8]* @.str12, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str3, i64 0, i64 0), i32 680, i32 %2, i32 12) #11
-  %56 = bitcast i8* %55 to [3 x float]*
-  %57 = getelementptr inbounds [3 x [3 x float]]* %rotmat, i64 0, i64 0
-  %58 = call float @fitit(i32 %2, [3 x float]* %x, %struct.t_edpar* %edi, [3 x float]* %56, [3 x float]* %57) #12
-  %59 = getelementptr inbounds %struct.t_edpar* %edi, i64 0, i32 6
-  %60 = load i32* %59, align 4, !tbaa !56
-  %61 = tail call i32 @do_per_step(i32 %step, i32 %60) #11
-  %62 = icmp ne i32 %61, 0
-  %63 = icmp sgt i32 %step, 0
-  %or.cond3 = and i1 %63, %62
-  br i1 %or.cond3, label %64, label %67
+  %55 = tail call i8* @save_calloc(i8* getelementptr inbounds ([9 x i8]* @.str12, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str3, i64 0, i64 0), i32 680, i32 %2, i32 12) #11, !dbg !2718
+  %56 = bitcast i8* %55 to [3 x float]*, !dbg !2718
+  tail call void @llvm.dbg.value(metadata [3 x float]* %56, i64 0, metadata !926, metadata !1112), !dbg !2719
+  %57 = getelementptr inbounds [3 x [3 x float]]* %rotmat, i64 0, i64 0, !dbg !2720
+  %58 = call float @fitit(i32 %2, [3 x float]* %x, %struct.t_edpar* %edi, [3 x float]* %56, [3 x float]* %57) #12, !dbg !2721
+  tail call void @llvm.dbg.value(metadata float %58, i64 0, metadata !930, metadata !1112), !dbg !2722
+  %59 = getelementptr inbounds %struct.t_edpar* %edi, i64 0, i32 6, !dbg !2723
+  %60 = load i32* %59, align 4, !dbg !2723, !tbaa !1624
+  %61 = tail call i32 @do_per_step(i32 %step, i32 %60) #11, !dbg !2725
+  %62 = icmp ne i32 %61, 0, !dbg !2725
+  %63 = icmp sgt i32 %step, 0, !dbg !2726
+  %or.cond3 = and i1 %63, %62, !dbg !2727
+  br i1 %or.cond3, label %64, label %67, !dbg !2727
 
 ; <label>:64                                      ; preds = %.loopexit
-  tail call void @project([3 x float]* %x, %struct.t_edpar* %edi, i8* getelementptr inbounds ([2 x i8]* @.str14, i64 0, i64 0)) #12
-  %65 = getelementptr inbounds %struct.t_edpar* %edi, i64 0, i32 9, i32 4
-  tail call void @projectx(%struct.t_edpar* %edi, [3 x float]* %x, %struct.t_eigvec* %65) #12
-  %66 = getelementptr inbounds %struct.t_edpar* %edi, i64 0, i32 9, i32 3
-  tail call void @projectx(%struct.t_edpar* %edi, [3 x float]* %x, %struct.t_eigvec* %66) #12
-  store float -1.000000e+05, float* @do_edsam.oldrad, align 4, !tbaa !2
-  br label %67
+  tail call void @project([3 x float]* %x, %struct.t_edpar* %edi, i8* getelementptr inbounds ([2 x i8]* @.str14, i64 0, i64 0)) #12, !dbg !2728
+  %65 = getelementptr inbounds %struct.t_edpar* %edi, i64 0, i32 9, i32 4, !dbg !2730
+  tail call void @projectx(%struct.t_edpar* %edi, [3 x float]* %x, %struct.t_eigvec* %65) #12, !dbg !2731
+  %66 = getelementptr inbounds %struct.t_edpar* %edi, i64 0, i32 9, i32 3, !dbg !2732
+  tail call void @projectx(%struct.t_edpar* %edi, [3 x float]* %x, %struct.t_eigvec* %66) #12, !dbg !2733
+  store float -1.000000e+05, float* @do_edsam.oldrad, align 4, !dbg !2734, !tbaa !1208
+  br label %67, !dbg !2735
 
 ; <label>:67                                      ; preds = %64, %.loopexit
-  %68 = tail call i32 @do_per_step(i32 %step, i32 500) #11
-  %69 = icmp ne i32 %68, 0
-  %or.cond5 = and i1 %63, %69
-  br i1 %or.cond5, label %70, label %80
+  %68 = tail call i32 @do_per_step(i32 %step, i32 500) #11, !dbg !2736
+  %69 = icmp ne i32 %68, 0, !dbg !2736
+  %or.cond5 = and i1 %63, %69, !dbg !2738
+  br i1 %or.cond5, label %70, label %80, !dbg !2738
 
 ; <label>:70                                      ; preds = %67
-  %71 = getelementptr inbounds %struct.t_edpar* %edi, i64 0, i32 9, i32 4
-  %72 = tail call float @calc_radius(%struct.t_eigvec* %71) #12
-  %73 = load float* @do_edsam.oldrad, align 4, !tbaa !2
-  %74 = fsub float %72, %73
-  %75 = getelementptr inbounds %struct.t_edpar* %edi, i64 0, i32 10
-  %76 = load float* %75, align 4, !tbaa !57
-  %77 = fcmp olt float %74, %76
-  br i1 %77, label %78, label %79
+  %71 = getelementptr inbounds %struct.t_edpar* %edi, i64 0, i32 9, i32 4, !dbg !2739
+  %72 = tail call float @calc_radius(%struct.t_eigvec* %71) #12, !dbg !2741
+  tail call void @llvm.dbg.value(metadata float %72, i64 0, metadata !932, metadata !1112), !dbg !2742
+  %73 = load float* @do_edsam.oldrad, align 4, !dbg !2743, !tbaa !1208
+  %74 = fsub float %72, %73, !dbg !2745
+  %75 = getelementptr inbounds %struct.t_edpar* %edi, i64 0, i32 10, !dbg !2746
+  %76 = load float* %75, align 4, !dbg !2746, !tbaa !1628
+  %77 = fcmp olt float %74, %76, !dbg !2747
+  br i1 %77, label %78, label %79, !dbg !2748
 
 ; <label>:78                                      ; preds = %70
-  tail call void @project([3 x float]* %x, %struct.t_edpar* %edi, i8* getelementptr inbounds ([2 x i8]* @.str14, i64 0, i64 0)) #12
-  tail call void @projectx(%struct.t_edpar* %edi, [3 x float]* %x, %struct.t_eigvec* %71) #12
-  store float 0.000000e+00, float* @do_edsam.oldrad, align 4, !tbaa !2
-  br label %80
+  tail call void @project([3 x float]* %x, %struct.t_edpar* %edi, i8* getelementptr inbounds ([2 x i8]* @.str14, i64 0, i64 0)) #12, !dbg !2749
+  tail call void @projectx(%struct.t_edpar* %edi, [3 x float]* %x, %struct.t_eigvec* %71) #12, !dbg !2751
+  store float 0.000000e+00, float* @do_edsam.oldrad, align 4, !dbg !2752, !tbaa !1208
+  br label %80, !dbg !2753
 
 ; <label>:79                                      ; preds = %70
-  store float %72, float* @do_edsam.oldrad, align 4, !tbaa !2
+  store float %72, float* @do_edsam.oldrad, align 4, !dbg !2754, !tbaa !1208
   br label %80
 
 ; <label>:80                                      ; preds = %78, %79, %67
-  tail call void @ed_cons([3 x float]* %x, %struct.t_edpar* %edi, i32 %step) #12
-  %81 = load i32* %13, align 4, !tbaa !54
-  %82 = tail call i32 @do_per_step(i32 %step, i32 %81) #11
-  %83 = icmp ne i32 %82, 0
-  %or.cond7 = and i1 %17, %83
-  br i1 %or.cond7, label %84, label %90
+  tail call void @ed_cons([3 x float]* %x, %struct.t_edpar* %edi, i32 %step) #12, !dbg !2755
+  %81 = load i32* %13, align 4, !dbg !2756, !tbaa !1616
+  %82 = tail call i32 @do_per_step(i32 %step, i32 %81) #11, !dbg !2758
+  %83 = icmp ne i32 %82, 0, !dbg !2758
+  %or.cond7 = and i1 %17, %83, !dbg !2759
+  br i1 %or.cond7, label %84, label %90, !dbg !2759
 
 ; <label>:84                                      ; preds = %80
-  call void @rotate_vec(i32 %2, [3 x float]* %vdum.0, [3 x float]* %57) #12
-  call void @rotate_vec(i32 %2, [3 x float]* %fdum.0, [3 x float]* %57) #12
-  tail call void @project([3 x float]* %vdum.0, %struct.t_edpar* %edi, i8* getelementptr inbounds ([2 x i8]* @.str48, i64 0, i64 0)) #12
-  tail call void @project([3 x float]* %fdum.0, %struct.t_edpar* %edi, i8* getelementptr inbounds ([2 x i8]* @.str49, i64 0, i64 0)) #12
-  tail call void @project([3 x float]* %x, %struct.t_edpar* %edi, i8* getelementptr inbounds ([2 x i8]* @.str14, i64 0, i64 0)) #12
-  %85 = bitcast [3 x float]* %vdum.0 to i8*
-  tail call void @save_free(i8* getelementptr inbounds ([5 x i8]* @.str50, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str3, i64 0, i64 0), i32 714, i8* %85) #11
-  %86 = bitcast [3 x float]* %fdum.0 to i8*
-  tail call void @save_free(i8* getelementptr inbounds ([5 x i8]* @.str51, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str3, i64 0, i64 0), i32 715, i8* %86) #11
-  tail call void @write_edo(%struct.t_edpar* %edi, i32 %step, float %58) #12
-  %87 = getelementptr inbounds %struct.t_edpar* %edi, i64 0, i32 19
-  %88 = load %struct.__sFILE** %87, align 8, !tbaa !52
-  %89 = tail call i32 @fflush(%struct.__sFILE* %88) #11
-  br label %90
+  call void @rotate_vec(i32 %2, [3 x float]* %vdum.0, [3 x float]* %57) #12, !dbg !2760
+  call void @rotate_vec(i32 %2, [3 x float]* %fdum.0, [3 x float]* %57) #12, !dbg !2762
+  tail call void @project([3 x float]* %vdum.0, %struct.t_edpar* %edi, i8* getelementptr inbounds ([2 x i8]* @.str48, i64 0, i64 0)) #12, !dbg !2763
+  tail call void @project([3 x float]* %fdum.0, %struct.t_edpar* %edi, i8* getelementptr inbounds ([2 x i8]* @.str49, i64 0, i64 0)) #12, !dbg !2764
+  tail call void @project([3 x float]* %x, %struct.t_edpar* %edi, i8* getelementptr inbounds ([2 x i8]* @.str14, i64 0, i64 0)) #12, !dbg !2765
+  %85 = bitcast [3 x float]* %vdum.0 to i8*, !dbg !2766
+  tail call void @save_free(i8* getelementptr inbounds ([5 x i8]* @.str50, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str3, i64 0, i64 0), i32 714, i8* %85) #11, !dbg !2766
+  %86 = bitcast [3 x float]* %fdum.0 to i8*, !dbg !2767
+  tail call void @save_free(i8* getelementptr inbounds ([5 x i8]* @.str51, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str3, i64 0, i64 0), i32 715, i8* %86) #11, !dbg !2767
+  tail call void @write_edo(%struct.t_edpar* %edi, i32 %step, float %58) #12, !dbg !2768
+  %87 = getelementptr inbounds %struct.t_edpar* %edi, i64 0, i32 19, !dbg !2769
+  %88 = load %struct.__sFILE** %87, align 8, !dbg !2769, !tbaa !1578
+  %89 = tail call i32 @fflush(%struct.__sFILE* %88) #11, !dbg !2770
+  br label %90, !dbg !2771
 
 ; <label>:90                                      ; preds = %84, %80
-  br i1 %63, label %91, label %111
+  br i1 %63, label %91, label %111, !dbg !2772
 
 ; <label>:91                                      ; preds = %90
-  %92 = getelementptr inbounds %struct.t_edpar* %edi, i64 0, i32 5
-  %93 = load i32* %92, align 4, !tbaa !55
-  %94 = tail call i32 @do_per_step(i32 %step, i32 %93) #11
-  %95 = icmp eq i32 %94, 0
-  br i1 %95, label %111, label %96
+  %92 = getelementptr inbounds %struct.t_edpar* %edi, i64 0, i32 5, !dbg !2774
+  %93 = load i32* %92, align 4, !dbg !2774, !tbaa !1620
+  %94 = tail call i32 @do_per_step(i32 %step, i32 %93) #11, !dbg !2775
+  %95 = icmp eq i32 %94, 0, !dbg !2775
+  br i1 %95, label %111, label %96, !dbg !2776
 
 ; <label>:96                                      ; preds = %91
-  %97 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %log, i8* getelementptr inbounds ([34 x i8]* @.str52, i64 0, i64 0), i32 %step) #11
-  tail call void @project([3 x float]* %x, %struct.t_edpar* %edi, i8* getelementptr inbounds ([2 x i8]* @.str14, i64 0, i64 0)) #12
-  tail call void @write_edidx(%struct.__sFILE* %log, %struct.t_edpar* %edi) #12
-  %98 = getelementptr inbounds %struct.t_edpar* %edi, i64 0, i32 9, i32 4
-  %99 = tail call float @calc_radius(%struct.t_eigvec* %98) #12
-  %100 = fpext float %99 to double
-  %101 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %log, i8* getelementptr inbounds ([24 x i8]* @.str53, i64 0, i64 0), double %100) #11
-  %102 = getelementptr inbounds %struct.t_edpar* %edi, i64 0, i32 9, i32 3
-  %103 = tail call float @calc_radius(%struct.t_eigvec* %102) #12
-  %104 = fpext float %103 to double
-  %105 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %log, i8* getelementptr inbounds ([29 x i8]* @.str54, i64 0, i64 0), double %104) #11
-  %106 = getelementptr inbounds %struct.t_edpar* %edi, i64 0, i32 9, i32 5
-  %107 = tail call float @calc_radius(%struct.t_eigvec* %106) #12
-  %108 = fpext float %107 to double
-  %109 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %log, i8* getelementptr inbounds ([25 x i8]* @.str55, i64 0, i64 0), double %108) #11
-  %110 = tail call i32 @fflush(%struct.__sFILE* %log) #11
-  br label %111
+  %97 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %log, i8* getelementptr inbounds ([34 x i8]* @.str52, i64 0, i64 0), i32 %step) #11, !dbg !2777
+  tail call void @project([3 x float]* %x, %struct.t_edpar* %edi, i8* getelementptr inbounds ([2 x i8]* @.str14, i64 0, i64 0)) #12, !dbg !2779
+  tail call void @write_edidx(%struct.__sFILE* %log, %struct.t_edpar* %edi) #12, !dbg !2780
+  %98 = getelementptr inbounds %struct.t_edpar* %edi, i64 0, i32 9, i32 4, !dbg !2781
+  %99 = tail call float @calc_radius(%struct.t_eigvec* %98) #12, !dbg !2782
+  %100 = fpext float %99 to double, !dbg !2782
+  %101 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %log, i8* getelementptr inbounds ([24 x i8]* @.str53, i64 0, i64 0), double %100) #11, !dbg !2783
+  %102 = getelementptr inbounds %struct.t_edpar* %edi, i64 0, i32 9, i32 3, !dbg !2784
+  %103 = tail call float @calc_radius(%struct.t_eigvec* %102) #12, !dbg !2785
+  %104 = fpext float %103 to double, !dbg !2785
+  %105 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %log, i8* getelementptr inbounds ([29 x i8]* @.str54, i64 0, i64 0), double %104) #11, !dbg !2786
+  %106 = getelementptr inbounds %struct.t_edpar* %edi, i64 0, i32 9, i32 5, !dbg !2787
+  %107 = tail call float @calc_radius(%struct.t_eigvec* %106) #12, !dbg !2788
+  %108 = fpext float %107 to double, !dbg !2788
+  %109 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %log, i8* getelementptr inbounds ([25 x i8]* @.str55, i64 0, i64 0), double %108) #11, !dbg !2789
+  %110 = tail call i32 @fflush(%struct.__sFILE* %log) #11, !dbg !2790
+  br label %111, !dbg !2791
 
 ; <label>:111                                     ; preds = %91, %96, %90
-  call void @rmfit(i32 %2, [3 x float]* %x, [3 x float]* %56, [3 x float]* %57) #12
-  %112 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 1
-  %113 = load i32* %112, align 4, !tbaa !91
-  %114 = icmp eq i32 %113, %step
-  br i1 %114, label %115, label %118
+  call void @rmfit(i32 %2, [3 x float]* %x, [3 x float]* %56, [3 x float]* %57) #12, !dbg !2792
+  %112 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 1, !dbg !2793
+  %113 = load i32* %112, align 4, !dbg !2793, !tbaa !2795
+  %114 = icmp eq i32 %113, %step, !dbg !2796
+  br i1 %114, label %115, label %118, !dbg !2797
 
 ; <label>:115                                     ; preds = %111
-  %116 = getelementptr inbounds %struct.t_edpar* %edi, i64 0, i32 19
-  %117 = load %struct.__sFILE** %116, align 8, !tbaa !52
-  tail call void @ffclose(%struct.__sFILE* %117) #11
-  br label %118
+  %116 = getelementptr inbounds %struct.t_edpar* %edi, i64 0, i32 19, !dbg !2798
+  %117 = load %struct.__sFILE** %116, align 8, !dbg !2798, !tbaa !1578
+  tail call void @ffclose(%struct.__sFILE* %117) #11, !dbg !2799
+  br label %118, !dbg !2799
 
 ; <label>:118                                     ; preds = %115, %111
-  tail call void @save_free(i8* getelementptr inbounds ([9 x i8]* @.str12, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str3, i64 0, i64 0), i32 738, i8* %55) #11
-  call void @llvm.lifetime.end(i64 36, i8* %3) #6
-  ret void
+  tail call void @save_free(i8* getelementptr inbounds ([9 x i8]* @.str12, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str3, i64 0, i64 0), i32 738, i8* %55) #11, !dbg !2800
+  call void @llvm.lifetime.end(i64 36, i8* %3) #6, !dbg !2801
+  ret void, !dbg !2801
 }

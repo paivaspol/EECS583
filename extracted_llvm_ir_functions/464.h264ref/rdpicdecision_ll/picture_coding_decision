@@ -1,74 +1,88 @@
-define i32 @picture_coding_decision(%struct.Picture* nocapture %picture1, %struct.Picture* nocapture %picture2, i32 %qp) #1 {
-entry:
-  %0 = load %struct.ImageParameters** @img, align 8, !tbaa !0
-  %type = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 6
-  %1 = load i32* %type, align 4, !tbaa !3
-  %cmp = icmp eq i32 %1, 3
-  %2 = load %struct.InputParameters** @input, align 8, !tbaa !0
-  %successive_Bframe = getelementptr inbounds %struct.InputParameters* %2, i64 0, i32 34
-  %3 = load i32* %successive_Bframe, align 4, !tbaa !3
-  %tobool = icmp eq i32 %3, 0
-  %sub = add nsw i32 %qp, -12
-  %conv4 = sitofp i32 %sub to double
-  %div = fdiv double %conv4, 3.000000e+00
-  %exp2 = tail call double @exp2(double %div) #2
-  %mul = fmul double %exp2, 6.800000e-01
-  br i1 %tobool, label %if.end, label %if.then
+define i32 @picture_coding_decision(%struct.Picture* nocapture readonly %picture1, %struct.Picture* nocapture readonly %picture2, i32 %qp) #1 {
+  tail call void @llvm.dbg.value(metadata %struct.Picture* %picture1, i64 0, metadata !230, metadata !591), !dbg !612
+  tail call void @llvm.dbg.value(metadata %struct.Picture* %picture2, i64 0, metadata !231, metadata !591), !dbg !613
+  tail call void @llvm.dbg.value(metadata i32 %qp, i64 0, metadata !232, metadata !591), !dbg !614
+  %1 = load %struct.ImageParameters** @img, align 8, !dbg !615, !tbaa !616
+  %2 = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 6, !dbg !620
+  %3 = load i32* %2, align 4, !dbg !620, !tbaa !621
+  %4 = icmp eq i32 %3, 3, !dbg !626
+  %5 = load %struct.InputParameters** @input, align 8, !dbg !627, !tbaa !616
+  %6 = getelementptr inbounds %struct.InputParameters* %5, i64 0, i32 34, !dbg !629
+  %7 = load i32* %6, align 4, !dbg !629, !tbaa !630
+  %8 = icmp eq i32 %7, 0, !dbg !627
+  %9 = add nsw i32 %qp, -12, !dbg !632
+  %10 = sitofp i32 %9 to double, !dbg !633
+  %11 = fdiv double %10, 3.000000e+00, !dbg !634
+  %exp2 = tail call double @exp2(double %11) #2, !dbg !635
+  %12 = fmul double %exp2, 6.800000e-01, !dbg !636
+  br i1 %8, label %19, label %13, !dbg !637
 
-if.then:                                          ; preds = %entry
-  %cmp2 = icmp eq i32 %1, 1
-  br i1 %cmp2, label %lor.end, label %lor.rhs
+; <label>:13                                      ; preds = %0
+  %14 = icmp eq i32 %3, 1, !dbg !638
+  br i1 %14, label %16, label %15, !dbg !639
 
-lor.rhs:                                          ; preds = %if.then
-  %phitmp30 = select i1 %cmp, double 2.000000e+00, double 1.000000e+00
-  br label %lor.end
+; <label>:15                                      ; preds = %13
+  %phitmp1 = select i1 %4, double 2.000000e+00, double 1.000000e+00, !dbg !639
+  br label %16, !dbg !639
 
-lor.end:                                          ; preds = %lor.rhs, %if.then
-  %4 = phi double [ 2.000000e+00, %if.then ], [ %phitmp30, %lor.rhs ]
-  %mul8 = fmul double %mul, %4
-  br label %if.end
+; <label>:16                                      ; preds = %15, %13
+  %17 = phi double [ 2.000000e+00, %13 ], [ %phitmp1, %15 ]
+  %18 = fmul double %12, %17, !dbg !640
+  tail call void @llvm.dbg.value(metadata double %18, i64 0, metadata !233, metadata !591), !dbg !641
+  br label %19, !dbg !642
 
-if.end:                                           ; preds = %entry, %lor.end
-  %lambda_picture.0 = phi double [ %mul8, %lor.end ], [ %mul, %entry ]
-  %distortion_y = getelementptr inbounds %struct.Picture* %picture1, i64 0, i32 4
-  %5 = load float* %distortion_y, align 4, !tbaa !4
-  %distortion_u = getelementptr inbounds %struct.Picture* %picture1, i64 0, i32 5
-  %6 = load float* %distortion_u, align 4, !tbaa !4
-  %add = fadd float %5, %6
-  %distortion_v = getelementptr inbounds %struct.Picture* %picture1, i64 0, i32 6
-  %7 = load float* %distortion_v, align 4, !tbaa !4
-  %add14 = fadd float %add, %7
-  %conv15 = fpext float %add14 to double
-  %distortion_y16 = getelementptr inbounds %struct.Picture* %picture2, i64 0, i32 4
-  %8 = load float* %distortion_y16, align 4, !tbaa !4
-  %distortion_u17 = getelementptr inbounds %struct.Picture* %picture2, i64 0, i32 5
-  %9 = load float* %distortion_u17, align 4, !tbaa !4
-  %add18 = fadd float %8, %9
-  %distortion_v19 = getelementptr inbounds %struct.Picture* %picture2, i64 0, i32 6
-  %10 = load float* %distortion_v19, align 4, !tbaa !4
-  %add20 = fadd float %add18, %10
-  %conv21 = fpext float %add20 to double
-  %bits_per_picture = getelementptr inbounds %struct.Picture* %picture2, i64 0, i32 3
-  %11 = load i32* %bits_per_picture, align 4, !tbaa !3
-  %bits_per_picture22 = getelementptr inbounds %struct.Picture* %picture1, i64 0, i32 3
-  %12 = load i32* %bits_per_picture22, align 4, !tbaa !3
-  %conv.i = sitofp i32 %12 to double
-  %mul.i = fmul double %lambda_picture.0, %conv.i
-  %add.i = fadd double %conv15, %mul.i
-  %conv1.i = sitofp i32 %11 to double
-  %mul2.i = fmul double %lambda_picture.0, %conv1.i
-  %add3.i = fadd double %conv21, %mul2.i
-  %cmp.i = fcmp ogt double %add3.i, %add.i
-  br i1 %cmp.i, label %rd_pic_decision.exit, label %lor.lhs.false.i
+; <label>:19                                      ; preds = %0, %16
+  %lambda_picture.0 = phi double [ %18, %16 ], [ %12, %0 ]
+  %20 = getelementptr inbounds %struct.Picture* %picture1, i64 0, i32 4, !dbg !643
+  %21 = load float* %20, align 4, !dbg !643, !tbaa !644
+  %22 = getelementptr inbounds %struct.Picture* %picture1, i64 0, i32 5, !dbg !646
+  %23 = load float* %22, align 4, !dbg !646, !tbaa !647
+  %24 = fadd float %21, %23, !dbg !648
+  %25 = getelementptr inbounds %struct.Picture* %picture1, i64 0, i32 6, !dbg !649
+  %26 = load float* %25, align 4, !dbg !649, !tbaa !650
+  %27 = fadd float %24, %26, !dbg !651
+  %28 = fpext float %27 to double, !dbg !652
+  tail call void @llvm.dbg.value(metadata double %28, i64 0, metadata !236, metadata !591), !dbg !653
+  %29 = getelementptr inbounds %struct.Picture* %picture2, i64 0, i32 4, !dbg !654
+  %30 = load float* %29, align 4, !dbg !654, !tbaa !644
+  %31 = getelementptr inbounds %struct.Picture* %picture2, i64 0, i32 5, !dbg !655
+  %32 = load float* %31, align 4, !dbg !655, !tbaa !647
+  %33 = fadd float %30, %32, !dbg !656
+  %34 = getelementptr inbounds %struct.Picture* %picture2, i64 0, i32 6, !dbg !657
+  %35 = load float* %34, align 4, !dbg !657, !tbaa !650
+  %36 = fadd float %33, %35, !dbg !658
+  %37 = fpext float %36 to double, !dbg !659
+  tail call void @llvm.dbg.value(metadata double %37, i64 0, metadata !237, metadata !591), !dbg !660
+  %38 = getelementptr inbounds %struct.Picture* %picture2, i64 0, i32 3, !dbg !661
+  %39 = load i32* %38, align 4, !dbg !661, !tbaa !662
+  tail call void @llvm.dbg.value(metadata i32 %39, i64 0, metadata !239, metadata !591), !dbg !663
+  %40 = getelementptr inbounds %struct.Picture* %picture1, i64 0, i32 3, !dbg !664
+  %41 = load i32* %40, align 4, !dbg !664, !tbaa !662
+  tail call void @llvm.dbg.value(metadata i32 %41, i64 0, metadata !238, metadata !591), !dbg !665
+  tail call void @llvm.dbg.value(metadata double %28, i64 0, metadata !24, metadata !591), !dbg !666
+  tail call void @llvm.dbg.value(metadata double %37, i64 0, metadata !25, metadata !591), !dbg !668
+  tail call void @llvm.dbg.value(metadata i32 %41, i64 0, metadata !26, metadata !591), !dbg !669
+  tail call void @llvm.dbg.value(metadata i32 %39, i64 0, metadata !27, metadata !591), !dbg !670
+  tail call void @llvm.dbg.value(metadata double %lambda_picture.0, i64 0, metadata !28, metadata !591), !dbg !671
+  %42 = sitofp i32 %41 to double, !dbg !672
+  %43 = fmul double %lambda_picture.0, %42, !dbg !673
+  %44 = fadd double %28, %43, !dbg !674
+  tail call void @llvm.dbg.value(metadata double %44, i64 0, metadata !29, metadata !591), !dbg !675
+  %45 = sitofp i32 %39 to double, !dbg !676
+  %46 = fmul double %lambda_picture.0, %45, !dbg !677
+  %47 = fadd double %37, %46, !dbg !678
+  tail call void @llvm.dbg.value(metadata double %47, i64 0, metadata !30, metadata !591), !dbg !679
+  %48 = fcmp ogt double %47, %44, !dbg !680
+  br i1 %48, label %rd_pic_decision.exit, label %49, !dbg !681
 
-lor.lhs.false.i:                                  ; preds = %if.end
-  %cmp5.i = fcmp une double %add3.i, %add.i
-  %cmp7.i = fcmp ult float %add20, %add14
-  %or.cond.i = or i1 %cmp5.i, %cmp7.i
-  %..i = zext i1 %or.cond.i to i32
-  br label %rd_pic_decision.exit
+; <label>:49                                      ; preds = %19
+  %50 = fcmp une double %47, %44, !dbg !682
+  %51 = fcmp ult float %36, %27, !dbg !683
+  %or.cond.i = or i1 %51, %50, !dbg !684
+  %..i = zext i1 %or.cond.i to i32, !dbg !684
+  br label %rd_pic_decision.exit, !dbg !684
 
-rd_pic_decision.exit:                             ; preds = %if.end, %lor.lhs.false.i
-  %call2331 = phi i32 [ %..i, %lor.lhs.false.i ], [ 0, %if.end ]
-  ret i32 %call2331
+rd_pic_decision.exit:                             ; preds = %19, %49
+  %52 = phi i32 [ %..i, %49 ], [ 0, %19 ]
+  ret i32 %52, !dbg !685
 }

@@ -1,11 +1,15 @@
 define i32 @read_edint2(%struct.__sFILE* %file) #4 {
   %line = alloca [4097 x i8], align 16
   %idum = alloca i32, align 4
-  %1 = getelementptr inbounds [4097 x i8]* %line, i64 0, i64 0
-  call void @llvm.lifetime.start(i64 4097, i8* %1) #6
-  %2 = call i8* @fgets2(i8* %1, i32 4096, %struct.__sFILE* %file) #11
-  %3 = call i32 (i8*, i8*, ...)* @sscanf(i8* %1, i8* getelementptr inbounds ([3 x i8]* @.str30, i64 0, i64 0), i32* %idum) #11
-  %4 = load i32* %idum, align 4, !tbaa !34
-  call void @llvm.lifetime.end(i64 4097, i8* %1) #6
-  ret i32 %4
+  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %file, i64 0, metadata !641, metadata !1112), !dbg !2265
+  %1 = getelementptr inbounds [4097 x i8]* %line, i64 0, i64 0, !dbg !2266
+  call void @llvm.lifetime.start(i64 4097, i8* %1) #6, !dbg !2266
+  tail call void @llvm.dbg.declare(metadata [4097 x i8]* %line, metadata !642, metadata !1112), !dbg !2267
+  %2 = call i8* @fgets2(i8* %1, i32 4096, %struct.__sFILE* %file) #11, !dbg !2268
+  call void @llvm.dbg.value(metadata i32* %idum, i64 0, metadata !643, metadata !1112), !dbg !2269
+  %3 = call i32 (i8*, i8*, ...)* @sscanf(i8* %1, i8* getelementptr inbounds ([3 x i8]* @.str30, i64 0, i64 0), i32* %idum) #11, !dbg !2270
+  call void @llvm.dbg.value(metadata i32* %idum, i64 0, metadata !643, metadata !1112), !dbg !2269
+  %4 = load i32* %idum, align 4, !dbg !2271, !tbaa !1327
+  call void @llvm.lifetime.end(i64 4097, i8* %1) #6, !dbg !2272
+  ret i32 %4, !dbg !2272
 }

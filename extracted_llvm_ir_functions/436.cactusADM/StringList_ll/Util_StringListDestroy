@@ -1,27 +1,29 @@
 define void @Util_StringListDestroy(%struct.uStringList* nocapture %this) #1 {
-  %1 = getelementptr inbounds %struct.uStringList* %this, i64 0, i32 0
-  %2 = load i32* %1, align 4, !tbaa !9
-  %3 = icmp sgt i32 %2, 0
-  %4 = getelementptr inbounds %struct.uStringList* %this, i64 0, i32 1
-  br i1 %3, label %.lr.ph, label %._crit_edge
+  tail call void @llvm.dbg.value(metadata %struct.uStringList* %this, i64 0, metadata !54, metadata !63), !dbg !189
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !55, metadata !63), !dbg !190
+  %1 = getelementptr inbounds %struct.uStringList* %this, i64 0, i32 0, !dbg !191
+  %2 = load i32* %1, align 4, !dbg !191, !tbaa !88
+  %3 = icmp sgt i32 %2, 0, !dbg !194
+  %4 = getelementptr inbounds %struct.uStringList* %this, i64 0, i32 1, !dbg !195
+  br i1 %3, label %.lr.ph, label %._crit_edge, !dbg !197
 
 .lr.ph:                                           ; preds = %0, %.lr.ph
   %indvars.iv = phi i64 [ %indvars.iv.next, %.lr.ph ], [ 0, %0 ]
-  %5 = load %struct.iInternalStringList** %4, align 8, !tbaa !2
-  %6 = getelementptr inbounds %struct.iInternalStringList* %5, i64 %indvars.iv, i32 1
-  %7 = load i8** %6, align 8, !tbaa !11
-  tail call void @free(i8* %7) #5
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %8 = load i32* %1, align 4, !tbaa !9
-  %9 = sext i32 %8 to i64
-  %10 = icmp slt i64 %indvars.iv.next, %9
-  br i1 %10, label %.lr.ph, label %._crit_edge
+  %5 = load %struct.iInternalStringList** %4, align 8, !dbg !195, !tbaa !77
+  %6 = getelementptr inbounds %struct.iInternalStringList* %5, i64 %indvars.iv, i32 1, !dbg !198
+  %7 = load i8** %6, align 8, !dbg !198, !tbaa !106
+  tail call void @free(i8* %7) #6, !dbg !199
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !197
+  %8 = load i32* %1, align 4, !dbg !191, !tbaa !88
+  %9 = sext i32 %8 to i64, !dbg !194
+  %10 = icmp slt i64 %indvars.iv.next, %9, !dbg !194
+  br i1 %10, label %.lr.ph, label %._crit_edge, !dbg !197
 
 ._crit_edge:                                      ; preds = %.lr.ph, %0
-  %11 = bitcast %struct.iInternalStringList** %4 to i8**
-  %12 = load i8** %11, align 8, !tbaa !2
-  tail call void @free(i8* %12) #5
-  %13 = bitcast %struct.uStringList* %this to i8*
-  tail call void @free(i8* %13) #5
-  ret void
+  %11 = bitcast %struct.iInternalStringList** %4 to i8**, !dbg !200
+  %12 = load i8** %11, align 8, !dbg !200, !tbaa !77
+  tail call void @free(i8* %12) #6, !dbg !201
+  %13 = bitcast %struct.uStringList* %this to i8*, !dbg !202
+  tail call void @free(i8* %13) #6, !dbg !203
+  ret void, !dbg !204
 }

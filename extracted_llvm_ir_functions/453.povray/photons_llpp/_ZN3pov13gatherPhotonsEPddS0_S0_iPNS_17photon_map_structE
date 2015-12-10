@@ -1,0 +1,40 @@
+define i32 @_ZN3pov13gatherPhotonsEPddS0_S0_iPNS_17photon_map_structE(double* %pt, double %Size, double* nocapture %r, double* %norm, i32 %flatten, %"struct.pov::photon_map_struct"* nocapture readonly %map) #4 {
+  tail call void @llvm.dbg.value(metadata double* %pt, i64 0, metadata !1146, metadata !1948), !dbg !3940
+  tail call void @llvm.dbg.value(metadata double %Size, i64 0, metadata !1147, metadata !1948), !dbg !3941
+  tail call void @llvm.dbg.value(metadata double* %r, i64 0, metadata !1148, metadata !1948), !dbg !3942
+  tail call void @llvm.dbg.value(metadata double* %norm, i64 0, metadata !1149, metadata !1948), !dbg !3943
+  tail call void @llvm.dbg.value(metadata i32 %flatten, i64 0, metadata !1150, metadata !1948), !dbg !3944
+  tail call void @llvm.dbg.value(metadata %"struct.pov::photon_map_struct"* %map, i64 0, metadata !1151, metadata !1948), !dbg !3945
+  %1 = getelementptr inbounds %"struct.pov::photon_map_struct"* %map, i64 0, i32 2, !dbg !3946
+  %2 = load i32* %1, align 4, !dbg !3946, !tbaa !2441
+  %3 = icmp slt i32 %2, 1, !dbg !3948
+  br i1 %3, label %15, label %4, !dbg !3949
+
+; <label>:4                                       ; preds = %0
+  store i32 0, i32* @_ZN3povL10numfound_sE, align 4, !dbg !3950, !tbaa !2001
+  %5 = fmul double %Size, %Size, !dbg !3951
+  store double %5, double* @_ZN3povL6dmax_sE, align 8, !dbg !3952, !tbaa !2066
+  store double %Size, double* @_ZN3povL11sqrt_dmax_sE, align 8, !dbg !3953, !tbaa !2066
+  store double* %norm, double** @_ZN3povL6norm_sE, align 8, !dbg !3954, !tbaa !2027
+  %6 = icmp eq i32 %flatten, 0, !dbg !3955
+  %. = select i1 %6, double 0.000000e+00, double 1.000000e+00
+  store double %., double* @_ZN3povL13flattenFactorE, align 8, !dbg !3957, !tbaa !2066
+  %7 = load i32* getelementptr inbounds (%"struct.pov::photon_options_struct"* @_ZN3pov13photonOptionsE, i64 0, i32 10), align 4, !dbg !3959, !tbaa !2005
+  store i32 %7, i32* @_ZN3povL11TargetNum_sE, align 4, !dbg !3960, !tbaa !2001
+  store double* %pt, double** @_ZN3povL4pt_sE, align 8, !dbg !3961, !tbaa !2027
+  %8 = bitcast %"struct.pov::photon_map_struct"* %map to i64*, !dbg !3962
+  %9 = load i64* %8, align 8, !dbg !3962, !tbaa !2438
+  store i64 %9, i64* bitcast (%"struct.pov::photon_struct"*** @_ZN3povL5map_sE to i64*), align 8, !dbg !3963, !tbaa !2027
+  %10 = load i32* %1, align 4, !dbg !3964, !tbaa !2441
+  %11 = add nsw i32 %10, -1, !dbg !3965
+  tail call fastcc void @_ZN3povL16gatherPhotonsRecEii(i32 0, i32 %11) #8, !dbg !3966
+  %12 = load i64* bitcast (double* @_ZN3povL11sqrt_dmax_sE to i64*), align 8, !dbg !3967, !tbaa !2066
+  %13 = bitcast double* %r to i64*, !dbg !3968
+  store i64 %12, i64* %13, align 8, !dbg !3968, !tbaa !2066
+  %14 = load i32* @_ZN3povL10numfound_sE, align 4, !dbg !3969, !tbaa !2001
+  br label %15, !dbg !3970
+
+; <label>:15                                      ; preds = %0, %4
+  %.0 = phi i32 [ %14, %4 ], [ 0, %0 ]
+  ret i32 %.0, !dbg !3971
+}

@@ -1,29 +1,30 @@
-define void @set_program_name(i8* nocapture readonly %argvzero) #1 {
-  %1 = load i8** @program, align 8, !tbaa !19
-  %2 = icmp eq i8* %1, null
-  br i1 %2, label %3, label %14
+define void @set_program_name(i8* nocapture readonly %argvzero) #2 {
+  tail call void @llvm.dbg.value(metadata i8* %argvzero, i64 0, metadata !368, metadata !852), !dbg !1146
+  %1 = load i8** @program, align 8, !dbg !1147, !tbaa !1132
+  %2 = icmp eq i8* %1, null, !dbg !1149
+  br i1 %2, label %3, label %14, !dbg !1150
 
 ; <label>:3                                       ; preds = %0
-  %4 = tail call i64 @strlen(i8* %argvzero) #12
-  %5 = icmp ugt i64 %4, 3
-  br i1 %5, label %6, label %12
+  %4 = tail call i64 @strlen(i8* %argvzero) #12, !dbg !1151
+  %5 = icmp ugt i64 %4, 3, !dbg !1154
+  br i1 %5, label %6, label %12, !dbg !1155
 
 ; <label>:6                                       ; preds = %3
-  %7 = tail call i32 @strncmp(i8* %argvzero, i8* getelementptr inbounds ([4 x i8]* @.str1, i64 0, i64 0), i64 3) #12
-  %8 = icmp eq i32 %7, 0
-  br i1 %8, label %9, label %12
+  %7 = tail call i32 @strncmp(i8* %argvzero, i8* getelementptr inbounds ([4 x i8]* @.str1, i64 0, i64 0), i64 3) #12, !dbg !1156
+  %8 = icmp eq i32 %7, 0, !dbg !1156
+  br i1 %8, label %9, label %12, !dbg !1157
 
 ; <label>:9                                       ; preds = %6
-  %10 = getelementptr inbounds i8* %argvzero, i64 3
-  %11 = tail call i8* @strdup(i8* %10) #12
-  store i8* %11, i8** @program, align 8, !tbaa !19
-  br label %14
+  %10 = getelementptr inbounds i8* %argvzero, i64 3, !dbg !1158
+  %11 = tail call i8* @strdup(i8* %10) #12, !dbg !1159
+  store i8* %11, i8** @program, align 8, !dbg !1160, !tbaa !1132
+  br label %14, !dbg !1161
 
 ; <label>:12                                      ; preds = %6, %3
-  %13 = tail call i8* @strdup(i8* %argvzero) #12
-  store i8* %13, i8** @program, align 8, !tbaa !19
+  %13 = tail call i8* @strdup(i8* %argvzero) #12, !dbg !1162
+  store i8* %13, i8** @program, align 8, !dbg !1163, !tbaa !1132
   br label %14
 
 ; <label>:14                                      ; preds = %9, %12, %0
-  ret void
+  ret void, !dbg !1164
 }

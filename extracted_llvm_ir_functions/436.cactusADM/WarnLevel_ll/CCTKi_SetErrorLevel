@@ -1,32 +1,36 @@
 define i32 @CCTKi_SetErrorLevel(i32 %level) #1 {
-  %1 = load i32* @warning_level, align 4, !tbaa !6
-  %2 = icmp slt i32 %1, %level
-  br i1 %2, label %13, label %3
+  tail call void @llvm.dbg.value(metadata i32 %level, i64 0, metadata !125, metadata !220), !dbg !413
+  %1 = load i32* @warning_level, align 4, !dbg !414, !tbaa !267
+  %2 = icmp slt i32 %1, %level, !dbg !416
+  br i1 %2, label %13, label %3, !dbg !417
 
 ; <label>:3                                       ; preds = %0
-  %4 = load i32* @error_level, align 4, !tbaa !6
-  %5 = icmp eq i32 %4, %level
-  br i1 %5, label %11, label %6
+  %4 = load i32* @error_level, align 4, !dbg !418, !tbaa !267
+  %5 = icmp eq i32 %4, %level, !dbg !421
+  br i1 %5, label %11, label %6, !dbg !422
 
 ; <label>:6                                       ; preds = %3
-  %7 = icmp slt i32 %4, %level
-  %8 = select i1 %7, i32 1, i32 -1
-  %9 = select i1 %7, i8* getelementptr inbounds ([11 x i8]* @.str14, i64 0, i64 0), i8* getelementptr inbounds ([11 x i8]* @.str15, i64 0, i64 0)
-  %10 = tail call i32 (i8*, i8*, ...)* @CCTK_VInfo(i8* getelementptr inbounds ([7 x i8]* @.str4, i64 0, i64 0), i8* getelementptr inbounds ([29 x i8]* @.str18, i64 0, i64 0), i8* %9, i32 %4, i32 %level) #7
-  store i32 %level, i32* @error_level, align 4, !tbaa !6
-  br label %15
+  %7 = icmp slt i32 %4, %level, !dbg !423
+  %8 = select i1 %7, i32 1, i32 -1, !dbg !425
+  tail call void @llvm.dbg.value(metadata i32 %8, i64 0, metadata !126, metadata !220), !dbg !426
+  %9 = select i1 %7, i8* getelementptr inbounds ([11 x i8]* @.str14, i64 0, i64 0), i8* getelementptr inbounds ([11 x i8]* @.str15, i64 0, i64 0), !dbg !427
+  %10 = tail call i32 (i8*, i8*, ...)* @CCTK_VInfo(i8* getelementptr inbounds ([7 x i8]* @.str4, i64 0, i64 0), i8* getelementptr inbounds ([29 x i8]* @.str18, i64 0, i64 0), i8* %9, i32 %4, i32 %level) #8, !dbg !428
+  store i32 %level, i32* @error_level, align 4, !dbg !429, !tbaa !267
+  br label %15, !dbg !430
 
 ; <label>:11                                      ; preds = %3
-  %12 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 3, i32 587, i8* getelementptr inbounds ([78 x i8]* @.str11, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str4, i64 0, i64 0), i8* getelementptr inbounds ([26 x i8]* @.str19, i64 0, i64 0), i32 %level) #7
+  %12 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 3, i32 587, i8* getelementptr inbounds ([78 x i8]* @.str11, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str4, i64 0, i64 0), i8* getelementptr inbounds ([26 x i8]* @.str19, i64 0, i64 0), i32 %level) #8, !dbg !431
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !126, metadata !220), !dbg !426
   br label %15
 
 ; <label>:13                                      ; preds = %0
-  store i32 %level, i32* @error_level, align 4, !tbaa !6
-  %14 = tail call i32 (i8*, i8*, ...)* @CCTK_VInfo(i8* getelementptr inbounds ([7 x i8]* @.str4, i64 0, i64 0), i8* getelementptr inbounds ([57 x i8]* @.str20, i64 0, i64 0), i32 %1, i32 %level) #7
-  store i32 %level, i32* @warning_level, align 4, !tbaa !6
+  store i32 %level, i32* @error_level, align 4, !dbg !433, !tbaa !267
+  %14 = tail call i32 (i8*, i8*, ...)* @CCTK_VInfo(i8* getelementptr inbounds ([7 x i8]* @.str4, i64 0, i64 0), i8* getelementptr inbounds ([57 x i8]* @.str20, i64 0, i64 0), i32 %1, i32 %level) #8, !dbg !435
+  store i32 %level, i32* @warning_level, align 4, !dbg !436, !tbaa !267
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !126, metadata !220), !dbg !426
   br label %15
 
 ; <label>:15                                      ; preds = %6, %11, %13
   %retval.0 = phi i32 [ %8, %6 ], [ 0, %11 ], [ 0, %13 ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !437
 }

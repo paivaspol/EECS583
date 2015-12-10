@@ -1,14 +1,16 @@
 define i32 @do_per_step(i32 %step, i32 %nstep) #6 {
-  %1 = icmp eq i32 %nstep, 0
-  br i1 %1, label %6, label %2
+  tail call void @llvm.dbg.value(metadata i32 %step, i64 0, metadata !538, metadata !666), !dbg !1041
+  tail call void @llvm.dbg.value(metadata i32 %nstep, i64 0, metadata !539, metadata !666), !dbg !1042
+  %1 = icmp eq i32 %nstep, 0, !dbg !1043
+  br i1 %1, label %6, label %2, !dbg !1045
 
 ; <label>:2                                       ; preds = %0
-  %3 = srem i32 %step, %nstep
-  %4 = icmp eq i32 %3, 0
-  %5 = zext i1 %4 to i32
-  br label %6
+  %3 = srem i32 %step, %nstep, !dbg !1046
+  %4 = icmp eq i32 %3, 0, !dbg !1047
+  %5 = zext i1 %4 to i32, !dbg !1047
+  br label %6, !dbg !1048
 
 ; <label>:6                                       ; preds = %0, %2
   %.0 = phi i32 [ %5, %2 ], [ 0, %0 ]
-  ret i32 %.0
+  ret i32 %.0, !dbg !1049
 }

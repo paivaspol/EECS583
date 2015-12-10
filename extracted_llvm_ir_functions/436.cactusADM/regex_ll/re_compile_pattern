@@ -1,22 +1,26 @@
 define i8* @re_compile_pattern(i8* %pattern, i64 %length, %struct.re_pattern_buffer* %bufp) #0 {
-  %1 = getelementptr inbounds %struct.re_pattern_buffer* %bufp, i64 0, i32 7
-  %2 = load i8* %1, align 8
-  %3 = and i8 %2, 105
-  %4 = or i8 %3, -128
-  store i8 %4, i8* %1, align 8
-  %5 = load i64* @re_syntax_options, align 8, !tbaa !2
-  %6 = tail call fastcc i32 @regex_compile(i8* %pattern, i64 %length, i64 %5, %struct.re_pattern_buffer* %bufp) #8
-  %7 = icmp eq i32 %6, 0
-  br i1 %7, label %13, label %8
+  tail call void @llvm.dbg.value(metadata i8* %pattern, i64 0, metadata !238, metadata !797), !dbg !2306
+  tail call void @llvm.dbg.value(metadata i64 %length, i64 0, metadata !239, metadata !797), !dbg !2307
+  tail call void @llvm.dbg.value(metadata %struct.re_pattern_buffer* %bufp, i64 0, metadata !240, metadata !797), !dbg !2308
+  %1 = getelementptr inbounds %struct.re_pattern_buffer* %bufp, i64 0, i32 7, !dbg !2309
+  %2 = load i8* %1, align 8, !dbg !2310
+  %3 = and i8 %2, 105, !dbg !2311
+  %4 = or i8 %3, -128, !dbg !2311
+  store i8 %4, i8* %1, align 8, !dbg !2311
+  %5 = load i64* @re_syntax_options, align 8, !dbg !2312, !tbaa !800
+  %6 = tail call fastcc i32 @regex_compile(i8* %pattern, i64 %length, i64 %5, %struct.re_pattern_buffer* %bufp) #8, !dbg !2313
+  tail call void @llvm.dbg.value(metadata i32 %6, i64 0, metadata !241, metadata !797), !dbg !2314
+  %7 = icmp eq i32 %6, 0, !dbg !2315
+  br i1 %7, label %13, label %8, !dbg !2317
 
 ; <label>:8                                       ; preds = %0
-  %9 = sext i32 %6 to i64
-  %10 = getelementptr inbounds [17 x i64]* @re_error_msgid_idx, i64 0, i64 %9
-  %11 = load i64* %10, align 8, !tbaa !2
-  %12 = getelementptr inbounds [369 x i8]* @re_error_msgid, i64 0, i64 %11
-  br label %13
+  %9 = sext i32 %6 to i64, !dbg !2318
+  %10 = getelementptr inbounds [17 x i64]* @re_error_msgid_idx, i64 0, i64 %9, !dbg !2318
+  %11 = load i64* %10, align 8, !dbg !2318, !tbaa !800
+  %12 = getelementptr inbounds [369 x i8]* @re_error_msgid, i64 0, i64 %11, !dbg !2318
+  br label %13, !dbg !2319
 
 ; <label>:13                                      ; preds = %0, %8
   %.0 = phi i8* [ %12, %8 ], [ null, %0 ]
-  ret i8* %.0
+  ret i8* %.0, !dbg !2320
 }

@@ -1,44 +1,53 @@
-define void @writeDquant_CABAC(%struct.syntaxelement* nocapture %se, %struct.EncodingEnvironment* %eep_dp) #0 {
-entry:
-  %0 = load %struct.ImageParameters** @img, align 8, !tbaa !3
-  %currentSlice = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 50
-  %1 = load %struct.Slice** %currentSlice, align 8, !tbaa !3
-  %mot_ctx = getelementptr inbounds %struct.Slice* %1, i64 0, i32 7
-  %2 = load %struct.MotionInfoContexts** %mot_ctx, align 8, !tbaa !3
-  %value1 = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 1
-  %3 = load i32* %value1, align 4, !tbaa !0
-  %current_mb_nr = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 3
-  %4 = load i32* %current_mb_nr, align 4, !tbaa !0
-  %idxprom = sext i32 %4 to i64
-  %mb_data = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 51
-  %5 = load %struct.macroblock** %mb_data, align 8, !tbaa !3
-  %prev_delta_qp = getelementptr inbounds %struct.macroblock* %5, i64 %idxprom, i32 37
-  %6 = load i32* %prev_delta_qp, align 4, !tbaa !0
-  store i32 %6, i32* @last_dquant, align 4, !tbaa !0
-  %cmp = icmp slt i32 %3, 1
-  %. = zext i1 %cmp to i32
-  %ispos = icmp sgt i32 %3, -1
-  %neg = sub i32 0, %3
-  %7 = select i1 %ispos, i32 %3, i32 %neg
-  %shl = shl i32 %7, 1
-  %add = or i32 %shl, %.
-  %cmp1 = icmp ne i32 %6, 0
-  %cmp2 = icmp eq i32 %add, 1
-  %idx.ext = zext i1 %cmp1 to i64
-  %add.ptr = getelementptr inbounds %struct.MotionInfoContexts* %2, i64 0, i32 4, i64 %idx.ext
-  br i1 %cmp2, label %if.then3, label %if.else
+define void @writeDquant_CABAC(%struct.syntaxelement* nocapture readonly %se, %struct.EncodingEnvironment* %eep_dp) #0 {
+  tail call void @llvm.dbg.value(metadata %struct.syntaxelement* %se, i64 0, metadata !385, metadata !1011), !dbg !1884
+  tail call void @llvm.dbg.value(metadata %struct.EncodingEnvironment* %eep_dp, i64 0, metadata !386, metadata !1011), !dbg !1885
+  %1 = load %struct.ImageParameters** @img, align 8, !dbg !1886, !tbaa !1001
+  %2 = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 50, !dbg !1887
+  %3 = load %struct.Slice** %2, align 8, !dbg !1887, !tbaa !1106
+  %4 = getelementptr inbounds %struct.Slice* %3, i64 0, i32 7, !dbg !1888
+  %5 = load %struct.MotionInfoContexts** %4, align 8, !dbg !1888, !tbaa !1108
+  tail call void @llvm.dbg.value(metadata %struct.MotionInfoContexts* %5, i64 0, metadata !387, metadata !1011), !dbg !1889
+  %6 = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 1, !dbg !1890
+  %7 = load i32* %6, align 4, !dbg !1890, !tbaa !1115
+  tail call void @llvm.dbg.value(metadata i32 %7, i64 0, metadata !390, metadata !1011), !dbg !1891
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !391, metadata !1011), !dbg !1892
+  %8 = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 3, !dbg !1893
+  %9 = load i32* %8, align 4, !dbg !1893, !tbaa !1004
+  %10 = sext i32 %9 to i64, !dbg !1894
+  %11 = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 51, !dbg !1895
+  %12 = load %struct.macroblock** %11, align 8, !dbg !1895, !tbaa !1010
+  %13 = getelementptr inbounds %struct.macroblock* %12, i64 %10, i32 37, !dbg !1896
+  %14 = load i32* %13, align 4, !dbg !1896, !tbaa !1897
+  store i32 %14, i32* @last_dquant, align 4, !dbg !1898, !tbaa !995
+  %15 = icmp slt i32 %7, 1, !dbg !1899
+  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !391, metadata !1011), !dbg !1892
+  %. = zext i1 %15 to i32, !dbg !1901
+  %ispos = icmp sgt i32 %7, -1, !dbg !1902
+  %neg = sub i32 0, %7, !dbg !1902
+  %16 = select i1 %ispos, i32 %7, i32 %neg, !dbg !1902
+  %17 = shl i32 %16, 1, !dbg !1903
+  tail call void @llvm.dbg.value(metadata i32 %17, i64 0, metadata !389, metadata !1011), !dbg !1904
+  %18 = or i32 %17, %., !dbg !1905
+  tail call void @llvm.dbg.value(metadata i32 %18, i64 0, metadata !389, metadata !1011), !dbg !1904
+  %19 = icmp ne i32 %14, 0, !dbg !1906
+  %20 = icmp eq i32 %18, 1, !dbg !1907
+  %21 = zext i1 %19 to i64, !dbg !1909
+  %22 = getelementptr inbounds %struct.MotionInfoContexts* %5, i64 0, i32 4, i64 %21, !dbg !1909
+  br i1 %20, label %23, label %24, !dbg !1911
 
-if.then3:                                         ; preds = %entry
-  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %add.ptr) #5
-  br label %if.end13
+; <label>:23                                      ; preds = %0
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %22) #6, !dbg !1912
+  br label %27, !dbg !1913
 
-if.else:                                          ; preds = %entry
-  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %add.ptr) #5
-  %dec8 = add nsw i32 %add, -2
-  %add.ptr12 = getelementptr inbounds %struct.MotionInfoContexts* %2, i64 0, i32 4, i64 2
-  tail call void @unary_bin_encode(%struct.EncodingEnvironment* %eep_dp, i32 %dec8, %struct.BiContextType* %add.ptr12, i32 1) #7
-  br label %if.end13
+; <label>:24                                      ; preds = %0
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %22) #6, !dbg !1914
+  tail call void @llvm.dbg.value(metadata i32 2, i64 0, metadata !388, metadata !1011), !dbg !1916
+  %25 = add nsw i32 %18, -2, !dbg !1917
+  tail call void @llvm.dbg.value(metadata i32 %25, i64 0, metadata !389, metadata !1011), !dbg !1904
+  %26 = getelementptr inbounds %struct.MotionInfoContexts* %5, i64 0, i32 4, i64 2, !dbg !1918
+  tail call void @unary_bin_encode(%struct.EncodingEnvironment* %eep_dp, i32 %25, %struct.BiContextType* %26, i32 1) #7, !dbg !1919
+  br label %27
 
-if.end13:                                         ; preds = %if.else, %if.then3
-  ret void
+; <label>:27                                      ; preds = %24, %23
+  ret void, !dbg !1920
 }

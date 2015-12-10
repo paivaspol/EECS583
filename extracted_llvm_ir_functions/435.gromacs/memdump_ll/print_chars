@@ -1,35 +1,39 @@
 define internal fastcc void @print_chars(%struct.__sFILE* %fp, i8* %s, i32 %len) #0 {
-  %1 = icmp eq i32 %len, 0
-  br i1 %1, label %12, label %2
+  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %fp, i64 0, metadata !90, metadata !103), !dbg !149
+  tail call void @llvm.dbg.value(metadata i8* %s, i64 0, metadata !91, metadata !103), !dbg !150
+  tail call void @llvm.dbg.value(metadata i32 %len, i64 0, metadata !92, metadata !103), !dbg !151
+  %1 = icmp eq i32 %len, 0, !dbg !152
+  br i1 %1, label %12, label %2, !dbg !154
 
 ; <label>:2                                       ; preds = %0
-  %3 = icmp eq %struct.__sFILE* %fp, null
-  br i1 %3, label %.critedge, label %.preheader
+  %3 = icmp eq %struct.__sFILE* %fp, null, !dbg !155
+  br i1 %3, label %.critedge, label %.preheader, !dbg !158
 
 .preheader:                                       ; preds = %2
-  %4 = icmp slt i32 %len, 16
-  br i1 %4, label %.lr.ph, label %.loopexit
+  %4 = icmp slt i32 %len, 16, !dbg !159
+  br i1 %4, label %.lr.ph, label %.loopexit, !dbg !162
 
 .lr.ph:                                           ; preds = %.preheader, %.lr.ph
   %i.01 = phi i32 [ %6, %.lr.ph ], [ %len, %.preheader ]
-  %5 = tail call i64 @fwrite(i8* getelementptr inbounds ([4 x i8]* @.str3, i64 0, i64 0), i64 3, i64 1, %struct.__sFILE* %fp)
-  %6 = add nsw i32 %i.01, 1
-  %exitcond = icmp eq i32 %i.01, 15
-  br i1 %exitcond, label %.loopexit, label %.lr.ph
+  %5 = tail call i64 @fwrite(i8* getelementptr inbounds ([4 x i8]* @.str3, i64 0, i64 0), i64 3, i64 1, %struct.__sFILE* %fp), !dbg !163
+  %6 = add nsw i32 %i.01, 1, !dbg !164
+  tail call void @llvm.dbg.value(metadata i32 %6, i64 0, metadata !93, metadata !103), !dbg !165
+  %exitcond = icmp eq i32 %i.01, 15, !dbg !162
+  br i1 %exitcond, label %.loopexit, label %.lr.ph, !dbg !162
 
 .loopexit:                                        ; preds = %.lr.ph, %.preheader
-  %7 = sext i32 %len to i64
-  %8 = getelementptr inbounds i8* %s, i64 %7
-  store i8 0, i8* %8, align 1, !tbaa !2
-  %9 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %fp, i8* getelementptr inbounds ([7 x i8]* @.str4, i64 0, i64 0), i8* %s) #3
-  br label %12
+  %7 = sext i32 %len to i64, !dbg !166
+  %8 = getelementptr inbounds i8* %s, i64 %7, !dbg !166
+  store i8 0, i8* %8, align 1, !dbg !167, !tbaa !113
+  %9 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %fp, i8* getelementptr inbounds ([7 x i8]* @.str4, i64 0, i64 0), i8* %s) #4, !dbg !168
+  br label %12, !dbg !168
 
 .critedge:                                        ; preds = %2
-  %10 = sext i32 %len to i64
-  %11 = getelementptr inbounds i8* %s, i64 %10
-  store i8 0, i8* %11, align 1, !tbaa !2
+  %10 = sext i32 %len to i64, !dbg !166
+  %11 = getelementptr inbounds i8* %s, i64 %10, !dbg !166
+  store i8 0, i8* %11, align 1, !dbg !167, !tbaa !113
   br label %12
 
 ; <label>:12                                      ; preds = %.critedge, %0, %.loopexit
-  ret void
+  ret void, !dbg !170
 }

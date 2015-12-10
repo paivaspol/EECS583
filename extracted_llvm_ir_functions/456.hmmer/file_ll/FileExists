@@ -1,14 +1,15 @@
-define i32 @FileExists(i8* nocapture %filename) #0 {
-entry:
-  %call = tail call %struct._IO_FILE* @fopen(i8* %filename, i8* getelementptr inbounds ([2 x i8]* @.str4, i64 0, i64 0)) #6
-  %tobool = icmp eq %struct._IO_FILE* %call, null
-  br i1 %tobool, label %return, label %if.then
+define i32 @FileExists(i8* %filename) #0 {
+  tail call void @llvm.dbg.value(metadata i8* %filename, i64 0, metadata !125, metadata !131), !dbg !273
+  %1 = tail call %struct.__sFILE* @"\01_fopen"(i8* %filename, i8* getelementptr inbounds ([2 x i8]* @.str4, i64 0, i64 0)) #6, !dbg !274
+  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %1, i64 0, metadata !126, metadata !131), !dbg !276
+  %2 = icmp eq %struct.__sFILE* %1, null, !dbg !277
+  br i1 %2, label %5, label %3, !dbg !278
 
-if.then:                                          ; preds = %entry
-  %call1 = tail call i32 @fclose(%struct._IO_FILE* %call) #6
-  br label %return
+; <label>:3                                       ; preds = %0
+  %4 = tail call i32 @fclose(%struct.__sFILE* %1) #6, !dbg !279
+  br label %5, !dbg !281
 
-return:                                           ; preds = %entry, %if.then
-  %retval.0 = phi i32 [ 1, %if.then ], [ 0, %entry ]
-  ret i32 %retval.0
+; <label>:5                                       ; preds = %0, %3
+  %.0 = phi i32 [ 1, %3 ], [ 0, %0 ]
+  ret i32 %.0, !dbg !282
 }

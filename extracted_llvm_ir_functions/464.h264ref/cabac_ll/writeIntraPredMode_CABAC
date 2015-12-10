@@ -1,39 +1,41 @@
-define void @writeIntraPredMode_CABAC(%struct.syntaxelement* nocapture %se, %struct.EncodingEnvironment* %eep_dp) #0 {
-entry:
-  %0 = load %struct.ImageParameters** @img, align 8, !tbaa !3
-  %currentSlice = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 50
-  %1 = load %struct.Slice** %currentSlice, align 8, !tbaa !3
-  %tex_ctx = getelementptr inbounds %struct.Slice* %1, i64 0, i32 8
-  %2 = load %struct.TextureInfoContexts** %tex_ctx, align 8, !tbaa !3
-  %value1 = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 1
-  %3 = load i32* %value1, align 4, !tbaa !0
-  %cmp = icmp eq i32 %3, -1
-  %arraydecay = getelementptr inbounds %struct.TextureInfoContexts* %2, i64 0, i32 0, i64 0
-  br i1 %cmp, label %if.then, label %if.else
+define void @writeIntraPredMode_CABAC(%struct.syntaxelement* nocapture readonly %se, %struct.EncodingEnvironment* %eep_dp) #0 {
+  tail call void @llvm.dbg.value(metadata %struct.syntaxelement* %se, i64 0, metadata !361, metadata !1011), !dbg !1698
+  tail call void @llvm.dbg.value(metadata %struct.EncodingEnvironment* %eep_dp, i64 0, metadata !362, metadata !1011), !dbg !1699
+  %1 = load %struct.ImageParameters** @img, align 8, !dbg !1700, !tbaa !1001
+  %2 = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 50, !dbg !1701
+  %3 = load %struct.Slice** %2, align 8, !dbg !1701, !tbaa !1106
+  %4 = getelementptr inbounds %struct.Slice* %3, i64 0, i32 8, !dbg !1702
+  %5 = load %struct.TextureInfoContexts** %4, align 8, !dbg !1702, !tbaa !1703
+  tail call void @llvm.dbg.value(metadata %struct.TextureInfoContexts* %5, i64 0, metadata !363, metadata !1011), !dbg !1704
+  %6 = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 1, !dbg !1705
+  %7 = load i32* %6, align 4, !dbg !1705, !tbaa !1115
+  %8 = icmp eq i32 %7, -1, !dbg !1707
+  %9 = getelementptr inbounds %struct.TextureInfoContexts* %5, i64 0, i32 0, i64 0, !dbg !1708
+  br i1 %8, label %10, label %11, !dbg !1709
 
-if.then:                                          ; preds = %entry
-  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %arraydecay) #5
-  br label %if.end
+; <label>:10                                      ; preds = %0
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %9) #6, !dbg !1710
+  br label %21, !dbg !1710
 
-if.else:                                          ; preds = %entry
-  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %arraydecay) #5
-  %4 = load i32* %value1, align 4, !tbaa !0
-  %.tr = trunc i32 %4 to i16
-  %conv = and i16 %.tr, 1
-  %add.ptr = getelementptr inbounds %struct.TextureInfoContexts* %2, i64 0, i32 0, i64 1
-  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext %conv, %struct.BiContextType* %add.ptr) #5
-  %5 = load i32* %value1, align 4, !tbaa !0
-  %and7 = lshr i32 %5, 1
-  %and7.tr = trunc i32 %and7 to i16
-  %conv8 = and i16 %and7.tr, 1
-  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext %conv8, %struct.BiContextType* %add.ptr) #5
-  %6 = load i32* %value1, align 4, !tbaa !0
-  %and13 = lshr i32 %6, 2
-  %and13.tr = trunc i32 %and13 to i16
-  %conv15 = and i16 %and13.tr, 1
-  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext %conv15, %struct.BiContextType* %add.ptr) #5
-  br label %if.end
+; <label>:11                                      ; preds = %0
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %9) #6, !dbg !1711
+  %12 = load i32* %6, align 4, !dbg !1713, !tbaa !1115
+  %.tr = trunc i32 %12 to i16, !dbg !1714
+  %13 = and i16 %.tr, 1, !dbg !1714
+  %14 = getelementptr inbounds %struct.TextureInfoContexts* %5, i64 0, i32 0, i64 1, !dbg !1715
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext %13, %struct.BiContextType* %14) #6, !dbg !1716
+  %15 = load i32* %6, align 4, !dbg !1717, !tbaa !1115
+  %16 = lshr i32 %15, 1, !dbg !1718
+  %.tr1 = trunc i32 %16 to i16, !dbg !1719
+  %17 = and i16 %.tr1, 1, !dbg !1719
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext %17, %struct.BiContextType* %14) #6, !dbg !1720
+  %18 = load i32* %6, align 4, !dbg !1721, !tbaa !1115
+  %19 = lshr i32 %18, 2, !dbg !1722
+  %.tr2 = trunc i32 %19 to i16, !dbg !1723
+  %20 = and i16 %.tr2, 1, !dbg !1723
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext %20, %struct.BiContextType* %14) #6, !dbg !1724
+  br label %21
 
-if.end:                                           ; preds = %if.else, %if.then
-  ret void
+; <label>:21                                      ; preds = %11, %10
+  ret void, !dbg !1725
 }

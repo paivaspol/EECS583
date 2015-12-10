@@ -1,56 +1,68 @@
 define i32 @CCTKi_NamesStoreGroup(i8* %gname, i32 %gnum) #1 {
-  %1 = load %struct.T_HASH** @GroupData, align 8, !tbaa !2
-  %2 = icmp eq %struct.T_HASH* %1, null
-  br i1 %2, label %3, label %5
+  tail call void @llvm.dbg.value(metadata i8* %gname, i64 0, metadata !27, metadata !110), !dbg !111
+  tail call void @llvm.dbg.value(metadata i32 %gnum, i64 0, metadata !28, metadata !110), !dbg !112
+  %1 = load %struct.T_HASH** @GroupData, align 8, !dbg !113, !tbaa !115
+  %2 = icmp eq %struct.T_HASH* %1, null, !dbg !113
+  br i1 %2, label %3, label %5, !dbg !119
 
 ; <label>:3                                       ; preds = %0
-  %4 = tail call %struct.T_HASH* @Util_HashCreate(i32 64) #5
-  store %struct.T_HASH* %4, %struct.T_HASH** @GroupData, align 8, !tbaa !2
-  br label %5
+  %4 = tail call %struct.T_HASH* @Util_HashCreate(i32 64) #6, !dbg !120
+  store %struct.T_HASH* %4, %struct.T_HASH** @GroupData, align 8, !dbg !122, !tbaa !115
+  br label %5, !dbg !123
 
 ; <label>:5                                       ; preds = %0, %3
   %6 = phi %struct.T_HASH* [ %1, %0 ], [ %4, %3 ]
-  %7 = tail call i8* @malloc(i64 4) #5
-  %8 = icmp ne i8* %7, null
-  %9 = icmp ne %struct.T_HASH* %6, null
-  %or.cond = and i1 %8, %9
-  br i1 %or.cond, label %10, label %27
+  %7 = tail call i8* @malloc(i64 4) #6, !dbg !124
+  %8 = icmp ne i8* %7, null, !dbg !125
+  %9 = icmp ne %struct.T_HASH* %6, null, !dbg !127
+  %or.cond = and i1 %8, %9, !dbg !128
+  br i1 %or.cond, label %10, label %27, !dbg !128
 
 ; <label>:10                                      ; preds = %5
-  %11 = bitcast i8* %7 to i32*
-  store i32 %gnum, i32* %11, align 4, !tbaa !6
-  %12 = tail call i64 @strlen(i8* %gname) #5
-  %13 = trunc i64 %12 to i32
-  %14 = icmp eq i32 %13, 0
-  br i1 %14, label %CaseIndependentHash.exit, label %.lr.ph.i
+  %11 = bitcast i8* %7 to i32*, !dbg !129
+  store i32 %gnum, i32* %11, align 4, !dbg !131, !tbaa !132
+  %12 = tail call i64 @strlen(i8* %gname) #6, !dbg !135
+  %13 = trunc i64 %12 to i32, !dbg !135
+  tail call void @llvm.dbg.value(metadata i32 %13, i64 0, metadata !67, metadata !110) #7, !dbg !136
+  tail call void @llvm.dbg.value(metadata i8* %gname, i64 0, metadata !68, metadata !110) #7, !dbg !138
+  tail call void @llvm.dbg.value(metadata i32 %13, i64 0, metadata !70, metadata !110) #7, !dbg !139
+  tail call void @llvm.dbg.value(metadata i8* %gname, i64 0, metadata !71, metadata !110) #7, !dbg !140
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !69, metadata !110) #7, !dbg !141
+  %14 = icmp eq i32 %13, 0, !dbg !142
+  br i1 %14, label %CaseIndependentHash.exit, label %.lr.ph.i, !dbg !142
 
 .lr.ph.i:                                         ; preds = %10, %.lr.ph.i
-  %pos.03.i = phi i8* [ %17, %.lr.ph.i ], [ %gname, %10 ]
-  %i.02.i = phi i32 [ %15, %.lr.ph.i ], [ %13, %10 ]
-  %hash.01.i = phi i32 [ %21, %.lr.ph.i ], [ 0, %10 ]
-  %15 = add nsw i32 %i.02.i, -1
-  %16 = mul i32 %hash.01.i, 33
-  %17 = getelementptr inbounds i8* %pos.03.i, i64 1
-  %18 = load i8* %pos.03.i, align 1, !tbaa !9
-  %19 = sext i8 %18 to i32
-  %20 = tail call i32 @__toupper(i32 %19) #5
-  %21 = add i32 %20, %16
-  %22 = icmp eq i32 %15, 0
-  br i1 %22, label %CaseIndependentHash.exit.loopexit, label %.lr.ph.i
+  %pos.03.i = phi i8* [ %17, %.lr.ph.i ], [ %gname, %10 ], !dbg !143
+  %i.02.i = phi i32 [ %15, %.lr.ph.i ], [ %13, %10 ], !dbg !143
+  %hash.01.i = phi i32 [ %21, %.lr.ph.i ], [ 0, %10 ], !dbg !143
+  %15 = add nsw i32 %i.02.i, -1, !dbg !144
+  %16 = mul i32 %hash.01.i, 33, !dbg !145
+  %17 = getelementptr inbounds i8* %pos.03.i, i64 1, !dbg !147
+  tail call void @llvm.dbg.value(metadata i8* %17, i64 0, metadata !71, metadata !110) #7, !dbg !140
+  %18 = load i8* %pos.03.i, align 1, !dbg !148, !tbaa !149
+  %19 = sext i8 %18 to i32, !dbg !148
+  tail call void @llvm.dbg.value(metadata i32 %19, i64 0, metadata !77, metadata !110) #7, !dbg !150
+  %20 = tail call i32 @__toupper(i32 %19) #6, !dbg !152
+  %21 = add i32 %20, %16, !dbg !153
+  tail call void @llvm.dbg.value(metadata i32 %21, i64 0, metadata !69, metadata !110) #7, !dbg !141
+  %22 = icmp eq i32 %15, 0, !dbg !142
+  br i1 %22, label %CaseIndependentHash.exit.loopexit, label %.lr.ph.i, !dbg !142
 
 CaseIndependentHash.exit.loopexit:                ; preds = %.lr.ph.i
-  %.pre = load %struct.T_HASH** @GroupData, align 8, !tbaa !2
+  %.pre = load %struct.T_HASH** @GroupData, align 8, !dbg !154, !tbaa !115
   br label %CaseIndependentHash.exit
 
 CaseIndependentHash.exit:                         ; preds = %CaseIndependentHash.exit.loopexit, %10
   %23 = phi %struct.T_HASH* [ %6, %10 ], [ %.pre, %CaseIndependentHash.exit.loopexit ]
-  %hash.0.lcssa.i = phi i32 [ 0, %10 ], [ %21, %CaseIndependentHash.exit.loopexit ]
-  %24 = tail call i64 @strlen(i8* %gname) #5
-  %25 = trunc i64 %24 to i32
-  %26 = tail call i32 @Util_HashStore(%struct.T_HASH* %23, i32 %25, i8* %gname, i32 %hash.0.lcssa.i, i8* %7) #5
-  br label %27
+  %hash.0.lcssa.i = phi i32 [ 0, %10 ], [ %21, %CaseIndependentHash.exit.loopexit ], !dbg !143
+  tail call void @llvm.dbg.value(metadata i32 %hash.0.lcssa.i, i64 0, metadata !30, metadata !110), !dbg !155
+  %24 = tail call i64 @strlen(i8* %gname) #6, !dbg !156
+  %25 = trunc i64 %24 to i32, !dbg !156
+  %26 = tail call i32 @Util_HashStore(%struct.T_HASH* %23, i32 %25, i8* %gname, i32 %hash.0.lcssa.i, i8* %7) #6, !dbg !157
+  tail call void @llvm.dbg.value(metadata i32 %26, i64 0, metadata !29, metadata !110), !dbg !158
+  br label %27, !dbg !159
 
 ; <label>:27                                      ; preds = %5, %CaseIndependentHash.exit
   %retval.0 = phi i32 [ %26, %CaseIndependentHash.exit ], [ -1, %5 ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !160
 }

@@ -1,27 +1,28 @@
 define void @DVzero(i32 %size, double* %y) #0 {
-entry:
-  %y13 = bitcast double* %y to i8*
-  %cmp = icmp sgt i32 %size, 0
-  br i1 %cmp, label %if.then, label %if.end4
+  tail call void @llvm.dbg.value(metadata i32 %size, i64 0, metadata !440, metadata !696), !dbg !1502
+  tail call void @llvm.dbg.value(metadata double* %y, i64 0, metadata !441, metadata !696), !dbg !1503
+  %y2 = bitcast double* %y to i8*
+  %1 = icmp sgt i32 %size, 0, !dbg !1504
+  br i1 %1, label %2, label %11, !dbg !1505
 
-if.then:                                          ; preds = %entry
-  %cmp1 = icmp eq double* %y, null
-  br i1 %cmp1, label %if.then2, label %if.end4.loopexit
+; <label>:2                                       ; preds = %0
+  %3 = icmp eq double* %y, null, !dbg !1506
+  br i1 %3, label %4, label %.loopexit, !dbg !1507
 
-if.then2:                                         ; preds = %if.then
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([58 x i8]* @.str35, i64 0, i64 0), i32 %size, double* null) #5
-  tail call void @exit(i32 -1) #6
-  unreachable
+; <label>:4                                       ; preds = %2
+  %5 = load %struct.__sFILE** @__stderrp, align 8, !dbg !1508, !tbaa !709
+  %6 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %5, i8* getelementptr inbounds ([58 x i8]* @.str35, i64 0, i64 0), i32 %size, double* null) #7, !dbg !1510
+  tail call void @exit(i32 -1) #8, !dbg !1511
+  unreachable, !dbg !1511
 
-if.end4.loopexit:                                 ; preds = %if.then
-  %1 = add i32 %size, -1
-  %2 = zext i32 %1 to i64
-  %3 = shl nuw nsw i64 %2, 3
-  %4 = add i64 %3, 8
-  call void @llvm.memset.p0i8.i64(i8* %y13, i8 0, i64 %4, i32 8, i1 false)
-  br label %if.end4
+.loopexit:                                        ; preds = %2
+  %7 = add i32 %size, -1, !dbg !1512
+  %8 = zext i32 %7 to i64
+  %9 = shl nuw nsw i64 %8, 3, !dbg !1512
+  %10 = add nuw nsw i64 %9, 8, !dbg !1512
+  call void @llvm.memset.p0i8.i64(i8* %y2, i8 0, i64 %10, i32 8, i1 false), !dbg !1514
+  br label %11
 
-if.end4:                                          ; preds = %if.end4.loopexit, %entry
-  ret void
+; <label>:11                                      ; preds = %.loopexit, %0
+  ret void, !dbg !1517
 }

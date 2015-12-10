@@ -1,34 +1,59 @@
-define internal fastcc void @assembleAggregates(%struct._Chv* %frontJ, %struct._ChvList* %aggList, %struct._ChvManager* %chvmanager, double* nocapture %cpus, i32 %msglvl, %struct._IO_FILE* %msgFile) #0 {
-entry:
-  %id = getelementptr inbounds %struct._Chv* %frontJ, i64 0, i32 0
-  %0 = load i32* %id, align 4, !tbaa !3
-  %call = tail call %struct._Chv* @ChvList_getList(%struct._ChvList* %aggList, i32 %0) #5
-  %cmp11 = icmp eq %struct._Chv* %call, null
-  br i1 %cmp11, label %for.end, label %for.body
+define internal fastcc void @assembleAggregates(%struct._Chv* %frontJ, %struct._ChvList* %aggList, %struct._ChvManager* %chvmanager, double* nocapture %cpus, i32 %msglvl, %struct.__sFILE* %msgFile) #0 {
+  tail call void @llvm.dbg.value(metadata %struct._Chv* %frontJ, i64 0, metadata !519, metadata !608), !dbg !1147
+  tail call void @llvm.dbg.value(metadata %struct._ChvList* %aggList, i64 0, metadata !520, metadata !608), !dbg !1148
+  tail call void @llvm.dbg.value(metadata %struct._ChvManager* %chvmanager, i64 0, metadata !521, metadata !608), !dbg !1149
+  tail call void @llvm.dbg.value(metadata double* %cpus, i64 0, metadata !522, metadata !608), !dbg !1150
+  tail call void @llvm.dbg.value(metadata i32 %msglvl, i64 0, metadata !523, metadata !608), !dbg !1151
+  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %msgFile, i64 0, metadata !524, metadata !608), !dbg !1152
+  %1 = tail call i32 @gettimeofday(%struct.timeval* @TV, i8* bitcast (%struct.timezone* @TZ to i8*)) #6, !dbg !1153
+  %2 = load i64* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 0), align 8, !dbg !1153, !tbaa !706
+  %3 = sitofp i64 %2 to double, !dbg !1153
+  %4 = load i32* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 1), align 8, !dbg !1153, !tbaa !709
+  %5 = sitofp i32 %4 to double, !dbg !1153
+  %6 = fmul double %5, 1.000000e-06, !dbg !1153
+  %7 = fadd double %3, %6, !dbg !1153
+  tail call void @llvm.dbg.value(metadata double %7, i64 0, metadata !527, metadata !608), !dbg !1154
+  %8 = getelementptr inbounds %struct._Chv* %frontJ, i64 0, i32 0, !dbg !1155
+  %9 = load i32* %8, align 4, !dbg !1155, !tbaa !796
+  %10 = tail call %struct._Chv* @ChvList_getList(%struct._ChvList* %aggList, i32 %9) #6, !dbg !1156
+  tail call void @llvm.dbg.value(metadata %struct._Chv* %10, i64 0, metadata !526, metadata !608), !dbg !1157
+  tail call void @llvm.dbg.value(metadata %struct._Chv* %10, i64 0, metadata !525, metadata !608), !dbg !1158
+  %11 = icmp eq %struct._Chv* %10, null, !dbg !1159
+  br i1 %11, label %._crit_edge, label %.lr.ph, !dbg !1162
 
-for.body:                                         ; preds = %entry, %for.body
-  %chv.012 = phi %struct._Chv* [ %1, %for.body ], [ %call, %entry ]
-  tail call void @Chv_assembleChv(%struct._Chv* %frontJ, %struct._Chv* %chv.012) #5
-  %next = getelementptr inbounds %struct._Chv* %chv.012, i64 0, i32 10
-  %1 = load %struct._Chv** %next, align 8, !tbaa !0
-  %cmp = icmp eq %struct._Chv* %1, null
-  br i1 %cmp, label %for.end, label %for.body
+.lr.ph:                                           ; preds = %0, %.lr.ph
+  %chv.01 = phi %struct._Chv* [ %13, %.lr.ph ], [ %10, %0 ]
+  tail call void @Chv_assembleChv(%struct._Chv* %frontJ, %struct._Chv* %chv.01) #6, !dbg !1163
+  %12 = getelementptr inbounds %struct._Chv* %chv.01, i64 0, i32 10, !dbg !1165
+  %13 = load %struct._Chv** %12, align 8, !dbg !1165, !tbaa !1166
+  tail call void @llvm.dbg.value(metadata %struct._Chv* %13, i64 0, metadata !525, metadata !608), !dbg !1158
+  %14 = icmp eq %struct._Chv* %13, null, !dbg !1159
+  br i1 %14, label %._crit_edge, label %.lr.ph, !dbg !1162
 
-for.end:                                          ; preds = %for.body, %entry
-  %arrayidx = getelementptr inbounds double* %cpus, i64 8
-  %2 = load double* %arrayidx, align 8, !tbaa !4
-  %add = fadd double %2, 0.000000e+00
-  store double %add, double* %arrayidx, align 8, !tbaa !4
-  tail call void @ChvManager_releaseListOfObjects(%struct._ChvManager* %chvmanager, %struct._Chv* %call) #5
-  %cmp1 = icmp sgt i32 %msglvl, 3
-  br i1 %cmp1, label %if.then, label %if.end
+._crit_edge:                                      ; preds = %.lr.ph, %0
+  %15 = tail call i32 @gettimeofday(%struct.timeval* @TV, i8* bitcast (%struct.timezone* @TZ to i8*)) #6, !dbg !1167
+  %16 = load i64* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 0), align 8, !dbg !1167, !tbaa !706
+  %17 = sitofp i64 %16 to double, !dbg !1167
+  %18 = load i32* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 1), align 8, !dbg !1167, !tbaa !709
+  %19 = sitofp i32 %18 to double, !dbg !1167
+  %20 = fmul double %19, 1.000000e-06, !dbg !1167
+  %21 = fadd double %17, %20, !dbg !1167
+  tail call void @llvm.dbg.value(metadata double %21, i64 0, metadata !528, metadata !608), !dbg !1168
+  %22 = fsub double %21, %7, !dbg !1169
+  %23 = getelementptr inbounds double* %cpus, i64 8, !dbg !1170
+  %24 = load double* %23, align 8, !dbg !1171, !tbaa !717
+  %25 = fadd double %24, %22, !dbg !1171
+  store double %25, double* %23, align 8, !dbg !1171, !tbaa !717
+  tail call void @ChvManager_releaseListOfObjects(%struct._ChvManager* %chvmanager, %struct._Chv* %10) #6, !dbg !1172
+  %26 = icmp sgt i32 %msglvl, 3, !dbg !1173
+  br i1 %26, label %27, label %30, !dbg !1175
 
-if.then:                                          ; preds = %for.end
-  %3 = tail call i64 @fwrite(i8* getelementptr inbounds ([17 x i8]* @.str30, i64 0, i64 0), i64 16, i64 1, %struct._IO_FILE* %msgFile)
-  tail call void @Chv_writeForHumanEye(%struct._Chv* %frontJ, %struct._IO_FILE* %msgFile) #5
-  %call3 = tail call i32 @fflush(%struct._IO_FILE* %msgFile) #5
-  br label %if.end
+; <label>:27                                      ; preds = %._crit_edge
+  %28 = tail call i64 @fwrite(i8* getelementptr inbounds ([17 x i8]* @.str18, i64 0, i64 0), i64 16, i64 1, %struct.__sFILE* %msgFile), !dbg !1176
+  tail call void @Chv_writeForHumanEye(%struct._Chv* %frontJ, %struct.__sFILE* %msgFile) #6, !dbg !1178
+  %29 = tail call i32 @fflush(%struct.__sFILE* %msgFile) #6, !dbg !1179
+  br label %30, !dbg !1180
 
-if.end:                                           ; preds = %if.then, %for.end
-  ret void
+; <label>:30                                      ; preds = %27, %._crit_edge
+  ret void, !dbg !1181
 }

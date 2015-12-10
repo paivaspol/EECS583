@@ -1,42 +1,46 @@
 define i32 @StrShuffle(i8* %s1, i8* %s2) #0 {
-entry:
-  %cmp = icmp eq i8* %s1, %s2
-  br i1 %cmp, label %if.end, label %if.then
+  tail call void @llvm.dbg.value(metadata i8* %s1, i64 0, metadata !14, metadata !145), !dbg !146
+  tail call void @llvm.dbg.value(metadata i8* %s2, i64 0, metadata !15, metadata !145), !dbg !147
+  %1 = icmp eq i8* %s1, %s2, !dbg !148
+  br i1 %1, label %5, label %2, !dbg !150
 
-if.then:                                          ; preds = %entry
-  %call = tail call i8* @strcpy(i8* %s1, i8* %s2) #6
-  br label %if.end
+; <label>:2                                       ; preds = %0
+  %3 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %s1, i1 false), !dbg !151
+  %4 = tail call i8* @__strcpy_chk(i8* %s1, i8* %s2, i64 %3) #6, !dbg !151
+  br label %5, !dbg !151
 
-if.end:                                           ; preds = %entry, %if.then
-  %call1 = tail call i64 @strlen(i8* %s1) #7
-  %conv = trunc i64 %call1 to i32
-  %cmp226 = icmp sgt i32 %conv, 1
-  br i1 %cmp226, label %for.body.lr.ph, label %for.end
+; <label>:5                                       ; preds = %0, %2
+  %6 = tail call i64 @strlen(i8* %s1) #6, !dbg !152
+  %7 = trunc i64 %6 to i32, !dbg !152
+  tail call void @llvm.dbg.value(metadata i32 %7, i64 0, metadata !16, metadata !145), !dbg !154
+  %8 = icmp sgt i32 %7, 1, !dbg !155
+  br i1 %8, label %.lr.ph, label %._crit_edge, !dbg !157
 
-for.body.lr.ph:                                   ; preds = %if.end
-  %sext = shl i64 %call1, 32
-  %0 = ashr exact i64 %sext, 32
-  br label %for.body
+.lr.ph:                                           ; preds = %5
+  %sext = shl i64 %6, 32
+  %9 = ashr exact i64 %sext, 32
+  br label %10, !dbg !157
 
-for.body:                                         ; preds = %for.body.lr.ph, %for.body
-  %indvars.iv = phi i64 [ %0, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
-  %call4 = tail call double @sre_random() #6
-  %1 = trunc i64 %indvars.iv to i32
-  %conv5 = sitofp i32 %1 to double
-  %mul = fmul double %conv5, %call4
-  %conv6 = fptosi double %mul to i32
-  %idxprom = sext i32 %conv6 to i64
-  %arrayidx = getelementptr inbounds i8* %s1, i64 %idxprom
-  %2 = load i8* %arrayidx, align 1, !tbaa !0
-  %indvars.iv.next = add i64 %indvars.iv, -1
-  %arrayidx8 = getelementptr inbounds i8* %s1, i64 %indvars.iv.next
-  %3 = load i8* %arrayidx8, align 1, !tbaa !0
-  store i8 %3, i8* %arrayidx, align 1, !tbaa !0
-  store i8 %2, i8* %arrayidx8, align 1, !tbaa !0
-  %4 = trunc i64 %indvars.iv.next to i32
-  %cmp2 = icmp sgt i32 %4, 1
-  br i1 %cmp2, label %for.body, label %for.end
+; <label>:10                                      ; preds = %.lr.ph, %10
+  %indvars.iv = phi i64 [ %9, %.lr.ph ], [ %indvars.iv.next, %10 ]
+  %11 = tail call double @sre_random() #6, !dbg !158
+  %12 = trunc i64 %indvars.iv to i32, !dbg !158
+  %13 = sitofp i32 %12 to double, !dbg !158
+  %14 = fmul double %13, %11, !dbg !158
+  %15 = fptosi double %14 to i32, !dbg !158
+  tail call void @llvm.dbg.value(metadata i32 %15, i64 0, metadata !17, metadata !145), !dbg !160
+  %16 = sext i32 %15 to i64, !dbg !161
+  %17 = getelementptr inbounds i8* %s1, i64 %16, !dbg !161
+  %18 = load i8* %17, align 1, !dbg !161, !tbaa !162
+  tail call void @llvm.dbg.value(metadata i8 %18, i64 0, metadata !18, metadata !145), !dbg !165
+  %indvars.iv.next = add nsw i64 %indvars.iv, -1, !dbg !157
+  %19 = getelementptr inbounds i8* %s1, i64 %indvars.iv.next, !dbg !166
+  %20 = load i8* %19, align 1, !dbg !166, !tbaa !162
+  store i8 %20, i8* %17, align 1, !dbg !167, !tbaa !162
+  store i8 %18, i8* %19, align 1, !dbg !168, !tbaa !162
+  %21 = icmp sgt i64 %indvars.iv.next, 1, !dbg !155
+  br i1 %21, label %10, label %._crit_edge, !dbg !157
 
-for.end:                                          ; preds = %for.body, %if.end
-  ret i32 1
+._crit_edge:                                      ; preds = %10, %5
+  ret i32 1, !dbg !169
 }

@@ -1,18 +1,22 @@
-define double @ExtremeValueP2(float %x, float %mu, float %lambda, i32 %N) #0 {
-entry:
-  %conv = sitofp i32 %N to double
-  %call = tail call double @ExtremeValueP(float %x, float %mu, float %lambda) #6
-  %mul = fmul double %conv, %call
-  %cmp = fcmp olt double %mul, 1.000000e-07
-  br i1 %cmp, label %return, label %if.else
+define double @ExtremeValueP2(float %x, float %mu, float %lambda, i32 %N) #5 {
+  tail call void @llvm.dbg.value(metadata float %x, i64 0, metadata !266, metadata !372), !dbg !1740
+  tail call void @llvm.dbg.value(metadata float %mu, i64 0, metadata !267, metadata !372), !dbg !1741
+  tail call void @llvm.dbg.value(metadata float %lambda, i64 0, metadata !268, metadata !372), !dbg !1742
+  tail call void @llvm.dbg.value(metadata i32 %N, i64 0, metadata !269, metadata !372), !dbg !1743
+  %1 = sitofp i32 %N to double, !dbg !1744
+  %2 = tail call double @ExtremeValueP(float %x, float %mu, float %lambda) #8, !dbg !1745
+  %3 = fmul double %1, %2, !dbg !1746
+  tail call void @llvm.dbg.value(metadata double %3, i64 0, metadata !270, metadata !372), !dbg !1747
+  %4 = fcmp olt double %3, 1.000000e-07, !dbg !1748
+  br i1 %4, label %9, label %5, !dbg !1750
 
-if.else:                                          ; preds = %entry
-  %mul2 = fmul double %mul, -1.000000e+00
-  %call3 = tail call double @exp(double %mul2) #4
-  %sub = fsub double 1.000000e+00, %call3
-  br label %return
+; <label>:5                                       ; preds = %0
+  %6 = fsub double -0.000000e+00, %3, !dbg !1751
+  %7 = tail call double @exp(double %6) #9, !dbg !1752
+  %8 = fsub double 1.000000e+00, %7, !dbg !1753
+  br label %9, !dbg !1754
 
-return:                                           ; preds = %entry, %if.else
-  %retval.0 = phi double [ %sub, %if.else ], [ %mul, %entry ]
-  ret double %retval.0
+; <label>:9                                       ; preds = %0, %5
+  %.0 = phi double [ %8, %5 ], [ %3, %0 ]
+  ret double %.0, !dbg !1755
 }

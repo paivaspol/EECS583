@@ -1,44 +1,47 @@
 define %struct._Task* @_Z11task_createPFvPvES_j(void (i8*)* %fnp, i8* %arg, i32 %stack_size) #6 {
-  %p.02 = load %struct._Task** getelementptr inbounds (%struct._Task* @main_task, i64 0, i32 5), align 8
-  %1 = icmp eq %struct._Task* %p.02, null
-  br i1 %1, label %.loopexit, label %.lr.ph
+  call void @llvm.dbg.value(metadata void (i8*)* %fnp, i64 0, metadata !63, metadata !99), !dbg !277
+  call void @llvm.dbg.value(metadata i8* %arg, i64 0, metadata !64, metadata !99), !dbg !278
+  call void @llvm.dbg.value(metadata i32 %stack_size, i64 0, metadata !65, metadata !99), !dbg !279
+  %p.02 = load %struct._Task** getelementptr inbounds (%struct._Task* @main_task, i64 0, i32 5), align 8, !dbg !280
+  %1 = icmp eq %struct._Task* %p.02, null, !dbg !282
+  br i1 %1, label %.loopexit, label %.lr.ph, !dbg !284
 
 .lr.ph:                                           ; preds = %0, %17
   %p.03 = phi %struct._Task* [ %p.0, %17 ], [ %p.02, %0 ]
-  %2 = getelementptr inbounds %struct._Task* %p.03, i64 0, i32 3
-  %3 = load i32* %2, align 4, !tbaa !12
-  %4 = icmp eq i32 %3, 0
-  br i1 %4, label %5, label %17
+  %2 = getelementptr inbounds %struct._Task* %p.03, i64 0, i32 3, !dbg !285
+  %3 = load i32* %2, align 4, !dbg !285, !tbaa !150
+  %4 = icmp eq i32 %3, 0, !dbg !288
+  br i1 %4, label %5, label %17, !dbg !289
 
 ; <label>:5                                       ; preds = %.lr.ph
-  %6 = getelementptr inbounds %struct._Task* %p.03, i64 0, i32 4
-  %7 = load i32* %6, align 4, !tbaa !11
-  %8 = icmp ult i32 %7, %stack_size
-  br i1 %8, label %17, label %9
+  %6 = getelementptr inbounds %struct._Task* %p.03, i64 0, i32 4, !dbg !290
+  %7 = load i32* %6, align 4, !dbg !290, !tbaa !143
+  %8 = icmp ult i32 %7, %stack_size, !dbg !291
+  br i1 %8, label %17, label %9, !dbg !292
 
 ; <label>:9                                       ; preds = %5
-  %10 = getelementptr inbounds %struct._Task* %p.03, i64 0, i32 6
-  store void (i8*)* %fnp, void (i8*)** %10, align 8, !tbaa !15
-  %11 = getelementptr inbounds %struct._Task* %p.03, i64 0, i32 7
-  store i8* %arg, i8** %11, align 8, !tbaa !16
-  %12 = getelementptr inbounds %struct._Task* %p.03, i64 0, i32 8
-  store i32 %stack_size, i32* %12, align 4, !tbaa !14
-  %13 = call i32 @setjmp(i32* getelementptr inbounds ([37 x i32]* @tmp_jmpb, i64 0, i64 0)) #9
-  %14 = icmp eq i32 %13, 0
-  br i1 %14, label %15, label %.loopexit
+  %10 = getelementptr inbounds %struct._Task* %p.03, i64 0, i32 6, !dbg !293
+  store void (i8*)* %fnp, void (i8*)** %10, align 8, !dbg !295, !tbaa !194
+  %11 = getelementptr inbounds %struct._Task* %p.03, i64 0, i32 7, !dbg !296
+  store i8* %arg, i8** %11, align 8, !dbg !297, !tbaa !195
+  %12 = getelementptr inbounds %struct._Task* %p.03, i64 0, i32 8, !dbg !298
+  store i32 %stack_size, i32* %12, align 4, !dbg !299, !tbaa !174
+  %13 = call i32 @setjmp(i32* getelementptr inbounds ([37 x i32]* @tmp_jmpb, i64 0, i64 0)) #10, !dbg !300
+  %14 = icmp eq i32 %13, 0, !dbg !302
+  br i1 %14, label %15, label %.loopexit, !dbg !303
 
 ; <label>:15                                      ; preds = %9
-  %16 = getelementptr inbounds %struct._Task* %p.03, i64 0, i32 2, i64 0
-  call void @longjmp(i32* %16, i32 1) #10
-  unreachable
+  %16 = getelementptr inbounds %struct._Task* %p.03, i64 0, i32 2, i64 0, !dbg !304
+  call void @longjmp(i32* %16, i32 1) #11, !dbg !306
+  unreachable, !dbg !306
 
 ; <label>:17                                      ; preds = %5, %.lr.ph
-  %18 = getelementptr inbounds %struct._Task* %p.03, i64 0, i32 5
-  %p.0 = load %struct._Task** %18, align 8
-  %19 = icmp eq %struct._Task* %p.0, null
-  br i1 %19, label %.loopexit, label %.lr.ph
+  %18 = getelementptr inbounds %struct._Task* %p.03, i64 0, i32 5, !dbg !307
+  %p.0 = load %struct._Task** %18, align 8, !dbg !280
+  %19 = icmp eq %struct._Task* %p.0, null, !dbg !282
+  br i1 %19, label %.loopexit, label %.lr.ph, !dbg !284
 
 .loopexit:                                        ; preds = %17, %0, %9
   %.0 = phi %struct._Task* [ %p.03, %9 ], [ null, %0 ], [ null, %17 ]
-  ret %struct._Task* %.0
+  ret %struct._Task* %.0, !dbg !308
 }

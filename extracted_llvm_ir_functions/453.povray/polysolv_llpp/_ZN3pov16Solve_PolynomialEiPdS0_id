@@ -1,0 +1,445 @@
+define i32 @_ZN3pov16Solve_PolynomialEiPdS0_id(i32 %n, double* nocapture readonly %c0, double* %r, i32 %sturm, double %epsilon) #0 {
+  %cubic.i = alloca [4 x double], align 16
+  %roots.i = alloca [3 x double], align 16
+  tail call void @llvm.dbg.value(metadata i32 %n, i64 0, metadata !166, metadata !653), !dbg !654
+  tail call void @llvm.dbg.value(metadata double* %c0, i64 0, metadata !167, metadata !653), !dbg !655
+  tail call void @llvm.dbg.value(metadata double* %r, i64 0, metadata !168, metadata !653), !dbg !656
+  tail call void @llvm.dbg.value(metadata i32 %sturm, i64 0, metadata !169, metadata !653), !dbg !657
+  tail call void @llvm.dbg.value(metadata double %epsilon, i64 0, metadata !170, metadata !653), !dbg !658
+  tail call void @llvm.dbg.value(metadata i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 113), i64 0, metadata !181, metadata !653), !dbg !659
+  %1 = load i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 113), align 8, !dbg !661, !tbaa !662
+  %2 = add nsw i64 %1, 1, !dbg !661
+  store i64 %2, i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 113), align 8, !dbg !661, !tbaa !662
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !171, metadata !653), !dbg !666
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !172, metadata !653), !dbg !667
+  tail call void @llvm.dbg.declare(metadata [4 x double]* %cubic.i, metadata !325, metadata !653), !dbg !668
+  tail call void @llvm.dbg.declare(metadata [3 x double]* %roots.i, metadata !329, metadata !653), !dbg !673
+  %3 = sext i32 %n to i64, !dbg !674
+  br label %4, !dbg !674
+
+; <label>:4                                       ; preds = %4, %0
+  %indvars.iv = phi i64 [ %indvars.iv.next, %4 ], [ 0, %0 ]
+  %5 = getelementptr inbounds double* %c0, i64 %indvars.iv, !dbg !675
+  %6 = load double* %5, align 8, !dbg !675, !tbaa !676
+  %7 = tail call double @fabs(double %6) #5, !dbg !678
+  %8 = fcmp olt double %7, 1.000000e-10, !dbg !679
+  %9 = icmp slt i64 %indvars.iv, %3, !dbg !680
+  %10 = and i1 %9, %8, !dbg !681
+  %indvars.iv.next = add nsw i64 %indvars.iv, 1, !dbg !674
+  br i1 %10, label %4, label %11, !dbg !674
+
+; <label>:11                                      ; preds = %4
+  %12 = trunc i64 %indvars.iv to i32, !dbg !682
+  %13 = sub nsw i32 %n, %12, !dbg !682
+  tail call void @llvm.dbg.value(metadata i32 %13, i64 0, metadata !166, metadata !653), !dbg !654
+  tail call void @llvm.dbg.value(metadata double* %5, i64 0, metadata !173, metadata !653), !dbg !683
+  switch i32 %13, label %209 [
+    i32 0, label %230
+    i32 1, label %14
+    i32 2, label %21
+    i32 3, label %23
+    i32 4, label %45
+  ], !dbg !684
+
+; <label>:14                                      ; preds = %11
+  %15 = fcmp une double %6, 0.000000e+00, !dbg !685
+  br i1 %15, label %16, label %230, !dbg !687
+
+; <label>:16                                      ; preds = %14
+  %17 = getelementptr inbounds double* %c0, i64 %indvars.iv.next, !dbg !688
+  %18 = load double* %17, align 8, !dbg !688, !tbaa !676
+  %19 = fsub double -0.000000e+00, %18, !dbg !690
+  %20 = fdiv double %19, %6, !dbg !691
+  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !171, metadata !653), !dbg !666
+  store double %20, double* %r, align 8, !dbg !692, !tbaa !676
+  br label %230, !dbg !693
+
+; <label>:21                                      ; preds = %11
+  %22 = tail call fastcc i32 @_ZN3povL15solve_quadraticEPdS0_(double* %5, double* %r) #6, !dbg !694
+  tail call void @llvm.dbg.value(metadata i32 %22, i64 0, metadata !171, metadata !653), !dbg !666
+  br label %230, !dbg !695
+
+; <label>:23                                      ; preds = %11
+  %24 = fcmp ogt double %epsilon, 0.000000e+00, !dbg !696
+  br i1 %24, label %25, label %39, !dbg !698
+
+; <label>:25                                      ; preds = %23
+  %.sum2 = add nsw i64 %indvars.iv, 2, !dbg !699
+  %26 = getelementptr inbounds double* %c0, i64 %.sum2, !dbg !699
+  %27 = load double* %26, align 8, !dbg !699, !tbaa !676
+  %28 = fcmp une double %27, 0.000000e+00, !dbg !702
+  br i1 %28, label %29, label %39, !dbg !703
+
+; <label>:29                                      ; preds = %25
+  %.sum3 = add nsw i64 %indvars.iv, 3, !dbg !704
+  %30 = getelementptr inbounds double* %c0, i64 %.sum3, !dbg !704
+  %31 = load double* %30, align 8, !dbg !704, !tbaa !676
+  %32 = fdiv double %31, %27, !dbg !705
+  %33 = tail call double @fabs(double %32) #5, !dbg !706
+  %34 = fcmp olt double %33, %epsilon, !dbg !707
+  br i1 %34, label %35, label %39, !dbg !708
+
+; <label>:35                                      ; preds = %29
+  tail call void @llvm.dbg.value(metadata i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 114), i64 0, metadata !181, metadata !653), !dbg !709
+  %36 = load i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 114), align 8, !dbg !712, !tbaa !662
+  %37 = add nsw i64 %36, 1, !dbg !712
+  store i64 %37, i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 114), align 8, !dbg !712, !tbaa !662
+  %38 = tail call fastcc i32 @_ZN3povL15solve_quadraticEPdS0_(double* %5, double* %r) #6, !dbg !713
+  tail call void @llvm.dbg.value(metadata i32 %38, i64 0, metadata !171, metadata !653), !dbg !666
+  br label %230, !dbg !714
+
+; <label>:39                                      ; preds = %25, %29, %23
+  %40 = icmp eq i32 %sturm, 0, !dbg !715
+  br i1 %40, label %43, label %41, !dbg !717
+
+; <label>:41                                      ; preds = %39
+  %42 = tail call fastcc i32 @_ZN3povL9polysolveEiPdS0_(i32 3, double* %5, double* %r) #6, !dbg !718
+  tail call void @llvm.dbg.value(metadata i32 %42, i64 0, metadata !171, metadata !653), !dbg !666
+  br label %230, !dbg !720
+
+; <label>:43                                      ; preds = %39
+  %44 = tail call fastcc i32 @_ZN3povL11solve_cubicEPdS0_(double* %5, double* %r) #6, !dbg !721
+  tail call void @llvm.dbg.value(metadata i32 %44, i64 0, metadata !171, metadata !653), !dbg !666
+  br label %230
+
+; <label>:45                                      ; preds = %11
+  %46 = fcmp ogt double %epsilon, 0.000000e+00, !dbg !723
+  br i1 %46, label %47, label %.preheader, !dbg !725
+
+; <label>:47                                      ; preds = %45
+  %.sum = add nsw i64 %indvars.iv, 3, !dbg !726
+  %48 = getelementptr inbounds double* %c0, i64 %.sum, !dbg !726
+  %49 = load double* %48, align 8, !dbg !726, !tbaa !676
+  %50 = fcmp une double %49, 0.000000e+00, !dbg !729
+  br i1 %50, label %51, label %.preheader, !dbg !730
+
+; <label>:51                                      ; preds = %47
+  %.sum1 = add nsw i64 %indvars.iv, 4, !dbg !731
+  %52 = getelementptr inbounds double* %c0, i64 %.sum1, !dbg !731
+  %53 = load double* %52, align 8, !dbg !731, !tbaa !676
+  %54 = fdiv double %53, %49, !dbg !732
+  %55 = tail call double @fabs(double %54) #5, !dbg !733
+  %56 = fcmp olt double %55, %epsilon, !dbg !734
+  br i1 %56, label %57, label %.preheader, !dbg !735
+
+; <label>:57                                      ; preds = %51
+  tail call void @llvm.dbg.value(metadata i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 114), i64 0, metadata !181, metadata !653), !dbg !736
+  %58 = load i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 114), align 8, !dbg !739, !tbaa !662
+  %59 = add nsw i64 %58, 1, !dbg !739
+  store i64 %59, i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 114), align 8, !dbg !739, !tbaa !662
+  %60 = icmp eq i32 %sturm, 0, !dbg !740
+  br i1 %60, label %63, label %61, !dbg !742
+
+; <label>:61                                      ; preds = %57
+  %62 = tail call fastcc i32 @_ZN3povL9polysolveEiPdS0_(i32 3, double* %5, double* %r) #6, !dbg !743
+  tail call void @llvm.dbg.value(metadata i32 %62, i64 0, metadata !171, metadata !653), !dbg !666
+  br label %230, !dbg !745
+
+; <label>:63                                      ; preds = %57
+  %64 = tail call fastcc i32 @_ZN3povL11solve_cubicEPdS0_(double* %5, double* %r) #6, !dbg !746
+  tail call void @llvm.dbg.value(metadata i32 %64, i64 0, metadata !171, metadata !653), !dbg !666
+  br label %230
+
+.preheader:                                       ; preds = %45, %51, %47, %.preheader
+  %indvars.iv4.i = phi i64 [ %indvars.iv.next5.i, %.preheader ], [ 0, %47 ], [ 0, %51 ], [ 0, %45 ], !dbg !748
+  %biggest.03.i = phi double [ %biggest.1.i, %.preheader ], [ 0.000000e+00, %47 ], [ 0.000000e+00, %51 ], [ 0.000000e+00, %45 ], !dbg !748
+  %.sum9 = add i64 %indvars.iv4.i, %indvars.iv, !dbg !750
+  %65 = getelementptr inbounds double* %c0, i64 %.sum9, !dbg !750
+  %66 = load double* %65, align 8, !dbg !750, !tbaa !676
+  %67 = tail call double @fabs(double %66) #5, !dbg !756
+  %68 = fcmp ogt double %67, %biggest.03.i, !dbg !757
+  tail call void @llvm.dbg.value(metadata double %66, i64 0, metadata !320, metadata !653) #3, !dbg !758
+  %biggest.1.i = select i1 %68, double %66, double %biggest.03.i, !dbg !759
+  %indvars.iv.next5.i = add nuw nsw i64 %indvars.iv4.i, 1, !dbg !760
+  %exitcond.i = icmp eq i64 %indvars.iv.next5.i, 5, !dbg !760
+  br i1 %exitcond.i, label %69, label %.preheader, !dbg !760
+
+; <label>:69                                      ; preds = %.preheader
+  %70 = fcmp oeq double %biggest.1.i, 0.000000e+00, !dbg !761
+  br i1 %70, label %_ZN3povL16difficult_coeffsEiPd.exit, label %.preheader.i, !dbg !763
+
+.preheader.i:                                     ; preds = %69, %78
+  %indvars.iv.i = phi i64 [ %indvars.iv.next.i, %78 ], [ 0, %69 ], !dbg !748
+  %.sum10 = add i64 %indvars.iv.i, %indvars.iv, !dbg !764
+  %71 = getelementptr inbounds double* %c0, i64 %.sum10, !dbg !764
+  %72 = load double* %71, align 8, !dbg !764, !tbaa !676
+  %73 = fcmp une double %72, 0.000000e+00, !dbg !769
+  br i1 %73, label %74, label %78, !dbg !770
+
+; <label>:74                                      ; preds = %.preheader.i
+  %75 = fdiv double %biggest.1.i, %72, !dbg !771
+  %76 = tail call double @fabs(double %75) #5, !dbg !774
+  %77 = fcmp ogt double %76, 1.000000e+12, !dbg !775
+  br i1 %77, label %_ZN3povL16difficult_coeffsEiPd.exit.thread, label %78, !dbg !776
+
+; <label>:78                                      ; preds = %74, %.preheader.i
+  %indvars.iv.next.i = add nuw nsw i64 %indvars.iv.i, 1, !dbg !777
+  %79 = icmp slt i64 %indvars.iv.next.i, 5, !dbg !778
+  br i1 %79, label %.preheader.i, label %_ZN3povL16difficult_coeffsEiPd.exit, !dbg !777
+
+_ZN3povL16difficult_coeffsEiPd.exit:              ; preds = %78, %69
+  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !169, metadata !653), !dbg !657
+  %80 = icmp eq i32 %sturm, 0, !dbg !779
+  br i1 %80, label %82, label %_ZN3povL16difficult_coeffsEiPd.exit.thread, !dbg !780
+
+_ZN3povL16difficult_coeffsEiPd.exit.thread:       ; preds = %74, %_ZN3povL16difficult_coeffsEiPd.exit
+  %81 = tail call fastcc i32 @_ZN3povL9polysolveEiPdS0_(i32 4, double* %5, double* %r) #6, !dbg !781
+  tail call void @llvm.dbg.value(metadata i32 %81, i64 0, metadata !171, metadata !653), !dbg !666
+  br label %230, !dbg !783
+
+; <label>:82                                      ; preds = %_ZN3povL16difficult_coeffsEiPd.exit
+  %83 = bitcast [4 x double]* %cubic.i to i8*, !dbg !784
+  call void @llvm.lifetime.start(i64 32, i8* %83), !dbg !784
+  %84 = bitcast [3 x double]* %roots.i to i8*, !dbg !784
+  call void @llvm.lifetime.start(i64 24, i8* %84), !dbg !784
+  tail call void @llvm.dbg.value(metadata double* %5, i64 0, metadata !323, metadata !653) #3, !dbg !784
+  tail call void @llvm.dbg.value(metadata double* %r, i64 0, metadata !324, metadata !653) #3, !dbg !785
+  tail call void @llvm.dbg.value(metadata double %6, i64 0, metadata !342, metadata !653) #3, !dbg !786
+  %85 = fcmp une double %6, 1.000000e+00, !dbg !787
+  %86 = getelementptr inbounds double* %c0, i64 %indvars.iv.next, !dbg !789
+  %87 = bitcast double* %86 to <2 x double>*, !dbg !789
+  %88 = load <2 x double>* %87, align 8, !dbg !789
+  %.sum13 = add nsw i64 %indvars.iv, 3, !dbg !791
+  %89 = getelementptr inbounds double* %c0, i64 %.sum13, !dbg !791
+  %90 = bitcast double* %89 to <2 x double>*, !dbg !791
+  %91 = load <2 x double>* %90, align 8, !dbg !791
+  br i1 %85, label %92, label %97, !dbg !792
+
+; <label>:92                                      ; preds = %82
+  tail call void @llvm.dbg.value(metadata double undef, i64 0, metadata !343, metadata !653) #3, !dbg !793
+  %93 = insertelement <2 x double> undef, double %6, i32 0, !dbg !794
+  %94 = insertelement <2 x double> %93, double %6, i32 1, !dbg !794
+  %95 = fdiv <2 x double> %88, %94, !dbg !794
+  tail call void @llvm.dbg.value(metadata double undef, i64 0, metadata !344, metadata !653) #3, !dbg !795
+  tail call void @llvm.dbg.value(metadata double undef, i64 0, metadata !345, metadata !653) #3, !dbg !796
+  %96 = fdiv <2 x double> %91, %94, !dbg !797
+  tail call void @llvm.dbg.value(metadata double undef, i64 0, metadata !346, metadata !653) #3, !dbg !798
+  br label %97, !dbg !799
+
+; <label>:97                                      ; preds = %92, %82
+  %98 = phi <2 x double> [ %95, %92 ], [ %88, %82 ], !dbg !791
+  %99 = phi <2 x double> [ %96, %92 ], [ %91, %82 ], !dbg !791
+  %100 = extractelement <2 x double> %98, i32 0, !dbg !800
+  %101 = fmul double %100, %100, !dbg !800
+  tail call void @llvm.dbg.value(metadata double %101, i64 0, metadata !333, metadata !653) #3, !dbg !801
+  %102 = fmul double %101, 3.750000e-01, !dbg !802
+  %103 = extractelement <2 x double> %98, i32 1, !dbg !802
+  %104 = fsub double %103, %102, !dbg !802
+  tail call void @llvm.dbg.value(metadata double %104, i64 0, metadata !335, metadata !653) #3, !dbg !803
+  %105 = fmul double %101, 1.250000e-01, !dbg !804
+  %106 = fmul double %100, %105, !dbg !805
+  %107 = fmul double %100, 5.000000e-01, !dbg !806
+  %108 = fmul double %107, %103, !dbg !807
+  %109 = fsub double %106, %108, !dbg !808
+  %110 = extractelement <2 x double> %99, i32 0, !dbg !809
+  %111 = fadd double %110, %109, !dbg !809
+  tail call void @llvm.dbg.value(metadata double %111, i64 0, metadata !336, metadata !653) #3, !dbg !810
+  %112 = fmul double %101, -1.171875e-02, !dbg !811
+  %113 = fmul double %101, %112, !dbg !812
+  %114 = fmul double %101, 6.250000e-02, !dbg !813
+  %115 = fmul double %103, %114, !dbg !814
+  %116 = fadd double %113, %115, !dbg !815
+  %117 = fmul double %100, 2.500000e-01, !dbg !816
+  %118 = fmul double %117, %110, !dbg !817
+  %119 = fsub double %116, %118, !dbg !818
+  %120 = extractelement <2 x double> %99, i32 1, !dbg !819
+  %121 = fadd double %120, %119, !dbg !819
+  tail call void @llvm.dbg.value(metadata double %121, i64 0, metadata !339, metadata !653) #3, !dbg !820
+  %122 = getelementptr inbounds [4 x double]* %cubic.i, i64 0, i64 0, !dbg !821
+  store double 1.000000e+00, double* %122, align 16, !dbg !822, !tbaa !676
+  %123 = fmul double %104, -5.000000e-01, !dbg !823
+  %124 = getelementptr inbounds [4 x double]* %cubic.i, i64 0, i64 1, !dbg !824
+  store double %123, double* %124, align 8, !dbg !825, !tbaa !676
+  %125 = getelementptr inbounds [4 x double]* %cubic.i, i64 0, i64 2, !dbg !826
+  %126 = fmul double %121, 5.000000e-01, !dbg !827
+  %127 = fmul double %104, %126, !dbg !828
+  %128 = fmul double %111, 1.250000e-01, !dbg !829
+  %129 = fmul double %111, %128, !dbg !830
+  %130 = insertelement <2 x double> <double -0.000000e+00, double undef>, double %127, i32 1, !dbg !831
+  %131 = insertelement <2 x double> undef, double %121, i32 0, !dbg !831
+  %132 = insertelement <2 x double> %131, double %129, i32 1, !dbg !831
+  %133 = fsub <2 x double> %130, %132, !dbg !831
+  %134 = bitcast double* %125 to <2 x double>*, !dbg !832
+  store <2 x double> %133, <2 x double>* %134, align 16, !dbg !832, !tbaa !676
+  %135 = getelementptr inbounds [3 x double]* %roots.i, i64 0, i64 0, !dbg !833
+  %136 = call fastcc i32 @_ZN3povL11solve_cubicEPdS0_(double* %122, double* %135) #7, !dbg !834
+  tail call void @llvm.dbg.value(metadata i32 %136, i64 0, metadata !347, metadata !653) #3, !dbg !835
+  %137 = icmp sgt i32 %136, 0, !dbg !836
+  br i1 %137, label %138, label %_ZN3povL13solve_quarticEPdS0_.exit, !dbg !838
+
+; <label>:138                                     ; preds = %97
+  %139 = load double* %135, align 16, !dbg !839, !tbaa !676
+  tail call void @llvm.dbg.value(metadata double %139, i64 0, metadata !334, metadata !653) #3, !dbg !841
+  %140 = fmul double %139, 2.000000e+00, !dbg !842
+  %141 = fsub double %140, %104, !dbg !843
+  tail call void @llvm.dbg.value(metadata double %141, i64 0, metadata !340, metadata !653) #3, !dbg !844
+  %142 = fcmp olt double %141, 0.000000e+00, !dbg !845
+  br i1 %142, label %143, label %145, !dbg !847
+
+; <label>:143                                     ; preds = %138
+  %144 = fcmp ogt double %141, -1.000000e-10, !dbg !848
+  br i1 %144, label %.thread.i, label %_ZN3povL13solve_quarticEPdS0_.exit, !dbg !851
+
+; <label>:145                                     ; preds = %138
+  %146 = fcmp olt double %141, 1.000000e-10, !dbg !852
+  br i1 %146, label %.thread.i, label %152, !dbg !854
+
+.thread.i:                                        ; preds = %145, %143
+  %d1.01.i = phi double [ %141, %145 ], [ 0.000000e+00, %143 ], !dbg !791
+  %147 = fmul double %139, %139, !dbg !855
+  %148 = fsub double %147, %121, !dbg !857
+  tail call void @llvm.dbg.value(metadata double %148, i64 0, metadata !341, metadata !653) #3, !dbg !858
+  %149 = fcmp olt double %148, 0.000000e+00, !dbg !859
+  br i1 %149, label %_ZN3povL13solve_quarticEPdS0_.exit, label %150, !dbg !861
+
+; <label>:150                                     ; preds = %.thread.i
+  %151 = tail call double @sqrt(double %148) #5, !dbg !862
+  tail call void @llvm.dbg.value(metadata double %151, i64 0, metadata !341, metadata !653) #3, !dbg !858
+  br label %156, !dbg !863
+
+; <label>:152                                     ; preds = %145
+  %153 = tail call double @sqrt(double %141) #5, !dbg !864
+  tail call void @llvm.dbg.value(metadata double %153, i64 0, metadata !340, metadata !653) #3, !dbg !844
+  %154 = fmul double %111, 5.000000e-01, !dbg !866
+  %155 = fdiv double %154, %153, !dbg !867
+  tail call void @llvm.dbg.value(metadata double %155, i64 0, metadata !341, metadata !653) #3, !dbg !858
+  br label %156, !dbg !791
+
+; <label>:156                                     ; preds = %152, %150
+  %d1.1.i = phi double [ %d1.01.i, %150 ], [ %153, %152 ], !dbg !791
+  %d2.0.i = phi double [ %151, %150 ], [ %155, %152 ], !dbg !791
+  %157 = fmul double %d1.1.i, %d1.1.i, !dbg !868
+  tail call void @llvm.dbg.value(metadata double %157, i64 0, metadata !337, metadata !653) #3, !dbg !869
+  %158 = fmul double %100, -2.500000e-01, !dbg !870
+  tail call void @llvm.dbg.value(metadata double %158, i64 0, metadata !338, metadata !653) #3, !dbg !871
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !347, metadata !653) #3, !dbg !835
+  %159 = fsub double %139, %d2.0.i, !dbg !872
+  %160 = fmul double %159, 4.000000e+00, !dbg !873
+  %161 = fsub double %157, %160, !dbg !874
+  tail call void @llvm.dbg.value(metadata double %161, i64 0, metadata !335, metadata !653) #3, !dbg !803
+  %162 = fcmp oeq double %161, 0.000000e+00, !dbg !875
+  br i1 %162, label %163, label %166, !dbg !877
+
+; <label>:163                                     ; preds = %156
+  %164 = fmul double %d1.1.i, -5.000000e-01, !dbg !878
+  %165 = fsub double %164, %158, !dbg !880
+  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !347, metadata !653) #3, !dbg !835
+  store double %165, double* %r, align 8, !dbg !881, !tbaa !676
+  br label %182, !dbg !882
+
+; <label>:166                                     ; preds = %156
+  %167 = fcmp ogt double %161, 0.000000e+00, !dbg !883
+  br i1 %167, label %168, label %182, !dbg !886
+
+; <label>:168                                     ; preds = %166
+  %169 = tail call double @sqrt(double %161) #5, !dbg !887
+  tail call void @llvm.dbg.value(metadata double %169, i64 0, metadata !335, metadata !653) #3, !dbg !803
+  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !347, metadata !653) #3, !dbg !835
+  %170 = insertelement <2 x double> undef, double %d1.1.i, i32 0, !dbg !889
+  %171 = insertelement <2 x double> %170, double %d1.1.i, i32 1, !dbg !889
+  %172 = insertelement <2 x double> undef, double %169, i32 0, !dbg !889
+  %173 = insertelement <2 x double> %172, double %169, i32 1, !dbg !889
+  %174 = fadd <2 x double> %171, %173, !dbg !889
+  %175 = fsub <2 x double> %171, %173, !dbg !889
+  %176 = shufflevector <2 x double> %174, <2 x double> %175, <2 x i32> <i32 0, i32 3>, !dbg !889
+  %177 = fmul <2 x double> %176, <double 5.000000e-01, double 5.000000e-01>, !dbg !890
+  %178 = insertelement <2 x double> undef, double %158, i32 0, !dbg !890
+  %179 = insertelement <2 x double> %178, double %158, i32 1, !dbg !890
+  %180 = fsub <2 x double> %179, %177, !dbg !890
+  tail call void @llvm.dbg.value(metadata i32 2, i64 0, metadata !347, metadata !653) #3, !dbg !835
+  %181 = bitcast double* %r to <2 x double>*, !dbg !891
+  store <2 x double> %180, <2 x double>* %181, align 8, !dbg !891, !tbaa !676
+  br label %182, !dbg !892
+
+; <label>:182                                     ; preds = %168, %166, %163
+  %i.0.i = phi i32 [ 1, %163 ], [ 2, %168 ], [ 0, %166 ], !dbg !791
+  %183 = fadd double %139, %d2.0.i, !dbg !893
+  %184 = fmul double %183, 4.000000e+00, !dbg !894
+  %185 = fsub double %157, %184, !dbg !895
+  tail call void @llvm.dbg.value(metadata double %185, i64 0, metadata !335, metadata !653) #3, !dbg !803
+  %186 = fcmp oeq double %185, 0.000000e+00, !dbg !896
+  br i1 %186, label %187, label %193, !dbg !898
+
+; <label>:187                                     ; preds = %182
+  %188 = fmul double %d1.1.i, 5.000000e-01, !dbg !899
+  %189 = fsub double %188, %158, !dbg !901
+  %190 = add nuw nsw i32 %i.0.i, 1, !dbg !902
+  tail call void @llvm.dbg.value(metadata i32 %190, i64 0, metadata !347, metadata !653) #3, !dbg !835
+  %191 = zext i32 %i.0.i to i64, !dbg !903
+  %192 = getelementptr inbounds double* %r, i64 %191, !dbg !903
+  store double %189, double* %192, align 8, !dbg !904, !tbaa !676
+  br label %_ZN3povL13solve_quarticEPdS0_.exit, !dbg !905
+
+; <label>:193                                     ; preds = %182
+  %194 = fcmp ogt double %185, 0.000000e+00, !dbg !906
+  br i1 %194, label %195, label %_ZN3povL13solve_quarticEPdS0_.exit, !dbg !909
+
+; <label>:195                                     ; preds = %193
+  %196 = tail call double @sqrt(double %185) #5, !dbg !910
+  tail call void @llvm.dbg.value(metadata double %196, i64 0, metadata !335, metadata !653) #3, !dbg !803
+  %197 = fadd double %d1.1.i, %196, !dbg !912
+  %198 = fmul double %197, 5.000000e-01, !dbg !913
+  %199 = fadd double %158, %198, !dbg !914
+  %200 = add nuw nsw i32 %i.0.i, 1, !dbg !915
+  tail call void @llvm.dbg.value(metadata i32 %200, i64 0, metadata !347, metadata !653) #3, !dbg !835
+  %201 = zext i32 %i.0.i to i64, !dbg !916
+  %202 = getelementptr inbounds double* %r, i64 %201, !dbg !916
+  store double %199, double* %202, align 8, !dbg !917, !tbaa !676
+  %203 = fsub double %d1.1.i, %196, !dbg !918
+  %204 = fmul double %203, 5.000000e-01, !dbg !919
+  %205 = fadd double %158, %204, !dbg !920
+  %206 = add nuw nsw i32 %i.0.i, 2, !dbg !921
+  tail call void @llvm.dbg.value(metadata i32 %206, i64 0, metadata !347, metadata !653) #3, !dbg !835
+  %207 = zext i32 %200 to i64, !dbg !922
+  %208 = getelementptr inbounds double* %r, i64 %207, !dbg !922
+  store double %205, double* %208, align 8, !dbg !923, !tbaa !676
+  br label %_ZN3povL13solve_quarticEPdS0_.exit, !dbg !924
+
+_ZN3povL13solve_quarticEPdS0_.exit:               ; preds = %97, %143, %.thread.i, %187, %193, %195
+  %.0.i = phi i32 [ 0, %97 ], [ 0, %143 ], [ 0, %.thread.i ], [ %190, %187 ], [ %206, %195 ], [ %i.0.i, %193 ], !dbg !791
+  call void @llvm.lifetime.end(i64 32, i8* %83), !dbg !925
+  call void @llvm.lifetime.end(i64 24, i8* %84), !dbg !925
+  tail call void @llvm.dbg.value(metadata i32 %.0.i, i64 0, metadata !171, metadata !653), !dbg !666
+  br label %230
+
+; <label>:209                                     ; preds = %11
+  %210 = fcmp ogt double %epsilon, 0.000000e+00, !dbg !926
+  br i1 %210, label %211, label %228, !dbg !928
+
+; <label>:211                                     ; preds = %209
+  %212 = add nsw i32 %13, -1, !dbg !929
+  %213 = sext i32 %212 to i64, !dbg !932
+  %.sum5 = add nsw i64 %213, %indvars.iv, !dbg !932
+  %214 = getelementptr inbounds double* %c0, i64 %.sum5, !dbg !932
+  %215 = load double* %214, align 8, !dbg !932, !tbaa !676
+  %216 = fcmp une double %215, 0.000000e+00, !dbg !933
+  br i1 %216, label %217, label %228, !dbg !934
+
+; <label>:217                                     ; preds = %211
+  %218 = sext i32 %13 to i64, !dbg !935
+  %.sum6 = add nsw i64 %218, %indvars.iv, !dbg !935
+  %219 = getelementptr inbounds double* %c0, i64 %.sum6, !dbg !935
+  %220 = load double* %219, align 8, !dbg !935, !tbaa !676
+  %221 = fdiv double %220, %215, !dbg !936
+  %222 = tail call double @fabs(double %221) #5, !dbg !937
+  %223 = fcmp olt double %222, %epsilon, !dbg !938
+  br i1 %223, label %224, label %228, !dbg !939
+
+; <label>:224                                     ; preds = %217
+  tail call void @llvm.dbg.value(metadata i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 114), i64 0, metadata !181, metadata !653), !dbg !940
+  %225 = load i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 114), align 8, !dbg !943, !tbaa !662
+  %226 = add nsw i64 %225, 1, !dbg !943
+  store i64 %226, i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 114), align 8, !dbg !943, !tbaa !662
+  %227 = tail call fastcc i32 @_ZN3povL9polysolveEiPdS0_(i32 %212, double* %5, double* %r) #6, !dbg !944
+  tail call void @llvm.dbg.value(metadata i32 %227, i64 0, metadata !171, metadata !653), !dbg !666
+  br label %228, !dbg !945
+
+; <label>:228                                     ; preds = %211, %217, %224, %209
+  %229 = tail call fastcc i32 @_ZN3povL9polysolveEiPdS0_(i32 %13, double* %5, double* %r) #6, !dbg !946
+  tail call void @llvm.dbg.value(metadata i32 %229, i64 0, metadata !171, metadata !653), !dbg !666
+  br label %230, !dbg !947
+
+; <label>:230                                     ; preds = %_ZN3povL16difficult_coeffsEiPd.exit.thread, %_ZN3povL13solve_quarticEPdS0_.exit, %61, %63, %41, %43, %14, %16, %228, %35, %21, %11
+  %roots.0 = phi i32 [ %229, %228 ], [ %62, %61 ], [ %64, %63 ], [ %81, %_ZN3povL16difficult_coeffsEiPd.exit.thread ], [ %.0.i, %_ZN3povL13solve_quarticEPdS0_.exit ], [ %38, %35 ], [ %42, %41 ], [ %44, %43 ], [ %22, %21 ], [ 1, %16 ], [ 0, %14 ], [ 0, %11 ]
+  ret i32 %roots.0, !dbg !948
+}

@@ -1,18 +1,20 @@
-define void @set_default_file_name(i8* nocapture readonly %name) #3 {
-  %1 = tail call i8* @strdup(i8* %name) #9
-  store i8* %1, i8** @default_file_name, align 8, !tbaa !14
-  %.cast = ptrtoint i8* %1 to i64
-  br label %2
+define void @set_default_file_name(i8* nocapture readonly %name) #4 {
+  tail call void @llvm.dbg.value(metadata i8* %name, i64 0, metadata !135, metadata !382), !dbg !421
+  %1 = tail call i8* @strdup(i8* %name) #9, !dbg !422
+  store i8* %1, i8** @default_file_name, align 8, !dbg !423, !tbaa !424
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !136, metadata !382), !dbg !425
+  %.cast = ptrtoint i8* %1 to i64, !dbg !426
+  br label %2, !dbg !429
 
 ; <label>:2                                       ; preds = %2, %0
   %indvars.iv = phi i64 [ 0, %0 ], [ %indvars.iv.next, %2 ]
-  %3 = getelementptr inbounds [46 x %struct.t_deffile]* @deffile, i64 0, i64 %indvars.iv, i32 2
-  %4 = bitcast i8** %3 to i64*
-  store i64 %.cast, i64* %4, align 8, !tbaa !15
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %exitcond = icmp eq i64 %indvars.iv.next, 46
-  br i1 %exitcond, label %5, label %2
+  %3 = getelementptr inbounds [46 x %struct.t_deffile]* @deffile, i64 0, i64 %indvars.iv, i32 2, !dbg !430
+  %4 = bitcast i8** %3 to i64*, !dbg !431
+  store i64 %.cast, i64* %4, align 8, !dbg !431, !tbaa !432
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !429
+  %exitcond = icmp eq i64 %indvars.iv.next, 46, !dbg !429
+  br i1 %exitcond, label %5, label %2, !dbg !429
 
 ; <label>:5                                       ; preds = %2
-  ret void
+  ret void, !dbg !434
 }

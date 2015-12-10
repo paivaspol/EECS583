@@ -1,47 +1,48 @@
 define i32 @xdrclose(%struct.XDR* %xdrs) #4 {
-  %1 = icmp eq %struct.XDR* %xdrs, null
-  br i1 %1, label %2, label %.preheader
+  tail call void @llvm.dbg.value(metadata %struct.XDR* %xdrs, i64 0, metadata !280, metadata !435), !dbg !660
+  %1 = icmp eq %struct.XDR* %xdrs, null, !dbg !661
+  br i1 %1, label %2, label %.preheader, !dbg !663
 
 ; <label>:2                                       ; preds = %0
-  %3 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !18
-  %4 = tail call i64 @fwrite(i8* getelementptr inbounds ([33 x i8]* @.str3, i64 0, i64 0), i64 32, i64 1, %struct.__sFILE* %3)
-  tail call void @exit(i32 1) #11
-  unreachable
+  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !664, !tbaa !611
+  %4 = tail call i64 @fwrite(i8* getelementptr inbounds ([33 x i8]* @.str3, i64 0, i64 0), i64 32, i64 1, %struct.__sFILE* %3), !dbg !666
+  tail call void @exit(i32 1) #11, !dbg !667
+  unreachable, !dbg !667
 
 ; <label>:5                                       ; preds = %.preheader
-  %6 = icmp slt i64 %indvars.iv.next, 20
-  br i1 %6, label %.preheader, label %21
+  %6 = icmp slt i64 %indvars.iv.next, 20, !dbg !668
+  br i1 %6, label %.preheader, label %21, !dbg !671
 
 .preheader:                                       ; preds = %0, %5
   %indvars.iv = phi i64 [ %indvars.iv.next, %5 ], [ 1, %0 ]
-  %7 = getelementptr inbounds [20 x %struct.XDR*]* @xdridptr, i64 0, i64 %indvars.iv
-  %8 = load %struct.XDR** %7, align 8, !tbaa !18
-  %9 = icmp eq %struct.XDR* %8, %xdrs
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  br i1 %9, label %10, label %5
+  %7 = getelementptr inbounds [20 x %struct.XDR*]* @xdridptr, i64 0, i64 %indvars.iv, !dbg !672
+  %8 = load %struct.XDR** %7, align 8, !dbg !672, !tbaa !611
+  %9 = icmp eq %struct.XDR* %8, %xdrs, !dbg !675
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !671
+  br i1 %9, label %10, label %5, !dbg !676
 
 ; <label>:10                                      ; preds = %.preheader
-  %11 = getelementptr inbounds %struct.XDR* %xdrs, i64 0, i32 1
-  %12 = load %struct.xdr_ops** %11, align 8, !tbaa !19
-  %13 = getelementptr inbounds %struct.xdr_ops* %12, i64 0, i32 7
-  %14 = load void (%struct.XDR*)** %13, align 8, !tbaa !21
-  %15 = icmp eq void (%struct.XDR*)* %14, null
-  br i1 %15, label %17, label %16
+  %11 = getelementptr inbounds %struct.XDR* %xdrs, i64 0, i32 1, !dbg !677
+  %12 = load %struct.xdr_ops** %11, align 8, !dbg !677, !tbaa !681
+  %13 = getelementptr inbounds %struct.xdr_ops* %12, i64 0, i32 7, !dbg !677
+  %14 = load void (%struct.XDR*)** %13, align 8, !dbg !677, !tbaa !683
+  %15 = icmp eq void (%struct.XDR*)* %14, null, !dbg !677
+  br i1 %15, label %17, label %16, !dbg !685
 
 ; <label>:16                                      ; preds = %10
-  tail call void %14(%struct.XDR* %xdrs) #10
-  br label %17
+  tail call void %14(%struct.XDR* %xdrs) #10, !dbg !677
+  br label %17, !dbg !677
 
 ; <label>:17                                      ; preds = %10, %16
-  %18 = getelementptr inbounds [20 x %struct.__sFILE*]* @xdrfiles, i64 0, i64 %indvars.iv
-  %19 = load %struct.__sFILE** %18, align 8, !tbaa !18
-  %20 = tail call i32 @fclose(%struct.__sFILE* %19) #10
-  store %struct.XDR* null, %struct.XDR** %7, align 8, !tbaa !18
-  ret i32 1
+  %18 = getelementptr inbounds [20 x %struct.__sFILE*]* @xdrfiles, i64 0, i64 %indvars.iv, !dbg !686
+  %19 = load %struct.__sFILE** %18, align 8, !dbg !686, !tbaa !611
+  %20 = tail call i32 @fclose(%struct.__sFILE* %19) #10, !dbg !687
+  store %struct.XDR* null, %struct.XDR** %7, align 8, !dbg !688, !tbaa !611
+  ret i32 1, !dbg !689
 
 ; <label>:21                                      ; preds = %5
-  %22 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !18
-  %23 = tail call i64 @fwrite(i8* getelementptr inbounds ([33 x i8]* @.str4, i64 0, i64 0), i64 32, i64 1, %struct.__sFILE* %22)
-  tail call void @exit(i32 1) #11
-  unreachable
+  %22 = load %struct.__sFILE** @__stderrp, align 8, !dbg !690, !tbaa !611
+  %23 = tail call i64 @fwrite(i8* getelementptr inbounds ([33 x i8]* @.str4, i64 0, i64 0), i64 32, i64 1, %struct.__sFILE* %22), !dbg !691
+  tail call void @exit(i32 1) #11, !dbg !692
+  unreachable, !dbg !692
 }

@@ -1,34 +1,39 @@
 define %struct.T_SKTREE* @SKTreeFindNode(%struct.T_SKTREE* readonly %root, i8* readonly %key) #1 {
-  %1 = icmp eq %struct.T_SKTREE* %root, null
-  br i1 %1, label %tailrecurse._crit_edge, label %.lr.ph
+  tail call void @llvm.dbg.value(metadata %struct.T_SKTREE* %root, i64 0, metadata !79, metadata !109), !dbg !330
+  tail call void @llvm.dbg.value(metadata i8* %key, i64 0, metadata !80, metadata !109), !dbg !331
+  %1 = icmp eq %struct.T_SKTREE* %root, null, !dbg !332
+  br i1 %1, label %tailrecurse._crit_edge, label %.lr.ph, !dbg !334
 
 .lr.ph:                                           ; preds = %0, %tailrecurse.backedge
   %root.tr1 = phi %struct.T_SKTREE* [ %root.tr.be, %tailrecurse.backedge ], [ %root, %0 ]
-  %2 = getelementptr inbounds %struct.T_SKTREE* %root.tr1, i64 0, i32 4
-  %3 = load i8** %2, align 8, !tbaa !7
-  %4 = tail call i32 @STR_cmpi(i8* %key, i8* %3) #9
-  %5 = icmp slt i32 %4, 0
-  br i1 %5, label %6, label %8
+  %2 = getelementptr inbounds %struct.T_SKTREE* %root.tr1, i64 0, i32 4, !dbg !335
+  %3 = load i8** %2, align 8, !dbg !335, !tbaa !140
+  %4 = tail call i32 @STR_cmpi(i8* %key, i8* %3) #9, !dbg !335
+  tail call void @llvm.dbg.value(metadata i32 %4, i64 0, metadata !81, metadata !109), !dbg !338
+  %5 = icmp slt i32 %4, 0, !dbg !339
+  br i1 %5, label %6, label %8, !dbg !340
 
 ; <label>:6                                       ; preds = %.lr.ph
-  %7 = getelementptr inbounds %struct.T_SKTREE* %root.tr1, i64 0, i32 0
-  br label %tailrecurse.backedge
+  %7 = getelementptr inbounds %struct.T_SKTREE* %root.tr1, i64 0, i32 0, !dbg !341
+  br label %tailrecurse.backedge, !dbg !343
 
 ; <label>:8                                       ; preds = %.lr.ph
-  %9 = icmp sgt i32 %4, 0
-  br i1 %9, label %10, label %tailrecurse._crit_edge
+  %9 = icmp sgt i32 %4, 0, !dbg !344
+  br i1 %9, label %10, label %tailrecurse._crit_edge, !dbg !346
 
 ; <label>:10                                      ; preds = %8
-  %11 = getelementptr inbounds %struct.T_SKTREE* %root.tr1, i64 0, i32 1
-  br label %tailrecurse.backedge
+  %11 = getelementptr inbounds %struct.T_SKTREE* %root.tr1, i64 0, i32 1, !dbg !347
+  br label %tailrecurse.backedge, !dbg !349
 
 tailrecurse.backedge:                             ; preds = %10, %6
   %root.tr.be.in = phi %struct.T_SKTREE** [ %11, %10 ], [ %7, %6 ]
-  %root.tr.be = load %struct.T_SKTREE** %root.tr.be.in, align 8
-  %12 = icmp eq %struct.T_SKTREE* %root.tr.be, null
-  br i1 %12, label %tailrecurse._crit_edge, label %.lr.ph
+  %root.tr.be = load %struct.T_SKTREE** %root.tr.be.in, align 8, !dbg !347
+  tail call void @llvm.dbg.value(metadata %struct.T_SKTREE* %root.tr.be, i64 0, metadata !79, metadata !109), !dbg !330
+  tail call void @llvm.dbg.value(metadata i8* %key, i64 0, metadata !80, metadata !109), !dbg !331
+  %12 = icmp eq %struct.T_SKTREE* %root.tr.be, null, !dbg !332
+  br i1 %12, label %tailrecurse._crit_edge, label %.lr.ph, !dbg !334
 
 tailrecurse._crit_edge:                           ; preds = %8, %tailrecurse.backedge, %0
   %node.0 = phi %struct.T_SKTREE* [ null, %0 ], [ %root.tr1, %8 ], [ null, %tailrecurse.backedge ]
-  ret %struct.T_SKTREE* %node.0
+  ret %struct.T_SKTREE* %node.0, !dbg !350
 }

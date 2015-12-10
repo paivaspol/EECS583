@@ -1,170 +1,200 @@
-define float @do_optimize_poisson(%struct.__sFILE* %log, i32 %bVerbose, %struct.t_inputrec* nocapture readonly %ir, i32 %natoms, [3 x float]* %x, [3 x float]* %f, float* %charge, float* %box, float* %phi, %struct.t_commrec* nocapture readnone %cr, %struct.t_nrnb* %nrnb, [3 x float]* %f_ref, float* %phi_ref, float* %beta, i32 %bOld) #3 {
+define float @do_optimize_poisson(%struct.__sFILE* %log, i32 %bVerbose, %struct.t_inputrec* nocapture readonly %ir, i32 %natoms, [3 x float]* %x, [3 x float]* %f, float* %charge, float* %box, float* %phi, %struct.t_commrec* nocapture readnone %cr, %struct.t_nrnb* %nrnb, [3 x float]* %f_ref, float* %phi_ref, float* %beta, i32 %bOld) #4 {
   %beta52 = bitcast float* %beta to i8*
   %rmsf = alloca [21 x [21 x [21 x float]]], align 16
   %buf = alloca [128 x i8], align 16
-  %1 = bitcast [21 x [21 x [21 x float]]]* %rmsf to i8*
-  call void @llvm.lifetime.start(i64 37044, i8* %1) #5
-  %2 = getelementptr inbounds [128 x i8]* %buf, i64 0, i64 0
-  call void @llvm.lifetime.start(i64 128, i8* %2) #5
+  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %log, i64 0, metadata !336, metadata !394), !dbg !755
+  tail call void @llvm.dbg.value(metadata i32 %bVerbose, i64 0, metadata !337, metadata !394), !dbg !756
+  tail call void @llvm.dbg.value(metadata %struct.t_inputrec* %ir, i64 0, metadata !338, metadata !394), !dbg !757
+  tail call void @llvm.dbg.value(metadata i32 %natoms, i64 0, metadata !339, metadata !394), !dbg !758
+  tail call void @llvm.dbg.value(metadata [3 x float]* %x, i64 0, metadata !340, metadata !394), !dbg !759
+  tail call void @llvm.dbg.value(metadata [3 x float]* %f, i64 0, metadata !341, metadata !394), !dbg !760
+  tail call void @llvm.dbg.value(metadata float* %charge, i64 0, metadata !342, metadata !394), !dbg !761
+  tail call void @llvm.dbg.value(metadata float* %box, i64 0, metadata !343, metadata !394), !dbg !762
+  tail call void @llvm.dbg.value(metadata float* %phi, i64 0, metadata !344, metadata !394), !dbg !763
+  tail call void @llvm.dbg.value(metadata %struct.t_commrec* %cr, i64 0, metadata !345, metadata !394), !dbg !764
+  tail call void @llvm.dbg.value(metadata %struct.t_nrnb* %nrnb, i64 0, metadata !346, metadata !394), !dbg !765
+  tail call void @llvm.dbg.value(metadata [3 x float]* %f_ref, i64 0, metadata !347, metadata !394), !dbg !766
+  tail call void @llvm.dbg.value(metadata float* %phi_ref, i64 0, metadata !348, metadata !394), !dbg !767
+  tail call void @llvm.dbg.value(metadata float* %beta, i64 0, metadata !349, metadata !394), !dbg !768
+  tail call void @llvm.dbg.value(metadata i32 %bOld, i64 0, metadata !350, metadata !394), !dbg !769
+  %1 = bitcast [21 x [21 x [21 x float]]]* %rmsf to i8*, !dbg !770
+  call void @llvm.lifetime.start(i64 37044, i8* %1) #6, !dbg !770
+  tail call void @llvm.dbg.declare(metadata [21 x [21 x [21 x float]]]* %rmsf, metadata !351, metadata !394), !dbg !771
+  tail call void @llvm.dbg.declare(metadata [3 x i32]* undef, metadata !357, metadata !394), !dbg !772
+  tail call void @llvm.dbg.value(metadata float 0x3F847AE140000000, i64 0, metadata !358, metadata !394), !dbg !773
+  %2 = getelementptr inbounds [128 x i8]* %buf, i64 0, i64 0, !dbg !774
+  call void @llvm.lifetime.start(i64 128, i8* %2) #6, !dbg !774
+  tail call void @llvm.dbg.declare(metadata [128 x i8]* %buf, metadata !364, metadata !394), !dbg !775
+  tail call void @llvm.dbg.value(metadata float 0.000000e+00, i64 0, metadata !368, metadata !394), !dbg !776
   %.b = load i1* @do_optimize_poisson.bFirst, align 1
-  br i1 %.b, label %._crit_edge55, label %3
+  br i1 %.b, label %._crit_edge55, label %3, !dbg !777
 
 ._crit_edge55:                                    ; preds = %0
-  %.pre56 = load %struct.t_PSgrid** @do_optimize_poisson.rho, align 8, !tbaa !19
-  br label %38
+  %.pre56 = load %struct.t_PSgrid** @do_optimize_poisson.rho, align 8, !dbg !778, !tbaa !460
+  br label %38, !dbg !777
 
 ; <label>:3                                       ; preds = %0
-  %4 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 72
-  %5 = load i32* %4, align 4, !tbaa !23
-  store i32 %5, i32* @do_optimize_poisson.maxnit, align 4, !tbaa !20
-  %6 = tail call i64 @fwrite(i8* getelementptr inbounds ([55 x i8]* @.str9, i64 0, i64 0), i64 54, i64 1, %struct.__sFILE* %log)
-  %7 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 17
-  %8 = load i32* %7, align 4, !tbaa !26
-  %9 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 18
-  %10 = load i32* %9, align 4, !tbaa !27
-  %11 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 19
-  %12 = load i32* %11, align 4, !tbaa !28
-  %13 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %log, i8* getelementptr inbounds ([27 x i8]* @.str10, i64 0, i64 0), i32 %8, i32 %10, i32 %12) #6
-  %14 = load i32* %7, align 4, !tbaa !26
-  %15 = icmp slt i32 %14, 4
-  br i1 %15, label %22, label %16
+  %4 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 72, !dbg !779
+  %5 = load i32* %4, align 4, !dbg !779, !tbaa !688
+  store i32 %5, i32* @do_optimize_poisson.maxnit, align 4, !dbg !782, !tbaa !472
+  %6 = tail call i64 @fwrite(i8* getelementptr inbounds ([55 x i8]* @.str9, i64 0, i64 0), i64 54, i64 1, %struct.__sFILE* %log), !dbg !783
+  %7 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 17, !dbg !784
+  %8 = load i32* %7, align 4, !dbg !784, !tbaa !694
+  %9 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 18, !dbg !785
+  %10 = load i32* %9, align 4, !dbg !785, !tbaa !696
+  %11 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 19, !dbg !786
+  %12 = load i32* %11, align 4, !dbg !786, !tbaa !698
+  %13 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %log, i8* getelementptr inbounds ([27 x i8]* @.str10, i64 0, i64 0), i32 %8, i32 %10, i32 %12) #7, !dbg !787
+  %14 = load i32* %7, align 4, !dbg !788, !tbaa !694
+  %15 = icmp slt i32 %14, 4, !dbg !790
+  br i1 %15, label %22, label %16, !dbg !791
 
 ; <label>:16                                      ; preds = %3
-  %17 = load i32* %9, align 4, !tbaa !27
-  %18 = icmp slt i32 %17, 4
-  br i1 %18, label %22, label %19
+  %17 = load i32* %9, align 4, !dbg !792, !tbaa !696
+  %18 = icmp slt i32 %17, 4, !dbg !793
+  br i1 %18, label %22, label %19, !dbg !794
 
 ; <label>:19                                      ; preds = %16
-  %20 = load i32* %11, align 4, !tbaa !28
-  %21 = icmp slt i32 %20, 4
-  br i1 %21, label %22, label %23
+  %20 = load i32* %11, align 4, !dbg !795, !tbaa !698
+  %21 = icmp slt i32 %20, 4, !dbg !796
+  br i1 %21, label %22, label %23, !dbg !797
 
 ; <label>:22                                      ; preds = %19, %16, %3
-  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([49 x i8]* @.str11, i64 0, i64 0)) #6
-  %.pre = load i32* %7, align 4, !tbaa !26
-  %.pre53 = load i32* %9, align 4, !tbaa !27
-  %.pre54 = load i32* %11, align 4, !tbaa !28
-  br label %23
+  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([49 x i8]* @.str11, i64 0, i64 0)) #7, !dbg !798
+  %.pre = load i32* %7, align 4, !dbg !799, !tbaa !694
+  %.pre53 = load i32* %9, align 4, !dbg !800, !tbaa !696
+  %.pre54 = load i32* %11, align 4, !dbg !801, !tbaa !698
+  br label %23, !dbg !798
 
 ; <label>:23                                      ; preds = %22, %19
   %24 = phi i32 [ %.pre54, %22 ], [ %20, %19 ]
   %25 = phi i32 [ %.pre53, %22 ], [ %17, %19 ]
   %26 = phi i32 [ %.pre, %22 ], [ %14, %19 ]
-  %27 = tail call %struct.t_PSgrid* @mk_PSgrid(i32 %26, i32 %25, i32 %24) #8
-  store %struct.t_PSgrid* %27, %struct.t_PSgrid** @do_optimize_poisson.pot, align 8, !tbaa !19
-  %28 = load i32* %7, align 4, !tbaa !26
-  %29 = load i32* %9, align 4, !tbaa !27
-  %30 = load i32* %11, align 4, !tbaa !28
-  %31 = tail call %struct.t_PSgrid* @mk_PSgrid(i32 %28, i32 %29, i32 %30) #8
-  store %struct.t_PSgrid* %31, %struct.t_PSgrid** @do_optimize_poisson.rho, align 8, !tbaa !19
-  %32 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 37
-  %33 = bitcast float* %32 to i32*
-  %34 = load i32* %33, align 4, !tbaa !29
-  store i32 %34, i32* bitcast (float* @do_optimize_poisson.r1 to i32*), align 4, !tbaa !21
-  %35 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 38
-  %36 = bitcast float* %35 to i32*
-  %37 = load i32* %36, align 4, !tbaa !30
-  store i32 %37, i32* bitcast (float* @do_optimize_poisson.rc to i32*), align 4, !tbaa !21
-  call void @memset_pattern16(i8* %beta52, i8* bitcast ([4 x float]* @.memset_pattern15 to i8*), i64 12) #5
+  %27 = tail call %struct.t_PSgrid* @mk_PSgrid(i32 %26, i32 %25, i32 %24) #9, !dbg !802
+  store %struct.t_PSgrid* %27, %struct.t_PSgrid** @do_optimize_poisson.pot, align 8, !dbg !803, !tbaa !460
+  %28 = load i32* %7, align 4, !dbg !804, !tbaa !694
+  %29 = load i32* %9, align 4, !dbg !805, !tbaa !696
+  %30 = load i32* %11, align 4, !dbg !806, !tbaa !698
+  %31 = tail call %struct.t_PSgrid* @mk_PSgrid(i32 %28, i32 %29, i32 %30) #9, !dbg !807
+  store %struct.t_PSgrid* %31, %struct.t_PSgrid** @do_optimize_poisson.rho, align 8, !dbg !808, !tbaa !460
+  %32 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 37, !dbg !809
+  %33 = bitcast float* %32 to i32*, !dbg !809
+  %34 = load i32* %33, align 4, !dbg !809, !tbaa !722
+  store i32 %34, i32* bitcast (float* @do_optimize_poisson.r1 to i32*), align 4, !dbg !810, !tbaa !519
+  %35 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 38, !dbg !811
+  %36 = bitcast float* %35 to i32*, !dbg !811
+  %37 = load i32* %36, align 4, !dbg !811, !tbaa !725
+  store i32 %37, i32* bitcast (float* @do_optimize_poisson.rc to i32*), align 4, !dbg !812, !tbaa !519
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !360, metadata !394), !dbg !813
+  call void @memset_pattern16(i8* %beta52, i8* bitcast ([4 x float]* @.memset_pattern15 to i8*), i64 12) #6, !dbg !814
   store i1 true, i1* @do_optimize_poisson.bFirst, align 1
-  br label %38
+  br label %38, !dbg !817
 
 ; <label>:38                                      ; preds = %._crit_edge55, %23
   %39 = phi %struct.t_PSgrid* [ %.pre56, %._crit_edge55 ], [ %31, %23 ]
-  tail call void @clear_PSgrid(%struct.t_PSgrid* %39) #8
-  %40 = load float* @do_optimize_poisson.rc, align 4, !tbaa !21
-  %41 = load %struct.t_PSgrid** @do_optimize_poisson.rho, align 8, !tbaa !19
-  %42 = load float* @do_optimize_poisson.r1, align 4, !tbaa !21
-  tail call void @spread_q_poisson(%struct.__sFILE* %log, i32 %bVerbose, i32 1, i32 %natoms, [3 x float]* %x, float* %charge, float* %box, float %40, %struct.t_PSgrid* %41, %struct.t_nrnb* %nrnb, i32 %bOld, float %42) #6
-  %43 = load %struct.t_PSgrid** @do_optimize_poisson.rho, align 8, !tbaa !19
-  tail call void @symmetrize_PSgrid(%struct.__sFILE* %log, %struct.t_PSgrid* %43, float 0.000000e+00) #8
-  %44 = load %struct.t_PSgrid** @do_optimize_poisson.pot, align 8, !tbaa !19
-  %45 = load %struct.t_PSgrid** @do_optimize_poisson.rho, align 8, !tbaa !19
-  tail call void @copy_PSgrid(%struct.t_PSgrid* %44, %struct.t_PSgrid* %45) #8
-  %46 = load %struct.t_PSgrid** @do_optimize_poisson.pot, align 8, !tbaa !19
-  %47 = load %struct.t_PSgrid** @do_optimize_poisson.rho, align 8, !tbaa !19
-  %48 = load i32* @do_optimize_poisson.maxnit, align 4, !tbaa !20
-  %49 = tail call i32 @solve_poisson(%struct.__sFILE* %log, %struct.t_PSgrid* %46, %struct.t_PSgrid* %47, i32 %bVerbose, %struct.t_nrnb* %nrnb, i32 %48, float 0x3F847AE140000000, float* %box) #6
-  %50 = load %struct.t_PSgrid** @do_optimize_poisson.pot, align 8, !tbaa !19
-  tail call void @symmetrize_PSgrid(%struct.__sFILE* %log, %struct.t_PSgrid* %50, float 0.000000e+00) #8
-  %51 = getelementptr inbounds float* %beta, i64 1
-  %52 = getelementptr inbounds float* %beta, i64 2
-  %53 = icmp sgt i32 %natoms, 0
-  %54 = add i32 %natoms, -1
-  br label %55
+  tail call void @clear_PSgrid(%struct.t_PSgrid* %39) #9, !dbg !818
+  %40 = load float* @do_optimize_poisson.rc, align 4, !dbg !819, !tbaa !519
+  %41 = load %struct.t_PSgrid** @do_optimize_poisson.rho, align 8, !dbg !820, !tbaa !460
+  %42 = load float* @do_optimize_poisson.r1, align 4, !dbg !821, !tbaa !519
+  tail call void @spread_q_poisson(%struct.__sFILE* %log, i32 %bVerbose, i32 1, i32 %natoms, [3 x float]* %x, float* %charge, float* %box, float %40, %struct.t_PSgrid* %41, %struct.t_nrnb* %nrnb, i32 %bOld, float %42) #7, !dbg !822
+  %43 = load %struct.t_PSgrid** @do_optimize_poisson.rho, align 8, !dbg !823, !tbaa !460
+  tail call void @symmetrize_PSgrid(%struct.__sFILE* %log, %struct.t_PSgrid* %43, float 0.000000e+00) #9, !dbg !824
+  %44 = load %struct.t_PSgrid** @do_optimize_poisson.pot, align 8, !dbg !825, !tbaa !460
+  %45 = load %struct.t_PSgrid** @do_optimize_poisson.rho, align 8, !dbg !827, !tbaa !460
+  tail call void @copy_PSgrid(%struct.t_PSgrid* %44, %struct.t_PSgrid* %45) #9, !dbg !828
+  %46 = load %struct.t_PSgrid** @do_optimize_poisson.pot, align 8, !dbg !829, !tbaa !460
+  %47 = load %struct.t_PSgrid** @do_optimize_poisson.rho, align 8, !dbg !830, !tbaa !460
+  %48 = load i32* @do_optimize_poisson.maxnit, align 4, !dbg !831, !tbaa !472
+  %49 = tail call i32 @solve_poisson(%struct.__sFILE* %log, %struct.t_PSgrid* %46, %struct.t_PSgrid* %47, i32 %bVerbose, %struct.t_nrnb* %nrnb, i32 %48, float 0x3F847AE140000000, float* %box) #7, !dbg !832
+  %50 = load %struct.t_PSgrid** @do_optimize_poisson.pot, align 8, !dbg !833, !tbaa !460
+  tail call void @symmetrize_PSgrid(%struct.__sFILE* %log, %struct.t_PSgrid* %50, float 0.000000e+00) #9, !dbg !834
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !361, metadata !394), !dbg !835
+  %51 = getelementptr inbounds float* %beta, i64 1, !dbg !836
+  %52 = getelementptr inbounds float* %beta, i64 2, !dbg !843
+  %53 = icmp sgt i32 %natoms, 0, !dbg !847
+  %54 = add i32 %natoms, -1, !dbg !850
+  br label %55, !dbg !850
 
 ; <label>:55                                      ; preds = %85, %38
   %indvars.iv46 = phi i64 [ 0, %38 ], [ %indvars.iv.next47, %85 ]
-  %56 = trunc i64 %indvars.iv46 to i32
-  %57 = sitofp i32 %56 to double
-  %58 = fmul double %57, 2.500000e-02
-  %59 = fadd double %58, 1.600000e+00
-  %60 = fptrunc double %59 to float
-  store float %60, float* %beta, align 4, !tbaa !21
-  br label %61
+  %56 = trunc i64 %indvars.iv46 to i32, !dbg !851
+  %57 = sitofp i32 %56 to double, !dbg !851
+  %58 = fmul double %57, 2.500000e-02, !dbg !851
+  %59 = fadd double %58, 1.600000e+00, !dbg !851
+  %60 = fptrunc double %59 to float, !dbg !851
+  store float %60, float* %beta, align 4, !dbg !852, !tbaa !519
+  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !362, metadata !394), !dbg !853
+  br label %61, !dbg !854
 
 ; <label>:61                                      ; preds = %84, %55
   %indvars.iv43 = phi i64 [ 0, %55 ], [ %indvars.iv.next44, %84 ]
-  %62 = trunc i64 %indvars.iv43 to i32
-  %63 = sitofp i32 %62 to double
-  %64 = fmul double %63, 2.500000e-02
-  %65 = fadd double %64, 1.600000e+00
-  %66 = fptrunc double %65 to float
-  store float %66, float* %51, align 4, !tbaa !21
-  br label %67
+  %62 = trunc i64 %indvars.iv43 to i32, !dbg !855
+  %63 = sitofp i32 %62 to double, !dbg !855
+  %64 = fmul double %63, 2.500000e-02, !dbg !855
+  %65 = fadd double %64, 1.600000e+00, !dbg !855
+  %66 = fptrunc double %65 to float, !dbg !855
+  store float %66, float* %51, align 4, !dbg !856, !tbaa !519
+  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !363, metadata !394), !dbg !857
+  br label %67, !dbg !858
 
 ; <label>:67                                      ; preds = %._crit_edge20, %61
   %indvars.iv40 = phi i64 [ 0, %61 ], [ %indvars.iv.next41, %._crit_edge20 ]
-  %68 = trunc i64 %indvars.iv40 to i32
-  %69 = sitofp i32 %68 to double
-  %70 = fmul double %69, 2.500000e-02
-  %71 = fadd double %70, 1.600000e+00
-  %72 = fptrunc double %71 to float
-  store float %72, float* %52, align 4, !tbaa !21
-  br i1 %53, label %.lr.ph19, label %._crit_edge20
+  %68 = trunc i64 %indvars.iv40 to i32, !dbg !859
+  %69 = sitofp i32 %68 to double, !dbg !859
+  %70 = fmul double %69, 2.500000e-02, !dbg !859
+  %71 = fadd double %70, 1.600000e+00, !dbg !859
+  %72 = fptrunc double %71 to float, !dbg !859
+  store float %72, float* %52, align 4, !dbg !860, !tbaa !519
+  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !359, metadata !394), !dbg !861
+  br i1 %53, label %.lr.ph19, label %._crit_edge20, !dbg !862
 
 .lr.ph19:                                         ; preds = %67, %.lr.ph19
   %indvars.iv35 = phi i64 [ %indvars.iv.next36, %.lr.ph19 ], [ 0, %67 ]
-  %73 = getelementptr inbounds float* %phi, i64 %indvars.iv35
-  store float 0.000000e+00, float* %73, align 4, !tbaa !21
-  %74 = getelementptr inbounds [3 x float]* %f, i64 %indvars.iv35, i64 0
-  store float 0.000000e+00, float* %74, align 4, !tbaa !21
-  %75 = getelementptr inbounds [3 x float]* %f, i64 %indvars.iv35, i64 1
-  store float 0.000000e+00, float* %75, align 4, !tbaa !21
-  %76 = getelementptr inbounds [3 x float]* %f, i64 %indvars.iv35, i64 2
-  store float 0.000000e+00, float* %76, align 4, !tbaa !21
-  %indvars.iv.next36 = add nuw nsw i64 %indvars.iv35, 1
-  %lftr.wideiv37 = trunc i64 %indvars.iv35 to i32
-  %exitcond38 = icmp eq i32 %lftr.wideiv37, %54
-  br i1 %exitcond38, label %._crit_edge20, label %.lr.ph19
+  %73 = getelementptr inbounds float* %phi, i64 %indvars.iv35, !dbg !863
+  store float 0.000000e+00, float* %73, align 4, !dbg !865, !tbaa !519
+  %74 = getelementptr inbounds [3 x float]* %f, i64 %indvars.iv35, i64 0, !dbg !866
+  tail call void @llvm.dbg.value(metadata float* %74, i64 0, metadata !374, metadata !394), !dbg !867
+  store float 0.000000e+00, float* %74, align 4, !dbg !869, !tbaa !519
+  %75 = getelementptr inbounds [3 x float]* %f, i64 %indvars.iv35, i64 1, !dbg !870
+  store float 0.000000e+00, float* %75, align 4, !dbg !871, !tbaa !519
+  %76 = getelementptr inbounds [3 x float]* %f, i64 %indvars.iv35, i64 2, !dbg !872
+  store float 0.000000e+00, float* %76, align 4, !dbg !873, !tbaa !519
+  %indvars.iv.next36 = add nuw nsw i64 %indvars.iv35, 1, !dbg !862
+  %lftr.wideiv37 = trunc i64 %indvars.iv35 to i32, !dbg !862
+  %exitcond38 = icmp eq i32 %lftr.wideiv37, %54, !dbg !862
+  br i1 %exitcond38, label %._crit_edge20, label %.lr.ph19, !dbg !862
 
 ._crit_edge20:                                    ; preds = %.lr.ph19, %67
-  %77 = load %struct.t_PSgrid** @do_optimize_poisson.pot, align 8, !tbaa !19
-  %78 = call float @ps_gather_f(%struct.__sFILE* %log, i32 %bVerbose, i32 %natoms, [3 x float]* %x, [3 x float]* %f, float* %charge, float* %box, float* %phi, %struct.t_PSgrid* %77, float* %beta, %struct.t_nrnb* %nrnb) #6
-  %79 = load float* %beta, align 4, !tbaa !21
-  %80 = fpext float %79 to double
-  %81 = call i32 (i8*, i32, i64, i8*, ...)* @__sprintf_chk(i8* %2, i32 0, i64 128, i8* getelementptr inbounds ([20 x i8]* @.str12, i64 0, i64 0), double %80) #6
-  %82 = call float @analyse_diff(%struct.__sFILE* %log, i8* %2, i32 %natoms, [3 x float]* %f_ref, [3 x float]* %f, float* %phi_ref, float* %phi, float* null, i8* null, i8* null, i8* null, i8* null) #6
-  %83 = getelementptr inbounds [21 x [21 x [21 x float]]]* %rmsf, i64 0, i64 %indvars.iv46, i64 %indvars.iv43, i64 %indvars.iv40
-  store float %82, float* %83, align 4, !tbaa !21
-  %indvars.iv.next41 = add nuw nsw i64 %indvars.iv40, 1
-  %exitcond42 = icmp eq i64 %indvars.iv.next41, 21
-  br i1 %exitcond42, label %84, label %67
+  %77 = load %struct.t_PSgrid** @do_optimize_poisson.pot, align 8, !dbg !874, !tbaa !460
+  %78 = call float @ps_gather_f(%struct.__sFILE* %log, i32 %bVerbose, i32 %natoms, [3 x float]* %x, [3 x float]* %f, float* %charge, float* %box, float* %phi, %struct.t_PSgrid* %77, float* %beta, %struct.t_nrnb* %nrnb) #7, !dbg !875
+  call void @llvm.dbg.value(metadata float %78, i64 0, metadata !368, metadata !394), !dbg !776
+  %79 = load float* %beta, align 4, !dbg !876, !tbaa !519
+  %80 = fpext float %79 to double, !dbg !876
+  %81 = call i32 (i8*, i32, i64, i8*, ...)* @__sprintf_chk(i8* %2, i32 0, i64 128, i8* getelementptr inbounds ([20 x i8]* @.str12, i64 0, i64 0), double %80) #7, !dbg !876
+  %82 = call float @analyse_diff(%struct.__sFILE* %log, i8* %2, i32 %natoms, [3 x float]* %f_ref, [3 x float]* %f, float* %phi_ref, float* %phi, float* null, i8* null, i8* null, i8* null, i8* null) #7, !dbg !877
+  %83 = getelementptr inbounds [21 x [21 x [21 x float]]]* %rmsf, i64 0, i64 %indvars.iv46, i64 %indvars.iv43, i64 %indvars.iv40, !dbg !878
+  store float %82, float* %83, align 4, !dbg !879, !tbaa !519
+  %indvars.iv.next41 = add nuw nsw i64 %indvars.iv40, 1, !dbg !858
+  %exitcond42 = icmp eq i64 %indvars.iv.next41, 21, !dbg !858
+  br i1 %exitcond42, label %84, label %67, !dbg !858
 
 ; <label>:84                                      ; preds = %._crit_edge20
-  %indvars.iv.next44 = add nuw nsw i64 %indvars.iv43, 1
-  %exitcond45 = icmp eq i64 %indvars.iv.next44, 21
-  br i1 %exitcond45, label %85, label %61
+  %indvars.iv.next44 = add nuw nsw i64 %indvars.iv43, 1, !dbg !854
+  %exitcond45 = icmp eq i64 %indvars.iv.next44, 21, !dbg !854
+  br i1 %exitcond45, label %85, label %61, !dbg !854
 
 ; <label>:85                                      ; preds = %84
-  %indvars.iv.next47 = add nuw nsw i64 %indvars.iv46, 1
-  %exitcond48 = icmp eq i64 %indvars.iv.next47, 21
-  br i1 %exitcond48, label %86, label %55
+  %indvars.iv.next47 = add nuw nsw i64 %indvars.iv46, 1, !dbg !850
+  %exitcond48 = icmp eq i64 %indvars.iv.next47, 21, !dbg !850
+  br i1 %exitcond48, label %86, label %55, !dbg !850
 
 ; <label>:86                                      ; preds = %85
-  %87 = getelementptr inbounds [21 x [21 x [21 x float]]]* %rmsf, i64 0, i64 0, i64 0, i64 0
-  %88 = load float* %87, align 16, !tbaa !21
-  br label %89
+  %87 = getelementptr inbounds [21 x [21 x [21 x float]]]* %rmsf, i64 0, i64 0, i64 0, i64 0, !dbg !880
+  %88 = load float* %87, align 16, !dbg !880, !tbaa !519
+  call void @llvm.dbg.value(metadata float %88, i64 0, metadata !355, metadata !394), !dbg !881
+  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !357, metadata !562), !dbg !772
+  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !361, metadata !394), !dbg !835
+  br label %89, !dbg !882
 
 ; <label>:89                                      ; preds = %120, %86
   %indvars.iv32 = phi i64 [ 0, %86 ], [ %indvars.iv.next33, %120 ]
@@ -172,13 +202,14 @@ define float @do_optimize_poisson(%struct.__sFILE* %log, i32 %bVerbose, %struct.
   %minimum.sroa.6.014 = phi i32 [ 0, %86 ], [ %minimum.sroa.6.3, %120 ]
   %minimum.sroa.0.013 = phi i32 [ 0, %86 ], [ %minimum.sroa.0.3, %120 ]
   %minimum.sroa.3.012 = phi i32 [ 0, %86 ], [ %minimum.sroa.3.3, %120 ]
-  %90 = trunc i64 %indvars.iv32 to i32
-  %91 = sitofp i32 %90 to double
-  %92 = fmul double %91, 2.500000e-02
-  %93 = fadd double %92, 1.600000e+00
-  %94 = fptrunc double %93 to float
-  store float %94, float* %beta, align 4, !tbaa !21
-  br label %95
+  %90 = trunc i64 %indvars.iv32 to i32, !dbg !884
+  %91 = sitofp i32 %90 to double, !dbg !884
+  %92 = fmul double %91, 2.500000e-02, !dbg !884
+  %93 = fadd double %92, 1.600000e+00, !dbg !884
+  %94 = fptrunc double %93 to float, !dbg !884
+  store float %94, float* %beta, align 4, !dbg !887, !tbaa !519
+  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !362, metadata !394), !dbg !853
+  br label %95, !dbg !888
 
 ; <label>:95                                      ; preds = %119, %89
   %indvars.iv29 = phi i64 [ 0, %89 ], [ %indvars.iv.next30, %119 ]
@@ -186,13 +217,14 @@ define float @do_optimize_poisson(%struct.__sFILE* %log, i32 %bVerbose, %struct.
   %minimum.sroa.6.19 = phi i32 [ %minimum.sroa.6.014, %89 ], [ %minimum.sroa.6.3, %119 ]
   %minimum.sroa.0.18 = phi i32 [ %minimum.sroa.0.013, %89 ], [ %minimum.sroa.0.3, %119 ]
   %minimum.sroa.3.17 = phi i32 [ %minimum.sroa.3.012, %89 ], [ %minimum.sroa.3.3, %119 ]
-  %96 = trunc i64 %indvars.iv29 to i32
-  %97 = sitofp i32 %96 to double
-  %98 = fmul double %97, 2.500000e-02
-  %99 = fadd double %98, 1.600000e+00
-  %100 = fptrunc double %99 to float
-  store float %100, float* %51, align 4, !tbaa !21
-  br label %101
+  %96 = trunc i64 %indvars.iv29 to i32, !dbg !890
+  %97 = sitofp i32 %96 to double, !dbg !890
+  %98 = fmul double %97, 2.500000e-02, !dbg !890
+  %99 = fadd double %98, 1.600000e+00, !dbg !890
+  %100 = fptrunc double %99 to float, !dbg !890
+  store float %100, float* %51, align 4, !dbg !893, !tbaa !519
+  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !363, metadata !394), !dbg !857
+  br label %101, !dbg !894
 
 ; <label>:101                                     ; preds = %._crit_edge57, %95
   %102 = phi float [ %100, %95 ], [ %.pre58, %._crit_edge57 ]
@@ -201,91 +233,96 @@ define float @do_optimize_poisson(%struct.__sFILE* %log, i32 %bVerbose, %struct.
   %minimum.sroa.6.24 = phi i32 [ %minimum.sroa.6.19, %95 ], [ %minimum.sroa.6.3, %._crit_edge57 ]
   %minimum.sroa.0.23 = phi i32 [ %minimum.sroa.0.18, %95 ], [ %minimum.sroa.0.3, %._crit_edge57 ]
   %minimum.sroa.3.22 = phi i32 [ %minimum.sroa.3.17, %95 ], [ %minimum.sroa.3.3, %._crit_edge57 ]
-  %103 = trunc i64 %indvars.iv26 to i32
-  %104 = sitofp i32 %103 to double
-  %105 = fmul double %104, 2.500000e-02
-  %106 = fadd double %105, 1.600000e+00
-  %107 = fptrunc double %106 to float
-  store float %107, float* %52, align 4, !tbaa !21
-  %108 = getelementptr inbounds [21 x [21 x [21 x float]]]* %rmsf, i64 0, i64 %indvars.iv32, i64 %indvars.iv29, i64 %indvars.iv26
-  %109 = load float* %108, align 4, !tbaa !21
-  %110 = load float* %beta, align 4, !tbaa !21
-  %111 = fpext float %110 to double
-  %112 = fpext float %102 to double
-  %113 = fpext float %107 to double
-  %114 = fpext float %109 to double
-  %115 = call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %log, i8* getelementptr inbounds ([40 x i8]* @.str13, i64 0, i64 0), double %111, double %112, double %113, double %114) #6
-  %116 = fcmp olt float %109, %rmsf_min.26
-  br i1 %116, label %117, label %118
+  %103 = trunc i64 %indvars.iv26 to i32, !dbg !896
+  %104 = sitofp i32 %103 to double, !dbg !896
+  %105 = fmul double %104, 2.500000e-02, !dbg !896
+  %106 = fadd double %105, 1.600000e+00, !dbg !896
+  %107 = fptrunc double %106 to float, !dbg !896
+  store float %107, float* %52, align 4, !dbg !899, !tbaa !519
+  %108 = getelementptr inbounds [21 x [21 x [21 x float]]]* %rmsf, i64 0, i64 %indvars.iv32, i64 %indvars.iv29, i64 %indvars.iv26, !dbg !900
+  %109 = load float* %108, align 4, !dbg !900, !tbaa !519
+  call void @llvm.dbg.value(metadata float %109, i64 0, metadata !356, metadata !394), !dbg !901
+  %110 = load float* %beta, align 4, !dbg !902, !tbaa !519
+  %111 = fpext float %110 to double, !dbg !902
+  %112 = fpext float %102 to double, !dbg !903
+  %113 = fpext float %107 to double, !dbg !904
+  %114 = fpext float %109 to double, !dbg !905
+  %115 = call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %log, i8* getelementptr inbounds ([40 x i8]* @.str13, i64 0, i64 0), double %111, double %112, double %113, double %114) #7, !dbg !906
+  %116 = fcmp olt float %109, %rmsf_min.26, !dbg !907
+  br i1 %116, label %117, label %118, !dbg !909
 
 ; <label>:117                                     ; preds = %101
-  br label %118
+  call void @llvm.dbg.value(metadata float %109, i64 0, metadata !355, metadata !394), !dbg !881
+  br label %118, !dbg !910
 
 ; <label>:118                                     ; preds = %101, %117
   %minimum.sroa.3.3 = phi i32 [ %96, %117 ], [ %minimum.sroa.3.22, %101 ]
   %minimum.sroa.0.3 = phi i32 [ %90, %117 ], [ %minimum.sroa.0.23, %101 ]
   %minimum.sroa.6.3 = phi i32 [ %103, %117 ], [ %minimum.sroa.6.24, %101 ]
   %rmsf_min.3 = phi float [ %109, %117 ], [ %rmsf_min.26, %101 ]
-  %indvars.iv.next27 = add nuw nsw i64 %indvars.iv26, 1
-  %exitcond28 = icmp eq i64 %indvars.iv.next27, 21
-  br i1 %exitcond28, label %119, label %._crit_edge57
+  %indvars.iv.next27 = add nuw nsw i64 %indvars.iv26, 1, !dbg !894
+  %exitcond28 = icmp eq i64 %indvars.iv.next27, 21, !dbg !894
+  br i1 %exitcond28, label %119, label %._crit_edge57, !dbg !894
 
 ._crit_edge57:                                    ; preds = %118
-  %.pre58 = load float* %51, align 4, !tbaa !21
-  br label %101
+  %.pre58 = load float* %51, align 4, !dbg !903, !tbaa !519
+  br label %101, !dbg !894
 
 ; <label>:119                                     ; preds = %118
-  %indvars.iv.next30 = add nuw nsw i64 %indvars.iv29, 1
-  %exitcond31 = icmp eq i64 %indvars.iv.next30, 21
-  br i1 %exitcond31, label %120, label %95
+  %indvars.iv.next30 = add nuw nsw i64 %indvars.iv29, 1, !dbg !888
+  %exitcond31 = icmp eq i64 %indvars.iv.next30, 21, !dbg !888
+  br i1 %exitcond31, label %120, label %95, !dbg !888
 
 ; <label>:120                                     ; preds = %119
-  %indvars.iv.next33 = add nuw nsw i64 %indvars.iv32, 1
-  %exitcond34 = icmp eq i64 %indvars.iv.next33, 21
-  br i1 %exitcond34, label %121, label %89
+  %indvars.iv.next33 = add nuw nsw i64 %indvars.iv32, 1, !dbg !882
+  %exitcond34 = icmp eq i64 %indvars.iv.next33, 21, !dbg !882
+  br i1 %exitcond34, label %121, label %89, !dbg !882
 
 ; <label>:121                                     ; preds = %120
-  %122 = sitofp i32 %minimum.sroa.0.3 to double
-  %123 = fmul double %122, 2.500000e-02
-  %124 = fadd double %123, 1.600000e+00
-  %125 = fptrunc double %124 to float
-  store float %125, float* %beta, align 4, !tbaa !21
-  %126 = sitofp i32 %minimum.sroa.3.3 to double
-  %127 = fmul double %126, 2.500000e-02
-  %128 = fadd double %127, 1.600000e+00
-  %129 = fptrunc double %128 to float
-  store float %129, float* %51, align 4, !tbaa !21
-  %130 = sitofp i32 %minimum.sroa.6.3 to double
-  %131 = fmul double %130, 2.500000e-02
-  %132 = fadd double %131, 1.600000e+00
-  %133 = fptrunc double %132 to float
-  store float %133, float* %52, align 4, !tbaa !21
-  %134 = fpext float %rmsf_min.3 to double
-  %135 = fpext float %125 to double
-  %136 = fpext float %129 to double
-  %137 = fpext float %133 to double
-  %138 = call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %log, i8* getelementptr inbounds ([50 x i8]* @.str14, i64 0, i64 0), double %134, double %135, double %136, double %137) #6
-  br i1 %53, label %.lr.ph, label %._crit_edge
+  %122 = sitofp i32 %minimum.sroa.0.3 to double, !dbg !912
+  %123 = fmul double %122, 2.500000e-02, !dbg !912
+  %124 = fadd double %123, 1.600000e+00, !dbg !912
+  %125 = fptrunc double %124 to float, !dbg !912
+  store float %125, float* %beta, align 4, !dbg !913, !tbaa !519
+  %126 = sitofp i32 %minimum.sroa.3.3 to double, !dbg !914
+  %127 = fmul double %126, 2.500000e-02, !dbg !914
+  %128 = fadd double %127, 1.600000e+00, !dbg !914
+  %129 = fptrunc double %128 to float, !dbg !914
+  store float %129, float* %51, align 4, !dbg !915, !tbaa !519
+  %130 = sitofp i32 %minimum.sroa.6.3 to double, !dbg !916
+  %131 = fmul double %130, 2.500000e-02, !dbg !916
+  %132 = fadd double %131, 1.600000e+00, !dbg !916
+  %133 = fptrunc double %132 to float, !dbg !916
+  store float %133, float* %52, align 4, !dbg !917, !tbaa !519
+  %134 = fpext float %rmsf_min.3 to double, !dbg !918
+  %135 = fpext float %125 to double, !dbg !919
+  %136 = fpext float %129 to double, !dbg !920
+  %137 = fpext float %133 to double, !dbg !921
+  %138 = call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %log, i8* getelementptr inbounds ([50 x i8]* @.str14, i64 0, i64 0), double %134, double %135, double %136, double %137) #7, !dbg !922
+  call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !359, metadata !394), !dbg !861
+  br i1 %53, label %.lr.ph, label %._crit_edge, !dbg !923
 
 .lr.ph:                                           ; preds = %121, %.lr.ph
   %indvars.iv = phi i64 [ %indvars.iv.next, %.lr.ph ], [ 0, %121 ]
-  %139 = getelementptr inbounds float* %phi, i64 %indvars.iv
-  store float 0.000000e+00, float* %139, align 4, !tbaa !21
-  %140 = getelementptr inbounds [3 x float]* %f, i64 %indvars.iv, i64 0
-  store float 0.000000e+00, float* %140, align 4, !tbaa !21
-  %141 = getelementptr inbounds [3 x float]* %f, i64 %indvars.iv, i64 1
-  store float 0.000000e+00, float* %141, align 4, !tbaa !21
-  %142 = getelementptr inbounds [3 x float]* %f, i64 %indvars.iv, i64 2
-  store float 0.000000e+00, float* %142, align 4, !tbaa !21
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %54
-  br i1 %exitcond, label %._crit_edge, label %.lr.ph
+  %139 = getelementptr inbounds float* %phi, i64 %indvars.iv, !dbg !925
+  store float 0.000000e+00, float* %139, align 4, !dbg !928, !tbaa !519
+  %140 = getelementptr inbounds [3 x float]* %f, i64 %indvars.iv, i64 0, !dbg !929
+  tail call void @llvm.dbg.value(metadata float* %140, i64 0, metadata !374, metadata !394), !dbg !930
+  store float 0.000000e+00, float* %140, align 4, !dbg !932, !tbaa !519
+  %141 = getelementptr inbounds [3 x float]* %f, i64 %indvars.iv, i64 1, !dbg !933
+  store float 0.000000e+00, float* %141, align 4, !dbg !934, !tbaa !519
+  %142 = getelementptr inbounds [3 x float]* %f, i64 %indvars.iv, i64 2, !dbg !935
+  store float 0.000000e+00, float* %142, align 4, !dbg !936, !tbaa !519
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !923
+  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !923
+  %exitcond = icmp eq i32 %lftr.wideiv, %54, !dbg !923
+  br i1 %exitcond, label %._crit_edge, label %.lr.ph, !dbg !923
 
 ._crit_edge:                                      ; preds = %.lr.ph, %121
-  %143 = load %struct.t_PSgrid** @do_optimize_poisson.pot, align 8, !tbaa !19
-  %144 = call float @ps_gather_f(%struct.__sFILE* %log, i32 %bVerbose, i32 %natoms, [3 x float]* %x, [3 x float]* %f, float* %charge, float* %box, float* %phi, %struct.t_PSgrid* %143, float* %beta, %struct.t_nrnb* %nrnb) #6
-  call void @llvm.lifetime.end(i64 128, i8* %2) #5
-  call void @llvm.lifetime.end(i64 37044, i8* %1) #5
-  ret float %144
+  %143 = load %struct.t_PSgrid** @do_optimize_poisson.pot, align 8, !dbg !937, !tbaa !460
+  %144 = call float @ps_gather_f(%struct.__sFILE* %log, i32 %bVerbose, i32 %natoms, [3 x float]* %x, [3 x float]* %f, float* %charge, float* %box, float* %phi, %struct.t_PSgrid* %143, float* %beta, %struct.t_nrnb* %nrnb) #7, !dbg !938
+  call void @llvm.dbg.value(metadata float %144, i64 0, metadata !368, metadata !394), !dbg !776
+  call void @llvm.lifetime.end(i64 128, i8* %2) #6, !dbg !939
+  call void @llvm.lifetime.end(i64 37044, i8* %1) #6, !dbg !939
+  ret float %144, !dbg !939
 }

@@ -1,0 +1,78 @@
+define internal fastcc void @_ZN3povL25determine_element_textureEPNS_11Blob_StructEPNS_19Blob_Element_StructEPNS_14Texture_StructEPdPiPS5_S6_(%"struct.pov::Blob_Struct"* nocapture readonly %Blob, %"struct.pov::Blob_Element_Struct"* %Element, %"struct.pov::Texture_Struct"* %Texture, double* %P, i32* nocapture %Count, %"struct.pov::Texture_Struct"** nocapture %Textures, double* nocapture %Weights) #0 {
+  tail call void @llvm.dbg.value(metadata %"struct.pov::Blob_Struct"* %Blob, i64 0, metadata !1491, metadata !1893), !dbg !3708
+  tail call void @llvm.dbg.value(metadata %"struct.pov::Blob_Element_Struct"* %Element, i64 0, metadata !1492, metadata !1893), !dbg !3709
+  tail call void @llvm.dbg.value(metadata %"struct.pov::Texture_Struct"* %Texture, i64 0, metadata !1493, metadata !1893), !dbg !3710
+  tail call void @llvm.dbg.value(metadata double* %P, i64 0, metadata !1494, metadata !1893), !dbg !3711
+  tail call void @llvm.dbg.value(metadata i32* %Count, i64 0, metadata !1495, metadata !1893), !dbg !3712
+  tail call void @llvm.dbg.value(metadata %"struct.pov::Texture_Struct"** %Textures, i64 0, metadata !1496, metadata !1893), !dbg !3713
+  tail call void @llvm.dbg.value(metadata double* %Weights, i64 0, metadata !1497, metadata !1893), !dbg !3714
+  %1 = tail call fastcc double @_ZN3povL23calculate_element_fieldEPNS_19Blob_Element_StructEPd(%"struct.pov::Blob_Element_Struct"* %Element, double* %P) #6, !dbg !3715
+  %2 = tail call double @fabs(double %1) #7, !dbg !3716
+  tail call void @llvm.dbg.value(metadata double %2, i64 0, metadata !1499, metadata !1893), !dbg !3717
+  %3 = fcmp ueq double %1, 0.000000e+00, !dbg !3718
+  br i1 %3, label %34, label %4, !dbg !3720
+
+; <label>:4                                       ; preds = %0
+  %5 = icmp eq %"struct.pov::Texture_Struct"* %Texture, null, !dbg !3721
+  br i1 %5, label %6, label %15, !dbg !3724
+
+; <label>:6                                       ; preds = %4
+  %7 = getelementptr inbounds %"struct.pov::Blob_Struct"* %Blob, i64 0, i32 3, !dbg !3725
+  %8 = bitcast %"struct.pov::Texture_Struct"** %7 to i64*, !dbg !3725
+  %9 = load i64* %8, align 8, !dbg !3725, !tbaa !3536
+  %10 = load i32* %Count, align 4, !dbg !3727, !tbaa !1988
+  %11 = sext i32 %10 to i64, !dbg !3728
+  %12 = getelementptr inbounds %"struct.pov::Texture_Struct"** %Textures, i64 %11, !dbg !3728
+  %13 = bitcast %"struct.pov::Texture_Struct"** %12 to i64*, !dbg !3729
+  store i64 %9, i64* %13, align 8, !dbg !3729, !tbaa !2026
+  %14 = inttoptr i64 %9 to %"struct.pov::Texture_Struct"*
+  br label %.preheader, !dbg !3730
+
+; <label>:15                                      ; preds = %4
+  %16 = load i32* %Count, align 4, !dbg !3731, !tbaa !1988
+  %17 = sext i32 %16 to i64, !dbg !3733
+  %18 = getelementptr inbounds %"struct.pov::Texture_Struct"** %Textures, i64 %17, !dbg !3733
+  store %"struct.pov::Texture_Struct"* %Texture, %"struct.pov::Texture_Struct"** %18, align 8, !dbg !3734, !tbaa !2026
+  br label %.preheader
+
+.preheader:                                       ; preds = %15, %6
+  %19 = phi %"struct.pov::Texture_Struct"* [ %Texture, %15 ], [ %14, %6 ]
+  %20 = phi i32 [ %16, %15 ], [ %10, %6 ]
+  %21 = icmp sgt i32 %20, 0, !dbg !3735
+  br i1 %21, label %.lr.ph, label %.preheader._crit_edge, !dbg !3738
+
+.preheader._crit_edge:                            ; preds = %.preheader
+  %.pre = sext i32 %20 to i64, !dbg !3739
+  br label %._crit_edge, !dbg !3738
+
+; <label>:22                                      ; preds = %.lr.ph
+  %23 = icmp slt i64 %indvars.iv.next, %26, !dbg !3735
+  br i1 %23, label %.lr.ph, label %._crit_edge, !dbg !3738
+
+.lr.ph:                                           ; preds = %.preheader, %22
+  %indvars.iv = phi i64 [ %indvars.iv.next, %22 ], [ 0, %.preheader ]
+  %24 = getelementptr inbounds %"struct.pov::Texture_Struct"** %Textures, i64 %indvars.iv, !dbg !3740
+  %25 = load %"struct.pov::Texture_Struct"** %24, align 8, !dbg !3740, !tbaa !2026
+  %26 = sext i32 %20 to i64, !dbg !3743
+  %27 = icmp eq %"struct.pov::Texture_Struct"* %25, %19, !dbg !3744
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !3738
+  br i1 %27, label %28, label %22, !dbg !3745
+
+; <label>:28                                      ; preds = %.lr.ph
+  %29 = getelementptr inbounds double* %Weights, i64 %indvars.iv, !dbg !3746
+  %30 = load double* %29, align 8, !dbg !3748, !tbaa !1939
+  %31 = fadd double %2, %30, !dbg !3748
+  store double %31, double* %29, align 8, !dbg !3748, !tbaa !1939
+  br label %34, !dbg !3749
+
+._crit_edge:                                      ; preds = %22, %.preheader._crit_edge
+  %.pre-phi = phi i64 [ %.pre, %.preheader._crit_edge ], [ %26, %22 ], !dbg !3739
+  %32 = add nsw i32 %20, 1, !dbg !3750
+  store i32 %32, i32* %Count, align 4, !dbg !3750, !tbaa !1988
+  %33 = getelementptr inbounds double* %Weights, i64 %.pre-phi, !dbg !3739
+  store double %2, double* %33, align 8, !dbg !3751, !tbaa !1939
+  br label %34, !dbg !3752
+
+; <label>:34                                      ; preds = %0, %28, %._crit_edge
+  ret void, !dbg !3753
+}

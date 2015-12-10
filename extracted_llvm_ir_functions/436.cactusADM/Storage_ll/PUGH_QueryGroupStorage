@@ -1,85 +1,98 @@
 define i32 @PUGH_QueryGroupStorage(%struct.cGH* %GH, i32 %group, i8* %groupname) #1 {
-  %1 = icmp ne i8* %groupname, null
-  br i1 %1, label %2, label %4
+  tail call void @llvm.dbg.value(metadata %struct.cGH* %GH, i64 0, metadata !141, metadata !539), !dbg !601
+  tail call void @llvm.dbg.value(metadata i32 %group, i64 0, metadata !142, metadata !539), !dbg !602
+  tail call void @llvm.dbg.value(metadata i8* %groupname, i64 0, metadata !143, metadata !539), !dbg !603
+  tail call void @llvm.dbg.value(metadata i32 -1, i64 0, metadata !148, metadata !539), !dbg !604
+  %1 = icmp ne i8* %groupname, null, !dbg !605
+  br i1 %1, label %2, label %4, !dbg !607
 
 ; <label>:2                                       ; preds = %0
-  %3 = tail call i32 @CCTK_GroupIndex(i8* %groupname) #7
-  br label %4
+  %3 = tail call i32 @CCTK_GroupIndex(i8* %groupname) #7, !dbg !608
+  tail call void @llvm.dbg.value(metadata i32 %3, i64 0, metadata !142, metadata !539), !dbg !602
+  br label %4, !dbg !610
 
 ; <label>:4                                       ; preds = %2, %0
   %.0 = phi i32 [ %3, %2 ], [ %group, %0 ]
-  %5 = tail call i32 @CCTK_FirstVarIndexI(i32 %.0) #7
-  %6 = icmp sgt i32 %5, -1
-  br i1 %6, label %7, label %42
+  %5 = tail call i32 @CCTK_FirstVarIndexI(i32 %.0) #7, !dbg !611
+  tail call void @llvm.dbg.value(metadata i32 %5, i64 0, metadata !144, metadata !539), !dbg !612
+  %6 = icmp sgt i32 %5, -1, !dbg !613
+  br i1 %6, label %7, label %42, !dbg !615
 
 ; <label>:7                                       ; preds = %4
-  %8 = tail call %struct.PGH* @PUGH_pGH(%struct.cGH* %GH) #7
-  %9 = tail call i32 @CCTK_GroupTypeI(i32 %.0) #7
-  %10 = icmp eq i32 %9, 1
-  br i1 %10, label %11, label %24
+  %8 = tail call %struct.PGH* @PUGH_pGH(%struct.cGH* %GH) #7, !dbg !616
+  tail call void @llvm.dbg.value(metadata %struct.PGH* %8, i64 0, metadata !149, metadata !539), !dbg !618
+  %9 = tail call i32 @CCTK_GroupTypeI(i32 %.0) #7, !dbg !619
+  tail call void @llvm.dbg.value(metadata i32 %9, i64 0, metadata !146, metadata !539), !dbg !620
+  %10 = icmp eq i32 %9, 1, !dbg !621
+  br i1 %10, label %11, label %24, !dbg !623
 
 ; <label>:11                                      ; preds = %7
-  %12 = tail call i32 @CCTK_VarTypeI(i32 %5) #7
-  %13 = tail call i32 @CCTK_VarTypeSize(i32 %12) #7
-  %14 = sext i32 %13 to i64
-  %15 = sext i32 %5 to i64
-  %16 = getelementptr inbounds %struct.PGH* %8, i64 0, i32 7
-  %17 = load i8**** %16, align 8, !tbaa !2
-  %18 = getelementptr inbounds i8*** %17, i64 %15
-  %19 = load i8*** %18, align 8, !tbaa !9
-  %20 = load i8** %19, align 8, !tbaa !9
-  %21 = getelementptr inbounds i8* %20, i64 %14
-  %22 = load i8* %21, align 1, !tbaa !16
-  %23 = sext i8 %22 to i32
-  br label %38
+  %12 = tail call i32 @CCTK_VarTypeI(i32 %5) #7, !dbg !624
+  %13 = tail call i32 @CCTK_VarTypeSize(i32 %12) #7, !dbg !626
+  tail call void @llvm.dbg.value(metadata i32 %13, i64 0, metadata !147, metadata !539), !dbg !627
+  %14 = sext i32 %13 to i64, !dbg !628
+  %15 = sext i32 %5 to i64, !dbg !629
+  %16 = getelementptr inbounds %struct.PGH* %8, i64 0, i32 7, !dbg !630
+  %17 = load i8**** %16, align 8, !dbg !630, !tbaa !558
+  %18 = getelementptr inbounds i8*** %17, i64 %15, !dbg !629
+  %19 = load i8*** %18, align 8, !dbg !629, !tbaa !565
+  %20 = load i8** %19, align 8, !dbg !629, !tbaa !565
+  %21 = getelementptr inbounds i8* %20, i64 %14, !dbg !628
+  %22 = load i8* %21, align 1, !dbg !628, !tbaa !631
+  %23 = sext i8 %22 to i32, !dbg !628
+  tail call void @llvm.dbg.value(metadata i32 %23, i64 0, metadata !145, metadata !539), !dbg !632
+  br label %38, !dbg !633
 
 ; <label>:24                                      ; preds = %7
-  %25 = and i32 %9, -2
-  %26 = icmp eq i32 %25, 2
-  br i1 %26, label %27, label %.thread
+  %25 = and i32 %9, -2, !dbg !634
+  %26 = icmp eq i32 %25, 2, !dbg !634
+  br i1 %26, label %27, label %.thread, !dbg !634
 
 ; <label>:27                                      ; preds = %24
-  %28 = sext i32 %5 to i64
-  %29 = getelementptr inbounds %struct.PGH* %8, i64 0, i32 7
-  %30 = load i8**** %29, align 8, !tbaa !2
-  %31 = getelementptr inbounds i8*** %30, i64 %28
-  %32 = bitcast i8*** %31 to %struct.PGA***
-  %33 = load %struct.PGA*** %32, align 8, !tbaa !9
-  %34 = load %struct.PGA** %33, align 8, !tbaa !9
-  %35 = getelementptr inbounds %struct.PGA* %34, i64 0, i32 5
-  %36 = load i32* %35, align 4, !tbaa !10
-  br label %38
+  %28 = sext i32 %5 to i64, !dbg !636
+  %29 = getelementptr inbounds %struct.PGH* %8, i64 0, i32 7, !dbg !638
+  %30 = load i8**** %29, align 8, !dbg !638, !tbaa !558
+  %31 = getelementptr inbounds i8*** %30, i64 %28, !dbg !636
+  %32 = bitcast i8*** %31 to %struct.PGA***, !dbg !636
+  %33 = load %struct.PGA*** %32, align 8, !dbg !636, !tbaa !565
+  %34 = load %struct.PGA** %33, align 8, !dbg !636, !tbaa !565
+  %35 = getelementptr inbounds %struct.PGA* %34, i64 0, i32 5, !dbg !639
+  %36 = load i32* %35, align 4, !dbg !639, !tbaa !569
+  tail call void @llvm.dbg.value(metadata i32 %36, i64 0, metadata !145, metadata !539), !dbg !632
+  br label %38, !dbg !640
 
 .thread:                                          ; preds = %24
-  %37 = tail call i32 @CCTK_Warn(i32 1, i32 233, i8* getelementptr inbounds ([74 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([45 x i8]* @.str5, i64 0, i64 0)) #7
-  br label %40
+  tail call void @llvm.dbg.value(metadata i32 -1, i64 0, metadata !145, metadata !539), !dbg !632
+  %37 = tail call i32 @CCTK_Warn(i32 1, i32 233, i8* getelementptr inbounds ([74 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([45 x i8]* @.str5, i64 0, i64 0)) #7, !dbg !641
+  br label %40, !dbg !643
 
 ; <label>:38                                      ; preds = %27, %11
   %storage.0 = phi i32 [ %23, %11 ], [ %36, %27 ]
   switch i32 %storage.0, label %40 [
     i32 1, label %47
     i32 0, label %39
-  ]
+  ], !dbg !643
 
 ; <label>:39                                      ; preds = %38
-  br label %47
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !148, metadata !539), !dbg !604
+  br label %47, !dbg !644
 
 ; <label>:40                                      ; preds = %.thread, %38
-  %41 = tail call i32 @CCTK_Warn(i32 1, i32 246, i8* getelementptr inbounds ([74 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([40 x i8]* @.str6, i64 0, i64 0)) #7
+  %41 = tail call i32 @CCTK_Warn(i32 1, i32 246, i8* getelementptr inbounds ([74 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([40 x i8]* @.str6, i64 0, i64 0)) #7, !dbg !648
   br label %47
 
 ; <label>:42                                      ; preds = %4
-  br i1 %1, label %43, label %45
+  br i1 %1, label %43, label %45, !dbg !650
 
 ; <label>:43                                      ; preds = %42
-  %44 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 253, i8* getelementptr inbounds ([74 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([45 x i8]* @.str3, i64 0, i64 0), i8* %groupname) #7
-  br label %47
+  %44 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 253, i8* getelementptr inbounds ([74 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([45 x i8]* @.str3, i64 0, i64 0), i8* %groupname) #7, !dbg !652
+  br label %47, !dbg !655
 
 ; <label>:45                                      ; preds = %42
-  %46 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 259, i8* getelementptr inbounds ([74 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([41 x i8]* @.str4, i64 0, i64 0), i32 %.0) #7
+  %46 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 259, i8* getelementptr inbounds ([74 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([41 x i8]* @.str4, i64 0, i64 0), i32 %.0) #7, !dbg !656
   br label %47
 
 ; <label>:47                                      ; preds = %38, %43, %45, %40, %39
   %retval.0 = phi i32 [ 0, %39 ], [ -1, %40 ], [ -1, %43 ], [ -1, %45 ], [ 1, %38 ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !658
 }

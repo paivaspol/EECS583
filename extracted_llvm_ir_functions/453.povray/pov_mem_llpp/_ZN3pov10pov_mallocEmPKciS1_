@@ -1,0 +1,73 @@
+define i8* @_ZN3pov10pov_mallocEmPKciS1_(i64 %size, i8* %file, i32 %line, i8* %msg) #1 {
+  tail call void @llvm.dbg.value(metadata i64 %size, i64 0, metadata !271, metadata !689), !dbg !690
+  tail call void @llvm.dbg.value(metadata i8* %file, i64 0, metadata !272, metadata !689), !dbg !691
+  tail call void @llvm.dbg.value(metadata i32 %line, i64 0, metadata !273, metadata !689), !dbg !692
+  tail call void @llvm.dbg.value(metadata i8* %msg, i64 0, metadata !274, metadata !689), !dbg !693
+  %1 = icmp eq i64 %size, 0, !dbg !694
+  br i1 %1, label %2, label %4, !dbg !696
+
+; <label>:2                                       ; preds = %0
+  %3 = tail call i32 (i8*, ...)* @_ZN3pov5ErrorEPKcz(i8* getelementptr inbounds ([55 x i8]* @.str, i64 0, i64 0), i8* %file, i32 %line) #8, !dbg !697
+  br label %4, !dbg !699
+
+; <label>:4                                       ; preds = %2, %0
+  %5 = add i64 %size, 48, !dbg !700
+  tail call void @llvm.dbg.value(metadata i64 %5, i64 0, metadata !276, metadata !689), !dbg !701
+  %6 = tail call i8* @malloc(i64 %5) #8, !dbg !702
+  tail call void @llvm.dbg.value(metadata i8* %6, i64 0, metadata !275, metadata !689), !dbg !703
+  %7 = icmp eq i8* %6, null, !dbg !704
+  br i1 %7, label %8, label %9, !dbg !706
+
+; <label>:8                                       ; preds = %4
+  tail call void @_ZN3pov7MAErrorEPKcl(i8* %msg, i64 %size) #8, !dbg !707
+  br label %9, !dbg !707
+
+; <label>:9                                       ; preds = %8, %4
+  %10 = bitcast i8* %6 to i64*, !dbg !708
+  store i64 %5, i64* %10, align 8, !dbg !709, !tbaa !710
+  %11 = getelementptr inbounds i8* %6, i64 32, !dbg !712
+  %12 = bitcast i8* %11 to i8**, !dbg !712
+  store i8* %file, i8** %12, align 8, !dbg !713, !tbaa !714
+  %13 = getelementptr inbounds i8* %6, i64 40, !dbg !715
+  %14 = bitcast i8* %13 to i32*, !dbg !715
+  store i32 %line, i32* %14, align 4, !dbg !716, !tbaa !717
+  %15 = load %"struct.pov::mem_node"** @_ZN3povL7memlistE, align 8, !dbg !718, !tbaa !676
+  %16 = icmp eq %"struct.pov::mem_node"* %15, null, !dbg !721
+  br i1 %16, label %17, label %20, !dbg !722
+
+; <label>:17                                      ; preds = %9
+  store i8* %6, i8** bitcast (%"struct.pov::mem_node"** @_ZN3povL7memlistE to i8**), align 8, !dbg !723, !tbaa !676
+  %18 = load i32* @_ZN3povL6poolnoE, align 4, !dbg !725, !tbaa !673
+  %19 = getelementptr inbounds i8* %6, i64 8, !dbg !726
+  tail call void @llvm.memset.p0i8.i64(i8* %19, i8 0, i64 16, i32 8, i1 false) #4, !dbg !727
+  store i64 0, i64* @_ZN3povL9num_nodesE, align 8, !dbg !728, !tbaa !668
+  br label %_ZN3povL8add_nodeEPNS_8mem_nodeE.exit, !dbg !729
+
+; <label>:20                                      ; preds = %9
+  %21 = getelementptr inbounds %"struct.pov::mem_node"* %15, i64 0, i32 1, !dbg !730
+  %22 = bitcast %"struct.pov::mem_node"** %21 to i8**, !dbg !732
+  store i8* %6, i8** %22, align 8, !dbg !732, !tbaa !733
+  %23 = load i32* @_ZN3povL6poolnoE, align 4, !dbg !734, !tbaa !673
+  %24 = getelementptr inbounds i8* %6, i64 8, !dbg !735
+  %25 = bitcast i8* %24 to %"struct.pov::mem_node"**, !dbg !735
+  store %"struct.pov::mem_node"* null, %"struct.pov::mem_node"** %25, align 8, !dbg !736, !tbaa !733
+  %26 = load i64* bitcast (%"struct.pov::mem_node"** @_ZN3povL7memlistE to i64*), align 8, !dbg !737, !tbaa !676
+  %27 = getelementptr inbounds i8* %6, i64 16, !dbg !738
+  %28 = bitcast i8* %27 to i64*, !dbg !739
+  store i64 %26, i64* %28, align 8, !dbg !739, !tbaa !740
+  store i8* %6, i8** bitcast (%"struct.pov::mem_node"** @_ZN3povL7memlistE to i8**), align 8, !dbg !741, !tbaa !676
+  %.pre = load i64* @_ZN3povL9num_nodesE, align 8, !dbg !742, !tbaa !668
+  %phitmp = add i64 %.pre, 1, !dbg !743
+  br label %_ZN3povL8add_nodeEPNS_8mem_nodeE.exit, !dbg !743
+
+_ZN3povL8add_nodeEPNS_8mem_nodeE.exit:            ; preds = %17, %20
+  %29 = phi i64 [ %phitmp, %20 ], [ 1, %17 ]
+  %.sink.i = phi i32 [ %23, %20 ], [ %18, %17 ], !dbg !743
+  %30 = getelementptr inbounds i8* %6, i64 24, !dbg !744
+  %31 = bitcast i8* %30 to i32*, !dbg !744
+  store i32 %.sink.i, i32* %31, align 4, !dbg !743
+  store i64 %29, i64* @_ZN3povL9num_nodesE, align 8, !dbg !742, !tbaa !668
+  tail call fastcc void @_ZN3povL15mem_stats_allocEmPKci(i64 %5) #8, !dbg !745
+  %32 = getelementptr inbounds i8* %6, i64 48, !dbg !746
+  ret i8* %32, !dbg !747
+}

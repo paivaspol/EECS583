@@ -1,0 +1,69 @@
+define void @_ZN3pov17Test_Mesh_OpacityEPNS_11Mesh_StructE(%"struct.pov::Mesh_Struct"* nocapture %Mesh) #0 {
+  tail call void @llvm.dbg.value(metadata %"struct.pov::Mesh_Struct"* %Mesh, i64 0, metadata !1136, metadata !2016), !dbg !4353
+  %1 = getelementptr inbounds %"struct.pov::Mesh_Struct"* %Mesh, i64 0, i32 3, !dbg !4354
+  %2 = load %"struct.pov::Texture_Struct"** %1, align 8, !dbg !4354, !tbaa !4356
+  %3 = icmp eq %"struct.pov::Texture_Struct"* %2, null, !dbg !4357
+  br i1 %3, label %7, label %4, !dbg !4358
+
+; <label>:4                                       ; preds = %0
+  %5 = tail call i32 @_ZN3pov12Test_OpacityEPNS_14Texture_StructE(%"struct.pov::Texture_Struct"* %2) #7, !dbg !4359
+  %6 = icmp eq i32 %5, 0, !dbg !4360
+  br i1 %6, label %._crit_edge, label %7, !dbg !4361
+
+._crit_edge:                                      ; preds = %4
+  %.phi.trans.insert = getelementptr inbounds %"struct.pov::Mesh_Struct"* %Mesh, i64 0, i32 13
+  %.pre = load i32* %.phi.trans.insert, align 4, !dbg !4362, !tbaa !3062
+  br label %11, !dbg !4361
+
+; <label>:7                                       ; preds = %4, %0
+  %8 = getelementptr inbounds %"struct.pov::Mesh_Struct"* %Mesh, i64 0, i32 13, !dbg !4364
+  %9 = load i32* %8, align 4, !dbg !4364, !tbaa !3062
+  %10 = or i32 %9, 128, !dbg !4364
+  store i32 %10, i32* %8, align 4, !dbg !4364, !tbaa !3062
+  br label %11, !dbg !4367
+
+; <label>:11                                      ; preds = %._crit_edge, %7
+  %.pre-phi = phi i32* [ %.phi.trans.insert, %._crit_edge ], [ %8, %7 ], !dbg !4362
+  %12 = phi i32 [ %.pre, %._crit_edge ], [ %10, %7 ]
+  %13 = and i32 %12, 256, !dbg !4362
+  %14 = icmp eq i32 %13, 0, !dbg !4362
+  br i1 %14, label %.loopexit, label %.preheader, !dbg !4368
+
+.preheader:                                       ; preds = %11
+  %15 = getelementptr inbounds %"struct.pov::Mesh_Struct"* %Mesh, i64 0, i32 15, !dbg !4369
+  %16 = load i64* %15, align 8, !dbg !4369, !tbaa !2904
+  %17 = icmp sgt i64 %16, 0, !dbg !4373
+  br i1 %17, label %.lr.ph, label %.loopexit, !dbg !4374
+
+.lr.ph:                                           ; preds = %.preheader
+  %18 = getelementptr inbounds %"struct.pov::Mesh_Struct"* %Mesh, i64 0, i32 16, !dbg !4375
+  br label %19, !dbg !4374
+
+; <label>:19                                      ; preds = %.lr.ph, %30
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %30 ]
+  %20 = load %"struct.pov::Texture_Struct"*** %18, align 8, !dbg !4375, !tbaa !2899
+  %21 = getelementptr inbounds %"struct.pov::Texture_Struct"** %20, i64 %indvars.iv, !dbg !4378
+  %22 = load %"struct.pov::Texture_Struct"** %21, align 8, !dbg !4378, !tbaa !2132
+  %23 = icmp eq %"struct.pov::Texture_Struct"* %22, null, !dbg !4379
+  br i1 %23, label %30, label %24, !dbg !4380
+
+; <label>:24                                      ; preds = %19
+  %25 = tail call i32 @_ZN3pov12Test_OpacityEPNS_14Texture_StructE(%"struct.pov::Texture_Struct"* %22) #7, !dbg !4381
+  %26 = icmp eq i32 %25, 0, !dbg !4381
+  br i1 %26, label %27, label %30, !dbg !4384
+
+; <label>:27                                      ; preds = %24
+  %28 = load i32* %.pre-phi, align 4, !dbg !4385, !tbaa !3062
+  %29 = and i32 %28, -129, !dbg !4385
+  store i32 %29, i32* %.pre-phi, align 4, !dbg !4385, !tbaa !3062
+  br label %30, !dbg !4388
+
+; <label>:30                                      ; preds = %24, %19, %27
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !4374
+  %31 = load i64* %15, align 8, !dbg !4369, !tbaa !2904
+  %32 = icmp slt i64 %indvars.iv.next, %31, !dbg !4373
+  br i1 %32, label %19, label %.loopexit, !dbg !4374
+
+.loopexit:                                        ; preds = %30, %.preheader, %11
+  ret void, !dbg !4389
+}

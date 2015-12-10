@@ -1,40 +1,51 @@
-define float @calc_ewaldcoeff(float %rc, float %dtol) #1 {
-  %1 = fpext float %dtol to double
-  br label %2
+define float @calc_ewaldcoeff(float %rc, float %dtol) #2 {
+  tail call void @llvm.dbg.value(metadata float %rc, i64 0, metadata !25, metadata !329), !dbg !336
+  tail call void @llvm.dbg.value(metadata float %dtol, i64 0, metadata !26, metadata !329), !dbg !337
+  tail call void @llvm.dbg.value(metadata float 5.000000e+00, i64 0, metadata !27, metadata !329), !dbg !338
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !31, metadata !329), !dbg !339
+  %1 = fpext float %dtol to double, !dbg !340
+  br label %2, !dbg !341
 
 ; <label>:2                                       ; preds = %2, %0
   %x.0 = phi float [ 5.000000e+00, %0 ], [ %4, %2 ]
   %i.0 = phi i32 [ 0, %0 ], [ %3, %2 ]
-  %3 = add nuw nsw i32 %i.0, 1
-  %4 = fmul float %x.0, 2.000000e+00
-  %5 = fmul float %4, %rc
-  %6 = fpext float %5 to double
-  %7 = tail call double @erfc(double %6) #7
-  %8 = fcmp ogt double %7, %1
-  br i1 %8, label %2, label %9
+  %3 = add nuw nsw i32 %i.0, 1, !dbg !342
+  tail call void @llvm.dbg.value(metadata i32 %3, i64 0, metadata !31, metadata !329), !dbg !339
+  %4 = fmul float %x.0, 2.000000e+00, !dbg !344
+  tail call void @llvm.dbg.value(metadata float %4, i64 0, metadata !27, metadata !329), !dbg !338
+  %5 = fmul float %4, %rc, !dbg !345
+  %6 = fpext float %5 to double, !dbg !346
+  %7 = tail call double @erfc(double %6) #8, !dbg !347
+  %8 = fcmp ogt double %7, %1, !dbg !348
+  br i1 %8, label %2, label %9, !dbg !349
 
 ; <label>:9                                       ; preds = %2
-  %10 = icmp sgt i32 %i.0, -61
-  br i1 %10, label %.lr.ph, label %._crit_edge
+  tail call void @llvm.dbg.value(metadata float 0.000000e+00, i64 0, metadata !28, metadata !329), !dbg !350
+  tail call void @llvm.dbg.value(metadata float %4, i64 0, metadata !29, metadata !329), !dbg !351
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !31, metadata !329), !dbg !339
+  %10 = icmp sgt i32 %i.0, -61, !dbg !352
+  br i1 %10, label %.lr.ph, label %._crit_edge, !dbg !355
 
 .lr.ph:                                           ; preds = %9, %.lr.ph
   %i.14 = phi i32 [ %17, %.lr.ph ], [ 0, %9 ]
   %high.03 = phi float [ %high.0., %.lr.ph ], [ %4, %9 ]
   %low.02 = phi float [ %.low.0, %.lr.ph ], [ 0.000000e+00, %9 ]
-  %11 = fadd float %low.02, %high.03
-  %12 = fmul float %11, 5.000000e-01
-  %13 = fmul float %12, %rc
-  %14 = fpext float %13 to double
-  %15 = tail call double @erfc(double %14) #7
-  %16 = fcmp ogt double %15, %1
-  %.low.0 = select i1 %16, float %12, float %low.02
-  %high.0. = select i1 %16, float %high.03, float %12
-  %17 = add nuw nsw i32 %i.14, 1
-  %18 = add nsw i32 %i.0, 60
-  %19 = icmp slt i32 %i.14, %18
-  br i1 %19, label %.lr.ph, label %._crit_edge
+  %11 = fadd float %low.02, %high.03, !dbg !356
+  %12 = fmul float %11, 5.000000e-01, !dbg !358
+  tail call void @llvm.dbg.value(metadata float %12, i64 0, metadata !27, metadata !329), !dbg !338
+  %13 = fmul float %12, %rc, !dbg !359
+  %14 = fpext float %13 to double, !dbg !361
+  %15 = tail call double @erfc(double %14) #8, !dbg !362
+  %16 = fcmp ogt double %15, %1, !dbg !363
+  %.low.0 = select i1 %16, float %12, float %low.02, !dbg !364
+  %high.0. = select i1 %16, float %high.03, float %12, !dbg !364
+  %17 = add nuw nsw i32 %i.14, 1, !dbg !365
+  tail call void @llvm.dbg.value(metadata i32 %17, i64 0, metadata !31, metadata !329), !dbg !339
+  %18 = add nsw i32 %i.0, 60, !dbg !352
+  %19 = icmp slt i32 %i.14, %18, !dbg !352
+  br i1 %19, label %.lr.ph, label %._crit_edge, !dbg !355
 
 ._crit_edge:                                      ; preds = %.lr.ph, %9
   %x.1.lcssa = phi float [ %4, %9 ], [ %12, %.lr.ph ]
-  ret float %x.1.lcssa
+  ret float %x.1.lcssa, !dbg !366
 }

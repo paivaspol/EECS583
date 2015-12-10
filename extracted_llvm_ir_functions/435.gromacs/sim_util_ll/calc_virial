@@ -1,75 +1,90 @@
 define void @calc_virial(%struct.__sFILE* %log, i32 %start, i32 %homenr, [3 x float]* %x, [3 x float]* %f, [3 x float]* %vir_part, [3 x float]* %pme_vir, %struct.t_graph* %graph, [3 x float]* %box, %struct.t_nrnb* nocapture %nrnb, %struct.t_forcerec* nocapture readonly %fr, i32 %bTweak) #4 {
   %virtest = alloca [3 x [3 x float]], align 16
-  %1 = bitcast [3 x [3 x float]]* %virtest to i8*
-  call void @llvm.lifetime.start(i64 36, i8* %1) #5
-  %2 = add nsw i32 %homenr, %start
-  tail call void @f_calc_vir(%struct.__sFILE* %log, i32 %start, i32 %2, [3 x float]* %x, [3 x float]* %f, [3 x float]* %vir_part, %struct.t_graph* %graph, [3 x float]* %box) #10
-  %3 = sitofp i32 %homenr to double
-  %4 = getelementptr inbounds %struct.t_nrnb* %nrnb, i64 0, i32 0, i64 107
-  %5 = load double* %4, align 8, !tbaa !6
-  %6 = fadd double %3, %5
-  store double %6, double* %4, align 8, !tbaa !6
-  %7 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 33
-  %8 = load i32* %7, align 4, !tbaa !44
-  %.off = add i32 %8, -3
-  %switch = icmp ugt i32 %.off, 3
-  %9 = icmp eq i32 %8, 5
-  %or.cond2 = or i1 %9, %switch
-  br i1 %or.cond2, label %.loopexit, label %10
+  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %log, i64 0, metadata !1234, metadata !1624), !dbg !2257
+  tail call void @llvm.dbg.value(metadata i32 %start, i64 0, metadata !1235, metadata !1624), !dbg !2258
+  tail call void @llvm.dbg.value(metadata i32 %homenr, i64 0, metadata !1236, metadata !1624), !dbg !2259
+  tail call void @llvm.dbg.value(metadata [3 x float]* %x, i64 0, metadata !1237, metadata !1624), !dbg !2260
+  tail call void @llvm.dbg.value(metadata [3 x float]* %f, i64 0, metadata !1238, metadata !1624), !dbg !2261
+  tail call void @llvm.dbg.value(metadata [3 x float]* %vir_part, i64 0, metadata !1239, metadata !1624), !dbg !2262
+  tail call void @llvm.dbg.value(metadata [3 x float]* %pme_vir, i64 0, metadata !1240, metadata !1624), !dbg !2263
+  tail call void @llvm.dbg.value(metadata %struct.t_graph* %graph, i64 0, metadata !1241, metadata !1624), !dbg !2264
+  tail call void @llvm.dbg.value(metadata [3 x float]* %box, i64 0, metadata !1242, metadata !1624), !dbg !2265
+  tail call void @llvm.dbg.value(metadata %struct.t_nrnb* %nrnb, i64 0, metadata !1243, metadata !1624), !dbg !2266
+  tail call void @llvm.dbg.value(metadata %struct.t_forcerec* %fr, i64 0, metadata !1244, metadata !1624), !dbg !2267
+  tail call void @llvm.dbg.value(metadata i32 %bTweak, i64 0, metadata !1245, metadata !1624), !dbg !2268
+  %1 = bitcast [3 x [3 x float]]* %virtest to i8*, !dbg !2269
+  call void @llvm.lifetime.start(i64 36, i8* %1) #5, !dbg !2269
+  tail call void @llvm.dbg.declare(metadata [3 x [3 x float]]* %virtest, metadata !1248, metadata !1624), !dbg !2270
+  %2 = add nsw i32 %homenr, %start, !dbg !2271
+  tail call void @f_calc_vir(%struct.__sFILE* %log, i32 %start, i32 %2, [3 x float]* %x, [3 x float]* %f, [3 x float]* %vir_part, %struct.t_graph* %graph, [3 x float]* %box) #10, !dbg !2272
+  %3 = sitofp i32 %homenr to double, !dbg !2273
+  %4 = getelementptr inbounds %struct.t_nrnb* %nrnb, i64 0, i32 0, i64 107, !dbg !2273
+  %5 = load double* %4, align 8, !dbg !2273, !tbaa !1735
+  %6 = fadd double %3, %5, !dbg !2273
+  store double %6, double* %4, align 8, !dbg !2273, !tbaa !1735
+  %7 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 33, !dbg !2274
+  %8 = load i32* %7, align 4, !dbg !2274, !tbaa !2057
+  %.off = add i32 %8, -3, !dbg !2274
+  %switch = icmp ugt i32 %.off, 3, !dbg !2274
+  %9 = icmp eq i32 %8, 5, !dbg !2276
+  %or.cond2 = or i1 %9, %switch, !dbg !2274
+  br i1 %or.cond2, label %.loopexit, label %10, !dbg !2274
 
 ; <label>:10                                      ; preds = %0
-  %11 = load %struct.__sFILE** @debug, align 8, !tbaa !32
-  %12 = icmp ne %struct.__sFILE* %11, null
-  %13 = icmp ne i32 %bTweak, 0
-  %or.cond = and i1 %13, %12
-  br i1 %or.cond, label %14, label %20
+  %11 = load %struct.__sFILE** @debug, align 8, !dbg !2277, !tbaa !1945
+  %12 = icmp ne %struct.__sFILE* %11, null, !dbg !2277
+  %13 = icmp ne i32 %bTweak, 0, !dbg !2280
+  %or.cond = and i1 %13, %12, !dbg !2281
+  br i1 %or.cond, label %14, label %20, !dbg !2281
 
 ; <label>:14                                      ; preds = %10
-  %15 = getelementptr inbounds [3 x [3 x float]]* %virtest, i64 0, i64 0
-  call void @llvm.memset.p0i8.i64(i8* %1, i8 0, i64 36, i32 16, i1 false) #5
-  %16 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 55
-  %17 = load [3 x float]** %16, align 8, !tbaa !45
-  call void @f_calc_vir(%struct.__sFILE* %log, i32 %start, i32 %2, [3 x float]* %x, [3 x float]* %17, [3 x float]* %15, %struct.t_graph* %graph, [3 x float]* %box) #10
-  %18 = load %struct.__sFILE** @debug, align 8, !tbaa !32
-  call void @pr_rvecs(%struct.__sFILE* %18, i32 0, i8* getelementptr inbounds ([8 x i8]* @.str7, i64 0, i64 0), [3 x float]* %15, i32 3) #10
-  %19 = load %struct.__sFILE** @debug, align 8, !tbaa !32
-  call void @pr_rvecs(%struct.__sFILE* %19, i32 0, i8* getelementptr inbounds ([8 x i8]* @.str8, i64 0, i64 0), [3 x float]* %pme_vir, i32 3) #10
-  br label %20
+  %15 = getelementptr inbounds [3 x [3 x float]]* %virtest, i64 0, i64 0, !dbg !2282
+  tail call void @llvm.dbg.value(metadata [3 x float]* %15, i64 0, metadata !1557, metadata !1624) #5, !dbg !2284
+  tail call void @llvm.dbg.value(metadata float 0.000000e+00, i64 0, metadata !1558, metadata !1624) #5, !dbg !2286
+  call void @llvm.memset.p0i8.i64(i8* %1, i8 0, i64 36, i32 16, i1 false) #5, !dbg !2287
+  %16 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 55, !dbg !2288
+  %17 = load [3 x float]** %16, align 8, !dbg !2288, !tbaa !2059
+  call void @f_calc_vir(%struct.__sFILE* %log, i32 %start, i32 %2, [3 x float]* %x, [3 x float]* %17, [3 x float]* %15, %struct.t_graph* %graph, [3 x float]* %box) #10, !dbg !2289
+  %18 = load %struct.__sFILE** @debug, align 8, !dbg !2290, !tbaa !1945
+  call void @pr_rvecs(%struct.__sFILE* %18, i32 0, i8* getelementptr inbounds ([8 x i8]* @.str7, i64 0, i64 0), [3 x float]* %15, i32 3) #10, !dbg !2291
+  %19 = load %struct.__sFILE** @debug, align 8, !dbg !2292, !tbaa !1945
+  call void @pr_rvecs(%struct.__sFILE* %19, i32 0, i8* getelementptr inbounds ([8 x i8]* @.str8, i64 0, i64 0), [3 x float]* %pme_vir, i32 3) #10, !dbg !2293
+  br label %20, !dbg !2294
 
 ; <label>:20                                      ; preds = %14, %10
-  br i1 %13, label %.loopexit, label %.preheader
+  br i1 %13, label %.loopexit, label %.preheader, !dbg !2295
 
 .preheader:                                       ; preds = %20, %27
   %indvars.iv6 = phi i64 [ %indvars.iv.next7, %27 ], [ 0, %20 ]
-  br label %21
+  br label %21, !dbg !2296
 
 ; <label>:21                                      ; preds = %21, %.preheader
   %indvars.iv = phi i64 [ 0, %.preheader ], [ %indvars.iv.next, %21 ]
-  %22 = getelementptr inbounds [3 x float]* %pme_vir, i64 %indvars.iv6, i64 %indvars.iv
-  %23 = load float* %22, align 4, !tbaa !2
-  %24 = getelementptr inbounds [3 x float]* %vir_part, i64 %indvars.iv6, i64 %indvars.iv
-  %25 = load float* %24, align 4, !tbaa !2
-  %26 = fadd float %23, %25
-  store float %26, float* %24, align 4, !tbaa !2
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %exitcond = icmp eq i64 %indvars.iv.next, 3
-  br i1 %exitcond, label %27, label %21
+  %22 = getelementptr inbounds [3 x float]* %pme_vir, i64 %indvars.iv6, i64 %indvars.iv, !dbg !2301
+  %23 = load float* %22, align 4, !dbg !2301, !tbaa !1720
+  %24 = getelementptr inbounds [3 x float]* %vir_part, i64 %indvars.iv6, i64 %indvars.iv, !dbg !2303
+  %25 = load float* %24, align 4, !dbg !2304, !tbaa !1720
+  %26 = fadd float %23, %25, !dbg !2304
+  store float %26, float* %24, align 4, !dbg !2304, !tbaa !1720
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !2296
+  %exitcond = icmp eq i64 %indvars.iv.next, 3, !dbg !2296
+  br i1 %exitcond, label %27, label %21, !dbg !2296
 
 ; <label>:27                                      ; preds = %21
-  %indvars.iv.next7 = add nuw nsw i64 %indvars.iv6, 1
-  %exitcond8 = icmp eq i64 %indvars.iv.next7, 3
-  br i1 %exitcond8, label %.loopexit, label %.preheader
+  %indvars.iv.next7 = add nuw nsw i64 %indvars.iv6, 1, !dbg !2305
+  %exitcond8 = icmp eq i64 %indvars.iv.next7, 3, !dbg !2305
+  br i1 %exitcond8, label %.loopexit, label %.preheader, !dbg !2305
 
 .loopexit:                                        ; preds = %27, %0, %20
-  %28 = load %struct.__sFILE** @debug, align 8, !tbaa !32
-  %29 = icmp eq %struct.__sFILE* %28, null
-  br i1 %29, label %31, label %30
+  %28 = load %struct.__sFILE** @debug, align 8, !dbg !2306, !tbaa !1945
+  %29 = icmp eq %struct.__sFILE* %28, null, !dbg !2306
+  br i1 %29, label %31, label %30, !dbg !2308
 
 ; <label>:30                                      ; preds = %.loopexit
-  call void @pr_rvecs(%struct.__sFILE* %28, i32 0, i8* getelementptr inbounds ([9 x i8]* @.str9, i64 0, i64 0), [3 x float]* %vir_part, i32 3) #10
-  br label %31
+  call void @pr_rvecs(%struct.__sFILE* %28, i32 0, i8* getelementptr inbounds ([9 x i8]* @.str9, i64 0, i64 0), [3 x float]* %vir_part, i32 3) #10, !dbg !2309
+  br label %31, !dbg !2309
 
 ; <label>:31                                      ; preds = %.loopexit, %30
-  call void @llvm.lifetime.end(i64 36, i8* %1) #5
-  ret void
+  call void @llvm.lifetime.end(i64 36, i8* %1) #5, !dbg !2310
+  ret void, !dbg !2310
 }

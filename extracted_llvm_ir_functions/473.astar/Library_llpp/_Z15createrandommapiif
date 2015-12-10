@@ -1,0 +1,62 @@
+define void @_Z15createrandommapiif(i32 %mapsizex, i32 %mapsizey, float %density) #3 {
+  tail call void @llvm.dbg.value(metadata i32 %mapsizex, i64 0, metadata !786, metadata !940), !dbg !990
+  tail call void @llvm.dbg.value(metadata i32 %mapsizey, i64 0, metadata !787, metadata !940), !dbg !991
+  tail call void @llvm.dbg.value(metadata float %density, i64 0, metadata !788, metadata !940), !dbg !992
+  %1 = tail call zeroext i1 @_ZN6wayobj7initmapEii(%class.wayobj* @way, i32 %mapsizex, i32 %mapsizey) #6, !dbg !993
+  %2 = tail call zeroext i1 @_ZN9regmngobj7initmapEii(%class.regmngobj* @regmng, i32 %mapsizex, i32 %mapsizey) #6, !dbg !994
+  %3 = load i8** getelementptr inbounds (%class.regmngobj* @regmng, i64 0, i32 7), align 8, !dbg !995, !tbaa !996
+  tail call void @llvm.dbg.value(metadata i8* %3, i64 0, metadata !789, metadata !940), !dbg !1006
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !791, metadata !940), !dbg !1007
+  %4 = icmp sgt i32 %mapsizey, 0, !dbg !1008
+  br i1 %4, label %.preheader.lr.ph, label %._crit_edge3, !dbg !1011
+
+.preheader.lr.ph:                                 ; preds = %0
+  %5 = icmp sgt i32 %mapsizex, 0, !dbg !1012
+  %6 = add i32 %mapsizex, -1, !dbg !1011
+  %7 = sext i32 %mapsizex to i64, !dbg !1011
+  %8 = add i32 %mapsizey, -1, !dbg !1011
+  br label %.preheader, !dbg !1011
+
+.preheader:                                       ; preds = %._crit_edge, %.preheader.lr.ph
+  %indvars.iv4 = phi i64 [ 0, %.preheader.lr.ph ], [ %indvars.iv.next5, %._crit_edge ]
+  br i1 %5, label %.lr.ph, label %._crit_edge, !dbg !1015
+
+.lr.ph:                                           ; preds = %.preheader
+  %9 = mul nsw i64 %indvars.iv4, %7, !dbg !1016
+  br label %10, !dbg !1015
+
+; <label>:10                                      ; preds = %19, %.lr.ph
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %19 ]
+  %11 = tail call float @_Z8myrandomff(float 0.000000e+00, float %density) #6, !dbg !1019
+  %12 = fcmp ugt float %11, 1.000000e+00, !dbg !1020
+  %13 = add nsw i64 %indvars.iv, %9, !dbg !1021
+  %14 = getelementptr inbounds i8* %3, i64 %13, !dbg !1022
+  br i1 %12, label %16, label %15, !dbg !1023
+
+; <label>:15                                      ; preds = %10
+  store i8 0, i8* %14, align 1, !dbg !1024, !tbaa !1025
+  %.pre = trunc i64 %indvars.iv to i32, !dbg !1015
+  br label %19, !dbg !1022
+
+; <label>:16                                      ; preds = %10
+  store i8 1, i8* %14, align 1, !dbg !1026, !tbaa !1025
+  %17 = trunc i64 %indvars.iv to i32, !dbg !1028
+  %18 = trunc i64 %indvars.iv4 to i32, !dbg !1028
+  tail call void @_ZN6wayobj8addpointEii(%class.wayobj* @way, i32 %17, i32 %18) #6, !dbg !1028
+  br label %19
+
+; <label>:19                                      ; preds = %15, %16
+  %lftr.wideiv.pre-phi = phi i32 [ %.pre, %15 ], [ %17, %16 ], !dbg !1015
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !1015
+  %exitcond = icmp eq i32 %lftr.wideiv.pre-phi, %6, !dbg !1015
+  br i1 %exitcond, label %._crit_edge, label %10, !dbg !1015
+
+._crit_edge:                                      ; preds = %19, %.preheader
+  %indvars.iv.next5 = add nuw nsw i64 %indvars.iv4, 1, !dbg !1011
+  %lftr.wideiv6 = trunc i64 %indvars.iv4 to i32, !dbg !1011
+  %exitcond7 = icmp eq i32 %lftr.wideiv6, %8, !dbg !1011
+  br i1 %exitcond7, label %._crit_edge3, label %.preheader, !dbg !1011
+
+._crit_edge3:                                     ; preds = %._crit_edge, %0
+  ret void, !dbg !1029
+}

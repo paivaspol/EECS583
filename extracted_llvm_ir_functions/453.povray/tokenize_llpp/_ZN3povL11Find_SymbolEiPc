@@ -1,0 +1,56 @@
+define internal fastcc %"struct.pov::Sym_Table_Entry"* @_ZN3povL11Find_SymbolEiPc(i32 %Index, i8* nocapture readonly %Name) #10 {
+  tail call void @llvm.dbg.value(metadata i32 %Index, i64 0, metadata !1656, metadata !2141), !dbg !5916
+  tail call void @llvm.dbg.value(metadata i8* %Name, i64 0, metadata !1657, metadata !2141), !dbg !5917
+  tail call void @llvm.dbg.value(metadata i8* %Name, i64 0, metadata !1509, metadata !2141), !dbg !5918
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !1510, metadata !2141), !dbg !5920
+  %1 = load i8* %Name, align 1, !dbg !5921, !tbaa !2531
+  %2 = icmp eq i8 %1, 0, !dbg !5921
+  br i1 %2, label %_ZN3povL14get_hash_valueEPc.exit, label %.lr.ph.i, !dbg !5922
+
+.lr.ph.i:                                         ; preds = %0, %.lr.ph.i
+  %3 = phi i8 [ %8, %.lr.ph.i ], [ %1, %0 ], !dbg !5923
+  %i.02.i = phi i32 [ %7, %.lr.ph.i ], [ 0, %0 ], !dbg !5923
+  %.01.i = phi i8* [ %5, %.lr.ph.i ], [ %Name, %0 ], !dbg !5923
+  %4 = shl i32 %i.02.i, 1, !dbg !5924
+  %5 = getelementptr inbounds i8* %.01.i, i64 1, !dbg !5925
+  tail call void @llvm.dbg.value(metadata i8* %5, i64 0, metadata !1509, metadata !2141), !dbg !5918
+  %6 = sext i8 %3 to i32, !dbg !5926
+  %7 = xor i32 %4, %6, !dbg !5927
+  tail call void @llvm.dbg.value(metadata i32 %7, i64 0, metadata !1510, metadata !2141), !dbg !5920
+  %8 = load i8* %5, align 1, !dbg !5921, !tbaa !2531
+  %9 = icmp eq i8 %8, 0, !dbg !5921
+  br i1 %9, label %._crit_edge.i, label %.lr.ph.i, !dbg !5922
+
+._crit_edge.i:                                    ; preds = %.lr.ph.i
+  %phitmp.i = urem i32 %7, 257, !dbg !5922
+  %phitmp1 = zext i32 %phitmp.i to i64, !dbg !5922
+  br label %_ZN3povL14get_hash_valueEPc.exit, !dbg !5922
+
+_ZN3povL14get_hash_valueEPc.exit:                 ; preds = %0, %._crit_edge.i
+  %i.0.lcssa.i = phi i64 [ %phitmp1, %._crit_edge.i ], [ 0, %0 ]
+  %10 = sext i32 %Index to i64, !dbg !5928
+  %11 = getelementptr inbounds [100 x %"struct.pov::Sym_Table_Struct"*]* @_ZN3pov6TablesE, i64 0, i64 %10, !dbg !5928
+  %12 = load %"struct.pov::Sym_Table_Struct"** %11, align 8, !dbg !5928, !tbaa !2174
+  %13 = getelementptr inbounds %"struct.pov::Sym_Table_Struct"* %12, i64 0, i32 1, i64 %i.0.lcssa.i, !dbg !5928
+  %Entry.02 = load %"struct.pov::Sym_Table_Entry"** %13, align 8, !dbg !5928
+  %14 = icmp eq %"struct.pov::Sym_Table_Entry"* %Entry.02, null, !dbg !5929
+  br i1 %14, label %._crit_edge, label %.lr.ph, !dbg !5930
+
+.lr.ph:                                           ; preds = %_ZN3povL14get_hash_valueEPc.exit, %19
+  %Entry.03 = phi %"struct.pov::Sym_Table_Entry"* [ %Entry.0, %19 ], [ %Entry.02, %_ZN3povL14get_hash_valueEPc.exit ]
+  %15 = getelementptr inbounds %"struct.pov::Sym_Table_Entry"* %Entry.03, i64 0, i32 1, !dbg !5931
+  %16 = load i8** %15, align 8, !dbg !5931, !tbaa !2249
+  %17 = tail call i32 @strcmp(i8* %Name, i8* %16) #11, !dbg !5934
+  %18 = icmp eq i32 %17, 0, !dbg !5935
+  br i1 %18, label %._crit_edge, label %19, !dbg !5936
+
+; <label>:19                                      ; preds = %.lr.ph
+  %20 = getelementptr inbounds %"struct.pov::Sym_Table_Entry"* %Entry.03, i64 0, i32 0, !dbg !5937
+  %Entry.0 = load %"struct.pov::Sym_Table_Entry"** %20, align 8, !dbg !5928
+  %21 = icmp eq %"struct.pov::Sym_Table_Entry"* %Entry.0, null, !dbg !5929
+  br i1 %21, label %._crit_edge, label %.lr.ph, !dbg !5930
+
+._crit_edge:                                      ; preds = %.lr.ph, %19, %_ZN3povL14get_hash_valueEPc.exit
+  %Entry.0.lcssa = phi %"struct.pov::Sym_Table_Entry"* [ null, %_ZN3povL14get_hash_valueEPc.exit ], [ %Entry.03, %.lr.ph ], [ null, %19 ]
+  ret %"struct.pov::Sym_Table_Entry"* %Entry.0.lcssa, !dbg !5938
+}

@@ -1,30 +1,71 @@
-define i32 @RBSPtoNALU(i8* nocapture %rbsp, %struct.NALU_t* nocapture %nalu, i32 %rbsp_size, i32 %nal_unit_type, i32 %nal_reference_idc, i32 %min_num_bytes, i32 %UseAnnexbLongStartcode) #0 {
-entry:
-  %forbidden_bit = getelementptr inbounds %struct.NALU_t* %nalu, i64 0, i32 5
-  store i32 0, i32* %forbidden_bit, align 4, !tbaa !0
-  %nal_reference_idc1 = getelementptr inbounds %struct.NALU_t* %nalu, i64 0, i32 4
-  store i32 %nal_reference_idc, i32* %nal_reference_idc1, align 4, !tbaa !0
-  %nal_unit_type2 = getelementptr inbounds %struct.NALU_t* %nalu, i64 0, i32 3
-  store i32 %nal_unit_type, i32* %nal_unit_type2, align 4, !tbaa !0
-  %tobool = icmp ne i32 %UseAnnexbLongStartcode, 0
-  %cond = select i1 %tobool, i32 4, i32 3
-  %startcodeprefix_len = getelementptr inbounds %struct.NALU_t* %nalu, i64 0, i32 0
-  store i32 %cond, i32* %startcodeprefix_len, align 4, !tbaa !0
-  %shl5 = shl i32 %nal_reference_idc, 5
-  %or7 = or i32 %shl5, %nal_unit_type
-  %conv = trunc i32 %or7 to i8
-  %buf = getelementptr inbounds %struct.NALU_t* %nalu, i64 0, i32 6
-  %0 = load i8** %buf, align 8, !tbaa !3
-  store i8 %conv, i8* %0, align 1, !tbaa !1
-  %1 = load i8** %buf, align 8, !tbaa !3
-  %arrayidx9 = getelementptr inbounds i8* %1, i64 1
-  %conv10 = sext i32 %rbsp_size to i64
-  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %arrayidx9, i8* %rbsp, i64 %conv10, i32 1, i1 false)
-  %2 = load i8** %buf, align 8, !tbaa !3
-  %arrayidx12 = getelementptr inbounds i8* %2, i64 1
-  %call = tail call i32 @RBSPtoEBSP(i8* %arrayidx12, i32 0, i32 %rbsp_size, i32 %min_num_bytes) #3
-  %add = add nsw i32 %call, 1
-  %len13 = getelementptr inbounds %struct.NALU_t* %nalu, i64 0, i32 1
-  store i32 %add, i32* %len13, align 4, !tbaa !0
-  ret i32 %add
+define i32 @RBSPtoNALU(i8* %rbsp, %struct.NALU_t* %nalu, i32 %rbsp_size, i32 %nal_unit_type, i32 %nal_reference_idc, i32 %min_num_bytes, i32 %UseAnnexbLongStartcode) #0 {
+  tail call void @llvm.dbg.value(metadata i8* %rbsp, i64 0, metadata !35, metadata !588), !dbg !589
+  tail call void @llvm.dbg.value(metadata %struct.NALU_t* %nalu, i64 0, metadata !36, metadata !588), !dbg !590
+  tail call void @llvm.dbg.value(metadata i32 %rbsp_size, i64 0, metadata !37, metadata !588), !dbg !591
+  tail call void @llvm.dbg.value(metadata i32 %nal_unit_type, i64 0, metadata !38, metadata !588), !dbg !592
+  tail call void @llvm.dbg.value(metadata i32 %nal_reference_idc, i64 0, metadata !39, metadata !588), !dbg !593
+  tail call void @llvm.dbg.value(metadata i32 %min_num_bytes, i64 0, metadata !40, metadata !588), !dbg !594
+  tail call void @llvm.dbg.value(metadata i32 %UseAnnexbLongStartcode, i64 0, metadata !41, metadata !588), !dbg !595
+  %1 = icmp eq %struct.NALU_t* %nalu, null, !dbg !596
+  br i1 %1, label %2, label %3, !dbg !596, !prof !597
+
+; <label>:2                                       ; preds = %0
+  tail call void @__assert_rtn(i8* getelementptr inbounds ([11 x i8]* @__func__.RBSPtoNALU, i64 0, i64 0), i8* getelementptr inbounds ([64 x i8]* @.str, i64 0, i64 0), i32 57, i8* getelementptr inbounds ([13 x i8]* @.str1, i64 0, i64 0)) #5, !dbg !596
+  unreachable, !dbg !596
+
+; <label>:3                                       ; preds = %0
+  %4 = icmp ugt i32 %nal_reference_idc, 3, !dbg !598
+  br i1 %4, label %5, label %6, !dbg !598, !prof !597
+
+; <label>:5                                       ; preds = %3
+  tail call void @__assert_rtn(i8* getelementptr inbounds ([11 x i8]* @__func__.RBSPtoNALU, i64 0, i64 0), i8* getelementptr inbounds ([64 x i8]* @.str, i64 0, i64 0), i32 58, i8* getelementptr inbounds ([47 x i8]* @.str2, i64 0, i64 0)) #5, !dbg !598
+  unreachable, !dbg !598
+
+; <label>:6                                       ; preds = %3
+  %nal_unit_type.off = add i32 %nal_unit_type, -1, !dbg !599
+  %7 = icmp ugt i32 %nal_unit_type.off, 9, !dbg !599
+  br i1 %7, label %8, label %9, !dbg !599, !prof !597
+
+; <label>:8                                       ; preds = %6
+  tail call void @__assert_rtn(i8* getelementptr inbounds ([11 x i8]* @__func__.RBSPtoNALU, i64 0, i64 0), i8* getelementptr inbounds ([64 x i8]* @.str, i64 0, i64 0), i32 59, i8* getelementptr inbounds ([41 x i8]* @.str3, i64 0, i64 0)) #5, !dbg !599
+  unreachable, !dbg !599
+
+; <label>:9                                       ; preds = %6
+  %10 = icmp sgt i32 %rbsp_size, 63999, !dbg !600
+  br i1 %10, label %11, label %12, !dbg !600, !prof !597
+
+; <label>:11                                      ; preds = %9
+  tail call void @__assert_rtn(i8* getelementptr inbounds ([11 x i8]* @__func__.RBSPtoNALU, i64 0, i64 0), i8* getelementptr inbounds ([64 x i8]* @.str, i64 0, i64 0), i32 60, i8* getelementptr inbounds ([24 x i8]* @.str4, i64 0, i64 0)) #5, !dbg !600
+  unreachable, !dbg !600
+
+; <label>:12                                      ; preds = %9
+  %13 = getelementptr inbounds %struct.NALU_t* %nalu, i64 0, i32 5, !dbg !601
+  store i32 0, i32* %13, align 4, !dbg !602, !tbaa !603
+  %14 = getelementptr inbounds %struct.NALU_t* %nalu, i64 0, i32 4, !dbg !609
+  store i32 %nal_reference_idc, i32* %14, align 4, !dbg !610, !tbaa !611
+  %15 = getelementptr inbounds %struct.NALU_t* %nalu, i64 0, i32 3, !dbg !612
+  store i32 %nal_unit_type, i32* %15, align 4, !dbg !613, !tbaa !614
+  %16 = icmp ne i32 %UseAnnexbLongStartcode, 0, !dbg !615
+  %17 = select i1 %16, i32 4, i32 3, !dbg !615
+  %18 = getelementptr inbounds %struct.NALU_t* %nalu, i64 0, i32 0, !dbg !616
+  store i32 %17, i32* %18, align 4, !dbg !617, !tbaa !618
+  %19 = shl i32 %nal_reference_idc, 5, !dbg !619
+  %20 = or i32 %19, %nal_unit_type, !dbg !620
+  %21 = trunc i32 %20 to i8, !dbg !621
+  %22 = getelementptr inbounds %struct.NALU_t* %nalu, i64 0, i32 6, !dbg !622
+  %23 = load i8** %22, align 8, !dbg !622, !tbaa !623
+  store i8 %21, i8* %23, align 1, !dbg !624, !tbaa !625
+  %24 = load i8** %22, align 8, !dbg !626, !tbaa !623
+  %25 = getelementptr inbounds i8* %24, i64 1, !dbg !626
+  %26 = sext i32 %rbsp_size to i64, !dbg !626
+  %27 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %25, i1 false), !dbg !626
+  %28 = tail call i8* @__memcpy_chk(i8* %25, i8* %rbsp, i64 %26, i64 %27) #6, !dbg !626
+  %29 = load i8** %22, align 8, !dbg !627, !tbaa !623
+  %30 = getelementptr inbounds i8* %29, i64 1, !dbg !628
+  %31 = tail call i32 @RBSPtoEBSP(i8* %30, i32 0, i32 %rbsp_size, i32 %min_num_bytes) #6, !dbg !629
+  %32 = add nsw i32 %31, 1, !dbg !630
+  tail call void @llvm.dbg.value(metadata i32 %32, i64 0, metadata !42, metadata !588), !dbg !631
+  %33 = getelementptr inbounds %struct.NALU_t* %nalu, i64 0, i32 1, !dbg !632
+  store i32 %32, i32* %33, align 4, !dbg !633, !tbaa !634
+  ret i32 %32, !dbg !635
 }

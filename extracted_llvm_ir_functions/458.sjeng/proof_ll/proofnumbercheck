@@ -1,136 +1,139 @@
 define void @proofnumbercheck(%struct.move_s* noalias nocapture sret %agg.result, %struct.move_s* byval align 8 %compmove) #0 {
-entry:
   %resmove = alloca %struct.move_s, align 4
-  %0 = load i32* @piece_count, align 4, !tbaa !0
-  %cmp = icmp slt i32 %0, 4
-  %1 = load i32* @Variant, align 4, !tbaa !0
-  %cmp1 = icmp eq i32 %1, 3
-  %or.cond = and i1 %cmp, %cmp1
-  br i1 %or.cond, label %if.then, label %if.end
+  tail call void @llvm.dbg.declare(metadata %struct.move_s* %compmove, metadata !180, metadata !211), !dbg !1638
+  %1 = load i32* @piece_count, align 4, !dbg !1639, !tbaa !214
+  %2 = icmp slt i32 %1, 4, !dbg !1641
+  %3 = load i32* @Variant, align 4
+  %4 = icmp eq i32 %3, 3, !dbg !1642
+  %or.cond = and i1 %2, %4, !dbg !1643
+  br i1 %or.cond, label %5, label %8, !dbg !1643
 
-if.then:                                          ; preds = %entry
-  %2 = bitcast %struct.move_s* %agg.result to i8*
-  %3 = bitcast %struct.move_s* %compmove to i8*
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %2, i8* %3, i64 24, i32 4, i1 false), !tbaa.struct !4
-  br label %return
+; <label>:5                                       ; preds = %0
+  %6 = bitcast %struct.move_s* %agg.result to i8*, !dbg !1644
+  %7 = bitcast %struct.move_s* %compmove to i8*, !dbg !1644
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %6, i8* %7, i64 24, i32 4, i1 false), !dbg !1644, !tbaa.struct !997
+  br label %74, !dbg !1646
 
-if.end:                                           ; preds = %entry
-  store i32 0, i32* @nodecount, align 4, !tbaa !0
-  store i32 0, i32* @iters, align 4, !tbaa !0
-  store i32 0, i32* @frees, align 4, !tbaa !0
-  store i32 1, i32* @ply, align 4, !tbaa !0
-  store i32 0, i32* @maxply, align 4, !tbaa !0
-  call void @make(%struct.move_s* %compmove, i32 0) #6
-  %4 = load i32* @hash, align 4, !tbaa !0
-  %5 = load i32* @move_number, align 4, !tbaa !0
-  %6 = load i32* @ply, align 4, !tbaa !0
-  %add = add i32 %5, -1
-  %sub = add i32 %add, %6
-  %idxprom = sext i32 %sub to i64
-  %arrayidx = getelementptr inbounds [600 x i32]* @hash_history, i64 0, i64 %idxprom
-  store i32 %4, i32* %arrayidx, align 4, !tbaa !0
-  %7 = load i32* @white_to_move, align 4, !tbaa !0
-  %not.tobool = icmp eq i32 %7, 0
-  %cond = zext i1 %not.tobool to i32
-  store i32 %cond, i32* @root_to_move, align 4, !tbaa !0
-  %call = call i64 @rtime() #6
-  %call2 = call noalias i8* @calloc(i64 1, i64 56) #6
-  %8 = bitcast i8* %call2 to %struct.node*
-  %9 = load i32* @PBSize, align 4, !tbaa !0
-  %conv = sext i32 %9 to i64
-  %call3 = call noalias i8* @calloc(i64 %conv, i64 56) #6
-  store i8* %call3, i8** @membuff, align 8, !tbaa !3
-  call void @pn_eval(%struct.node* %8) #5
-  call void @set_proof_and_disproof_numbers(%struct.node* %8) #5
-  %disproof = getelementptr inbounds i8* %call2, i64 8
-  %10 = bitcast i8* %disproof to i32*
-  %proof = getelementptr inbounds i8* %call2, i64 4
-  %11 = bitcast i8* %proof to i32*
-  %12 = load i32* %11, align 4, !tbaa !0
-  %cmp468 = icmp eq i32 %12, 0
-  br i1 %cmp468, label %while.end36, label %land.lhs.true6
+; <label>:8                                       ; preds = %0
+  store i32 0, i32* @nodecount, align 4, !dbg !1647, !tbaa !214
+  store i32 0, i32* @iters, align 4, !dbg !1648, !tbaa !214
+  store i32 0, i32* @frees, align 4, !dbg !1649, !tbaa !214
+  store i32 1, i32* @ply, align 4, !dbg !1650, !tbaa !214
+  store i32 0, i32* @maxply, align 4, !dbg !1651, !tbaa !214
+  call void @make(%struct.move_s* %compmove, i32 0) #6, !dbg !1652
+  %9 = load i32* @hash, align 4, !dbg !1653, !tbaa !214
+  %10 = load i32* @move_number, align 4, !dbg !1654, !tbaa !214
+  %11 = load i32* @ply, align 4, !dbg !1655, !tbaa !214
+  %12 = add i32 %10, -1, !dbg !1656
+  %13 = add i32 %12, %11, !dbg !1657
+  %14 = sext i32 %13 to i64, !dbg !1658
+  %15 = getelementptr inbounds [600 x i32]* @hash_history, i64 0, i64 %14, !dbg !1658
+  store i32 %9, i32* %15, align 4, !dbg !1659, !tbaa !214
+  %16 = load i32* @white_to_move, align 4, !dbg !1660, !tbaa !214
+  %not. = icmp eq i32 %16, 0, !dbg !1660
+  %17 = zext i1 %not. to i32, !dbg !1660
+  store i32 %17, i32* @root_to_move, align 4, !dbg !1661, !tbaa !214
+  %18 = call i64 @rtime() #6, !dbg !1662
+  call void @llvm.dbg.value(metadata i64 %18, i64 0, metadata !184, metadata !211), !dbg !1663
+  %19 = call i8* @calloc(i64 1, i64 56) #6, !dbg !1664
+  %20 = bitcast i8* %19 to %struct.node*, !dbg !1665
+  call void @llvm.dbg.value(metadata %struct.node* %20, i64 0, metadata !181, metadata !211), !dbg !1666
+  %21 = load i32* @PBSize, align 4, !dbg !1667, !tbaa !214
+  %22 = sext i32 %21 to i64, !dbg !1667
+  %23 = call i8* @calloc(i64 %22, i64 56) #6, !dbg !1668
+  store i8* %23, i8** @membuff, align 8, !dbg !1669, !tbaa !221
+  call void @pn_eval(%struct.node* %20) #5, !dbg !1670
+  call void @set_proof_and_disproof_numbers(%struct.node* %20) #5, !dbg !1671
+  call void @llvm.dbg.value(metadata %struct.node* %20, i64 0, metadata !183, metadata !211), !dbg !1672
+  %24 = getelementptr inbounds i8* %19, i64 8, !dbg !1673
+  %25 = bitcast i8* %24 to i32*, !dbg !1673
+  %26 = getelementptr inbounds i8* %19, i64 4, !dbg !1674
+  %27 = bitcast i8* %26 to i32*, !dbg !1674
+  %28 = load i32* %27, align 4, !dbg !1674, !tbaa !534
+  %29 = icmp eq i32 %28, 0, !dbg !1675
+  br i1 %29, label %.loopexit, label %.lr.ph5, !dbg !1676
 
-land.lhs.true6:                                   ; preds = %if.end, %while.cond.backedge
-  %.pre70 = phi i32 [ %18, %while.cond.backedge ], [ %12, %if.end ]
-  %13 = load i32* %10, align 4, !tbaa !0
-  %cmp7 = icmp eq i32 %13, 0
-  br i1 %cmp7, label %while.end36, label %land.rhs
+.lr.ph5:                                          ; preds = %8, %.backedge
+  %30 = phi i32 [ %52, %.backedge ], [ %28, %8 ]
+  %31 = load i32* %25, align 4, !dbg !1673, !tbaa !531
+  %32 = icmp eq i32 %31, 0, !dbg !1677
+  br i1 %32, label %.loopexit, label %33, !dbg !1678
 
-land.rhs:                                         ; preds = %land.lhs.true6
-  %14 = load i32* @bufftop, align 4, !tbaa !0
-  %conv9 = zext i32 %14 to i64
-  %15 = load i32* @PBSize, align 4, !tbaa !0
-  %sub10 = add nsw i32 %15, -10000
-  %conv11 = sext i32 %sub10 to i64
-  %mul = mul i64 %conv11, 56
-  %cmp12 = icmp ult i64 %conv9, %mul
-  br i1 %cmp12, label %while.body, label %while.end36
+; <label>:33                                      ; preds = %.lr.ph5
+  %34 = load i32* @bufftop, align 4, !dbg !1679, !tbaa !214
+  %35 = zext i32 %34 to i64, !dbg !1680
+  %36 = load i32* @PBSize, align 4, !dbg !1681, !tbaa !214
+  %37 = add nsw i32 %36, -10000, !dbg !1682
+  %38 = sext i32 %37 to i64, !dbg !1683
+  %39 = mul nsw i64 %38, 56, !dbg !1684
+  %40 = icmp ult i64 %35, %39, !dbg !1685
+  br i1 %40, label %41, label %.loopexit, !dbg !1686
 
-while.body:                                       ; preds = %land.rhs
-  %call14 = call %struct.node* @select_most_proving(%struct.node* %8) #5
-  call void @develop_node(%struct.node* %call14) #5
-  call void @update_ancestors(%struct.node* %call14) #5
-  %16 = load i32* @iters, align 4, !tbaa !0
-  %inc = add nsw i32 %16, 1
-  store i32 %inc, i32* @iters, align 4, !tbaa !0
-  %rem66 = and i32 %inc, 31
-  %cmp15 = icmp eq i32 %rem66, 0
-  br i1 %cmp15, label %if.then17, label %while.cond.backedge
+; <label>:41                                      ; preds = %33
+  %42 = call %struct.node* @select_most_proving(%struct.node* %20) #5, !dbg !1687
+  call void @llvm.dbg.value(metadata %struct.node* %42, i64 0, metadata !182, metadata !211), !dbg !1689
+  call void @develop_node(%struct.node* %42) #5, !dbg !1690
+  call void @update_ancestors(%struct.node* %42) #5, !dbg !1691
+  %43 = load i32* @iters, align 4, !dbg !1692, !tbaa !214
+  %44 = add nsw i32 %43, 1, !dbg !1692
+  store i32 %44, i32* @iters, align 4, !dbg !1692, !tbaa !214
+  %45 = and i32 %44, 31, !dbg !1693
+  %46 = icmp eq i32 %45, 0, !dbg !1693
+  br i1 %46, label %47, label %.backedge, !dbg !1695
 
-if.then17:                                        ; preds = %while.body
-  %call18 = call i64 @rtime() #6
-  %call19 = call i32 @rdifftime(i64 %call18, i64 %call) #6
-  %17 = load i32* @pn_time, align 4, !tbaa !0
-  %cmp20 = icmp sgt i32 %call19, %17
-  br i1 %cmp20, label %if.then17.while.endsplit_crit_edge, label %while.cond.backedge
+; <label>:47                                      ; preds = %41
+  %48 = call i64 @rtime() #6, !dbg !1696
+  %49 = call i32 @rdifftime(i64 %48, i64 %18) #6, !dbg !1699
+  %50 = load i32* @pn_time, align 4, !dbg !1700, !tbaa !214
+  %51 = icmp sgt i32 %49, %50, !dbg !1701
+  br i1 %51, label %..critedge_crit_edge8, label %.backedge, !dbg !1702
 
-if.then17.while.endsplit_crit_edge:               ; preds = %if.then17
-  %.pre.pre = load i32* %11, align 4, !tbaa !0
-  br label %while.end36
+.backedge:                                        ; preds = %47, %41
+  %52 = load i32* %27, align 4, !dbg !1674, !tbaa !534
+  %53 = icmp eq i32 %52, 0, !dbg !1675
+  br i1 %53, label %.loopexit, label %.lr.ph5, !dbg !1676
 
-while.cond.backedge:                              ; preds = %if.then17, %while.body
-  %18 = load i32* %11, align 4, !tbaa !0
-  %cmp4 = icmp eq i32 %18, 0
-  br i1 %cmp4, label %while.end36, label %land.lhs.true6
+..critedge_crit_edge8:                            ; preds = %47
+  %.pre = load i32* %27, align 4, !dbg !1703, !tbaa !534
+  br label %.loopexit, !dbg !1702
 
-while.end36:                                      ; preds = %if.end, %if.then17.while.endsplit_crit_edge, %land.rhs, %land.lhs.true6, %while.cond.backedge
-  %19 = phi i32 [ 0, %if.end ], [ %.pre.pre, %if.then17.while.endsplit_crit_edge ], [ %.pre70, %land.rhs ], [ %.pre70, %land.lhs.true6 ], [ 0, %while.cond.backedge ]
-  %20 = load i32* %10, align 4, !tbaa !0
-  %21 = load i32* @nodecount, align 4, !tbaa !0
-  %22 = load i32* @frees, align 4, !tbaa !0
-  %conv27 = sext i32 %21 to i64
-  %mul28 = mul i64 %conv27, 56
-  %conv29 = uitofp i64 %mul28 to float
-  %div = fmul float %conv29, 0x3EB0000000000000
-  %conv30 = fpext float %div to double
-  %23 = load i32* @iters, align 4, !tbaa !0
-  %call31 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([47 x i8]* @.str17, i64 0, i64 0), i32 %19, i32 %20, i32 %21, i32 %22, double %conv30, i32 %23) #6
-  call void @unmake(%struct.move_s* %compmove, i32 0) #6
-  %24 = load i32* %11, align 4, !tbaa !0
-  %cmp38 = icmp eq i32 %24, 0
-  %25 = bitcast %struct.move_s* %resmove to i8*
-  br i1 %cmp38, label %if.then40, label %if.else
+.loopexit:                                        ; preds = %.lr.ph5, %.backedge, %33, %8, %..critedge_crit_edge8
+  %54 = phi i32 [ %.pre, %..critedge_crit_edge8 ], [ 0, %8 ], [ %30, %33 ], [ 0, %.backedge ], [ %30, %.lr.ph5 ]
+  %55 = load i32* %25, align 4, !dbg !1704, !tbaa !531
+  %56 = load i32* @nodecount, align 4, !dbg !1705, !tbaa !214
+  %57 = load i32* @frees, align 4, !dbg !1706, !tbaa !214
+  %58 = sext i32 %56 to i64, !dbg !1707
+  %59 = mul nsw i64 %58, 56, !dbg !1708
+  %60 = uitofp i64 %59 to float, !dbg !1707
+  %61 = fmul float %60, 0x3EB0000000000000, !dbg !1709
+  %62 = fpext float %61 to double, !dbg !1710
+  %63 = load i32* @iters, align 4, !dbg !1711, !tbaa !214
+  %64 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([47 x i8]* @.str17, i64 0, i64 0), i32 %54, i32 %55, i32 %56, i32 %57, double %62, i32 %63) #6, !dbg !1712
+  call void @unmake(%struct.move_s* %compmove, i32 0) #6, !dbg !1713
+  %65 = load i32* %27, align 4, !dbg !1714, !tbaa !534
+  %66 = icmp eq i32 %65, 0, !dbg !1716
+  %67 = bitcast %struct.move_s* %resmove to i8*, !dbg !1717
+  br i1 %66, label %68, label %69, !dbg !1719
 
-if.then40:                                        ; preds = %while.end36
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %25, i8* bitcast (%struct.move_s* @pn_move to i8*), i64 24, i32 4, i1 false), !tbaa.struct !4
-  store i32 1, i32* @s_threat, align 4, !tbaa !0
-  br label %if.end49
+; <label>:68                                      ; preds = %.loopexit
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %67, i8* bitcast (%struct.move_s* @pn_move to i8*), i64 24, i32 4, i1 false), !dbg !1717, !tbaa.struct !997
+  store i32 1, i32* @s_threat, align 4, !dbg !1720, !tbaa !214
+  br label %71, !dbg !1721
 
-if.else:                                          ; preds = %while.end36
-  %26 = bitcast %struct.move_s* %compmove to i8*
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %25, i8* %26, i64 24, i32 4, i1 false), !tbaa.struct !4
-  br label %if.end49
+; <label>:69                                      ; preds = %.loopexit
+  %70 = bitcast %struct.move_s* %compmove to i8*, !dbg !1722
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %67, i8* %70, i64 24, i32 4, i1 false), !dbg !1722
+  br label %71, !dbg !1725
 
-if.end49:                                         ; preds = %if.else, %if.then40
-  store i32 0, i32* @bufftop, align 4, !tbaa !0
-  call void @free(i8* %call2) #6
-  %27 = load i8** @membuff, align 8, !tbaa !3
-  call void @free(i8* %27) #6
-  %28 = bitcast %struct.move_s* %agg.result to i8*
-  %29 = bitcast %struct.move_s* %resmove to i8*
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %28, i8* %29, i64 24, i32 4, i1 false), !tbaa.struct !4
-  br label %return
+; <label>:71                                      ; preds = %69, %68
+  store i32 0, i32* @bufftop, align 4, !dbg !1726, !tbaa !214
+  call void @free(i8* %19) #5, !dbg !1728
+  %72 = load i8** @membuff, align 8, !dbg !1729, !tbaa !221
+  call void @free(i8* %72) #5, !dbg !1730
+  %73 = bitcast %struct.move_s* %agg.result to i8*, !dbg !1731
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %73, i8* %67, i64 24, i32 4, i1 false), !dbg !1731, !tbaa.struct !997
+  br label %74, !dbg !1732
 
-return:                                           ; preds = %if.end49, %if.then
-  ret void
+; <label>:74                                      ; preds = %71, %5
+  ret void, !dbg !1733
 }

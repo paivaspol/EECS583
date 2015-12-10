@@ -1,53 +1,53 @@
-define void @MAIN_initialize(%struct.MAIN_Param* nocapture %param) #0 {
-entry:
-  tail call void @LBM_allocateGrid(double** bitcast ([26000000 x double]** @srcGrid to double**)) #7
-  tail call void @LBM_allocateGrid(double** bitcast ([26000000 x double]** @dstGrid to double**)) #7
-  %0 = load [26000000 x double]** @srcGrid, align 8, !tbaa !3
-  %arraydecay = getelementptr inbounds [26000000 x double]* %0, i64 0, i64 0
-  tail call void @LBM_initializeGrid(double* %arraydecay) #7
-  %1 = load [26000000 x double]** @dstGrid, align 8, !tbaa !3
-  %arraydecay1 = getelementptr inbounds [26000000 x double]* %1, i64 0, i64 0
-  tail call void @LBM_initializeGrid(double* %arraydecay1) #7
-  %obstacleFilename = getelementptr inbounds %struct.MAIN_Param* %param, i64 0, i32 4
-  %2 = load i8** %obstacleFilename, align 8, !tbaa !3
-  %cmp = icmp eq i8* %2, null
-  br i1 %cmp, label %if.end, label %if.then
+define void @MAIN_initialize(%struct.MAIN_Param* nocapture readonly %param) #0 {
+  tail call void @llvm.dbg.value(metadata %struct.MAIN_Param* %param, i64 0, metadata !145, metadata !183), !dbg !344
+  tail call void @LBM_allocateGrid(double** bitcast ([26000000 x double]** @srcGrid to double**)) #8, !dbg !345
+  tail call void @LBM_allocateGrid(double** bitcast ([26000000 x double]** @dstGrid to double**)) #8, !dbg !346
+  %1 = load [26000000 x double]** @srcGrid, align 8, !dbg !347, !tbaa !237
+  %2 = getelementptr inbounds [26000000 x double]* %1, i64 0, i64 0, !dbg !348
+  tail call void @LBM_initializeGrid(double* %2) #8, !dbg !349
+  %3 = load [26000000 x double]** @dstGrid, align 8, !dbg !350, !tbaa !237
+  %4 = getelementptr inbounds [26000000 x double]* %3, i64 0, i64 0, !dbg !351
+  tail call void @LBM_initializeGrid(double* %4) #8, !dbg !352
+  %5 = getelementptr inbounds %struct.MAIN_Param* %param, i64 0, i32 4, !dbg !353
+  %6 = load i8** %5, align 8, !dbg !353, !tbaa !204
+  %7 = icmp eq i8* %6, null, !dbg !355
+  br i1 %7, label %14, label %8, !dbg !356
 
-if.then:                                          ; preds = %entry
-  %3 = load [26000000 x double]** @srcGrid, align 8, !tbaa !3
-  %arraydecay2 = getelementptr inbounds [26000000 x double]* %3, i64 0, i64 0
-  tail call void @LBM_loadObstacleFile(double* %arraydecay2, i8* %2) #7
-  %4 = load [26000000 x double]** @dstGrid, align 8, !tbaa !3
-  %arraydecay4 = getelementptr inbounds [26000000 x double]* %4, i64 0, i64 0
-  %5 = load i8** %obstacleFilename, align 8, !tbaa !3
-  tail call void @LBM_loadObstacleFile(double* %arraydecay4, i8* %5) #7
-  br label %if.end
+; <label>:8                                       ; preds = %0
+  %9 = load [26000000 x double]** @srcGrid, align 8, !dbg !357, !tbaa !237
+  %10 = getelementptr inbounds [26000000 x double]* %9, i64 0, i64 0, !dbg !359
+  tail call void @LBM_loadObstacleFile(double* %10, i8* %6) #8, !dbg !360
+  %11 = load [26000000 x double]** @dstGrid, align 8, !dbg !361, !tbaa !237
+  %12 = getelementptr inbounds [26000000 x double]* %11, i64 0, i64 0, !dbg !362
+  %13 = load i8** %5, align 8, !dbg !363, !tbaa !204
+  tail call void @LBM_loadObstacleFile(double* %12, i8* %13) #8, !dbg !364
+  br label %14, !dbg !365
 
-if.end:                                           ; preds = %entry, %if.then
-  %simType = getelementptr inbounds %struct.MAIN_Param* %param, i64 0, i32 3
-  %6 = load i32* %simType, align 4, !tbaa !1
-  %cmp6 = icmp eq i32 %6, 1
-  %7 = load [26000000 x double]** @srcGrid, align 8, !tbaa !3
-  %arraydecay8 = getelementptr inbounds [26000000 x double]* %7, i64 0, i64 0
-  br i1 %cmp6, label %if.then7, label %if.else
+; <label>:14                                      ; preds = %0, %8
+  %15 = getelementptr inbounds %struct.MAIN_Param* %param, i64 0, i32 3, !dbg !366
+  %16 = load i32* %15, align 4, !dbg !366, !tbaa !286
+  %17 = icmp eq i32 %16, 1, !dbg !368
+  %18 = load [26000000 x double]** @srcGrid, align 8, !dbg !369, !tbaa !237
+  %19 = getelementptr inbounds [26000000 x double]* %18, i64 0, i64 0, !dbg !371
+  br i1 %17, label %20, label %23, !dbg !372
 
-if.then7:                                         ; preds = %if.end
-  tail call void @LBM_initializeSpecialCellsForChannel(double* %arraydecay8) #7
-  %8 = load [26000000 x double]** @dstGrid, align 8, !tbaa !3
-  %arraydecay9 = getelementptr inbounds [26000000 x double]* %8, i64 0, i64 0
-  tail call void @LBM_initializeSpecialCellsForChannel(double* %arraydecay9) #7
-  br label %if.end12
+; <label>:20                                      ; preds = %14
+  tail call void @LBM_initializeSpecialCellsForChannel(double* %19) #8, !dbg !373
+  %21 = load [26000000 x double]** @dstGrid, align 8, !dbg !374, !tbaa !237
+  %22 = getelementptr inbounds [26000000 x double]* %21, i64 0, i64 0, !dbg !375
+  tail call void @LBM_initializeSpecialCellsForChannel(double* %22) #8, !dbg !376
+  br label %26, !dbg !377
 
-if.else:                                          ; preds = %if.end
-  tail call void @LBM_initializeSpecialCellsForLDC(double* %arraydecay8) #7
-  %9 = load [26000000 x double]** @dstGrid, align 8, !tbaa !3
-  %arraydecay11 = getelementptr inbounds [26000000 x double]* %9, i64 0, i64 0
-  tail call void @LBM_initializeSpecialCellsForLDC(double* %arraydecay11) #7
-  br label %if.end12
+; <label>:23                                      ; preds = %14
+  tail call void @LBM_initializeSpecialCellsForLDC(double* %19) #8, !dbg !378
+  %24 = load [26000000 x double]** @dstGrid, align 8, !dbg !380, !tbaa !237
+  %25 = getelementptr inbounds [26000000 x double]* %24, i64 0, i64 0, !dbg !381
+  tail call void @LBM_initializeSpecialCellsForLDC(double* %25) #8, !dbg !382
+  br label %26
 
-if.end12:                                         ; preds = %if.else, %if.then7
-  %10 = load [26000000 x double]** @srcGrid, align 8, !tbaa !3
-  %arraydecay13 = getelementptr inbounds [26000000 x double]* %10, i64 0, i64 0
-  tail call void @LBM_showGridStatistics(double* %arraydecay13) #7
-  ret void
+; <label>:26                                      ; preds = %23, %20
+  %27 = load [26000000 x double]** @srcGrid, align 8, !dbg !383, !tbaa !237
+  %28 = getelementptr inbounds [26000000 x double]* %27, i64 0, i64 0, !dbg !384
+  tail call void @LBM_showGridStatistics(double* %28) #8, !dbg !385
+  ret void, !dbg !386
 }

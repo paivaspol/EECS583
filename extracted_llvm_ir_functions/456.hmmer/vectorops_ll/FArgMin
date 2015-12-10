@@ -1,25 +1,31 @@
-define i32 @FArgMin(float* nocapture %vec, i32 %n) #1 {
-entry:
-  %cmp9 = icmp sgt i32 %n, 1
-  br i1 %cmp9, label %for.body, label %for.end
+define i32 @FArgMin(float* nocapture readonly %vec, i32 %n) #1 {
+  tail call void @llvm.dbg.value(metadata float* %vec, i64 0, metadata !148, metadata !206), !dbg !453
+  tail call void @llvm.dbg.value(metadata i32 %n, i64 0, metadata !149, metadata !206), !dbg !454
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !151, metadata !206), !dbg !455
+  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !150, metadata !206), !dbg !456
+  %1 = icmp sgt i32 %n, 1, !dbg !457
+  br i1 %1, label %.lr.ph, label %._crit_edge, !dbg !460
 
-for.body:                                         ; preds = %entry, %for.body
-  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 1, %entry ]
-  %best.011 = phi i32 [ %best.1, %for.body ], [ 0, %entry ]
-  %arrayidx = getelementptr inbounds float* %vec, i64 %indvars.iv
-  %0 = load float* %arrayidx, align 4, !tbaa !3
-  %idxprom1 = sext i32 %best.011 to i64
-  %arrayidx2 = getelementptr inbounds float* %vec, i64 %idxprom1
-  %1 = load float* %arrayidx2, align 4, !tbaa !3
-  %cmp3 = fcmp olt float %0, %1
-  %2 = trunc i64 %indvars.iv to i32
-  %best.1 = select i1 %cmp3, i32 %2, i32 %best.011
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %n
-  br i1 %exitcond, label %for.end, label %for.body
+.lr.ph:                                           ; preds = %0
+  %2 = add i32 %n, -1, !dbg !460
+  br label %3, !dbg !460
 
-for.end:                                          ; preds = %for.body, %entry
-  %best.0.lcssa = phi i32 [ 0, %entry ], [ %best.1, %for.body ]
-  ret i32 %best.0.lcssa
+; <label>:3                                       ; preds = %3, %.lr.ph
+  %indvars.iv = phi i64 [ 1, %.lr.ph ], [ %indvars.iv.next, %3 ]
+  %best.02 = phi i32 [ 0, %.lr.ph ], [ %best.1, %3 ]
+  %4 = getelementptr inbounds float* %vec, i64 %indvars.iv, !dbg !461
+  %5 = load float* %4, align 4, !dbg !461, !tbaa !232
+  %6 = sext i32 %best.02 to i64, !dbg !463
+  %7 = getelementptr inbounds float* %vec, i64 %6, !dbg !463
+  %8 = load float* %7, align 4, !dbg !463, !tbaa !232
+  %9 = fcmp olt float %5, %8, !dbg !464
+  %10 = trunc i64 %indvars.iv to i32, !dbg !465
+  %best.1 = select i1 %9, i32 %10, i32 %best.02, !dbg !465
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !460
+  %exitcond = icmp eq i32 %10, %2, !dbg !460
+  br i1 %exitcond, label %._crit_edge, label %3, !dbg !460
+
+._crit_edge:                                      ; preds = %3, %0
+  %best.0.lcssa = phi i32 [ 0, %0 ], [ %best.1, %3 ]
+  ret i32 %best.0.lcssa, !dbg !466
 }

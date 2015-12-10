@@ -1,108 +1,120 @@
-define i32 @check_times2(float %t, float %t0, float %tp, float %tpp) #1 {
-  %1 = fsub float %t, %tp
-  %2 = fcmp ogt float %1, 0.000000e+00
-  br i1 %2, label %3, label %11
+define i32 @check_times2(float %t, float %t0, float %tp, float %tpp) #2 {
+  tail call void @llvm.dbg.value(metadata float %t, i64 0, metadata !383, metadata !852), !dbg !1181
+  tail call void @llvm.dbg.value(metadata float %t0, i64 0, metadata !384, metadata !852), !dbg !1182
+  tail call void @llvm.dbg.value(metadata float %tp, i64 0, metadata !385, metadata !852), !dbg !1183
+  tail call void @llvm.dbg.value(metadata float %tpp, i64 0, metadata !386, metadata !852), !dbg !1184
+  %1 = fsub float %t, %tp, !dbg !1185
+  %2 = fcmp ogt float %1, 0.000000e+00, !dbg !1187
+  br i1 %2, label %3, label %11, !dbg !1188
 
 ; <label>:3                                       ; preds = %0
-  %4 = fsub float %tp, %tpp
-  %5 = fcmp ogt float %4, 0.000000e+00
-  br i1 %5, label %6, label %11
+  %4 = fsub float %tp, %tpp, !dbg !1189
+  %5 = fcmp ogt float %4, 0.000000e+00, !dbg !1190
+  br i1 %5, label %6, label %11, !dbg !1191
 
 ; <label>:6                                       ; preds = %3
-  %7 = fcmp olt float %1, %4
-  %. = select i1 %7, float %1, float %4
-  %8 = fpext float %. to double
-  %9 = fmul double %8, 1.000000e-01
-  %10 = fptrunc double %9 to float
-  br label %11
+  %7 = fcmp olt float %1, %4, !dbg !1192
+  %. = select i1 %7, float %1, float %4, !dbg !1192
+  %8 = fpext float %. to double, !dbg !1192
+  %9 = fmul double %8, 1.000000e-01, !dbg !1193
+  %10 = fptrunc double %9 to float, !dbg !1194
+  tail call void @llvm.dbg.value(metadata float %10, i64 0, metadata !388, metadata !852), !dbg !1195
+  br label %11, !dbg !1196
 
 ; <label>:11                                      ; preds = %0, %3, %6
   %margin.0 = phi float [ %10, %6 ], [ 0.000000e+00, %3 ], [ 0.000000e+00, %0 ]
-  %12 = load float* @tbegin, align 4, !tbaa !15
-  %13 = fcmp ult float %12, 0.000000e+00
-  %14 = fcmp ugt float %12, %t
-  %or.cond = or i1 %13, %14
-  br i1 %or.cond, label %15, label %20
+  tail call void @llvm.dbg.value(metadata i32 -1, i64 0, metadata !387, metadata !852), !dbg !1197
+  %12 = load float* @tbegin, align 4, !dbg !1198, !tbaa !1095
+  %13 = fcmp ult float %12, 0.000000e+00, !dbg !1200
+  %14 = fcmp ugt float %12, %t, !dbg !1201
+  %or.cond = or i1 %13, %14, !dbg !1202
+  br i1 %or.cond, label %15, label %20, !dbg !1202
 
 ; <label>:15                                      ; preds = %11
-  %16 = fpext float %12 to double
-  %17 = fadd double %16, 1.000000e+00
-  %18 = tail call double @fabs(double %17) #15
-  %19 = fcmp olt double %18, 1.200000e-38
-  br i1 %19, label %20, label %._crit_edge
+  %16 = fpext float %12 to double, !dbg !1203
+  %17 = fadd double %16, 1.000000e+00, !dbg !1204
+  %18 = tail call double @fabs(double %17) #15, !dbg !1205
+  %19 = fcmp olt double %18, 1.200000e-38, !dbg !1206
+  br i1 %19, label %20, label %._crit_edge, !dbg !1207
 
 ._crit_edge:                                      ; preds = %15
-  %.pre = load float* @tend, align 4, !tbaa !15
-  br label %47
+  %.pre = load float* @tend, align 4, !dbg !1208, !tbaa !1095
+  br label %47, !dbg !1207
 
 ; <label>:20                                      ; preds = %11, %15
-  %21 = load float* @tend, align 4, !tbaa !15
-  %22 = fcmp ult float %21, 0.000000e+00
+  %21 = load float* @tend, align 4, !dbg !1210, !tbaa !1095
+  %22 = fcmp ult float %21, 0.000000e+00, !dbg !1211
   %23 = fadd float %margin.0, %21
-  %24 = fcmp ult float %23, %t
-  %or.cond2 = or i1 %22, %24
-  br i1 %or.cond2, label %25, label %30
+  %24 = fcmp ult float %23, %t, !dbg !1212
+  %or.cond2 = or i1 %22, %24, !dbg !1213
+  br i1 %or.cond2, label %25, label %30, !dbg !1213
 
 ; <label>:25                                      ; preds = %20
-  %26 = fpext float %21 to double
-  %27 = fadd double %26, 1.000000e+00
-  %28 = tail call double @fabs(double %27) #15
-  %29 = fcmp olt double %28, 1.200000e-38
-  br i1 %29, label %30, label %47
+  %26 = fpext float %21 to double, !dbg !1214
+  %27 = fadd double %26, 1.000000e+00, !dbg !1215
+  %28 = tail call double @fabs(double %27) #15, !dbg !1216
+  %29 = fcmp olt double %28, 1.200000e-38, !dbg !1217
+  br i1 %29, label %30, label %47, !dbg !1218
 
 ; <label>:30                                      ; preds = %20, %25
-  %31 = load float* @tdelta, align 4, !tbaa !15
-  %32 = fcmp ogt float %31, 0.000000e+00
-  br i1 %32, label %33, label %46
+  %31 = load float* @tdelta, align 4, !dbg !1219, !tbaa !1095
+  %32 = fcmp ogt float %31, 0.000000e+00, !dbg !1222
+  br i1 %32, label %33, label %46, !dbg !1223
 
 ; <label>:33                                      ; preds = %30
-  %34 = fsub float %t, %t0
-  %35 = fpext float %34 to double
-  %36 = fpext float %31 to double
-  %37 = fmul double %35, 0x3FF00000A10FAFA0
-  %38 = fdiv double %37, %36
-  %39 = fptosi double %38 to i32
-  %40 = sitofp i32 %39 to double
-  %41 = fmul double %36, %40
-  %42 = fsub double %35, %41
-  %43 = tail call double @fabs(double %42) #15
-  %fabsf = tail call float @fabsf(float %34) #9
-  %44 = fpext float %fabsf to double
-  %45 = fmul double %44, 6.000000e-07
-  %not..i = fcmp ugt double %43, %45
-  br i1 %not..i, label %54, label %46
+  %34 = fsub float %t, %t0, !dbg !1224
+  %35 = fpext float %34 to double, !dbg !1225
+  %36 = fpext float %31 to double, !dbg !1226
+  tail call void @llvm.dbg.value(metadata double %35, i64 0, metadata !373, metadata !852) #10, !dbg !1227
+  tail call void @llvm.dbg.value(metadata double %36, i64 0, metadata !374, metadata !852) #10, !dbg !1229
+  tail call void @llvm.dbg.value(metadata double 6.000000e-07, i64 0, metadata !376, metadata !852) #10, !dbg !1230
+  %37 = fmul double %35, 0x3FF00000A10FAFA0, !dbg !1231
+  %38 = fdiv double %37, %36, !dbg !1232
+  %39 = fptosi double %38 to i32, !dbg !1233
+  tail call void @llvm.dbg.value(metadata i32 %39, i64 0, metadata !375, metadata !852) #10, !dbg !1234
+  %40 = sitofp i32 %39 to double, !dbg !1235
+  %41 = fmul double %36, %40, !dbg !1236
+  %42 = fsub double %35, %41, !dbg !1237
+  %43 = tail call double @fabs(double %42) #15, !dbg !1238
+  %fabsf = tail call float @fabsf(float %34) #9, !dbg !1239
+  %44 = fpext float %fabsf to double, !dbg !1239
+  %45 = fmul double %44, 6.000000e-07, !dbg !1240
+  %not..i = fcmp ugt double %43, %45, !dbg !1241
+  br i1 %not..i, label %54, label %46, !dbg !1242
 
 ; <label>:46                                      ; preds = %33, %30
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !387, metadata !852), !dbg !1197
   br label %54
 
 ; <label>:47                                      ; preds = %._crit_edge, %25
   %48 = phi float [ %.pre, %._crit_edge ], [ %21, %25 ]
-  %49 = fpext float %48 to double
-  %50 = fadd double %49, 1.000000e+00
-  %51 = tail call double @fabs(double %50) #15
-  %52 = fcmp ule double %51, 1.200000e-38
-  %53 = fcmp ugt float %48, %t
-  %or.cond3 = or i1 %53, %52
-  %.4 = select i1 %or.cond3, i32 -1, i32 1
-  br label %54
+  %49 = fpext float %48 to double, !dbg !1208
+  %50 = fadd double %49, 1.000000e+00, !dbg !1243
+  %51 = tail call double @fabs(double %50) #15, !dbg !1244
+  %52 = fcmp ule double %51, 1.200000e-38, !dbg !1245
+  %53 = fcmp ugt float %48, %t, !dbg !1246
+  %or.cond3 = or i1 %53, %52, !dbg !1247
+  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !387, metadata !852), !dbg !1197
+  %.4 = select i1 %or.cond3, i32 -1, i32 1, !dbg !1247
+  br label %54, !dbg !1247
 
 ; <label>:54                                      ; preds = %33, %47, %46
   %55 = phi float [ %21, %46 ], [ %21, %33 ], [ %48, %47 ]
   %r.0 = phi i32 [ 0, %46 ], [ -1, %33 ], [ %.4, %47 ]
-  %56 = load %struct.__sFILE** @debug, align 8, !tbaa !19
-  %57 = icmp eq %struct.__sFILE* %56, null
-  br i1 %57, label %66, label %58
+  %56 = load %struct.__sFILE** @debug, align 8, !dbg !1248, !tbaa !1132
+  %57 = icmp eq %struct.__sFILE* %56, null, !dbg !1248
+  br i1 %57, label %66, label %58, !dbg !1250
 
 ; <label>:58                                      ; preds = %54
-  %59 = fpext float %t to double
-  %60 = fpext float %t0 to double
-  %61 = fpext float %12 to double
-  %62 = fpext float %55 to double
-  %63 = load float* @tdelta, align 4, !tbaa !15
-  %64 = fpext float %63 to double
-  %65 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %56, i8* getelementptr inbounds ([38 x i8]* @.str2, i64 0, i64 0), double %59, double %60, double %61, double %62, double %64, i32 %r.0) #12
-  br label %66
+  %59 = fpext float %t to double, !dbg !1251
+  %60 = fpext float %t0 to double, !dbg !1252
+  %61 = fpext float %12 to double, !dbg !1253
+  %62 = fpext float %55 to double, !dbg !1254
+  %63 = load float* @tdelta, align 4, !dbg !1255, !tbaa !1095
+  %64 = fpext float %63 to double, !dbg !1255
+  %65 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %56, i8* getelementptr inbounds ([38 x i8]* @.str2, i64 0, i64 0), double %59, double %60, double %61, double %62, double %64, i32 %r.0) #12, !dbg !1256
+  br label %66, !dbg !1256
 
 ; <label>:66                                      ; preds = %54, %58
-  ret i32 %r.0
+  ret i32 %r.0, !dbg !1257
 }

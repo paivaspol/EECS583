@@ -1,27 +1,35 @@
 define void @do_pbc_first(%struct.__sFILE* %log, %struct.t_parm* %parm, float* %box_size, %struct.t_forcerec* nocapture readonly %fr, %struct.t_graph* %graph, [3 x float]* %x) #4 {
-  %1 = icmp eq %struct.__sFILE* %log, null
-  br i1 %1, label %.critedge, label %2
+  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %log, i64 0, metadata !1385, metadata !1624), !dbg !2590
+  tail call void @llvm.dbg.value(metadata %struct.t_parm* %parm, i64 0, metadata !1386, metadata !1624), !dbg !2591
+  tail call void @llvm.dbg.value(metadata float* %box_size, i64 0, metadata !1387, metadata !1624), !dbg !2592
+  tail call void @llvm.dbg.value(metadata %struct.t_forcerec* %fr, i64 0, metadata !1388, metadata !1624), !dbg !2593
+  tail call void @llvm.dbg.value(metadata %struct.t_graph* %graph, i64 0, metadata !1389, metadata !1624), !dbg !2594
+  tail call void @llvm.dbg.value(metadata [3 x float]* %x, i64 0, metadata !1390, metadata !1624), !dbg !2595
+  %1 = icmp eq %struct.__sFILE* %log, null, !dbg !2596
+  br i1 %1, label %.critedge, label %2, !dbg !2598
 
 ; <label>:2                                       ; preds = %0
-  %3 = tail call i64 @fwrite(i8* getelementptr inbounds ([25 x i8]* @.str16, i64 0, i64 0), i64 24, i64 1, %struct.__sFILE* %log)
-  %4 = getelementptr inbounds %struct.t_parm* %parm, i64 0, i32 1, i64 0
-  %5 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 48
-  %6 = load [3 x float]** %5, align 8, !tbaa !26
-  tail call void @calc_shifts([3 x float]* %4, float* %box_size, [3 x float]* %6) #10
-  tail call void @mk_mshift(%struct.__sFILE* %log, %struct.t_graph* %graph, [3 x float]* %4, [3 x float]* %x) #10
-  tail call void @shift_self(%struct.t_graph* %graph, [3 x float]* %4, [3 x float]* %x) #10
-  %7 = tail call i64 @fwrite(i8* getelementptr inbounds ([12 x i8]* @.str18, i64 0, i64 0), i64 11, i64 1, %struct.__sFILE* %log)
-  br label %11
+  %3 = tail call i64 @fwrite(i8* getelementptr inbounds ([25 x i8]* @.str16, i64 0, i64 0), i64 24, i64 1, %struct.__sFILE* %log), !dbg !2599
+  %4 = getelementptr inbounds %struct.t_parm* %parm, i64 0, i32 1, i64 0, !dbg !2600
+  %5 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 48, !dbg !2601
+  %6 = load [3 x float]** %5, align 8, !dbg !2601, !tbaa !1908
+  tail call void @calc_shifts([3 x float]* %4, float* %box_size, [3 x float]* %6) #10, !dbg !2602
+  tail call void @mk_mshift(%struct.__sFILE* %log, %struct.t_graph* %graph, [3 x float]* %4, [3 x float]* %x) #10, !dbg !2603
+  tail call void @llvm.dbg.value(metadata i8* null, i64 0, metadata !1391, metadata !1624), !dbg !2604
+  tail call void @shift_self(%struct.t_graph* %graph, [3 x float]* %4, [3 x float]* %x) #10, !dbg !2605
+  %7 = tail call i64 @fwrite(i8* getelementptr inbounds ([12 x i8]* @.str18, i64 0, i64 0), i64 11, i64 1, %struct.__sFILE* %log), !dbg !2607
+  br label %11, !dbg !2607
 
 .critedge:                                        ; preds = %0
-  %8 = getelementptr inbounds %struct.t_parm* %parm, i64 0, i32 1, i64 0
-  %9 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 48
-  %10 = load [3 x float]** %9, align 8, !tbaa !26
-  tail call void @calc_shifts([3 x float]* %8, float* %box_size, [3 x float]* %10) #10
-  tail call void @mk_mshift(%struct.__sFILE* null, %struct.t_graph* %graph, [3 x float]* %8, [3 x float]* %x) #10
-  tail call void @shift_self(%struct.t_graph* %graph, [3 x float]* %8, [3 x float]* %x) #10
+  %8 = getelementptr inbounds %struct.t_parm* %parm, i64 0, i32 1, i64 0, !dbg !2600
+  %9 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 48, !dbg !2601
+  %10 = load [3 x float]** %9, align 8, !dbg !2601, !tbaa !1908
+  tail call void @calc_shifts([3 x float]* %8, float* %box_size, [3 x float]* %10) #10, !dbg !2602
+  tail call void @mk_mshift(%struct.__sFILE* null, %struct.t_graph* %graph, [3 x float]* %8, [3 x float]* %x) #10, !dbg !2603
+  tail call void @llvm.dbg.value(metadata i8* null, i64 0, metadata !1391, metadata !1624), !dbg !2604
+  tail call void @shift_self(%struct.t_graph* %graph, [3 x float]* %8, [3 x float]* %x) #10, !dbg !2605
   br label %11
 
 ; <label>:11                                      ; preds = %.critedge, %2
-  ret void
+  ret void, !dbg !2609
 }

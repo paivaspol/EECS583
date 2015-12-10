@@ -1,0 +1,77 @@
+define void @_ZN3pov13IncludeHeaderEPc(i8* %temp) #0 {
+  %b = alloca [1024 x i8], align 16
+  tail call void @llvm.dbg.value(metadata i8* %temp, i64 0, metadata !1392, metadata !2141), !dbg !5939
+  %1 = getelementptr inbounds [1024 x i8]* %b, i64 0, i64 0, !dbg !5940
+  call void @llvm.lifetime.start(i64 1024, i8* %1) #2, !dbg !5940
+  tail call void @llvm.dbg.declare(metadata [1024 x i8]* %b, metadata !1393, metadata !2141), !dbg !5941
+  %2 = load i8* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 70, i64 0), align 4, !dbg !5942, !tbaa !2531
+  %3 = icmp eq i8 %2, 0, !dbg !5944
+  br i1 %3, label %34, label %4, !dbg !5945
+
+; <label>:4                                       ; preds = %0
+  %5 = load i32* @_ZN3pov18Include_File_IndexE, align 4, !dbg !5946, !tbaa !2146
+  %6 = add nsw i32 %5, 1, !dbg !5946
+  store i32 %6, i32* @_ZN3pov18Include_File_IndexE, align 4, !dbg !5946, !tbaa !2146
+  %7 = icmp sgt i32 %5, 30, !dbg !5947
+  br i1 %7, label %8, label %10, !dbg !5949
+
+; <label>:8                                       ; preds = %4
+  store i32 %5, i32* @_ZN3pov18Include_File_IndexE, align 4, !dbg !5950, !tbaa !2146
+  %9 = tail call i32 (i8*, ...)* @_ZN3pov5ErrorEPKcz(i8* getelementptr inbounds ([31 x i8]* @.str559, i64 0, i64 0)) #11, !dbg !5952
+  %.pre = load i32* @_ZN3pov18Include_File_IndexE, align 4, !dbg !5953, !tbaa !2146
+  br label %10, !dbg !5954
+
+; <label>:10                                      ; preds = %8, %4
+  %11 = phi i32 [ %.pre, %8 ], [ %6, %4 ]
+  store i32 0, i32* @_ZN3pov9Echo_IndxE, align 4, !dbg !5955, !tbaa !2146
+  %12 = sext i32 %11 to i64, !dbg !5956
+  %13 = getelementptr inbounds [32 x %"struct.pov::InputFileData"]* @_ZN3pov13Include_FilesE, i64 0, i64 %12, !dbg !5956
+  store %"struct.pov::InputFileData"* %13, %"struct.pov::InputFileData"** @_ZN3pov10Input_FileE, align 8, !dbg !5957, !tbaa !2174
+  %14 = call %"class.pov_base::IStream"* @_ZN3pov11Locate_FileEPcjS0_b(i8* %temp, i32 11, i8* %1, i1 zeroext true) #11, !dbg !5958
+  call void @llvm.dbg.value(metadata %"class.pov_base::IStream"* %14, i64 0, metadata !1394, metadata !2141), !dbg !5959
+  %15 = icmp eq %"class.pov_base::IStream"* %14, null, !dbg !5960
+  br i1 %15, label %16, label %20, !dbg !5962
+
+; <label>:16                                      ; preds = %10
+  %17 = load %"struct.pov::InputFileData"** @_ZN3pov10Input_FileE, align 8, !dbg !5963, !tbaa !2174
+  %18 = getelementptr inbounds %"struct.pov::InputFileData"* %17, i64 0, i32 0, !dbg !5965
+  store %"class.pov_base::ITextStream"* null, %"class.pov_base::ITextStream"** %18, align 8, !dbg !5966, !tbaa !2176
+  store i32 12, i32* @_ZN3pov5StageE, align 4, !dbg !5967, !tbaa !2146
+  %19 = call i32 (i8*, ...)* @_ZN3pov5ErrorEPKcz(i8* getelementptr inbounds ([36 x i8]* @.str567, i64 0, i64 0), i8* %temp) #11, !dbg !5968
+  br label %27, !dbg !5969
+
+; <label>:20                                      ; preds = %10
+  %21 = call noalias i8* @_Znwm(i64 576) #12, !dbg !5970
+  %22 = bitcast i8* %21 to %"class.pov_base::ITextStream"*, !dbg !5970
+  invoke void @_ZN8pov_base11ITextStreamC1EPKcPNS_7IStreamE(%"class.pov_base::ITextStream"* %22, i8* %1, %"class.pov_base::IStream"* %14) #11
+          to label %23 unwind label %25, !dbg !5971
+
+; <label>:23                                      ; preds = %20
+  %24 = load i8*** bitcast (%"struct.pov::InputFileData"** @_ZN3pov10Input_FileE to i8***), align 8, !dbg !5972, !tbaa !2174
+  store i8* %21, i8** %24, align 8, !dbg !5973, !tbaa !2176
+  br label %27
+
+; <label>:25                                      ; preds = %20
+  %26 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !5974
+  call void @_ZdlPv(i8* %21) #13, !dbg !5970
+  resume { i8*, i32 } %26, !dbg !5970
+
+; <label>:27                                      ; preds = %23, %16
+  %28 = load %"struct.pov::InputFileData"** @_ZN3pov10Input_FileE, align 8, !dbg !5975, !tbaa !2174
+  %29 = getelementptr inbounds %"struct.pov::InputFileData"* %28, i64 0, i32 1, !dbg !5976
+  store i8 0, i8* %29, align 1, !dbg !5977, !tbaa !2203
+  %30 = getelementptr inbounds %"struct.pov::InputFileData"* %28, i64 0, i32 0, !dbg !5978
+  %31 = load %"class.pov_base::ITextStream"** %30, align 8, !dbg !5978, !tbaa !2176
+  tail call void @llvm.dbg.value(metadata %"class.pov_base::ITextStream"* %31, i64 0, metadata !1474, metadata !2141), !dbg !5979
+  %32 = getelementptr inbounds %"class.pov_base::ITextStream"* %31, i64 0, i32 7, !dbg !5981
+  %33 = load i8** %32, align 8, !dbg !5981, !tbaa !4732
+  call fastcc void @_ZN3povL13Add_Sym_TableEPKc(i8* %33) #11, !dbg !5982
+  store i32 143, i32* getelementptr inbounds (%"struct.pov::Token_Struct"* @_ZN3pov5TokenE, i64 0, i32 0), align 8, !dbg !5983, !tbaa !2467
+  store i8 0, i8* getelementptr inbounds (%"struct.pov::Token_Struct"* @_ZN3pov5TokenE, i64 0, i32 13), align 8, !dbg !5984, !tbaa !2469
+  br label %34, !dbg !5985
+
+; <label>:34                                      ; preds = %0, %27
+  call void @llvm.lifetime.end(i64 1024, i8* %1) #2, !dbg !5985
+  ret void, !dbg !5985
+}

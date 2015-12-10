@@ -1,121 +1,169 @@
-define i32 @IsReal(i8* %s) #3 {
-entry:
-  %cmp = icmp eq i8* %s, null
-  br i1 %cmp, label %return, label %while.cond.preheader
+define i32 @IsReal(i8* readonly %s) #0 {
+  tail call void @llvm.dbg.value(metadata i8* %s, i64 0, metadata !17, metadata !94), !dbg !177
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !18, metadata !94), !dbg !178
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !19, metadata !94), !dbg !179
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !20, metadata !94), !dbg !180
+  %1 = icmp eq i8* %s, null, !dbg !181
+  br i1 %1, label %.loopexit, label %.preheader16, !dbg !183
 
-while.cond.preheader:                             ; preds = %entry
-  %call = tail call i16** @__ctype_b_loc() #5
-  %0 = load i16** %call, align 8, !tbaa !0
-  br label %while.cond
+.preheader16:                                     ; preds = %0, %isspace.exit
+  %.0 = phi i8* [ %11, %isspace.exit ], [ %s, %0 ]
+  %2 = load i8* %.0, align 1, !dbg !184, !tbaa !108
+  tail call void @llvm.dbg.value(metadata i32 %9, i64 0, metadata !65, metadata !94) #5, !dbg !185
+  tail call void @llvm.dbg.value(metadata i32 %9, i64 0, metadata !73, metadata !94) #5, !dbg !187
+  tail call void @llvm.dbg.value(metadata i64 16384, i64 0, metadata !74, metadata !94) #5, !dbg !189
+  %isascii.i.i12 = icmp sgt i8 %2, -1, !dbg !190
+  br i1 %isascii.i.i12, label %3, label %8, !dbg !190
 
-while.cond:                                       ; preds = %while.cond, %while.cond.preheader
-  %s.addr.0 = phi i8* [ %incdec.ptr, %while.cond ], [ %s, %while.cond.preheader ]
-  %1 = load i8* %s.addr.0, align 1, !tbaa !1
-  %idxprom = sext i8 %1 to i64
-  %arrayidx = getelementptr inbounds i16* %0, i64 %idxprom
-  %2 = load i16* %arrayidx, align 2, !tbaa !4
-  %and = and i16 %2, 8192
-  %tobool = icmp eq i16 %and, 0
-  %incdec.ptr = getelementptr inbounds i8* %s.addr.0, i64 1
-  br i1 %tobool, label %while.end, label %while.cond
+; <label>:3                                       ; preds = %.preheader16
+  %4 = sext i8 %2 to i64, !dbg !191
+  %5 = getelementptr inbounds %struct._RuneLocale* @_DefaultRuneLocale, i64 0, i32 5, i64 %4, !dbg !191
+  %6 = load i32* %5, align 4, !dbg !191, !tbaa !102
+  %7 = and i32 %6, 16384, !dbg !192
+  br label %isspace.exit, !dbg !190
 
-while.end:                                        ; preds = %while.cond
-  switch i8 %1, label %while.cond11.preheader [
-    i8 45, label %if.then8
-    i8 43, label %if.then8
-  ]
+; <label>:8                                       ; preds = %.preheader16
+  %9 = sext i8 %2 to i32, !dbg !193
+  %10 = tail call i32 @__maskrune(i32 %9, i64 16384) #6, !dbg !194
+  br label %isspace.exit, !dbg !190
 
-if.then8:                                         ; preds = %while.end, %while.end
-  %.pre = load i8* %incdec.ptr, align 1, !tbaa !1
-  br label %while.cond11.preheader
+isspace.exit:                                     ; preds = %3, %8
+  %.sink.i.in.i = phi i32 [ %7, %3 ], [ %10, %8 ], !dbg !195
+  %.sink.i.i = icmp eq i32 %.sink.i.in.i, 0, !dbg !196
+  %11 = getelementptr inbounds i8* %.0, i64 1, !dbg !197
+  tail call void @llvm.dbg.value(metadata i8* %11, i64 0, metadata !17, metadata !94), !dbg !177
+  br i1 %.sink.i.i, label %12, label %.preheader16, !dbg !198
 
-while.cond11.preheader:                           ; preds = %if.then8, %while.end
-  %3 = phi i8 [ %1, %while.end ], [ %.pre, %if.then8 ]
-  %s.addr.1.ph = phi i8* [ %s.addr.0, %while.end ], [ %incdec.ptr, %if.then8 ]
-  %cmp13102 = icmp eq i8 %3, 0
-  br i1 %cmp13102, label %while.cond65.preheader, label %while.body15
+; <label>:12                                      ; preds = %isspace.exit
+  %13 = load i8* %.0, align 1, !dbg !199, !tbaa !108
+  switch i8 %13, label %.preheader15 [
+    i8 45, label %14
+    i8 43, label %14
+  ], !dbg !201
 
-while.body15:                                     ; preds = %while.cond11.preheader, %if.end62
-  %4 = phi i8 [ %9, %if.end62 ], [ %3, %while.cond11.preheader ]
-  %gotreal.0106 = phi i32 [ %gotreal.1, %if.end62 ], [ 0, %while.cond11.preheader ]
-  %gotexp.0105 = phi i32 [ %gotexp.1, %if.end62 ], [ 0, %while.cond11.preheader ]
-  %gotdecimal.0104 = phi i32 [ %gotdecimal.1, %if.end62 ], [ 0, %while.cond11.preheader ]
-  %s.addr.1103 = phi i8* [ %incdec.ptr63, %if.end62 ], [ %s.addr.1.ph, %while.cond11.preheader ]
-  %idxprom17 = sext i8 %4 to i64
-  %arrayidx19 = getelementptr inbounds i16* %0, i64 %idxprom17
-  %5 = load i16* %arrayidx19, align 2, !tbaa !4
-  %conv20 = zext i16 %5 to i32
-  %and21 = and i32 %conv20, 2048
-  %tobool22 = icmp eq i32 %and21, 0
-  br i1 %tobool22, label %if.else, label %if.then23
+; <label>:14                                      ; preds = %12, %12
+  tail call void @llvm.dbg.value(metadata i8* %11, i64 0, metadata !17, metadata !94), !dbg !177
+  %.pre = load i8* %11, align 1, !dbg !202, !tbaa !108
+  br label %.preheader15, !dbg !203
 
-if.then23:                                        ; preds = %while.body15
-  %inc = add nsw i32 %gotreal.0106, 1
-  br label %if.end62
+.preheader15:                                     ; preds = %14, %12
+  %15 = phi i8 [ %13, %12 ], [ %.pre, %14 ]
+  %.1.ph = phi i8* [ %.0, %12 ], [ %11, %14 ]
+  %16 = icmp eq i8 %15, 0, !dbg !204
+  br i1 %16, label %.preheader, label %.lr.ph, !dbg !205
 
-if.else:                                          ; preds = %while.body15
-  switch i8 %4, label %if.else50 [
-    i8 46, label %if.then27
-    i8 101, label %if.then44
-    i8 69, label %if.then44
-  ]
+.lr.ph:                                           ; preds = %.preheader15, %37
+  %17 = phi i8 [ %39, %37 ], [ %15, %.preheader15 ]
+  %gotreal.023 = phi i32 [ %gotreal.1, %37 ], [ 0, %.preheader15 ]
+  %gotexp.022 = phi i32 [ %gotexp.1, %37 ], [ 0, %.preheader15 ]
+  %gotdecimal.021 = phi i32 [ %gotdecimal.1, %37 ], [ 0, %.preheader15 ]
+  %.119 = phi i8* [ %38, %37 ], [ %.1.ph, %.preheader15 ]
+  %18 = sext i8 %17 to i32, !dbg !202
+  %isdigittmp = add nsw i32 %18, -48, !dbg !206
+  %isdigit = icmp ult i32 %isdigittmp, 10, !dbg !206
+  br i1 %isdigit, label %19, label %21, !dbg !209
 
-if.then27:                                        ; preds = %if.else
-  %6 = or i32 %gotexp.0105, %gotdecimal.0104
-  %7 = icmp eq i32 %6, 0
-  br i1 %7, label %if.else33, label %return
+; <label>:19                                      ; preds = %.lr.ph
+  %20 = add nsw i32 %gotreal.023, 1, !dbg !210
+  tail call void @llvm.dbg.value(metadata i32 %20, i64 0, metadata !20, metadata !94), !dbg !180
+  br label %37, !dbg !211
 
-if.else33:                                        ; preds = %if.then27
-  %inc34 = add nsw i32 %gotdecimal.0104, 1
-  br label %if.end62
+; <label>:21                                      ; preds = %.lr.ph
+  switch i8 %17, label %29 [
+    i8 46, label %22
+    i8 101, label %27
+    i8 69, label %27
+  ], !dbg !212
 
-if.then44:                                        ; preds = %if.else, %if.else
-  %tobool45 = icmp eq i32 %gotexp.0105, 0
-  br i1 %tobool45, label %if.end62, label %return
+; <label>:22                                      ; preds = %21
+  %23 = or i32 %gotexp.022, %gotdecimal.021, !dbg !213
+  %24 = icmp eq i32 %23, 0, !dbg !213
+  br i1 %24, label %25, label %.loopexit, !dbg !213
 
-if.else50:                                        ; preds = %if.else
-  %and56 = and i32 %conv20, 8192
-  %tobool57 = icmp eq i32 %and56, 0
-  br i1 %tobool57, label %if.end62, label %while.cond65.preheader
+; <label>:25                                      ; preds = %22
+  %26 = add nsw i32 %gotdecimal.021, 1, !dbg !216
+  tail call void @llvm.dbg.value(metadata i32 %26, i64 0, metadata !18, metadata !94), !dbg !178
+  br label %37, !dbg !218
 
-while.cond65.preheader:                           ; preds = %if.end62, %if.else50, %while.cond11.preheader
-  %8 = phi i8 [ 0, %while.cond11.preheader ], [ %4, %if.else50 ], [ 0, %if.end62 ]
-  %gotreal.0.lcssa = phi i32 [ 0, %while.cond11.preheader ], [ %gotreal.0106, %if.else50 ], [ %gotreal.1, %if.end62 ]
-  %s.addr.1.lcssa = phi i8* [ %s.addr.1.ph, %while.cond11.preheader ], [ %s.addr.1103, %if.else50 ], [ %incdec.ptr63, %if.end62 ]
-  br label %while.cond65
+; <label>:27                                      ; preds = %21, %21
+  %28 = icmp eq i32 %gotexp.022, 0, !dbg !219
+  br i1 %28, label %37, label %.loopexit, !dbg !223
 
-if.end62:                                         ; preds = %if.then44, %if.else50, %if.else33, %if.then23
-  %gotdecimal.1 = phi i32 [ %gotdecimal.0104, %if.then23 ], [ %inc34, %if.else33 ], [ %gotdecimal.0104, %if.else50 ], [ %gotdecimal.0104, %if.then44 ]
-  %gotexp.1 = phi i32 [ %gotexp.0105, %if.then23 ], [ %gotexp.0105, %if.else33 ], [ %gotexp.0105, %if.else50 ], [ 1, %if.then44 ]
-  %gotreal.1 = phi i32 [ %inc, %if.then23 ], [ %gotreal.0106, %if.else33 ], [ %gotreal.0106, %if.else50 ], [ %gotreal.0106, %if.then44 ]
-  %incdec.ptr63 = getelementptr inbounds i8* %s.addr.1103, i64 1
-  %9 = load i8* %incdec.ptr63, align 1, !tbaa !1
-  %cmp13 = icmp eq i8 %9, 0
-  br i1 %cmp13, label %while.cond65.preheader, label %while.body15
+; <label>:29                                      ; preds = %21
+  tail call void @llvm.dbg.value(metadata i32 %18, i64 0, metadata !65, metadata !94) #5, !dbg !224
+  tail call void @llvm.dbg.value(metadata i32 %18, i64 0, metadata !73, metadata !94) #5, !dbg !227
+  tail call void @llvm.dbg.value(metadata i64 16384, i64 0, metadata !74, metadata !94) #5, !dbg !229
+  %isascii.i.i413 = icmp sgt i8 %17, -1, !dbg !230
+  br i1 %isascii.i.i413, label %30, label %35, !dbg !230
 
-while.cond65:                                     ; preds = %while.cond65.while.cond65_crit_edge, %while.cond65.preheader
-  %10 = phi i8 [ %.pre114, %while.cond65.while.cond65_crit_edge ], [ %8, %while.cond65.preheader ]
-  %s.addr.2 = phi i8* [ %incdec.ptr74, %while.cond65.while.cond65_crit_edge ], [ %s.addr.1.lcssa, %while.cond65.preheader ]
-  %idxprom67 = sext i8 %10 to i64
-  %arrayidx69 = getelementptr inbounds i16* %0, i64 %idxprom67
-  %11 = load i16* %arrayidx69, align 2, !tbaa !4
-  %and71 = and i16 %11, 8192
-  %tobool72 = icmp eq i16 %and71, 0
-  %incdec.ptr74 = getelementptr inbounds i8* %s.addr.2, i64 1
-  br i1 %tobool72, label %while.end75, label %while.cond65.while.cond65_crit_edge
+; <label>:30                                      ; preds = %29
+  %31 = sext i8 %17 to i64, !dbg !231
+  %32 = getelementptr inbounds %struct._RuneLocale* @_DefaultRuneLocale, i64 0, i32 5, i64 %31, !dbg !231
+  %33 = load i32* %32, align 4, !dbg !231, !tbaa !102
+  %34 = and i32 %33, 16384, !dbg !232
+  br label %isspace.exit7, !dbg !230
 
-while.cond65.while.cond65_crit_edge:              ; preds = %while.cond65
-  %.pre114 = load i8* %incdec.ptr74, align 1, !tbaa !1
-  br label %while.cond65
+; <label>:35                                      ; preds = %29
+  %36 = tail call i32 @__maskrune(i32 %18, i64 16384) #6, !dbg !233
+  br label %isspace.exit7, !dbg !230
 
-while.end75:                                      ; preds = %while.cond65
-  %cmp77 = icmp ne i8 %10, 0
-  %tobool79 = icmp eq i32 %gotreal.0.lcssa, 0
-  %or.cond = or i1 %cmp77, %tobool79
-  %12 = zext i1 %or.cond to i32
-  %. = xor i32 %12, 1
-  ret i32 %.
+isspace.exit7:                                    ; preds = %30, %35
+  %.sink.i.in.i5 = phi i32 [ %34, %30 ], [ %36, %35 ], !dbg !234
+  %.sink.i.i6 = icmp eq i32 %.sink.i.in.i5, 0, !dbg !235
+  br i1 %.sink.i.i6, label %37, label %.preheader, !dbg !236
 
-return:                                           ; preds = %if.then44, %if.then27, %entry
-  ret i32 0
+.preheader:                                       ; preds = %isspace.exit7, %37, %.preheader15
+  %gotreal.0.lcssa = phi i32 [ 0, %.preheader15 ], [ %gotreal.023, %isspace.exit7 ], [ %gotreal.1, %37 ]
+  %.1.lcssa = phi i8* [ %.1.ph, %.preheader15 ], [ %.119, %isspace.exit7 ], [ %38, %37 ]
+  br label %41, !dbg !237
+
+; <label>:37                                      ; preds = %27, %isspace.exit7, %25, %19
+  %gotdecimal.1 = phi i32 [ %gotdecimal.021, %19 ], [ %26, %25 ], [ %gotdecimal.021, %isspace.exit7 ], [ %gotdecimal.021, %27 ]
+  %gotexp.1 = phi i32 [ %gotexp.022, %19 ], [ %gotexp.022, %25 ], [ %gotexp.022, %isspace.exit7 ], [ 1, %27 ]
+  %gotreal.1 = phi i32 [ %20, %19 ], [ %gotreal.023, %25 ], [ %gotreal.023, %isspace.exit7 ], [ %gotreal.023, %27 ]
+  %38 = getelementptr inbounds i8* %.119, i64 1, !dbg !238
+  tail call void @llvm.dbg.value(metadata i8* %38, i64 0, metadata !17, metadata !94), !dbg !177
+  %39 = load i8* %38, align 1, !dbg !202, !tbaa !108
+  %40 = icmp eq i8 %39, 0, !dbg !204
+  br i1 %40, label %.preheader, label %.lr.ph, !dbg !205
+
+; <label>:41                                      ; preds = %isspace.exit11, %.preheader
+  %.2 = phi i8* [ %51, %isspace.exit11 ], [ %.1.lcssa, %.preheader ]
+  %42 = load i8* %.2, align 1, !dbg !237, !tbaa !108
+  tail call void @llvm.dbg.value(metadata i32 %49, i64 0, metadata !65, metadata !94) #5, !dbg !239
+  tail call void @llvm.dbg.value(metadata i32 %49, i64 0, metadata !73, metadata !94) #5, !dbg !241
+  tail call void @llvm.dbg.value(metadata i64 16384, i64 0, metadata !74, metadata !94) #5, !dbg !243
+  %isascii.i.i814 = icmp sgt i8 %42, -1, !dbg !244
+  br i1 %isascii.i.i814, label %43, label %48, !dbg !244
+
+; <label>:43                                      ; preds = %41
+  %44 = sext i8 %42 to i64, !dbg !245
+  %45 = getelementptr inbounds %struct._RuneLocale* @_DefaultRuneLocale, i64 0, i32 5, i64 %44, !dbg !245
+  %46 = load i32* %45, align 4, !dbg !245, !tbaa !102
+  %47 = and i32 %46, 16384, !dbg !246
+  br label %isspace.exit11, !dbg !244
+
+; <label>:48                                      ; preds = %41
+  %49 = sext i8 %42 to i32, !dbg !247
+  %50 = tail call i32 @__maskrune(i32 %49, i64 16384) #6, !dbg !248
+  br label %isspace.exit11, !dbg !244
+
+isspace.exit11:                                   ; preds = %43, %48
+  %.sink.i.in.i9 = phi i32 [ %47, %43 ], [ %50, %48 ], !dbg !249
+  %.sink.i.i10 = icmp eq i32 %.sink.i.in.i9, 0, !dbg !250
+  %51 = getelementptr inbounds i8* %.2, i64 1, !dbg !251
+  tail call void @llvm.dbg.value(metadata i8* %51, i64 0, metadata !17, metadata !94), !dbg !177
+  br i1 %.sink.i.i10, label %52, label %41, !dbg !252
+
+; <label>:52                                      ; preds = %isspace.exit11
+  %53 = load i8* %.2, align 1, !dbg !253, !tbaa !108
+  %54 = icmp eq i8 %53, 0, !dbg !255
+  %55 = icmp ne i32 %gotreal.0.lcssa, 0, !dbg !256
+  %or.cond = and i1 %55, %54, !dbg !257
+  %. = zext i1 %or.cond to i32, !dbg !258
+  br label %.loopexit, !dbg !258
+
+.loopexit:                                        ; preds = %27, %22, %52, %0
+  %.02 = phi i32 [ 0, %0 ], [ %., %52 ], [ 0, %22 ], [ 0, %27 ]
+  ret i32 %.02, !dbg !259
 }

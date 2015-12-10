@@ -1,24 +1,27 @@
 define float @EVDrandom(float %mu, float %lambda) #0 {
-entry:
-  br label %while.body
+  tail call void @llvm.dbg.value(metadata float %mu, i64 0, metadata !281, metadata !372), !dbg !1756
+  tail call void @llvm.dbg.value(metadata float %lambda, i64 0, metadata !282, metadata !372), !dbg !1757
+  tail call void @llvm.dbg.value(metadata float 0.000000e+00, i64 0, metadata !283, metadata !372), !dbg !1758
+  br label %.critedge, !dbg !1759
 
-while.body:                                       ; preds = %entry, %while.body
-  %call = tail call double @sre_random() #4
-  %conv5 = fptrunc double %call to float
-  %cmp = fcmp oeq float %conv5, 0.000000e+00
-  %cmp3 = fcmp oeq float %conv5, 1.000000e+00
-  %or.cond = or i1 %cmp, %cmp3
-  br i1 %or.cond, label %while.body, label %while.end
+.critedge:                                        ; preds = %0, %.critedge
+  %1 = tail call double @sre_random() #7, !dbg !1760
+  %2 = fptrunc double %1 to float, !dbg !1760
+  tail call void @llvm.dbg.value(metadata float %2, i64 0, metadata !283, metadata !372), !dbg !1758
+  %3 = fcmp oeq float %2, 0.000000e+00, !dbg !1761
+  %4 = fcmp oeq float %2, 1.000000e+00, !dbg !1762
+  %or.cond = or i1 %3, %4, !dbg !1759
+  br i1 %or.cond, label %.critedge, label %5, !dbg !1759
 
-while.end:                                        ; preds = %while.body
-  %phitmp = fpext float %conv5 to double
-  %conv6 = fpext float %mu to double
-  %call8 = tail call double @log(double %phitmp) #4
-  %mul = fmul double %call8, -1.000000e+00
-  %call9 = tail call double @log(double %mul) #4
-  %conv10 = fpext float %lambda to double
-  %div = fdiv double %call9, %conv10
-  %sub = fsub double %conv6, %div
-  %conv11 = fptrunc double %sub to float
-  ret float %conv11
+; <label>:5                                       ; preds = %.critedge
+  %6 = fpext float %2 to double, !dbg !1763
+  %7 = fpext float %mu to double, !dbg !1764
+  %8 = tail call double @log(double %6) #9, !dbg !1765
+  %9 = fsub double -0.000000e+00, %8, !dbg !1766
+  %10 = tail call double @log(double %9) #9, !dbg !1767
+  %11 = fpext float %lambda to double, !dbg !1768
+  %12 = fdiv double %10, %11, !dbg !1769
+  %13 = fsub double %7, %12, !dbg !1770
+  %14 = fptrunc double %13 to float, !dbg !1764
+  ret float %14, !dbg !1771
 }

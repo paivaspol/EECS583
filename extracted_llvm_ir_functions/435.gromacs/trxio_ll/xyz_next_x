@@ -1,74 +1,83 @@
 define internal fastcc i32 @xyz_next_x(%struct.__sFILE* nocapture %status, float* nocapture %t, i32 %natoms, [3 x float]* nocapture %x, [3 x float]* nocapture %box) #5 {
-  %1 = load float* %t, align 4, !tbaa !14
-  %2 = load float* @tbegin, align 4, !tbaa !14
-  %3 = fcmp ult float %2, 0.000000e+00
-  br i1 %3, label %.critedge, label %.lr.ph
+  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %status, i64 0, metadata !551, metadata !651), !dbg !1485
+  tail call void @llvm.dbg.value(metadata float* %t, i64 0, metadata !552, metadata !651), !dbg !1486
+  tail call void @llvm.dbg.value(metadata i32 %natoms, i64 0, metadata !553, metadata !651), !dbg !1487
+  tail call void @llvm.dbg.value(metadata [3 x float]* %x, i64 0, metadata !554, metadata !651), !dbg !1488
+  tail call void @llvm.dbg.value(metadata [3 x float]* %box, i64 0, metadata !555, metadata !651), !dbg !1489
+  %1 = load float* %t, align 4, !dbg !1490, !tbaa !779
+  tail call void @llvm.dbg.value(metadata float %1, i64 0, metadata !556, metadata !651), !dbg !1491
+  %2 = load float* @tbegin, align 4, !dbg !1492, !tbaa !779
+  %3 = fcmp ult float %2, 0.000000e+00, !dbg !1493
+  br i1 %3, label %.critedge, label %.lr.ph, !dbg !1494
 
 .lr.ph:                                           ; preds = %0, %10
   %4 = phi float [ %17, %10 ], [ %2, %0 ]
   %5 = phi float [ %16, %10 ], [ %1, %0 ]
-  %6 = fcmp olt float %5, %4
-  br i1 %6, label %7, label %.critedge
+  %6 = fcmp olt float %5, %4, !dbg !1495
+  br i1 %6, label %7, label %.critedge, !dbg !1496
 
 ; <label>:7                                       ; preds = %.lr.ph
-  %8 = tail call fastcc i32 @do_read_xyz(%struct.__sFILE* %status, i32 %natoms, [3 x float]* %x, [3 x float]* %box) #13
-  %9 = icmp eq i32 %8, 0
-  br i1 %9, label %.loopexit, label %10
+  %8 = tail call fastcc i32 @do_read_xyz(%struct.__sFILE* %status, i32 %natoms, [3 x float]* %x, [3 x float]* %box) #13, !dbg !1497
+  %9 = icmp eq i32 %8, 0, !dbg !1497
+  br i1 %9, label %.loopexit, label %10, !dbg !1500
 
 ; <label>:10                                      ; preds = %7
-  %11 = load float* %t, align 4, !tbaa !14
-  tail call fastcc void @printcount2(float %11, float %11, float %11, float %11) #10
-  %12 = load double* @DT, align 8, !tbaa !16
-  %13 = load float* %t, align 4, !tbaa !14
-  %14 = fpext float %13 to double
-  %15 = fadd double %12, %14
-  %16 = fptrunc double %15 to float
-  store float %16, float* %t, align 4, !tbaa !14
-  %17 = load float* @tbegin, align 4, !tbaa !14
-  %18 = fcmp ult float %17, 0.000000e+00
-  br i1 %18, label %.critedge, label %.lr.ph
+  %11 = load float* %t, align 4, !dbg !1501, !tbaa !779
+  tail call void @llvm.dbg.value(metadata float %11, i64 0, metadata !623, metadata !651) #7, !dbg !1502
+  tail call fastcc void @printcount2(float %11, float %11, float %11, float %11) #10, !dbg !1504
+  %12 = load double* @DT, align 8, !dbg !1505, !tbaa !792
+  %13 = load float* %t, align 4, !dbg !1506, !tbaa !779
+  %14 = fpext float %13 to double, !dbg !1506
+  %15 = fadd double %12, %14, !dbg !1506
+  %16 = fptrunc double %15 to float, !dbg !1506
+  store float %16, float* %t, align 4, !dbg !1506, !tbaa !779
+  tail call void @llvm.dbg.value(metadata float %16, i64 0, metadata !556, metadata !651), !dbg !1491
+  %17 = load float* @tbegin, align 4, !dbg !1492, !tbaa !779
+  %18 = fcmp ult float %17, 0.000000e+00, !dbg !1493
+  br i1 %18, label %.critedge, label %.lr.ph, !dbg !1494
 
 .critedge:                                        ; preds = %.lr.ph, %10, %0
   %19 = phi float [ %1, %0 ], [ %5, %.lr.ph ], [ %16, %10 ]
-  %20 = load float* @tend, align 4, !tbaa !14
-  %21 = fcmp ult float %20, 0.000000e+00
-  br i1 %21, label %25, label %22
+  %20 = load float* @tend, align 4, !dbg !1507, !tbaa !779
+  %21 = fcmp ult float %20, 0.000000e+00, !dbg !1509
+  br i1 %21, label %25, label %22, !dbg !1510
 
 ; <label>:22                                      ; preds = %.critedge
-  %23 = fcmp olt float %19, %20
-  %24 = fcmp olt float %20, 0.000000e+00
-  %or.cond = or i1 %24, %23
-  br i1 %or.cond, label %26, label %37
+  %23 = fcmp olt float %19, %20, !dbg !1511
+  %24 = fcmp olt float %20, 0.000000e+00, !dbg !1512
+  %or.cond = or i1 %24, %23, !dbg !1513
+  br i1 %or.cond, label %26, label %37, !dbg !1513
 
 ; <label>:25                                      ; preds = %.critedge
-  %.old1 = fcmp olt float %20, 0.000000e+00
-  br i1 %.old1, label %26, label %37
+  %.old1 = fcmp olt float %20, 0.000000e+00, !dbg !1512
+  br i1 %.old1, label %26, label %37, !dbg !1514
 
 ; <label>:26                                      ; preds = %25, %22
-  %27 = tail call fastcc i32 @do_read_xyz(%struct.__sFILE* %status, i32 %natoms, [3 x float]* %x, [3 x float]* %box) #13
-  %28 = icmp eq i32 %27, 0
-  %29 = load float* %t, align 4, !tbaa !14
-  br i1 %28, label %30, label %31
+  %27 = tail call fastcc i32 @do_read_xyz(%struct.__sFILE* %status, i32 %natoms, [3 x float]* %x, [3 x float]* %box) #13, !dbg !1515
+  %28 = icmp eq i32 %27, 0, !dbg !1515
+  %29 = load float* %t, align 4, !dbg !1518, !tbaa !779
+  br i1 %28, label %30, label %31, !dbg !1519
 
 ; <label>:30                                      ; preds = %26
-  tail call fastcc void @printlast(float %29) #13
-  br label %.loopexit
+  tail call fastcc void @printlast(float %29) #13, !dbg !1520
+  br label %.loopexit, !dbg !1522
 
 ; <label>:31                                      ; preds = %26
-  tail call fastcc void @printcount2(float %29, float %29, float %29, float %29) #10
-  %32 = load double* @DT, align 8, !tbaa !16
-  %33 = load float* %t, align 4, !tbaa !14
-  %34 = fpext float %33 to double
-  %35 = fadd double %32, %34
-  %36 = fptrunc double %35 to float
-  store float %36, float* %t, align 4, !tbaa !14
-  br label %.loopexit
+  tail call void @llvm.dbg.value(metadata float %29, i64 0, metadata !623, metadata !651) #7, !dbg !1523
+  tail call fastcc void @printcount2(float %29, float %29, float %29, float %29) #10, !dbg !1525
+  %32 = load double* @DT, align 8, !dbg !1526, !tbaa !792
+  %33 = load float* %t, align 4, !dbg !1527, !tbaa !779
+  %34 = fpext float %33 to double, !dbg !1527
+  %35 = fadd double %32, %34, !dbg !1527
+  %36 = fptrunc double %35 to float, !dbg !1527
+  store float %36, float* %t, align 4, !dbg !1527, !tbaa !779
+  br label %.loopexit, !dbg !1528
 
 ; <label>:37                                      ; preds = %22, %25
-  tail call fastcc void @printlast(float %19) #13
-  br label %.loopexit
+  tail call fastcc void @printlast(float %19) #13, !dbg !1529
+  br label %.loopexit, !dbg !1530
 
 .loopexit:                                        ; preds = %7, %37, %31, %30
   %.0 = phi i32 [ 1, %31 ], [ 0, %30 ], [ 0, %37 ], [ 0, %7 ]
-  ret i32 %.0
+  ret i32 %.0, !dbg !1531
 }

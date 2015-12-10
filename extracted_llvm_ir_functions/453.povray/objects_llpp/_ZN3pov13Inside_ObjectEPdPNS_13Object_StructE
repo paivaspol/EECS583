@@ -1,0 +1,32 @@
+define zeroext i1 @_ZN3pov13Inside_ObjectEPdPNS_13Object_StructE(double* %IPoint, %"struct.pov::Object_Struct"* %Object) #0 {
+  tail call void @llvm.dbg.value(metadata double* %IPoint, i64 0, metadata !920, metadata !1323), !dbg !1467
+  tail call void @llvm.dbg.value(metadata %"struct.pov::Object_Struct"* %Object, i64 0, metadata !921, metadata !1323), !dbg !1468
+  %1 = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 0, i32 7, !dbg !1469
+  %Sib.01 = load %"struct.pov::Object_Struct"** %1, align 8, !dbg !1469
+  %2 = icmp eq %"struct.pov::Object_Struct"* %Sib.01, null, !dbg !1471
+  br i1 %2, label %._crit_edge, label %.lr.ph, !dbg !1473
+
+; <label>:3                                       ; preds = %.lr.ph
+  %4 = getelementptr inbounds %"struct.pov::Object_Struct"* %Sib.02, i64 0, i32 2, !dbg !1474
+  %Sib.0 = load %"struct.pov::Object_Struct"** %4, align 8, !dbg !1469
+  %5 = icmp eq %"struct.pov::Object_Struct"* %Sib.0, null, !dbg !1471
+  br i1 %5, label %._crit_edge, label %.lr.ph, !dbg !1473
+
+.lr.ph:                                           ; preds = %0, %3
+  %Sib.02 = phi %"struct.pov::Object_Struct"* [ %Sib.0, %3 ], [ %Sib.01, %0 ]
+  %6 = tail call zeroext i1 @_ZN3pov13Inside_ObjectEPdPNS_13Object_StructE(double* %IPoint, %"struct.pov::Object_Struct"* %Sib.02) #5, !dbg !1475
+  br i1 %6, label %3, label %.loopexit, !dbg !1478
+
+._crit_edge:                                      ; preds = %3, %0
+  %7 = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 0, i32 0, !dbg !1479
+  %8 = load %"struct.pov::Method_Struct"** %7, align 8, !dbg !1479, !tbaa !1347
+  %9 = getelementptr inbounds %"struct.pov::Method_Struct"* %8, i64 0, i32 1, !dbg !1479
+  %10 = load i32 (double*, %"struct.pov::Object_Struct"*)** %9, align 8, !dbg !1479, !tbaa !1480
+  %11 = tail call i32 %10(double* %IPoint, %"struct.pov::Object_Struct"* %Object) #5, !dbg !1479
+  %12 = icmp ne i32 %11, 0, !dbg !1481
+  br label %.loopexit, !dbg !1482
+
+.loopexit:                                        ; preds = %.lr.ph, %._crit_edge
+  %.0 = phi i1 [ %12, %._crit_edge ], [ false, %.lr.ph ]
+  ret i1 %.0, !dbg !1483
+}

@@ -1,116 +1,127 @@
 define void @InpMtx_checksums(%struct._InpMtx* %inpmtx, double* %sums) #0 {
-entry:
-  %cmp = icmp eq %struct._InpMtx* %inpmtx, null
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata %struct._InpMtx* %inpmtx, i64 0, metadata !138, metadata !225), !dbg !1105
+  tail call void @llvm.dbg.value(metadata double* %sums, i64 0, metadata !139, metadata !225), !dbg !1106
+  %1 = icmp eq %struct._InpMtx* %inpmtx, null, !dbg !1107
+  br i1 %1, label %2, label %5, !dbg !1109
 
-if.then:                                          ; preds = %entry
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([53 x i8]* @.str13, i64 0, i64 0), %struct._InpMtx* null, double* %sums) #6
-  tail call void @exit(i32 -1) #7
-  unreachable
+; <label>:2                                       ; preds = %0
+  %3 = load %struct.__sFILE** @__stderrp, align 8, !dbg !1110, !tbaa !232
+  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([53 x i8]* @.str13, i64 0, i64 0), %struct._InpMtx* null, double* %sums) #7, !dbg !1112
+  tail call void @exit(i32 -1) #8, !dbg !1113
+  unreachable, !dbg !1113
 
-if.end:                                           ; preds = %entry
-  %inputMode = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 2
-  %1 = load i32* %inputMode, align 4, !tbaa !3
-  %switch = icmp ult i32 %1, 3
-  br i1 %switch, label %sw.epilog, label %sw.default
+; <label>:5                                       ; preds = %0
+  %6 = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 2, !dbg !1114
+  %7 = load i32* %6, align 4, !dbg !1114, !tbaa !277
+  %switch = icmp ult i32 %7, 3, !dbg !1115
+  br i1 %switch, label %11, label %8, !dbg !1115
 
-sw.default:                                       ; preds = %if.end
-  %2 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call1 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([57 x i8]* @.str14, i64 0, i64 0), %struct._InpMtx* %inpmtx, double* %sums) #6
-  tail call void @exit(i32 -1) #7
-  unreachable
+; <label>:8                                       ; preds = %5
+  %9 = load %struct.__sFILE** @__stderrp, align 8, !dbg !1116, !tbaa !232
+  %10 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %9, i8* getelementptr inbounds ([57 x i8]* @.str14, i64 0, i64 0), %struct._InpMtx* %inpmtx, double* %sums) #7, !dbg !1118
+  tail call void @exit(i32 -1) #8, !dbg !1119
+  unreachable, !dbg !1119
 
-sw.epilog:                                        ; preds = %if.end
-  %arrayidx = getelementptr inbounds double* %sums, i64 2
-  %arrayidx2 = getelementptr inbounds double* %sums, i64 1
-  %3 = bitcast double* %sums to i8*
-  call void @llvm.memset.p0i8.i64(i8* %3, i8 0, i64 24, i32 8, i1 false)
-  %call4 = tail call i32 @InpMtx_nent(%struct._InpMtx* %inpmtx) #6
-  %cmp5 = icmp slt i32 %call4, 1
-  br i1 %cmp5, label %return, label %for.body.lr.ph
+; <label>:11                                      ; preds = %5
+  %12 = getelementptr inbounds double* %sums, i64 2, !dbg !1120
+  %13 = getelementptr inbounds double* %sums, i64 1, !dbg !1121
+  %14 = bitcast double* %sums to i8*, !dbg !1122
+  call void @llvm.memset.p0i8.i64(i8* %14, i8 0, i64 24, i32 8, i1 false), !dbg !1124
+  %15 = tail call i32 @InpMtx_nent(%struct._InpMtx* %inpmtx) #7, !dbg !1122
+  tail call void @llvm.dbg.value(metadata i32 %15, i64 0, metadata !141, metadata !225), !dbg !1125
+  %16 = icmp slt i32 %15, 1, !dbg !1126
+  br i1 %16, label %.loopexit, label %.lr.ph9, !dbg !1127
 
-for.body.lr.ph:                                   ; preds = %sw.epilog
-  %call8 = tail call i32* @InpMtx_ivec1(%struct._InpMtx* %inpmtx) #6
-  %call9 = tail call i32* @InpMtx_ivec2(%struct._InpMtx* %inpmtx) #6
-  %sums.promoted = load double* %sums, align 8, !tbaa !4
-  %arrayidx2.promoted = load double* %arrayidx2, align 8, !tbaa !4
-  br label %for.body
+.lr.ph9:                                          ; preds = %11
+  %17 = tail call i32* @InpMtx_ivec1(%struct._InpMtx* %inpmtx) #7, !dbg !1128
+  tail call void @llvm.dbg.value(metadata i32* %17, i64 0, metadata !142, metadata !225), !dbg !1129
+  %18 = tail call i32* @InpMtx_ivec2(%struct._InpMtx* %inpmtx) #7, !dbg !1130
+  tail call void @llvm.dbg.value(metadata i32* %18, i64 0, metadata !143, metadata !225), !dbg !1131
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !140, metadata !225), !dbg !1132
+  %sums.promoted = load double* %sums, align 8, !dbg !1133, !tbaa !461
+  %.promoted = load double* %13, align 8, !dbg !1137, !tbaa !461
+  %19 = add i32 %15, -1, !dbg !1138
+  br label %20, !dbg !1138
 
-for.body:                                         ; preds = %for.body, %for.body.lr.ph
-  %indvars.iv99 = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next100, %for.body ]
-  %4 = phi double [ %arrayidx2.promoted, %for.body.lr.ph ], [ %add19, %for.body ]
-  %5 = phi double [ %sums.promoted, %for.body.lr.ph ], [ %add, %for.body ]
-  %arrayidx11 = getelementptr inbounds i32* %call8, i64 %indvars.iv99
-  %6 = load i32* %arrayidx11, align 4, !tbaa !3
-  %ispos = icmp sgt i32 %6, -1
-  %neg = sub i32 0, %6
-  %7 = select i1 %ispos, i32 %6, i32 %neg
-  %conv = sitofp i32 %7 to double
-  %add = fadd double %5, %conv
-  %arrayidx15 = getelementptr inbounds i32* %call9, i64 %indvars.iv99
-  %8 = load i32* %arrayidx15, align 4, !tbaa !3
-  %ispos86 = icmp sgt i32 %8, -1
-  %neg87 = sub i32 0, %8
-  %9 = select i1 %ispos86, i32 %8, i32 %neg87
-  %conv17 = sitofp i32 %9 to double
-  %add19 = fadd double %4, %conv17
-  %indvars.iv.next100 = add i64 %indvars.iv99, 1
-  %lftr.wideiv101 = trunc i64 %indvars.iv.next100 to i32
-  %exitcond102 = icmp eq i32 %lftr.wideiv101, %call4
-  br i1 %exitcond102, label %for.end, label %for.body
+; <label>:20                                      ; preds = %20, %.lr.ph9
+  %indvars.iv16 = phi i64 [ 0, %.lr.ph9 ], [ %indvars.iv.next17, %20 ]
+  %21 = phi double [ %.promoted, %.lr.ph9 ], [ %32, %20 ], !dbg !1139
+  %22 = phi double [ %sums.promoted, %.lr.ph9 ], [ %27, %20 ], !dbg !1139
+  %23 = getelementptr inbounds i32* %17, i64 %indvars.iv16, !dbg !1139
+  %24 = load i32* %23, align 4, !dbg !1139, !tbaa !265
+  %ispos = icmp sgt i32 %24, -1, !dbg !1140
+  %neg = sub i32 0, %24, !dbg !1140
+  %25 = select i1 %ispos, i32 %24, i32 %neg, !dbg !1140
+  %26 = sitofp i32 %25 to double, !dbg !1140
+  %27 = fadd double %22, %26, !dbg !1133
+  %28 = getelementptr inbounds i32* %18, i64 %indvars.iv16, !dbg !1141
+  %29 = load i32* %28, align 4, !dbg !1141, !tbaa !265
+  %ispos2 = icmp sgt i32 %29, -1, !dbg !1142
+  %neg3 = sub i32 0, %29, !dbg !1142
+  %30 = select i1 %ispos2, i32 %29, i32 %neg3, !dbg !1142
+  %31 = sitofp i32 %30 to double, !dbg !1142
+  %32 = fadd double %21, %31, !dbg !1137
+  %indvars.iv.next17 = add nuw nsw i64 %indvars.iv16, 1, !dbg !1138
+  %lftr.wideiv18 = trunc i64 %indvars.iv16 to i32, !dbg !1138
+  %exitcond19 = icmp eq i32 %lftr.wideiv18, %19, !dbg !1138
+  br i1 %exitcond19, label %33, label %20, !dbg !1138
 
-for.end:                                          ; preds = %for.body
-  store double %add, double* %sums, align 8, !tbaa !4
-  store double %add19, double* %arrayidx2, align 8, !tbaa !4
-  %10 = load i32* %inputMode, align 4, !tbaa !3
-  switch i32 %10, label %return [
-    i32 2, label %sw.bb35
-    i32 1, label %sw.bb21
-  ]
+; <label>:33                                      ; preds = %20
+  store double %27, double* %sums, align 8, !dbg !1133, !tbaa !461
+  store double %32, double* %13, align 8, !dbg !1137, !tbaa !461
+  %34 = load i32* %6, align 4, !dbg !1143, !tbaa !277
+  switch i32 %34, label %.loopexit [
+    i32 2, label %.lr.ph
+    i32 1, label %.lr.ph7
+  ], !dbg !1144
 
-sw.bb21:                                          ; preds = %for.end
-  %call22 = tail call double* @InpMtx_dvec(%struct._InpMtx* %inpmtx) #6
-  %.pre = load double* %arrayidx, align 8, !tbaa !4
-  br label %for.body26
+.lr.ph7:                                          ; preds = %33
+  %35 = tail call double* @InpMtx_dvec(%struct._InpMtx* %inpmtx) #7, !dbg !1145
+  tail call void @llvm.dbg.value(metadata double* %35, i64 0, metadata !144, metadata !225), !dbg !1146
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !140, metadata !225), !dbg !1132
+  %36 = add i32 %15, -1, !dbg !1147
+  %.pre = load double* %12, align 8, !dbg !1149, !tbaa !461
+  br label %37, !dbg !1147
 
-for.body26:                                       ; preds = %for.body26, %sw.bb21
-  %11 = phi double [ %.pre, %sw.bb21 ], [ %add31, %for.body26 ]
-  %indvars.iv95 = phi i64 [ 0, %sw.bb21 ], [ %indvars.iv.next96, %for.body26 ]
-  %arrayidx28 = getelementptr inbounds double* %call22, i64 %indvars.iv95
-  %12 = load double* %arrayidx28, align 8, !tbaa !4
-  %call29 = tail call double @fabs(double %12) #9
-  %add31 = fadd double %call29, %11
-  store double %add31, double* %arrayidx, align 8, !tbaa !4
-  %indvars.iv.next96 = add i64 %indvars.iv95, 1
-  %lftr.wideiv97 = trunc i64 %indvars.iv.next96 to i32
-  %exitcond98 = icmp eq i32 %lftr.wideiv97, %call4
-  br i1 %exitcond98, label %return, label %for.body26
+; <label>:37                                      ; preds = %37, %.lr.ph7
+  %38 = phi double [ %.pre, %.lr.ph7 ], [ %42, %37 ], !dbg !1152
+  %indvars.iv12 = phi i64 [ 0, %.lr.ph7 ], [ %indvars.iv.next13, %37 ]
+  %39 = getelementptr inbounds double* %35, i64 %indvars.iv12, !dbg !1152
+  %40 = load double* %39, align 8, !dbg !1152, !tbaa !461
+  %41 = tail call double @fabs(double %40) #10, !dbg !1153
+  %42 = fadd double %41, %38, !dbg !1149
+  store double %42, double* %12, align 8, !dbg !1149, !tbaa !461
+  %indvars.iv.next13 = add nuw nsw i64 %indvars.iv12, 1, !dbg !1147
+  %lftr.wideiv14 = trunc i64 %indvars.iv12 to i32, !dbg !1147
+  %exitcond15 = icmp eq i32 %lftr.wideiv14, %36, !dbg !1147
+  br i1 %exitcond15, label %.loopexit, label %37, !dbg !1147
 
-sw.bb35:                                          ; preds = %for.end
-  %call37 = tail call double* @InpMtx_dvec(%struct._InpMtx* %inpmtx) #6
-  br label %for.body41
+.lr.ph:                                           ; preds = %33
+  %43 = tail call double* @InpMtx_dvec(%struct._InpMtx* %inpmtx) #7, !dbg !1154
+  tail call void @llvm.dbg.value(metadata double* %43, i64 0, metadata !147, metadata !225), !dbg !1155
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !140, metadata !225), !dbg !1132
+  %44 = add i32 %15, -1, !dbg !1156
+  br label %45, !dbg !1156
 
-for.body41:                                       ; preds = %sw.bb35, %for.body41
-  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body41 ], [ 0, %sw.bb35 ]
-  %13 = trunc i64 %indvars.iv to i32
-  %mul = shl nsw i32 %13, 1
-  %idxprom42 = sext i32 %mul to i64
-  %arrayidx43 = getelementptr inbounds double* %call37, i64 %idxprom42
-  %14 = load double* %arrayidx43, align 8, !tbaa !4
-  %add4585 = or i32 %mul, 1
-  %idxprom46 = sext i32 %add4585 to i64
-  %arrayidx47 = getelementptr inbounds double* %call37, i64 %idxprom46
-  %15 = load double* %arrayidx47, align 8, !tbaa !4
-  %call48 = tail call double @Zabs(double %14, double %15) #6
-  %16 = load double* %arrayidx, align 8, !tbaa !4
-  %add50 = fadd double %call48, %16
-  store double %add50, double* %arrayidx, align 8, !tbaa !4
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %call4
-  br i1 %exitcond, label %return, label %for.body41
+; <label>:45                                      ; preds = %45, %.lr.ph
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %45 ]
+  %46 = trunc i64 %indvars.iv to i32, !dbg !1158
+  %47 = shl nsw i32 %46, 1, !dbg !1158
+  %48 = sext i32 %47 to i64, !dbg !1161
+  %49 = getelementptr inbounds double* %43, i64 %48, !dbg !1161
+  %50 = load double* %49, align 8, !dbg !1161, !tbaa !461
+  %51 = or i32 %47, 1, !dbg !1162
+  %52 = sext i32 %51 to i64, !dbg !1163
+  %53 = getelementptr inbounds double* %43, i64 %52, !dbg !1163
+  %54 = load double* %53, align 8, !dbg !1163, !tbaa !461
+  %55 = tail call double @Zabs(double %50, double %54) #7, !dbg !1164
+  %56 = load double* %12, align 8, !dbg !1165, !tbaa !461
+  %57 = fadd double %55, %56, !dbg !1165
+  store double %57, double* %12, align 8, !dbg !1165, !tbaa !461
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !1156
+  %exitcond = icmp eq i32 %46, %44, !dbg !1156
+  br i1 %exitcond, label %.loopexit, label %45, !dbg !1156
 
-return:                                           ; preds = %for.body26, %for.body41, %for.end, %sw.epilog
-  ret void
+.loopexit:                                        ; preds = %37, %45, %33, %11
+  ret void, !dbg !1166
 }

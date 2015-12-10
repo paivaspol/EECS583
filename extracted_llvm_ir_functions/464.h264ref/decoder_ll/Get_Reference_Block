@@ -1,42 +1,48 @@
-define void @Get_Reference_Block(i16** nocapture %imY, i32 %block_y, i32 %block_x, i32 %mvhor, i32 %mvver, i16** nocapture %out) #0 {
-entry:
-  %mul1 = shl i32 %block_y, 4
-  %add = add nsw i32 %mul1, %mvver
-  %mul3 = shl i32 %block_x, 4
-  %add4 = add nsw i32 %mul3, %mvhor
-  %0 = zext i32 %add4 to i64
-  %1 = zext i32 %add to i64
-  br label %for.cond5.preheader
+define void @Get_Reference_Block(i16** nocapture readonly %imY, i32 %block_y, i32 %block_x, i32 %mvhor, i32 %mvver, i16** nocapture readonly %out) #0 {
+  tail call void @llvm.dbg.value(metadata i16** %imY, i64 0, metadata !130, metadata !762), !dbg !989
+  tail call void @llvm.dbg.value(metadata i32 %block_y, i64 0, metadata !131, metadata !762), !dbg !990
+  tail call void @llvm.dbg.value(metadata i32 %block_x, i64 0, metadata !132, metadata !762), !dbg !991
+  tail call void @llvm.dbg.value(metadata i32 %mvhor, i64 0, metadata !133, metadata !762), !dbg !992
+  tail call void @llvm.dbg.value(metadata i32 %mvver, i64 0, metadata !134, metadata !762), !dbg !993
+  tail call void @llvm.dbg.value(metadata i16** %out, i64 0, metadata !135, metadata !762), !dbg !994
+  %1 = shl i32 %block_y, 4, !dbg !995
+  %2 = add nsw i32 %1, %mvver, !dbg !996
+  tail call void @llvm.dbg.value(metadata i32 %2, i64 0, metadata !138, metadata !762), !dbg !997
+  %3 = shl i32 %block_x, 4, !dbg !998
+  %4 = add nsw i32 %3, %mvhor, !dbg !999
+  tail call void @llvm.dbg.value(metadata i32 %4, i64 0, metadata !139, metadata !762), !dbg !1000
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !137, metadata !762), !dbg !1001
+  %5 = zext i32 %4 to i64, !dbg !1002
+  %6 = zext i32 %2 to i64, !dbg !1002
+  br label %.preheader, !dbg !1002
 
-for.cond5.preheader:                              ; preds = %for.inc14, %entry
-  %indvars.iv27 = phi i64 [ 0, %entry ], [ %indvars.iv.next28, %for.inc14 ]
-  %2 = shl i64 %indvars.iv27, 2
-  %3 = add nsw i64 %1, %2
-  %arrayidx = getelementptr inbounds i16** %out, i64 %indvars.iv27
-  %.pre = load i16** %arrayidx, align 8, !tbaa !0
-  br label %for.body7
+.preheader:                                       ; preds = %18, %0
+  %indvars.iv3 = phi i64 [ 0, %0 ], [ %indvars.iv.next4, %18 ]
+  %7 = shl i64 %indvars.iv3, 2, !dbg !1004
+  %8 = add i64 %6, %7, !dbg !1008
+  %9 = getelementptr inbounds i16** %out, i64 %indvars.iv3, !dbg !1009
+  %.pre = load i16** %9, align 8, !dbg !1009, !tbaa !769
+  br label %10, !dbg !1010
 
-for.body7:                                        ; preds = %for.body7, %for.cond5.preheader
-  %indvars.iv = phi i64 [ 0, %for.cond5.preheader ], [ %indvars.iv.next, %for.body7 ]
-  %4 = shl i64 %indvars.iv, 2
-  %5 = add nsw i64 %0, %4
-  %6 = trunc i64 %5 to i32
-  %7 = trunc i64 %3 to i32
-  %call = tail call zeroext i8 @Get_Reference_Pixel(i16** %imY, i32 %7, i32 %6) #5
-  %conv = zext i8 %call to i16
-  %arrayidx13 = getelementptr inbounds i16* %.pre, i64 %indvars.iv
-  store i16 %conv, i16* %arrayidx13, align 2, !tbaa !4
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, 4
-  br i1 %exitcond, label %for.inc14, label %for.body7
+; <label>:10                                      ; preds = %10, %.preheader
+  %indvars.iv = phi i64 [ 0, %.preheader ], [ %indvars.iv.next, %10 ]
+  %11 = shl i64 %indvars.iv, 2, !dbg !1011
+  %12 = add i64 %5, %11, !dbg !1012
+  %13 = trunc i64 %12 to i32, !dbg !1013
+  %14 = trunc i64 %8 to i32, !dbg !1013
+  %15 = tail call zeroext i8 @Get_Reference_Pixel(i16** %imY, i32 %14, i32 %13) #7, !dbg !1013
+  %16 = zext i8 %15 to i16, !dbg !1013
+  %17 = getelementptr inbounds i16* %.pre, i64 %indvars.iv, !dbg !1009
+  store i16 %16, i16* %17, align 2, !dbg !1014, !tbaa !823
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !1010
+  %exitcond = icmp eq i64 %indvars.iv.next, 4, !dbg !1010
+  br i1 %exitcond, label %18, label %10, !dbg !1010
 
-for.inc14:                                        ; preds = %for.body7
-  %indvars.iv.next28 = add i64 %indvars.iv27, 1
-  %lftr.wideiv31 = trunc i64 %indvars.iv.next28 to i32
-  %exitcond32 = icmp eq i32 %lftr.wideiv31, 4
-  br i1 %exitcond32, label %for.end16, label %for.cond5.preheader
+; <label>:18                                      ; preds = %10
+  %indvars.iv.next4 = add nuw nsw i64 %indvars.iv3, 1, !dbg !1002
+  %exitcond5 = icmp eq i64 %indvars.iv.next4, 4, !dbg !1002
+  br i1 %exitcond5, label %19, label %.preheader, !dbg !1002
 
-for.end16:                                        ; preds = %for.inc14
-  ret void
+; <label>:19                                      ; preds = %18
+  ret void, !dbg !1015
 }

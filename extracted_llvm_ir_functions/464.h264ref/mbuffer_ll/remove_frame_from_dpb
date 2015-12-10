@@ -1,92 +1,105 @@
 define internal fastcc void @remove_frame_from_dpb(i32 %pos) #1 {
-entry:
-  %idxprom = sext i32 %pos to i64
-  %0 = load %struct.frame_store*** getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 0), align 8, !tbaa !0
-  %arrayidx = getelementptr inbounds %struct.frame_store** %0, i64 %idxprom
-  %1 = load %struct.frame_store** %arrayidx, align 8, !tbaa !0
-  %is_used = getelementptr inbounds %struct.frame_store* %1, i64 0, i32 0
-  %2 = load i32* %is_used, align 4, !tbaa !3
-  switch i32 %2, label %sw.default [
-    i32 3, label %sw.bb
-    i32 2, label %sw.bb5
-    i32 1, label %sw.bb8
-    i32 0, label %sw.epilog
-  ]
+  tail call void @llvm.dbg.value(metadata i32 %pos, i64 0, metadata !1037, metadata !1408), !dbg !6491
+  %1 = sext i32 %pos to i64, !dbg !6492
+  %2 = load %struct.frame_store*** getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 0), align 8, !dbg !6493, !tbaa !1469
+  %3 = getelementptr inbounds %struct.frame_store** %2, i64 %1, !dbg !6492
+  %4 = load %struct.frame_store** %3, align 8, !dbg !6492, !tbaa !1389
+  tail call void @llvm.dbg.value(metadata %struct.frame_store* %4, i64 0, metadata !1038, metadata !1408), !dbg !6494
+  %5 = getelementptr inbounds %struct.frame_store* %4, i64 0, i32 0, !dbg !6495
+  %6 = load i32* %5, align 4, !dbg !6495, !tbaa !1925
+  switch i32 %6, label %21 [
+    i32 3, label %7
+    i32 2, label %15
+    i32 1, label %18
+    i32 0, label %22
+  ], !dbg !6496
 
-sw.bb:                                            ; preds = %entry
-  %frame = getelementptr inbounds %struct.frame_store* %1, i64 0, i32 10
-  %3 = load %struct.storable_picture** %frame, align 8, !tbaa !0
-  tail call void @free_storable_picture(%struct.storable_picture* %3) #7
-  %top_field = getelementptr inbounds %struct.frame_store* %1, i64 0, i32 11
-  %4 = load %struct.storable_picture** %top_field, align 8, !tbaa !0
-  tail call void @free_storable_picture(%struct.storable_picture* %4) #7
-  %bottom_field = getelementptr inbounds %struct.frame_store* %1, i64 0, i32 12
-  %5 = load %struct.storable_picture** %bottom_field, align 8, !tbaa !0
-  tail call void @free_storable_picture(%struct.storable_picture* %5) #7
-  %6 = bitcast %struct.storable_picture** %frame to i8*
-  call void @llvm.memset.p0i8.i64(i8* %6, i8 0, i64 24, i32 8, i1 false)
-  br label %sw.epilog
+; <label>:7                                       ; preds = %0
+  %8 = getelementptr inbounds %struct.frame_store* %4, i64 0, i32 10, !dbg !6497
+  %9 = load %struct.storable_picture** %8, align 8, !dbg !6497, !tbaa !1601
+  tail call void @free_storable_picture(%struct.storable_picture* %9) #9, !dbg !6499
+  %10 = getelementptr inbounds %struct.frame_store* %4, i64 0, i32 11, !dbg !6500
+  %11 = load %struct.storable_picture** %10, align 8, !dbg !6500, !tbaa !1611
+  tail call void @free_storable_picture(%struct.storable_picture* %11) #9, !dbg !6501
+  %12 = getelementptr inbounds %struct.frame_store* %4, i64 0, i32 12, !dbg !6502
+  %13 = load %struct.storable_picture** %12, align 8, !dbg !6502, !tbaa !1620
+  tail call void @free_storable_picture(%struct.storable_picture* %13) #9, !dbg !6503
+  %14 = bitcast %struct.storable_picture** %8 to i8*, !dbg !6504
+  call void @llvm.memset.p0i8.i64(i8* %14, i8 0, i64 24, i32 8, i1 false), !dbg !6505
+  br label %22, !dbg !6504
 
-sw.bb5:                                           ; preds = %entry
-  %bottom_field6 = getelementptr inbounds %struct.frame_store* %1, i64 0, i32 12
-  %7 = load %struct.storable_picture** %bottom_field6, align 8, !tbaa !0
-  tail call void @free_storable_picture(%struct.storable_picture* %7) #7
-  store %struct.storable_picture* null, %struct.storable_picture** %bottom_field6, align 8, !tbaa !0
-  br label %sw.epilog
+; <label>:15                                      ; preds = %0
+  %16 = getelementptr inbounds %struct.frame_store* %4, i64 0, i32 12, !dbg !6506
+  %17 = load %struct.storable_picture** %16, align 8, !dbg !6506, !tbaa !1620
+  tail call void @free_storable_picture(%struct.storable_picture* %17) #9, !dbg !6507
+  store %struct.storable_picture* null, %struct.storable_picture** %16, align 8, !dbg !6508, !tbaa !1620
+  br label %22, !dbg !6509
 
-sw.bb8:                                           ; preds = %entry
-  %top_field9 = getelementptr inbounds %struct.frame_store* %1, i64 0, i32 11
-  %8 = load %struct.storable_picture** %top_field9, align 8, !tbaa !0
-  tail call void @free_storable_picture(%struct.storable_picture* %8) #7
-  store %struct.storable_picture* null, %struct.storable_picture** %top_field9, align 8, !tbaa !0
-  br label %sw.epilog
+; <label>:18                                      ; preds = %0
+  %19 = getelementptr inbounds %struct.frame_store* %4, i64 0, i32 11, !dbg !6510
+  %20 = load %struct.storable_picture** %19, align 8, !dbg !6510, !tbaa !1611
+  tail call void @free_storable_picture(%struct.storable_picture* %20) #9, !dbg !6511
+  store %struct.storable_picture* null, %struct.storable_picture** %19, align 8, !dbg !6512, !tbaa !1611
+  br label %22, !dbg !6513
 
-sw.default:                                       ; preds = %entry
-  tail call void @error(i8* getelementptr inbounds ([25 x i8]* @.str25, i64 0, i64 0), i32 500) #6
-  br label %sw.epilog
+; <label>:21                                      ; preds = %0
+  tail call void @error(i8* getelementptr inbounds ([25 x i8]* @.str37, i64 0, i64 0), i32 500) #8, !dbg !6514
+  br label %22, !dbg !6515
 
-sw.epilog:                                        ; preds = %sw.default, %entry, %sw.bb8, %sw.bb5, %sw.bb
-  %9 = bitcast %struct.frame_store* %1 to i8*
-  call void @llvm.memset.p0i8.i64(i8* %9, i8 0, i64 16, i32 4, i1 false)
-  %10 = load %struct.frame_store*** getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 0), align 8, !tbaa !0
-  %arrayidx13 = getelementptr inbounds %struct.frame_store** %10, i64 %idxprom
-  %11 = load %struct.frame_store** %arrayidx13, align 8, !tbaa !0
-  %12 = load i32* getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 4), align 4, !tbaa !3
-  %sub40 = add i32 %12, -1
-  %cmp41 = icmp ugt i32 %sub40, %pos
-  br i1 %cmp41, label %for.body.lr.ph, label %for.end
+; <label>:22                                      ; preds = %21, %0, %18, %15, %7
+  %23 = bitcast %struct.frame_store* %4 to i8*, !dbg !6516
+  call void @llvm.memset.p0i8.i64(i8* %23, i8 0, i64 16, i32 4, i1 false), !dbg !6517
+  %24 = load %struct.frame_store*** getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 0), align 8, !dbg !6516, !tbaa !1469
+  %25 = getelementptr inbounds %struct.frame_store** %24, i64 %1, !dbg !6518
+  %26 = bitcast %struct.frame_store** %25 to i64*, !dbg !6518
+  %27 = load i64* %26, align 8, !dbg !6518, !tbaa !1389
+  tail call void @llvm.dbg.value(metadata i32 %pos, i64 0, metadata !1040, metadata !1408), !dbg !6519
+  %28 = load i32* getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 4), align 4, !dbg !6520, !tbaa !1459
+  %29 = add i32 %28, -1, !dbg !6523
+  %30 = icmp ugt i32 %29, %pos, !dbg !6524
+  br i1 %30, label %.lr.ph, label %49, !dbg !6525
 
-for.body.lr.ph:                                   ; preds = %sw.epilog
-  %13 = zext i32 %pos to i64
-  br label %for.body
+.lr.ph:                                           ; preds = %22
+  %31 = zext i32 %pos to i64
+  %32 = add nuw i32 %pos, 1, !dbg !6526
+  %33 = zext i32 %32 to i64, !dbg !6528
+  %34 = getelementptr inbounds %struct.frame_store** %24, i64 %33, !dbg !6528
+  %35 = bitcast %struct.frame_store** %34 to i64*, !dbg !6528
+  %36 = load i64* %35, align 8, !dbg !6528, !tbaa !1389
+  %37 = getelementptr inbounds %struct.frame_store** %24, i64 %31, !dbg !6529
+  %38 = bitcast %struct.frame_store** %37 to i64*, !dbg !6530
+  store i64 %36, i64* %38, align 8, !dbg !6530, !tbaa !1389
+  tail call void @llvm.dbg.value(metadata i32 %32, i64 0, metadata !1040, metadata !1408), !dbg !6519
+  %39 = icmp ult i32 %32, %29, !dbg !6524
+  br i1 %39, label %._crit_edge2, label %._crit_edge, !dbg !6525
 
-for.body:                                         ; preds = %for.body.for.body_crit_edge, %for.body.lr.ph
-  %14 = phi %struct.frame_store** [ %10, %for.body.lr.ph ], [ %.pre44, %for.body.for.body_crit_edge ]
-  %indvars.iv = phi i64 [ %13, %for.body.lr.ph ], [ %indvars.iv.next, %for.body.for.body_crit_edge ]
-  %i.042 = phi i32 [ %pos, %for.body.lr.ph ], [ %add, %for.body.for.body_crit_edge ]
-  %add = add i32 %i.042, 1
-  %idxprom14 = zext i32 %add to i64
-  %arrayidx15 = getelementptr inbounds %struct.frame_store** %14, i64 %idxprom14
-  %15 = load %struct.frame_store** %arrayidx15, align 8, !tbaa !0
-  %arrayidx17 = getelementptr inbounds %struct.frame_store** %14, i64 %indvars.iv
-  store %struct.frame_store* %15, %struct.frame_store** %arrayidx17, align 8, !tbaa !0
-  %cmp = icmp ult i32 %add, %sub40
-  br i1 %cmp, label %for.body.for.body_crit_edge, label %for.cond.for.end_crit_edge
+._crit_edge2:                                     ; preds = %.lr.ph, %._crit_edge2
+  %40 = phi i32 [ %41, %._crit_edge2 ], [ %32, %.lr.ph ]
+  %indvars.iv4 = phi i64 [ %indvars.iv.next, %._crit_edge2 ], [ %31, %.lr.ph ]
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv4, 1, !dbg !6525
+  %.pre = load %struct.frame_store*** getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 0), align 8, !dbg !6531, !tbaa !1469
+  %41 = add nuw i32 %40, 1, !dbg !6526
+  %42 = zext i32 %41 to i64, !dbg !6528
+  %43 = getelementptr inbounds %struct.frame_store** %.pre, i64 %42, !dbg !6528
+  %44 = bitcast %struct.frame_store** %43 to i64*, !dbg !6528
+  %45 = load i64* %44, align 8, !dbg !6528, !tbaa !1389
+  %46 = getelementptr inbounds %struct.frame_store** %.pre, i64 %indvars.iv.next, !dbg !6529
+  %47 = bitcast %struct.frame_store** %46 to i64*, !dbg !6530
+  store i64 %45, i64* %47, align 8, !dbg !6530, !tbaa !1389
+  tail call void @llvm.dbg.value(metadata i32 %41, i64 0, metadata !1040, metadata !1408), !dbg !6519
+  %48 = icmp ult i32 %41, %29, !dbg !6524
+  br i1 %48, label %._crit_edge2, label %._crit_edge, !dbg !6525
 
-for.body.for.body_crit_edge:                      ; preds = %for.body
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %.pre44 = load %struct.frame_store*** getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 0), align 8, !tbaa !0
-  br label %for.body
+._crit_edge:                                      ; preds = %._crit_edge2, %.lr.ph
+  %.pre3 = load %struct.frame_store*** getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 0), align 8, !dbg !6532, !tbaa !1469
+  br label %49, !dbg !6525
 
-for.cond.for.end_crit_edge:                       ; preds = %for.body
-  %.pre = load %struct.frame_store*** getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 0), align 8, !tbaa !0
-  br label %for.end
-
-for.end:                                          ; preds = %for.cond.for.end_crit_edge, %sw.epilog
-  %16 = phi %struct.frame_store** [ %.pre, %for.cond.for.end_crit_edge ], [ %10, %sw.epilog ]
-  %idxprom19 = zext i32 %sub40 to i64
-  %arrayidx20 = getelementptr inbounds %struct.frame_store** %16, i64 %idxprom19
-  store %struct.frame_store* %11, %struct.frame_store** %arrayidx20, align 8, !tbaa !0
-  store i32 %sub40, i32* getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 4), align 4, !tbaa !3
-  ret void
+; <label>:49                                      ; preds = %._crit_edge, %22
+  %50 = phi %struct.frame_store** [ %.pre3, %._crit_edge ], [ %24, %22 ]
+  %51 = zext i32 %29 to i64, !dbg !6533
+  %52 = getelementptr inbounds %struct.frame_store** %50, i64 %51, !dbg !6533
+  %53 = bitcast %struct.frame_store** %52 to i64*, !dbg !6534
+  store i64 %27, i64* %53, align 8, !dbg !6534, !tbaa !1389
+  store i32 %29, i32* getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 4), align 4, !dbg !6535, !tbaa !1459
+  ret void, !dbg !6536
 }

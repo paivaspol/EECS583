@@ -1,63 +1,63 @@
 define void @BKL_init(%struct._BKL* %bkl, %struct._BPG* %bpg, float %alpha) #0 {
-entry:
-  %cmp = icmp eq %struct._BKL* %bkl, null
-  %cmp1 = icmp eq %struct._BPG* %bpg, null
-  %or.cond = or i1 %cmp, %cmp1
-  br i1 %or.cond, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata %struct._BKL* %bkl, i64 0, metadata !79, metadata !86), !dbg !87
+  tail call void @llvm.dbg.value(metadata %struct._BPG* %bpg, i64 0, metadata !80, metadata !86), !dbg !88
+  tail call void @llvm.dbg.value(metadata float %alpha, i64 0, metadata !81, metadata !86), !dbg !89
+  %1 = icmp eq %struct._BKL* %bkl, null, !dbg !90
+  %2 = icmp eq %struct._BPG* %bpg, null, !dbg !92
+  %or.cond = or i1 %1, %2, !dbg !93
+  br i1 %or.cond, label %3, label %7, !dbg !93
 
-if.then:                                          ; preds = %entry
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %conv = fpext float %alpha to double
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([48 x i8]* @.str, i64 0, i64 0), %struct._BKL* %bkl, %struct._BPG* %bpg, double %conv) #4
-  tail call void @exit(i32 -1) #5
-  unreachable
+; <label>:3                                       ; preds = %0
+  %4 = load %struct.__sFILE** @__stderrp, align 8, !dbg !94, !tbaa !96
+  %5 = fpext float %alpha to double, !dbg !100
+  %6 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %4, i8* getelementptr inbounds ([48 x i8]* @.str, i64 0, i64 0), %struct._BKL* %bkl, %struct._BPG* %bpg, double %5) #5, !dbg !101
+  tail call void @exit(i32 -1) #6, !dbg !102
+  unreachable, !dbg !102
 
-if.end:                                           ; preds = %entry
-  tail call void @BKL_clearData(%struct._BKL* %bkl) #4
-  %bpg2 = getelementptr inbounds %struct._BKL* %bkl, i64 0, i32 0
-  store %struct._BPG* %bpg, %struct._BPG** %bpg2, align 8, !tbaa !0
-  %nX = getelementptr inbounds %struct._BPG* %bpg, i64 0, i32 0
-  %1 = load i32* %nX, align 4, !tbaa !3
-  %ndom = getelementptr inbounds %struct._BKL* %bkl, i64 0, i32 1
-  store i32 %1, i32* %ndom, align 4, !tbaa !3
-  %nY = getelementptr inbounds %struct._BPG* %bpg, i64 0, i32 1
-  %2 = load i32* %nY, align 4, !tbaa !3
-  %nseg = getelementptr inbounds %struct._BKL* %bkl, i64 0, i32 2
-  store i32 %2, i32* %nseg, align 4, !tbaa !3
-  %3 = load i32* %nX, align 4, !tbaa !3
-  %4 = load i32* %nY, align 4, !tbaa !3
-  %add = add nsw i32 %4, %3
-  %nreg = getelementptr inbounds %struct._BKL* %bkl, i64 0, i32 3
-  store i32 %add, i32* %nreg, align 4, !tbaa !3
-  %graph = getelementptr inbounds %struct._BPG* %bpg, i64 0, i32 2
-  %5 = load %struct._Graph** %graph, align 8, !tbaa !0
-  %vwghts = getelementptr inbounds %struct._Graph* %5, i64 0, i32 7
-  %6 = load i32** %vwghts, align 8, !tbaa !0
-  %cmp5 = icmp eq i32* %6, null
-  br i1 %cmp5, label %if.then7, label %if.else
+; <label>:7                                       ; preds = %0
+  tail call void @BKL_clearData(%struct._BKL* %bkl) #5, !dbg !103
+  %8 = getelementptr inbounds %struct._BKL* %bkl, i64 0, i32 0, !dbg !104
+  store %struct._BPG* %bpg, %struct._BPG** %8, align 8, !dbg !105, !tbaa !106
+  %9 = getelementptr inbounds %struct._BPG* %bpg, i64 0, i32 0, !dbg !110
+  %10 = load i32* %9, align 4, !dbg !110, !tbaa !111
+  %11 = getelementptr inbounds %struct._BKL* %bkl, i64 0, i32 1, !dbg !113
+  store i32 %10, i32* %11, align 4, !dbg !114, !tbaa !115
+  %12 = getelementptr inbounds %struct._BPG* %bpg, i64 0, i32 1, !dbg !116
+  %13 = load i32* %12, align 4, !dbg !116, !tbaa !117
+  %14 = getelementptr inbounds %struct._BKL* %bkl, i64 0, i32 2, !dbg !118
+  store i32 %13, i32* %14, align 4, !dbg !119, !tbaa !120
+  %15 = add nsw i32 %13, %10, !dbg !121
+  %16 = getelementptr inbounds %struct._BKL* %bkl, i64 0, i32 3, !dbg !122
+  store i32 %15, i32* %16, align 4, !dbg !123, !tbaa !124
+  %17 = getelementptr inbounds %struct._BPG* %bpg, i64 0, i32 2, !dbg !125
+  %18 = load %struct._Graph** %17, align 8, !dbg !125, !tbaa !127
+  %19 = getelementptr inbounds %struct._Graph* %18, i64 0, i32 7, !dbg !128
+  %20 = load i32** %19, align 8, !dbg !128, !tbaa !129
+  %21 = icmp eq i32* %20, null, !dbg !131
+  br i1 %21, label %22, label %26, !dbg !132
 
-if.then7:                                         ; preds = %if.end
-  %totweight = getelementptr inbounds %struct._BKL* %bkl, i64 0, i32 4
-  store i32 %add, i32* %totweight, align 4, !tbaa !3
-  %call10 = tail call i32* @IVinit(i32 %add, i32 1) #4
-  %regwghts = getelementptr inbounds %struct._BKL* %bkl, i64 0, i32 12
-  store i32* %call10, i32** %regwghts, align 8, !tbaa !0
-  br label %if.end18
+; <label>:22                                      ; preds = %7
+  %23 = getelementptr inbounds %struct._BKL* %bkl, i64 0, i32 4, !dbg !133
+  store i32 %15, i32* %23, align 4, !dbg !135, !tbaa !136
+  %24 = tail call i32* @IVinit(i32 %15, i32 1) #5, !dbg !137
+  %25 = getelementptr inbounds %struct._BKL* %bkl, i64 0, i32 12, !dbg !138
+  store i32* %24, i32** %25, align 8, !dbg !139, !tbaa !140
+  br label %30, !dbg !141
 
-if.else:                                          ; preds = %if.end
-  %regwghts13 = getelementptr inbounds %struct._BKL* %bkl, i64 0, i32 12
-  store i32* %6, i32** %regwghts13, align 8, !tbaa !0
-  %call16 = tail call i32 @IVsum(i32 %add, i32* %6) #4
-  %totweight17 = getelementptr inbounds %struct._BKL* %bkl, i64 0, i32 4
-  store i32 %call16, i32* %totweight17, align 4, !tbaa !3
-  br label %if.end18
+; <label>:26                                      ; preds = %7
+  %27 = getelementptr inbounds %struct._BKL* %bkl, i64 0, i32 12, !dbg !142
+  store i32* %20, i32** %27, align 8, !dbg !144, !tbaa !140
+  %28 = tail call i32 @IVsum(i32 %15, i32* %20) #5, !dbg !145
+  %29 = getelementptr inbounds %struct._BKL* %bkl, i64 0, i32 4, !dbg !146
+  store i32 %28, i32* %29, align 4, !dbg !147, !tbaa !136
+  br label %30
 
-if.end18:                                         ; preds = %if.else, %if.then7
-  %7 = load i32* %nreg, align 4, !tbaa !3
-  %call20 = tail call i32* @IVinit(i32 %7, i32 0) #4
-  %colors = getelementptr inbounds %struct._BKL* %bkl, i64 0, i32 10
-  store i32* %call20, i32** %colors, align 8, !tbaa !0
-  %alpha21 = getelementptr inbounds %struct._BKL* %bkl, i64 0, i32 13
-  store float %alpha, float* %alpha21, align 4, !tbaa !4
-  ret void
+; <label>:30                                      ; preds = %26, %22
+  %31 = load i32* %16, align 4, !dbg !148, !tbaa !124
+  %32 = tail call i32* @IVinit(i32 %31, i32 0) #5, !dbg !149
+  %33 = getelementptr inbounds %struct._BKL* %bkl, i64 0, i32 10, !dbg !150
+  store i32* %32, i32** %33, align 8, !dbg !151, !tbaa !152
+  %34 = getelementptr inbounds %struct._BKL* %bkl, i64 0, i32 13, !dbg !153
+  store float %alpha, float* %34, align 4, !dbg !154, !tbaa !155
+  ret void, !dbg !156
 }

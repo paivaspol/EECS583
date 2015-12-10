@@ -1,50 +1,55 @@
 define i32 @get_ebin_space(%struct.t_ebin* nocapture %eb, i32 %nener, i8** nocapture readonly %enm) #3 {
-  %1 = getelementptr inbounds %struct.t_ebin* %eb, i64 0, i32 0
-  %2 = load i32* %1, align 4, !tbaa !14
-  %3 = add nsw i32 %2, %nener
-  store i32 %3, i32* %1, align 4, !tbaa !14
-  %4 = getelementptr inbounds %struct.t_ebin* %eb, i64 0, i32 2
-  %5 = bitcast %struct.t_energy** %4 to i8**
-  %6 = load i8** %5, align 8, !tbaa !16
-  %7 = shl i32 %3, 5
-  %8 = tail call i8* @save_realloc(i8* getelementptr inbounds ([6 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([64 x i8]* @.str1, i64 0, i64 0), i32 75, i8* %6, i32 %7) #7
-  store i8* %8, i8** %5, align 8, !tbaa !16
-  %9 = getelementptr inbounds %struct.t_ebin* %eb, i64 0, i32 1
-  %10 = bitcast i8*** %9 to i8**
-  %11 = load i8** %10, align 8, !tbaa !17
-  %12 = load i32* %1, align 4, !tbaa !14
-  %13 = shl i32 %12, 3
-  %14 = tail call i8* @save_realloc(i8* getelementptr inbounds ([8 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([64 x i8]* @.str1, i64 0, i64 0), i32 76, i8* %11, i32 %13) #7
-  store i8* %14, i8** %10, align 8, !tbaa !17
-  %15 = load i32* %1, align 4, !tbaa !14
-  %16 = icmp slt i32 %2, %15
-  br i1 %16, label %.lr.ph, label %._crit_edge
+  tail call void @llvm.dbg.value(metadata %struct.t_ebin* %eb, i64 0, metadata !118, metadata !175), !dbg !217
+  tail call void @llvm.dbg.value(metadata i32 %nener, i64 0, metadata !119, metadata !175), !dbg !218
+  tail call void @llvm.dbg.value(metadata i8** %enm, i64 0, metadata !120, metadata !175), !dbg !219
+  %1 = getelementptr inbounds %struct.t_ebin* %eb, i64 0, i32 0, !dbg !220
+  %2 = load i32* %1, align 4, !dbg !220, !tbaa !221
+  tail call void @llvm.dbg.value(metadata i32 %2, i64 0, metadata !121, metadata !175), !dbg !223
+  %3 = add nsw i32 %2, %nener, !dbg !224
+  store i32 %3, i32* %1, align 4, !dbg !224, !tbaa !221
+  %4 = getelementptr inbounds %struct.t_ebin* %eb, i64 0, i32 2, !dbg !225
+  %5 = bitcast %struct.t_energy** %4 to i8**, !dbg !225
+  %6 = load i8** %5, align 8, !dbg !225, !tbaa !226
+  %7 = shl i32 %3, 5, !dbg !225
+  %8 = tail call i8* @save_realloc(i8* getelementptr inbounds ([6 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([64 x i8]* @.str1, i64 0, i64 0), i32 75, i8* %6, i32 %7) #8, !dbg !225
+  store i8* %8, i8** %5, align 8, !dbg !225, !tbaa !226
+  %9 = getelementptr inbounds %struct.t_ebin* %eb, i64 0, i32 1, !dbg !227
+  %10 = bitcast i8*** %9 to i8**, !dbg !227
+  %11 = load i8** %10, align 8, !dbg !227, !tbaa !228
+  %12 = load i32* %1, align 4, !dbg !227, !tbaa !221
+  %13 = shl i32 %12, 3, !dbg !227
+  %14 = tail call i8* @save_realloc(i8* getelementptr inbounds ([8 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([64 x i8]* @.str1, i64 0, i64 0), i32 76, i8* %11, i32 %13) #8, !dbg !227
+  store i8* %14, i8** %10, align 8, !dbg !227, !tbaa !228
+  tail call void @llvm.dbg.value(metadata i32 %2, i64 0, metadata !122, metadata !175), !dbg !229
+  %15 = load i32* %1, align 4, !dbg !230, !tbaa !221
+  %16 = icmp slt i32 %2, %15, !dbg !233
+  br i1 %16, label %.lr.ph, label %._crit_edge, !dbg !234
 
 .lr.ph:                                           ; preds = %0
   %17 = sext i32 %2 to i64
-  br label %18
+  br label %18, !dbg !234
 
 ; <label>:18                                      ; preds = %.lr.ph, %18
   %indvars.iv = phi i64 [ %17, %.lr.ph ], [ %indvars.iv.next, %18 ]
-  %19 = load %struct.t_energy** %4, align 8, !tbaa !16
-  %20 = getelementptr inbounds %struct.t_energy* %19, i64 %indvars.iv, i32 0
-  store float 0.000000e+00, float* %20, align 4, !tbaa !18
-  %21 = getelementptr inbounds %struct.t_energy* %19, i64 %indvars.iv, i32 1
-  %22 = sub nsw i64 %indvars.iv, %17
-  %23 = getelementptr inbounds i8** %enm, i64 %22
-  %24 = bitcast double* %21 to i8*
-  call void @llvm.memset.p0i8.i64(i8* %24, i8 0, i64 20, i32 8, i1 false)
-  %25 = load i8** %23, align 8, !tbaa !22
-  %26 = tail call i8* @strdup(i8* %25) #7
-  %27 = load i8*** %9, align 8, !tbaa !17
-  %28 = getelementptr inbounds i8** %27, i64 %indvars.iv
-  store i8* %26, i8** %28, align 8, !tbaa !22
-  %indvars.iv.next = add nsw i64 %indvars.iv, 1
-  %29 = load i32* %1, align 4, !tbaa !14
-  %30 = sext i32 %29 to i64
-  %31 = icmp slt i64 %indvars.iv.next, %30
-  br i1 %31, label %18, label %._crit_edge
+  %19 = load %struct.t_energy** %4, align 8, !dbg !235, !tbaa !226
+  %20 = getelementptr inbounds %struct.t_energy* %19, i64 %indvars.iv, i32 0, !dbg !237
+  store float 0.000000e+00, float* %20, align 4, !dbg !238, !tbaa !239
+  %21 = getelementptr inbounds %struct.t_energy* %19, i64 %indvars.iv, i32 1, !dbg !243
+  %22 = sub nsw i64 %indvars.iv, %17, !dbg !244
+  %23 = getelementptr inbounds i8** %enm, i64 %22, !dbg !245
+  %24 = bitcast double* %21 to i8*, !dbg !245
+  call void @llvm.memset.p0i8.i64(i8* %24, i8 0, i64 20, i32 8, i1 false), !dbg !246
+  %25 = load i8** %23, align 8, !dbg !245, !tbaa !247
+  %26 = tail call i8* @strdup(i8* %25) #8, !dbg !248
+  %27 = load i8*** %9, align 8, !dbg !249, !tbaa !228
+  %28 = getelementptr inbounds i8** %27, i64 %indvars.iv, !dbg !250
+  store i8* %26, i8** %28, align 8, !dbg !251, !tbaa !247
+  %indvars.iv.next = add nsw i64 %indvars.iv, 1, !dbg !234
+  %29 = load i32* %1, align 4, !dbg !230, !tbaa !221
+  %30 = sext i32 %29 to i64, !dbg !233
+  %31 = icmp slt i64 %indvars.iv.next, %30, !dbg !233
+  br i1 %31, label %18, label %._crit_edge, !dbg !234
 
 ._crit_edge:                                      ; preds = %18, %0
-  ret i32 %2
+  ret i32 %2, !dbg !252
 }

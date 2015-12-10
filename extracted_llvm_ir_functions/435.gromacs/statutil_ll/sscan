@@ -1,55 +1,60 @@
-define i8* @sscan(i32 %argc, i8** nocapture readonly %argv, i32* nocapture %i) #1 {
-  %1 = load i32* %i, align 4, !tbaa !2
-  %2 = add nsw i32 %1, 1
-  %3 = icmp slt i32 %2, %argc
-  br i1 %3, label %4, label %25
+define i8* @sscan(i32 %argc, i8** nocapture readonly %argv, i32* nocapture %i) #2 {
+  tail call void @llvm.dbg.value(metadata i32 %argc, i64 0, metadata !681, metadata !852), !dbg !1411
+  tail call void @llvm.dbg.value(metadata i8** %argv, i64 0, metadata !682, metadata !852), !dbg !1412
+  tail call void @llvm.dbg.value(metadata i32* %i, i64 0, metadata !683, metadata !852), !dbg !1413
+  %1 = load i32* %i, align 4, !dbg !1414, !tbaa !860
+  %2 = add nsw i32 %1, 1, !dbg !1416
+  %3 = icmp slt i32 %2, %argc, !dbg !1417
+  br i1 %3, label %4, label %25, !dbg !1418
 
 ; <label>:4                                       ; preds = %0
-  %5 = sext i32 %2 to i64
-  %6 = getelementptr inbounds i8** %argv, i64 %5
-  %7 = load i8** %6, align 8, !tbaa !19
-  %8 = load i8* %7, align 1, !tbaa !14
-  %9 = icmp eq i8 %8, 45
-  br i1 %9, label %10, label %usage.exit
+  %5 = sext i32 %2 to i64, !dbg !1419
+  %6 = getelementptr inbounds i8** %argv, i64 %5, !dbg !1419
+  %7 = load i8** %6, align 8, !dbg !1419, !tbaa !1132
+  %8 = load i8* %7, align 1, !dbg !1419, !tbaa !995
+  %9 = icmp eq i8 %8, 45, !dbg !1422
+  br i1 %9, label %10, label %usage.exit, !dbg !1423
 
 ; <label>:10                                      ; preds = %4
-  %11 = add nsw i32 %1, 2
-  %12 = icmp slt i32 %11, %argc
-  br i1 %12, label %13, label %usage.exit
+  %11 = add nsw i32 %1, 2, !dbg !1424
+  %12 = icmp slt i32 %11, %argc, !dbg !1425
+  br i1 %12, label %13, label %usage.exit, !dbg !1426
 
 ; <label>:13                                      ; preds = %10
-  %14 = sext i32 %11 to i64
-  %15 = getelementptr inbounds i8** %argv, i64 %14
-  %16 = load i8** %15, align 8, !tbaa !19
-  %17 = load i8* %16, align 1, !tbaa !14
-  %18 = icmp eq i8 %17, 45
-  br i1 %18, label %usage.exit, label %19
+  %14 = sext i32 %11 to i64, !dbg !1427
+  %15 = getelementptr inbounds i8** %argv, i64 %14, !dbg !1427
+  %16 = load i8** %15, align 8, !dbg !1427, !tbaa !1132
+  %17 = load i8* %16, align 1, !dbg !1427, !tbaa !995
+  %18 = icmp eq i8 %17, 45, !dbg !1428
+  br i1 %18, label %usage.exit, label %19, !dbg !1429
 
 ; <label>:19                                      ; preds = %13
-  %20 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !19
-  %21 = sext i32 %1 to i64
-  %22 = getelementptr inbounds i8** %argv, i64 %21
-  %23 = load i8** %22, align 8, !tbaa !19
-  %24 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %20, i8* getelementptr inbounds ([49 x i8]* @.str11, i64 0, i64 0), i8* %23) #12
-  br label %usage.exit
+  %20 = load %struct.__sFILE** @__stderrp, align 8, !dbg !1430, !tbaa !1132
+  %21 = sext i32 %1 to i64, !dbg !1431
+  %22 = getelementptr inbounds i8** %argv, i64 %21, !dbg !1431
+  %23 = load i8** %22, align 8, !dbg !1431, !tbaa !1132
+  %24 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %20, i8* getelementptr inbounds ([49 x i8]* @.str11, i64 0, i64 0), i8* %23) #12, !dbg !1432
+  br label %usage.exit, !dbg !1432
 
 ; <label>:25                                      ; preds = %0
-  %26 = sext i32 %1 to i64
-  %27 = getelementptr inbounds i8** %argv, i64 %26
-  %28 = load i8** %27, align 8, !tbaa !19
-  %29 = icmp eq i8* %28, null
-  br i1 %29, label %usage.exit, label %30
+  %26 = sext i32 %1 to i64, !dbg !1433
+  %27 = getelementptr inbounds i8** %argv, i64 %26, !dbg !1433
+  %28 = load i8** %27, align 8, !dbg !1433, !tbaa !1132
+  tail call void @llvm.dbg.value(metadata i8* getelementptr inbounds ([9 x i8]* @.str12, i64 0, i64 0), i64 0, metadata !771, metadata !852) #10, !dbg !1434
+  tail call void @llvm.dbg.value(metadata i8* %28, i64 0, metadata !772, metadata !852) #10, !dbg !1436
+  %29 = icmp eq i8* %28, null, !dbg !1437
+  br i1 %29, label %usage.exit, label %30, !dbg !1438
 
 ; <label>:30                                      ; preds = %25
-  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([36 x i8]* @.str79, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str12, i64 0, i64 0), i8* %28) #12
-  br label %usage.exit
+  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([36 x i8]* @.str79, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str12, i64 0, i64 0), i8* %28) #12, !dbg !1439
+  br label %usage.exit, !dbg !1439
 
 usage.exit:                                       ; preds = %30, %25, %13, %4, %10, %19
-  %31 = load i32* %i, align 4, !tbaa !2
-  %32 = add nsw i32 %31, 1
-  store i32 %32, i32* %i, align 4, !tbaa !2
-  %33 = sext i32 %32 to i64
-  %34 = getelementptr inbounds i8** %argv, i64 %33
-  %35 = load i8** %34, align 8, !tbaa !19
-  ret i8* %35
+  %31 = load i32* %i, align 4, !dbg !1440, !tbaa !860
+  %32 = add nsw i32 %31, 1, !dbg !1440
+  store i32 %32, i32* %i, align 4, !dbg !1440, !tbaa !860
+  %33 = sext i32 %32 to i64, !dbg !1441
+  %34 = getelementptr inbounds i8** %argv, i64 %33, !dbg !1441
+  %35 = load i8** %34, align 8, !dbg !1441, !tbaa !1132
+  ret i8* %35, !dbg !1442
 }

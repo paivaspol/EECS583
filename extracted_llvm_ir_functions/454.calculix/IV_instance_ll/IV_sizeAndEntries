@@ -1,24 +1,28 @@
 define void @IV_sizeAndEntries(%struct._IV* %iv, i32* %psize, i32** %pentries) #0 {
-entry:
-  %cmp = icmp eq %struct._IV* %iv, null
-  %cmp1 = icmp eq i32* %psize, null
-  %or.cond = or i1 %cmp, %cmp1
-  %cmp3 = icmp eq i32** %pentries, null
-  %or.cond11 = or i1 %or.cond, %cmp3
-  br i1 %or.cond11, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata %struct._IV* %iv, i64 0, metadata !44, metadata !61), !dbg !133
+  tail call void @llvm.dbg.value(metadata i32* %psize, i64 0, metadata !45, metadata !61), !dbg !134
+  tail call void @llvm.dbg.value(metadata i32** %pentries, i64 0, metadata !46, metadata !61), !dbg !135
+  %1 = icmp eq %struct._IV* %iv, null, !dbg !136
+  %2 = icmp eq i32* %psize, null, !dbg !138
+  %or.cond = or i1 %1, %2, !dbg !139
+  %3 = icmp eq i32** %pentries, null, !dbg !140
+  %or.cond3 = or i1 %or.cond, %3, !dbg !139
+  br i1 %or.cond3, label %4, label %7, !dbg !139
 
-if.then:                                          ; preds = %entry
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([57 x i8]* @.str4, i64 0, i64 0), %struct._IV* %iv, i32* %psize, i32** %pentries) #4
-  tail call void @exit(i32 -1) #5
-  unreachable
+; <label>:4                                       ; preds = %0
+  %5 = load %struct.__sFILE** @__stderrp, align 8, !dbg !141, !tbaa !68
+  %6 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %5, i8* getelementptr inbounds ([57 x i8]* @.str4, i64 0, i64 0), %struct._IV* %iv, i32* %psize, i32** %pentries) #5, !dbg !143
+  tail call void @exit(i32 -1) #6, !dbg !144
+  unreachable, !dbg !144
 
-if.end:                                           ; preds = %entry
-  %size = getelementptr inbounds %struct._IV* %iv, i64 0, i32 0
-  %1 = load i32* %size, align 4, !tbaa !3
-  store i32 %1, i32* %psize, align 4, !tbaa !3
-  %vec = getelementptr inbounds %struct._IV* %iv, i64 0, i32 3
-  %2 = load i32** %vec, align 8, !tbaa !0
-  store i32* %2, i32** %pentries, align 8, !tbaa !0
-  ret void
+; <label>:7                                       ; preds = %0
+  %8 = getelementptr inbounds %struct._IV* %iv, i64 0, i32 0, !dbg !145
+  %9 = load i32* %8, align 4, !dbg !145, !tbaa !88
+  store i32 %9, i32* %psize, align 4, !dbg !146, !tbaa !120
+  %10 = getelementptr inbounds %struct._IV* %iv, i64 0, i32 3, !dbg !147
+  %11 = bitcast i32** %10 to i64*, !dbg !147
+  %12 = load i64* %11, align 8, !dbg !147, !tbaa !119
+  %13 = bitcast i32** %pentries to i64*, !dbg !148
+  store i64 %12, i64* %13, align 8, !dbg !148, !tbaa !68
+  ret void, !dbg !149
 }

@@ -1,17 +1,25 @@
 define i32 @BndScalarDirGN(%struct.cGH* %GH, i32 %stencil_size, i32 %dir, double %scalar, i8* %gname) #1 {
-  %1 = tail call i32 @CCTK_GroupIndex(i8* %gname) #5
-  %2 = icmp sgt i32 %1, -1
-  br i1 %2, label %3, label %5
+  tail call void @llvm.dbg.value(metadata %struct.cGH* %GH, i64 0, metadata !153, metadata !1207), !dbg !2087
+  tail call void @llvm.dbg.value(metadata i32 %stencil_size, i64 0, metadata !154, metadata !1207), !dbg !2088
+  tail call void @llvm.dbg.value(metadata i32 %dir, i64 0, metadata !155, metadata !1207), !dbg !2089
+  tail call void @llvm.dbg.value(metadata double %scalar, i64 0, metadata !156, metadata !1207), !dbg !2090
+  tail call void @llvm.dbg.value(metadata i8* %gname, i64 0, metadata !157, metadata !1207), !dbg !2091
+  %1 = tail call i32 @CCTK_GroupIndex(i8* %gname) #6, !dbg !2092
+  tail call void @llvm.dbg.value(metadata i32 %1, i64 0, metadata !158, metadata !1207), !dbg !2093
+  %2 = icmp sgt i32 %1, -1, !dbg !2094
+  br i1 %2, label %3, label %5, !dbg !2096
 
 ; <label>:3                                       ; preds = %0
-  %4 = tail call i32 @BndScalarDirGI(%struct.cGH* %GH, i32 %stencil_size, i32 %dir, double %scalar, i32 %1) #6
-  br label %7
+  %4 = tail call i32 @BndScalarDirGI(%struct.cGH* %GH, i32 %stencil_size, i32 %dir, double %scalar, i32 %1) #7, !dbg !2097
+  tail call void @llvm.dbg.value(metadata i32 %4, i64 0, metadata !159, metadata !1207), !dbg !2099
+  br label %7, !dbg !2100
 
 ; <label>:5                                       ; preds = %0
-  %6 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 2, i32 461, i8* getelementptr inbounds ([85 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([42 x i8]* @.str6, i64 0, i64 0), i8* %gname) #5
+  %6 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 2, i32 461, i8* getelementptr inbounds ([85 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([42 x i8]* @.str6, i64 0, i64 0), i8* %gname) #6, !dbg !2101
+  tail call void @llvm.dbg.value(metadata i32 -1, i64 0, metadata !159, metadata !1207), !dbg !2099
   br label %7
 
 ; <label>:7                                       ; preds = %5, %3
   %retval.0 = phi i32 [ %4, %3 ], [ -1, %5 ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !2103
 }

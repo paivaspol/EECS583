@@ -1,46 +1,52 @@
-define i32 @read_xpm_matrix(i8* %fnm, %struct.t_matrix** nocapture %matrix) #3 {
+define i32 @read_xpm_matrix(i8* %fnm, %struct.t_matrix** nocapture %matrix) #4 {
   %line = alloca i8*, align 8
-  %1 = tail call %struct.__sFILE* @ffopen(i8* %fnm, i8* getelementptr inbounds ([2 x i8]* @.str45, i64 0, i64 0)) #10
-  %2 = bitcast %struct.t_matrix** %matrix to i8**
-  br label %.outer
+  tail call void @llvm.dbg.value(metadata i8* %fnm, i64 0, metadata !286, metadata !477), !dbg !1215
+  tail call void @llvm.dbg.value(metadata %struct.t_matrix** %matrix, i64 0, metadata !287, metadata !477), !dbg !1216
+  %1 = tail call %struct.__sFILE* @ffopen(i8* %fnm, i8* getelementptr inbounds ([2 x i8]* @.str45, i64 0, i64 0)) #10, !dbg !1217
+  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %1, i64 0, metadata !288, metadata !477), !dbg !1218
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !290, metadata !477), !dbg !1219
+  %2 = bitcast %struct.t_matrix** %matrix to i8**, !dbg !1220
+  br label %.outer, !dbg !1224
 
 .outer:                                           ; preds = %10, %0
   %indvars.iv = phi i64 [ %indvars.iv.next, %10 ], [ 0, %0 ]
   br label %3
 
 ; <label>:3                                       ; preds = %.outer, %6
-  %4 = call i8* @fgetline(i8** %line, i32 4096, %struct.__sFILE* %1) #11
-  %5 = icmp eq i8* %4, null
-  br i1 %5, label %17, label %6
+  tail call void @llvm.dbg.value(metadata i8** %line, i64 0, metadata !289, metadata !477), !dbg !1225
+  %4 = call i8* @fgetline(i8** %line, i32 4096, %struct.__sFILE* %1) #11, !dbg !1226
+  %5 = icmp eq i8* %4, null, !dbg !1224
+  br i1 %5, label %17, label %6, !dbg !1224
 
 ; <label>:6                                       ; preds = %3
-  %7 = load i8** %line, align 8, !tbaa !14
-  %8 = tail call i8* @strstr(i8* %7, i8* getelementptr inbounds ([10 x i8]* @.str46, i64 0, i64 0)) #10
-  %9 = icmp eq i8* %8, null
-  br i1 %9, label %3, label %10
+  tail call void @llvm.dbg.value(metadata i8** %line, i64 0, metadata !289, metadata !477), !dbg !1225
+  %7 = load i8** %line, align 8, !dbg !1227, !tbaa !525
+  %8 = tail call i8* @strstr(i8* %7, i8* getelementptr inbounds ([10 x i8]* @.str46, i64 0, i64 0)) #10, !dbg !1228
+  %9 = icmp eq i8* %8, null, !dbg !1228
+  br i1 %9, label %3, label %10, !dbg !1229
 
 ; <label>:10                                      ; preds = %6
-  %11 = load i8** %2, align 8, !tbaa !14
-  %indvars.iv.next = add nuw i64 %indvars.iv, 1
-  %12 = trunc i64 %indvars.iv.next to i32
-  %13 = mul i32 %12, 1080
-  %14 = tail call i8* @save_realloc(i8* getelementptr inbounds ([8 x i8]* @.str47, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str1, i64 0, i64 0), i32 424, i8* %11, i32 %13) #10
-  %15 = bitcast i8* %14 to %struct.t_matrix*
-  store i8* %14, i8** %2, align 8, !tbaa !14
-  %16 = getelementptr inbounds %struct.t_matrix* %15, i64 %indvars.iv
-  tail call void @read_xpm_entry(%struct.__sFILE* %1, %struct.t_matrix* %16) #11
-  br label %.outer
+  %11 = load i8** %2, align 8, !dbg !1220, !tbaa !525
+  %indvars.iv.next = add nuw i64 %indvars.iv, 1, !dbg !1230
+  %12 = trunc i64 %indvars.iv.next to i32, !dbg !1220
+  %13 = mul i32 %12, 1080, !dbg !1220
+  %14 = tail call i8* @save_realloc(i8* getelementptr inbounds ([8 x i8]* @.str47, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str1, i64 0, i64 0), i32 424, i8* %11, i32 %13) #10, !dbg !1220
+  %15 = bitcast i8* %14 to %struct.t_matrix*, !dbg !1220
+  store i8* %14, i8** %2, align 8, !dbg !1220, !tbaa !525
+  %16 = getelementptr inbounds %struct.t_matrix* %15, i64 %indvars.iv, !dbg !1231
+  tail call void @read_xpm_entry(%struct.__sFILE* %1, %struct.t_matrix* %16) #11, !dbg !1232
+  br label %.outer, !dbg !1230
 
 ; <label>:17                                      ; preds = %3
-  %18 = trunc i64 %indvars.iv to i32
-  tail call void @ffclose(%struct.__sFILE* %1) #10
-  %19 = icmp eq i32 %18, 0
-  br i1 %19, label %20, label %21
+  %18 = trunc i64 %indvars.iv to i32, !dbg !1233
+  tail call void @ffclose(%struct.__sFILE* %1) #10, !dbg !1233
+  %19 = icmp eq i32 %18, 0, !dbg !1234
+  br i1 %19, label %20, label %21, !dbg !1236
 
 ; <label>:20                                      ; preds = %17
-  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([17 x i8]* @.str23, i64 0, i64 0)) #10
-  br label %21
+  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([17 x i8]* @.str23, i64 0, i64 0)) #10, !dbg !1237
+  br label %21, !dbg !1237
 
 ; <label>:21                                      ; preds = %20, %17
-  ret i32 %18
+  ret i32 %18, !dbg !1238
 }

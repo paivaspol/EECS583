@@ -1,24 +1,29 @@
-define i8* @lbasename(i8* %name) #0 {
-entry:
-  br label %for.cond
+define i8* @lbasename(i8* readonly %name) #0 {
+  tail call void @llvm.dbg.value(metadata i8* %name, i64 0, metadata !11, metadata !17), !dbg !18
+  tail call void @llvm.dbg.value(metadata i8* %name, i64 0, metadata !12, metadata !17), !dbg !19
+  br label %.outer, !dbg !20
 
-for.cond:                                         ; preds = %if.then, %for.cond.for.inc_crit_edge, %entry
-  %name.addr.0 = phi i8* [ %name, %entry ], [ %incdec.ptr.pre, %for.cond.for.inc_crit_edge ], [ %add.ptr, %if.then ]
-  %base.0 = phi i8* [ %name, %entry ], [ %base.0, %for.cond.for.inc_crit_edge ], [ %add.ptr, %if.then ]
-  %0 = load i8* %name.addr.0, align 1, !tbaa !0
-  switch i8 %0, label %for.cond.for.inc_crit_edge [
-    i8 0, label %for.end
-    i8 47, label %if.then
-  ]
+.outer:                                           ; preds = %3, %0
+  %.0.ph = phi i8* [ %4, %3 ], [ %name, %0 ]
+  br label %1
 
-for.cond.for.inc_crit_edge:                       ; preds = %for.cond
-  %incdec.ptr.pre = getelementptr inbounds i8* %name.addr.0, i64 1
-  br label %for.cond
+; <label>:1                                       ; preds = %.outer, %._crit_edge
+  %.0 = phi i8* [ %.pre, %._crit_edge ], [ %.0.ph, %.outer ]
+  %2 = load i8* %.0, align 1, !dbg !22, !tbaa !24
+  switch i8 %2, label %._crit_edge [
+    i8 0, label %5
+    i8 47, label %3
+  ], !dbg !27
 
-if.then:                                          ; preds = %for.cond
-  %add.ptr = getelementptr inbounds i8* %name.addr.0, i64 1
-  br label %for.cond
+._crit_edge:                                      ; preds = %1
+  %.pre = getelementptr inbounds i8* %.0, i64 1, !dbg !28
+  br label %1, !dbg !27
 
-for.end:                                          ; preds = %for.cond
-  ret i8* %base.0
+; <label>:3                                       ; preds = %1
+  %4 = getelementptr inbounds i8* %.0, i64 1, !dbg !29
+  tail call void @llvm.dbg.value(metadata i8* %4, i64 0, metadata !12, metadata !17), !dbg !19
+  br label %.outer, !dbg !31
+
+; <label>:5                                       ; preds = %1
+  ret i8* %.0.ph, !dbg !32
 }

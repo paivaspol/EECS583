@@ -1,37 +1,37 @@
-define void @MAIN_finalize(%struct.MAIN_Param* nocapture %param) #0 {
-entry:
-  %0 = load [26000000 x double]** @srcGrid, align 8, !tbaa !3
-  %arraydecay = getelementptr inbounds [26000000 x double]* %0, i64 0, i64 0
-  tail call void @LBM_showGridStatistics(double* %arraydecay) #7
-  %action = getelementptr inbounds %struct.MAIN_Param* %param, i64 0, i32 2
-  %1 = load i32* %action, align 4, !tbaa !1
-  %cmp = icmp eq i32 %1, 1
-  br i1 %cmp, label %if.then, label %if.end
+define void @MAIN_finalize(%struct.MAIN_Param* nocapture readonly %param) #0 {
+  tail call void @llvm.dbg.value(metadata %struct.MAIN_Param* %param, i64 0, metadata !148, metadata !183), !dbg !434
+  %1 = load [26000000 x double]** @srcGrid, align 8, !dbg !435, !tbaa !237
+  %2 = getelementptr inbounds [26000000 x double]* %1, i64 0, i64 0, !dbg !436
+  tail call void @LBM_showGridStatistics(double* %2) #8, !dbg !437
+  %3 = getelementptr inbounds %struct.MAIN_Param* %param, i64 0, i32 2, !dbg !438
+  %4 = load i32* %3, align 4, !dbg !438, !tbaa !281
+  %5 = icmp eq i32 %4, 1, !dbg !440
+  br i1 %5, label %6, label %11, !dbg !441
 
-if.then:                                          ; preds = %entry
-  %2 = load [26000000 x double]** @srcGrid, align 8, !tbaa !3
-  %arraydecay1 = getelementptr inbounds [26000000 x double]* %2, i64 0, i64 0
-  %resultFilename = getelementptr inbounds %struct.MAIN_Param* %param, i64 0, i32 1
-  %3 = load i8** %resultFilename, align 8, !tbaa !3
-  tail call void @LBM_compareVelocityField(double* %arraydecay1, i8* %3, i32 -1) #7
-  %.pr = load i32* %action, align 4, !tbaa !1
-  br label %if.end
+; <label>:6                                       ; preds = %0
+  %7 = load [26000000 x double]** @srcGrid, align 8, !dbg !442, !tbaa !237
+  %8 = getelementptr inbounds [26000000 x double]* %7, i64 0, i64 0, !dbg !443
+  %9 = getelementptr inbounds %struct.MAIN_Param* %param, i64 0, i32 1, !dbg !444
+  %10 = load i8** %9, align 8, !dbg !444, !tbaa !199
+  tail call void @LBM_compareVelocityField(double* %8, i8* %10, i32 -1) #8, !dbg !445
+  %.pr = load i32* %3, align 4, !dbg !446, !tbaa !281
+  br label %11, !dbg !445
 
-if.end:                                           ; preds = %if.then, %entry
-  %4 = phi i32 [ %.pr, %if.then ], [ %1, %entry ]
-  %cmp3 = icmp eq i32 %4, 2
-  br i1 %cmp3, label %if.then4, label %if.end7
+; <label>:11                                      ; preds = %6, %0
+  %12 = phi i32 [ %.pr, %6 ], [ %4, %0 ], !dbg !446
+  %13 = icmp eq i32 %12, 2, !dbg !448
+  br i1 %13, label %14, label %19, !dbg !449
 
-if.then4:                                         ; preds = %if.end
-  %5 = load [26000000 x double]** @srcGrid, align 8, !tbaa !3
-  %arraydecay5 = getelementptr inbounds [26000000 x double]* %5, i64 0, i64 0
-  %resultFilename6 = getelementptr inbounds %struct.MAIN_Param* %param, i64 0, i32 1
-  %6 = load i8** %resultFilename6, align 8, !tbaa !3
-  tail call void @LBM_storeVelocityField(double* %arraydecay5, i8* %6, i32 -1) #7
-  br label %if.end7
+; <label>:14                                      ; preds = %11
+  %15 = load [26000000 x double]** @srcGrid, align 8, !dbg !450, !tbaa !237
+  %16 = getelementptr inbounds [26000000 x double]* %15, i64 0, i64 0, !dbg !451
+  %17 = getelementptr inbounds %struct.MAIN_Param* %param, i64 0, i32 1, !dbg !452
+  %18 = load i8** %17, align 8, !dbg !452, !tbaa !199
+  tail call void @LBM_storeVelocityField(double* %16, i8* %18, i32 -1) #8, !dbg !453
+  br label %19, !dbg !453
 
-if.end7:                                          ; preds = %if.then4, %if.end
-  tail call void @LBM_freeGrid(double** bitcast ([26000000 x double]** @srcGrid to double**)) #7
-  tail call void @LBM_freeGrid(double** bitcast ([26000000 x double]** @dstGrid to double**)) #7
-  ret void
+; <label>:19                                      ; preds = %14, %11
+  tail call void @LBM_freeGrid(double** bitcast ([26000000 x double]** @srcGrid to double**)) #8, !dbg !454
+  tail call void @LBM_freeGrid(double** bitcast ([26000000 x double]** @dstGrid to double**)) #8, !dbg !455
+  ret void, !dbg !456
 }

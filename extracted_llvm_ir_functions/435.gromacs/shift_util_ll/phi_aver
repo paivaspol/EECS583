@@ -1,25 +1,30 @@
-define float @phi_aver(i32 %natoms, float* nocapture readonly %phi) #4 {
-  %1 = icmp sgt i32 %natoms, 0
-  br i1 %1, label %.lr.ph, label %._crit_edge
+define float @phi_aver(i32 %natoms, float* nocapture readonly %phi) #5 {
+  tail call void @llvm.dbg.value(metadata i32 %natoms, i64 0, metadata !414, metadata !655), !dbg !1638
+  tail call void @llvm.dbg.value(metadata float* %phi, i64 0, metadata !415, metadata !655), !dbg !1639
+  tail call void @llvm.dbg.value(metadata float 0.000000e+00, i64 0, metadata !416, metadata !655), !dbg !1640
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !417, metadata !655), !dbg !1641
+  %1 = icmp sgt i32 %natoms, 0, !dbg !1642
+  br i1 %1, label %.lr.ph, label %._crit_edge, !dbg !1645
 
 .lr.ph:                                           ; preds = %0
-  %2 = add i32 %natoms, -1
-  br label %3
+  %2 = add i32 %natoms, -1, !dbg !1645
+  br label %3, !dbg !1645
 
 ; <label>:3                                       ; preds = %3, %.lr.ph
   %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %3 ]
   %phitot.01 = phi float [ 0.000000e+00, %.lr.ph ], [ %6, %3 ]
-  %4 = getelementptr inbounds float* %phi, i64 %indvars.iv
-  %5 = load float* %4, align 4, !tbaa !2
-  %6 = fadd float %phitot.01, %5
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %2
-  br i1 %exitcond, label %._crit_edge, label %3
+  %4 = getelementptr inbounds float* %phi, i64 %indvars.iv, !dbg !1646
+  %5 = load float* %4, align 4, !dbg !1646, !tbaa !679
+  %6 = fadd float %phitot.01, %5, !dbg !1647
+  tail call void @llvm.dbg.value(metadata float %6, i64 0, metadata !416, metadata !655), !dbg !1640
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !1645
+  %lftr.wideiv = trunc i64 %indvars.iv to i32, !dbg !1645
+  %exitcond = icmp eq i32 %lftr.wideiv, %2, !dbg !1645
+  br i1 %exitcond, label %._crit_edge, label %3, !dbg !1645
 
 ._crit_edge:                                      ; preds = %3, %0
   %phitot.0.lcssa = phi float [ 0.000000e+00, %0 ], [ %6, %3 ]
-  %7 = sitofp i32 %natoms to float
-  %8 = fdiv float %phitot.0.lcssa, %7
-  ret float %8
+  %7 = sitofp i32 %natoms to float, !dbg !1648
+  %8 = fdiv float %phitot.0.lcssa, %7, !dbg !1649
+  ret float %8, !dbg !1650
 }

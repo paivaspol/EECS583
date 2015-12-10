@@ -1,18 +1,26 @@
 define void @_blockread(%struct.__sFILE* nocapture %fp, i32 %nelem, i32 %size, i8* nocapture %data, i8* %what, i8* %file, i32 %line) #1 {
-  %1 = sext i32 %size to i64
-  %2 = sext i32 %nelem to i64
-  %3 = tail call i64 @fread(i8* %data, i64 %1, i64 %2, %struct.__sFILE* %fp) #4
-  %4 = trunc i64 %3 to i32
-  %5 = icmp eq i32 %4, %nelem
-  br i1 %5, label %10, label %6
+  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %fp, i64 0, metadata !88, metadata !100), !dbg !129
+  tail call void @llvm.dbg.value(metadata i32 %nelem, i64 0, metadata !89, metadata !100), !dbg !130
+  tail call void @llvm.dbg.value(metadata i32 %size, i64 0, metadata !90, metadata !100), !dbg !131
+  tail call void @llvm.dbg.value(metadata i8* %data, i64 0, metadata !91, metadata !100), !dbg !132
+  tail call void @llvm.dbg.value(metadata i8* %what, i64 0, metadata !92, metadata !100), !dbg !133
+  tail call void @llvm.dbg.value(metadata i8* %file, i64 0, metadata !93, metadata !100), !dbg !134
+  tail call void @llvm.dbg.value(metadata i32 %line, i64 0, metadata !94, metadata !100), !dbg !135
+  %1 = sext i32 %size to i64, !dbg !136
+  %2 = sext i32 %nelem to i64, !dbg !138
+  %3 = tail call i64 @fread(i8* %data, i64 %1, i64 %2, %struct.__sFILE* %fp) #5, !dbg !139
+  %4 = trunc i64 %3 to i32, !dbg !139
+  tail call void @llvm.dbg.value(metadata i32 %4, i64 0, metadata !95, metadata !100), !dbg !140
+  %5 = icmp eq i32 %4, %nelem, !dbg !141
+  br i1 %5, label %10, label %6, !dbg !142
 
 ; <label>:6                                       ; preds = %0
-  %7 = tail call i32* @__error() #4
-  %8 = load i32* %7, align 4, !tbaa !2
-  %9 = tail call i64 @ftell(%struct.__sFILE* %fp) #4
-  tail call void (i32, i8*, ...)* @fatal_error(i32 %8, i8* getelementptr inbounds ([57 x i8]* @.str1, i64 0, i64 0), i8* %what, i32 %nelem, i32 %size, i32 %4, i64 %9, i8* %file, i32 %line) #4
-  br label %10
+  %7 = tail call i32* @__error() #5, !dbg !143
+  %8 = load i32* %7, align 4, !dbg !143, !tbaa !122
+  %9 = tail call i64 @ftell(%struct.__sFILE* %fp) #5, !dbg !144
+  tail call void (i32, i8*, ...)* @fatal_error(i32 %8, i8* getelementptr inbounds ([57 x i8]* @.str1, i64 0, i64 0), i8* %what, i32 %nelem, i32 %size, i32 %4, i64 %9, i8* %file, i32 %line) #5, !dbg !145
+  br label %10, !dbg !145
 
 ; <label>:10                                      ; preds = %0, %6
-  ret void
+  ret void, !dbg !146
 }

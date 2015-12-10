@@ -1,82 +1,95 @@
 define void @print_rgrid_pdb(i8* %fn, i32 %nx, i32 %ny, i32 %nz, float*** nocapture readonly %grid) #4 {
-  %1 = tail call %struct.__sFILE* @ffopen(i8* %fn, i8* getelementptr inbounds ([2 x i8]* @.str12, i64 0, i64 0)) #7
-  %2 = icmp sgt i32 %nx, 0
-  br i1 %2, label %.preheader1.lr.ph, label %._crit_edge10
+  tail call void @llvm.dbg.value(metadata i8* %fn, i64 0, metadata !318, metadata !432), !dbg !804
+  tail call void @llvm.dbg.value(metadata i32 %nx, i64 0, metadata !319, metadata !432), !dbg !805
+  tail call void @llvm.dbg.value(metadata i32 %ny, i64 0, metadata !320, metadata !432), !dbg !806
+  tail call void @llvm.dbg.value(metadata i32 %nz, i64 0, metadata !321, metadata !432), !dbg !807
+  tail call void @llvm.dbg.value(metadata float*** %grid, i64 0, metadata !322, metadata !432), !dbg !808
+  tail call void @llvm.dbg.value(metadata i32 1, i64 0, metadata !327, metadata !432), !dbg !809
+  %1 = tail call %struct.__sFILE* @ffopen(i8* %fn, i8* getelementptr inbounds ([2 x i8]* @.str12, i64 0, i64 0)) #7, !dbg !810
+  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %1, i64 0, metadata !323, metadata !432), !dbg !811
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !324, metadata !432), !dbg !812
+  %2 = icmp sgt i32 %nx, 0, !dbg !813
+  br i1 %2, label %.preheader1.lr.ph, label %._crit_edge10, !dbg !816
 
 .preheader1.lr.ph:                                ; preds = %0
-  %3 = icmp sgt i32 %ny, 0
-  %4 = icmp sgt i32 %nz, 0
-  %5 = add i32 %nz, -1
-  %6 = add i32 %ny, -1
-  %7 = add i32 %nx, -1
-  br label %.preheader1
+  %3 = icmp sgt i32 %ny, 0, !dbg !817
+  %4 = icmp sgt i32 %nz, 0, !dbg !821
+  %5 = add i32 %nz, -1, !dbg !816
+  %6 = add i32 %ny, -1, !dbg !816
+  %7 = add i32 %nx, -1, !dbg !816
+  br label %.preheader1, !dbg !816
 
 .preheader1:                                      ; preds = %._crit_edge6, %.preheader1.lr.ph
   %indvars.iv15 = phi i64 [ 0, %.preheader1.lr.ph ], [ %indvars.iv.next16, %._crit_edge6 ]
   %n.08 = phi i32 [ 1, %.preheader1.lr.ph ], [ %n.1.lcssa, %._crit_edge6 ]
-  br i1 %3, label %.preheader.lr.ph, label %.preheader1._crit_edge
+  br i1 %3, label %.preheader.lr.ph, label %.preheader1._crit_edge, !dbg !825
 
 .preheader1._crit_edge:                           ; preds = %.preheader1
-  %.pre19 = trunc i64 %indvars.iv15 to i32
-  br label %._crit_edge6
+  %.pre19 = trunc i64 %indvars.iv15 to i32, !dbg !816
+  br label %._crit_edge6, !dbg !825
 
 .preheader.lr.ph:                                 ; preds = %.preheader1
-  %8 = getelementptr inbounds float*** %grid, i64 %indvars.iv15
-  %9 = trunc i64 %indvars.iv15 to i32
-  %10 = shl nsw i32 %9, 2
-  %11 = sitofp i32 %10 to float
-  %12 = fpext float %11 to double
-  br label %.preheader
+  %8 = getelementptr inbounds float*** %grid, i64 %indvars.iv15, !dbg !826
+  %9 = trunc i64 %indvars.iv15 to i32, !dbg !828
+  %10 = shl nsw i32 %9, 2, !dbg !828
+  %11 = sitofp i32 %10 to float, !dbg !831
+  %12 = fpext float %11 to double, !dbg !832
+  br label %.preheader, !dbg !825
 
 .preheader:                                       ; preds = %.preheader._crit_edge, %.preheader.lr.ph
   %indvars.iv11 = phi i64 [ 0, %.preheader.lr.ph ], [ %indvars.iv.next12, %.preheader._crit_edge ]
   %n.14 = phi i32 [ %n.08, %.preheader.lr.ph ], [ %n.2.lcssa, %.preheader._crit_edge ]
-  %13 = trunc i64 %indvars.iv11 to i32
-  br i1 %4, label %.lr.ph, label %.preheader._crit_edge
+  %13 = trunc i64 %indvars.iv11 to i32, !dbg !833
+  br i1 %4, label %.lr.ph, label %.preheader._crit_edge, !dbg !834
 
 .lr.ph:                                           ; preds = %.preheader
-  %14 = shl nsw i32 %13, 2
-  %15 = sitofp i32 %14 to float
-  %16 = fpext float %15 to double
-  br label %17
+  %14 = shl nsw i32 %13, 2, !dbg !833
+  %15 = sitofp i32 %14 to float, !dbg !835
+  %16 = fpext float %15 to double, !dbg !836
+  br label %17, !dbg !834
 
 ; <label>:17                                      ; preds = %17, %.lr.ph
   %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %17 ]
   %n.22 = phi i32 [ %n.14, %.lr.ph ], [ %26, %17 ]
-  %18 = load float*** %8, align 8, !tbaa !32
-  %19 = getelementptr inbounds float** %18, i64 %indvars.iv11
-  %20 = load float** %19, align 8, !tbaa !32
-  %21 = getelementptr inbounds float* %20, i64 %indvars.iv
-  %22 = load float* %21, align 4, !tbaa !14
-  %23 = trunc i64 %indvars.iv to i32
-  %24 = shl nsw i32 %23, 2
-  %25 = sitofp i32 %24 to float
-  %26 = add nsw i32 %n.22, 1
-  %27 = fpext float %25 to double
-  %28 = fpext float %22 to double
-  %29 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %1, i8* getelementptr inbounds ([55 x i8]* @.str13, i64 0, i64 0), i32 %n.22, double %12, double %16, double %27, double 0.000000e+00, double %28) #7
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %exitcond = icmp eq i32 %23, %5
-  br i1 %exitcond, label %._crit_edge, label %17
+  %18 = load float*** %8, align 8, !dbg !826, !tbaa !723
+  %19 = getelementptr inbounds float** %18, i64 %indvars.iv11, !dbg !826
+  %20 = load float** %19, align 8, !dbg !826, !tbaa !723
+  %21 = getelementptr inbounds float* %20, i64 %indvars.iv, !dbg !826
+  %22 = load float* %21, align 4, !dbg !826, !tbaa !560
+  tail call void @llvm.dbg.value(metadata float %22, i64 0, metadata !332, metadata !432), !dbg !837
+  tail call void @llvm.dbg.value(metadata float %11, i64 0, metadata !329, metadata !432), !dbg !838
+  tail call void @llvm.dbg.value(metadata float %15, i64 0, metadata !330, metadata !432), !dbg !839
+  %23 = trunc i64 %indvars.iv to i32, !dbg !840
+  %24 = shl nsw i32 %23, 2, !dbg !840
+  %25 = sitofp i32 %24 to float, !dbg !841
+  tail call void @llvm.dbg.value(metadata float %25, i64 0, metadata !331, metadata !432), !dbg !842
+  %26 = add nsw i32 %n.22, 1, !dbg !843
+  tail call void @llvm.dbg.value(metadata i32 %26, i64 0, metadata !327, metadata !432), !dbg !809
+  %27 = fpext float %25 to double, !dbg !844
+  %28 = fpext float %22 to double, !dbg !845
+  %29 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %1, i8* getelementptr inbounds ([55 x i8]* @.str13, i64 0, i64 0), i32 %n.22, double %12, double %16, double %27, double 0.000000e+00, double %28) #7, !dbg !846
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1, !dbg !834
+  %exitcond = icmp eq i32 %23, %5, !dbg !834
+  br i1 %exitcond, label %._crit_edge, label %17, !dbg !834
 
 ._crit_edge:                                      ; preds = %17
-  %30 = add i32 %n.14, %nz
-  br label %.preheader._crit_edge
+  %30 = add i32 %n.14, %nz, !dbg !834
+  br label %.preheader._crit_edge, !dbg !834
 
 .preheader._crit_edge:                            ; preds = %.preheader, %._crit_edge
   %n.2.lcssa = phi i32 [ %30, %._crit_edge ], [ %n.14, %.preheader ]
-  %indvars.iv.next12 = add nuw nsw i64 %indvars.iv11, 1
-  %exitcond14 = icmp eq i32 %13, %6
-  br i1 %exitcond14, label %._crit_edge6, label %.preheader
+  %indvars.iv.next12 = add nuw nsw i64 %indvars.iv11, 1, !dbg !825
+  %exitcond14 = icmp eq i32 %13, %6, !dbg !825
+  br i1 %exitcond14, label %._crit_edge6, label %.preheader, !dbg !825
 
 ._crit_edge6:                                     ; preds = %.preheader._crit_edge, %.preheader1._crit_edge
-  %lftr.wideiv17.pre-phi = phi i32 [ %.pre19, %.preheader1._crit_edge ], [ %9, %.preheader._crit_edge ]
+  %lftr.wideiv17.pre-phi = phi i32 [ %.pre19, %.preheader1._crit_edge ], [ %9, %.preheader._crit_edge ], !dbg !816
   %n.1.lcssa = phi i32 [ %n.08, %.preheader1._crit_edge ], [ %n.2.lcssa, %.preheader._crit_edge ]
-  %indvars.iv.next16 = add nuw nsw i64 %indvars.iv15, 1
-  %exitcond18 = icmp eq i32 %lftr.wideiv17.pre-phi, %7
-  br i1 %exitcond18, label %._crit_edge10, label %.preheader1
+  %indvars.iv.next16 = add nuw nsw i64 %indvars.iv15, 1, !dbg !816
+  %exitcond18 = icmp eq i32 %lftr.wideiv17.pre-phi, %7, !dbg !816
+  br i1 %exitcond18, label %._crit_edge10, label %.preheader1, !dbg !816
 
 ._crit_edge10:                                    ; preds = %._crit_edge6, %0
-  tail call void @ffclose(%struct.__sFILE* %1) #7
-  ret void
+  tail call void @ffclose(%struct.__sFILE* %1) #7, !dbg !847
+  ret void, !dbg !848
 }

@@ -1,38 +1,43 @@
 define i32 @Einstein_RegisterSlicing(i8* %slice_name) #1 {
-  %1 = load %struct.cHandledData** @Eslicings, align 8, !tbaa !2
-  %2 = tail call i32 @Util_GetHandle(%struct.cHandledData* %1, i8* %slice_name, i8** null) #7
-  %3 = icmp slt i32 %2, 0
-  br i1 %3, label %4, label %18
+  tail call void @llvm.dbg.value(metadata i8* %slice_name, i64 0, metadata !64, metadata !207), !dbg !208
+  %1 = load %struct.cHandledData** @Eslicings, align 8, !dbg !209, !tbaa !210
+  %2 = tail call i32 @Util_GetHandle(%struct.cHandledData* %1, i8* %slice_name, i8** null) #7, !dbg !214
+  tail call void @llvm.dbg.value(metadata i32 %2, i64 0, metadata !65, metadata !207), !dbg !215
+  %3 = icmp slt i32 %2, 0, !dbg !216
+  br i1 %3, label %4, label %18, !dbg !218
 
 ; <label>:4                                       ; preds = %0
-  %5 = tail call i8* @malloc(i64 24) #7
-  %6 = icmp eq i8* %5, null
-  br i1 %6, label %16, label %7
+  %5 = tail call i8* @malloc(i64 24) #7, !dbg !219
+  %6 = icmp eq i8* %5, null, !dbg !221
+  br i1 %6, label %16, label %7, !dbg !223
 
 ; <label>:7                                       ; preds = %4
-  %8 = tail call i32 @Util_NewHandle(%struct.cHandledData** @Eslicings, i8* %slice_name, i8* %5) #7
-  %9 = bitcast i8* %5 to i8**
-  store i8* %slice_name, i8** %9, align 8, !tbaa !6
-  %10 = getelementptr inbounds i8* %5, i64 16
-  %11 = bitcast i8* %10 to i32 (%struct.cGH*)**
-  store i32 (%struct.cGH*)* null, i32 (%struct.cGH*)** %11, align 8, !tbaa !9
-  %12 = getelementptr inbounds i8* %5, i64 8
-  %13 = bitcast i8* %12 to i32*
-  store i32 0, i32* %13, align 4, !tbaa !10
-  %14 = load i32* @num_slicings, align 4, !tbaa !11
-  %15 = add nsw i32 %14, 1
-  store i32 %15, i32* @num_slicings, align 4, !tbaa !11
-  br label %20
+  %8 = tail call i32 @Util_NewHandle(%struct.cHandledData** @Eslicings, i8* %slice_name, i8* %5) #7, !dbg !224
+  tail call void @llvm.dbg.value(metadata i32 %8, i64 0, metadata !65, metadata !207), !dbg !215
+  %9 = bitcast i8* %5 to i8**, !dbg !226
+  store i8* %slice_name, i8** %9, align 8, !dbg !227, !tbaa !228
+  %10 = getelementptr inbounds i8* %5, i64 16, !dbg !231
+  %11 = bitcast i8* %10 to i32 (%struct.cGH*)**, !dbg !231
+  store i32 (%struct.cGH*)* null, i32 (%struct.cGH*)** %11, align 8, !dbg !232, !tbaa !233
+  %12 = getelementptr inbounds i8* %5, i64 8, !dbg !234
+  %13 = bitcast i8* %12 to i32*, !dbg !234
+  store i32 0, i32* %13, align 4, !dbg !235, !tbaa !236
+  %14 = load i32* @num_slicings, align 4, !dbg !237, !tbaa !238
+  %15 = add nsw i32 %14, 1, !dbg !237
+  store i32 %15, i32* @num_slicings, align 4, !dbg !237, !tbaa !238
+  br label %20, !dbg !239
 
 ; <label>:16                                      ; preds = %4
-  %17 = tail call i32 @CCTK_Warn(i32 0, i32 116, i8* getelementptr inbounds ([78 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([39 x i8]* @.str2, i64 0, i64 0)) #7
+  %17 = tail call i32 @CCTK_Warn(i32 0, i32 116, i8* getelementptr inbounds ([78 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([39 x i8]* @.str2, i64 0, i64 0)) #7, !dbg !240
+  tail call void @llvm.dbg.value(metadata i32 -2, i64 0, metadata !65, metadata !207), !dbg !215
   br label %20
 
 ; <label>:18                                      ; preds = %0
-  %19 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 0, i32 123, i8* getelementptr inbounds ([78 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([34 x i8]* @.str3, i64 0, i64 0), i8* %slice_name, i32 %2) #7
+  %19 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 0, i32 123, i8* getelementptr inbounds ([78 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([34 x i8]* @.str3, i64 0, i64 0), i8* %slice_name, i32 %2) #7, !dbg !242
+  tail call void @llvm.dbg.value(metadata i32 -1, i64 0, metadata !65, metadata !207), !dbg !215
   br label %20
 
 ; <label>:20                                      ; preds = %7, %16, %18
   %handle.0 = phi i32 [ %8, %7 ], [ -2, %16 ], [ -1, %18 ]
-  ret i32 %handle.0
+  ret i32 %handle.0, !dbg !244
 }

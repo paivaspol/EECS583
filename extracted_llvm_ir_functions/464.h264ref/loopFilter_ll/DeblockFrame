@@ -1,18 +1,22 @@
-define void @DeblockFrame(%struct.ImageParameters* nocapture %img, i16** nocapture %imgY, i16*** %imgUV) #0 {
-entry:
-  %PicSizeInMbs = getelementptr inbounds %struct.ImageParameters* %img, i64 0, i32 110
-  %0 = load i32* %PicSizeInMbs, align 4, !tbaa !0
-  %cmp4 = icmp eq i32 %0, 0
-  br i1 %cmp4, label %for.end, label %for.body
+define void @DeblockFrame(%struct.ImageParameters* nocapture %img, i16** nocapture readonly %imgY, i16*** readonly %imgUV) #0 {
+  tail call void @llvm.dbg.value(metadata %struct.ImageParameters* %img, i64 0, metadata !508, metadata !989), !dbg !990
+  tail call void @llvm.dbg.value(metadata i16** %imgY, i64 0, metadata !509, metadata !989), !dbg !991
+  tail call void @llvm.dbg.value(metadata i16*** %imgUV, i64 0, metadata !510, metadata !989), !dbg !992
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !511, metadata !989), !dbg !993
+  %1 = getelementptr inbounds %struct.ImageParameters* %img, i64 0, i32 110, !dbg !994
+  %2 = load i32* %1, align 4, !dbg !994, !tbaa !997
+  %3 = icmp eq i32 %2, 0, !dbg !1005
+  br i1 %3, label %._crit_edge, label %.lr.ph, !dbg !1006
 
-for.body:                                         ; preds = %entry, %for.body
-  %i.05 = phi i32 [ %inc, %for.body ], [ 0, %entry ]
-  tail call void @DeblockMb(%struct.ImageParameters* %img, i16** %imgY, i16*** %imgUV, i32 %i.05) #3
-  %inc = add i32 %i.05, 1
-  %1 = load i32* %PicSizeInMbs, align 4, !tbaa !0
-  %cmp = icmp ult i32 %inc, %1
-  br i1 %cmp, label %for.body, label %for.end
+.lr.ph:                                           ; preds = %0, %.lr.ph
+  %i.01 = phi i32 [ %4, %.lr.ph ], [ 0, %0 ]
+  tail call void @DeblockMb(%struct.ImageParameters* %img, i16** %imgY, i16*** %imgUV, i32 %i.01) #5, !dbg !1007
+  %4 = add nuw i32 %i.01, 1, !dbg !1009
+  tail call void @llvm.dbg.value(metadata i32 %4, i64 0, metadata !511, metadata !989), !dbg !993
+  %5 = load i32* %1, align 4, !dbg !994, !tbaa !997
+  %6 = icmp ult i32 %4, %5, !dbg !1005
+  br i1 %6, label %.lr.ph, label %._crit_edge, !dbg !1006
 
-for.end:                                          ; preds = %for.body, %entry
-  ret void
+._crit_edge:                                      ; preds = %.lr.ph, %0
+  ret void, !dbg !1010
 }

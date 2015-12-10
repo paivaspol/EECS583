@@ -1,0 +1,30 @@
+define void @_ZNK6soplex5Timer11updateTicksEv(%"class.soplex::Timer"* nocapture %this) #0 align 2 {
+  %now = alloca %struct.tms, align 16
+  tail call void @llvm.dbg.value(metadata %"class.soplex::Timer"* %this, i64 0, metadata !172, metadata !1032), !dbg !1033
+  tail call void @llvm.dbg.value(metadata %struct.tms* %now, i64 0, metadata !174, metadata !1032), !dbg !1034
+  %1 = call i64 @times(%struct.tms* %now) #4, !dbg !1035
+  tail call void @llvm.dbg.value(metadata i64 %1, i64 0, metadata !175, metadata !1032), !dbg !1036
+  %2 = icmp eq i64 %1, -1, !dbg !1037
+  br i1 %2, label %5, label %._crit_edge, !dbg !1039
+
+._crit_edge:                                      ; preds = %0
+  %3 = bitcast %struct.tms* %now to <2 x i64>*, !dbg !1040
+  %4 = load <2 x i64>* %3, align 16, !dbg !1040, !tbaa !1041
+  br label %7, !dbg !1039
+
+; <label>:5                                       ; preds = %0
+  tail call void @llvm.dbg.value(metadata i64 0, i64 0, metadata !175, metadata !1032), !dbg !1036
+  %6 = bitcast %struct.tms* %now to i8*, !dbg !1045
+  call void @llvm.memset.p0i8.i64(i8* %6, i8 0, i64 16, i32 16, i1 false), !dbg !1046
+  br label %7, !dbg !1045
+
+; <label>:7                                       ; preds = %._crit_edge, %5
+  %ret.0 = phi i64 [ 0, %5 ], [ %1, %._crit_edge ]
+  %8 = phi <2 x i64> [ zeroinitializer, %5 ], [ %4, %._crit_edge ]
+  %9 = getelementptr inbounds %"class.soplex::Timer"* %this, i64 0, i32 4, !dbg !1047
+  %10 = bitcast i64* %9 to <2 x i64>*, !dbg !1048
+  store <2 x i64> %8, <2 x i64>* %10, align 8, !dbg !1048, !tbaa !1041
+  %11 = getelementptr inbounds %"class.soplex::Timer"* %this, i64 0, i32 6, !dbg !1049
+  store i64 %ret.0, i64* %11, align 8, !dbg !1050, !tbaa !1051
+  ret void, !dbg !1054
+}

@@ -1,17 +1,18 @@
-define void @Warn(i8* nocapture %format, ...) #4 {
-entry:
+define void @Warn(i8* nocapture readonly %format, ...) #5 {
   %argp = alloca [1 x %struct.__va_list_tag], align 16
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %1 = call i64 @fwrite(i8* getelementptr inbounds ([10 x i8]* @.str2, i64 0, i64 0), i64 9, i64 1, %struct._IO_FILE* %0)
-  %arraydecay = getelementptr inbounds [1 x %struct.__va_list_tag]* %argp, i64 0, i64 0
-  %arraydecay1 = bitcast [1 x %struct.__va_list_tag]* %argp to i8*
-  call void @llvm.va_start(i8* %arraydecay1)
-  %2 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call3 = call i32 @vfprintf(%struct._IO_FILE* %2, i8* %format, %struct.__va_list_tag* %arraydecay) #5
-  call void @llvm.va_end(i8* %arraydecay1)
-  %3 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %fputc = call i32 @fputc(i32 10, %struct._IO_FILE* %3)
-  %4 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call7 = call i32 @fflush(%struct._IO_FILE* %4) #5
-  ret void
+  tail call void @llvm.dbg.value(metadata i8* %format, i64 0, metadata !29, metadata !44), !dbg !62
+  tail call void @llvm.dbg.declare(metadata [1 x %struct.__va_list_tag]* %argp, metadata !30, metadata !44), !dbg !63
+  %1 = load %struct.__sFILE** @__stderrp, align 8, !dbg !64, !tbaa !48
+  %2 = tail call i64 @fwrite(i8* getelementptr inbounds ([10 x i8]* @.str2, i64 0, i64 0), i64 9, i64 1, %struct.__sFILE* %1), !dbg !65
+  %3 = getelementptr inbounds [1 x %struct.__va_list_tag]* %argp, i64 0, i64 0, !dbg !66
+  %4 = bitcast [1 x %struct.__va_list_tag]* %argp to i8*, !dbg !66
+  call void @llvm.va_start(i8* %4), !dbg !66
+  %5 = load %struct.__sFILE** @__stderrp, align 8, !dbg !67, !tbaa !48
+  %6 = call i32 @vfprintf(%struct.__sFILE* %5, i8* %format, %struct.__va_list_tag* %3) #6, !dbg !68
+  call void @llvm.va_end(i8* %4), !dbg !69
+  %7 = load %struct.__sFILE** @__stderrp, align 8, !dbg !70, !tbaa !48
+  %fputc = call i32 @fputc(i32 10, %struct.__sFILE* %7), !dbg !71
+  %8 = load %struct.__sFILE** @__stderrp, align 8, !dbg !72, !tbaa !48
+  %9 = call i32 @fflush(%struct.__sFILE* %8) #6, !dbg !73
+  ret void, !dbg !74
 }

@@ -1,63 +1,72 @@
-define void @pr_difftime(%struct.__sFILE* nocapture %out, double %dt) #3 {
-  %1 = fdiv double %dt, 8.640000e+04
-  %2 = fptosi double %1 to i32
-  %3 = mul nsw i32 %2, 86400
-  %4 = sitofp i32 %3 to double
-  %5 = fsub double %dt, %4
-  %6 = fdiv double %5, 3.600000e+03
-  %7 = fptosi double %6 to i32
-  %8 = mul nsw i32 %7, 3600
-  %9 = sitofp i32 %8 to double
-  %10 = fsub double %5, %9
-  %11 = fdiv double %10, 6.000000e+01
-  %12 = fptosi double %11 to i32
-  %13 = mul nsw i32 %12, 60
-  %14 = sitofp i32 %13 to double
-  %15 = fsub double %10, %14
-  %16 = fptosi double %15 to i32
-  %17 = icmp sgt i32 %2, 0
-  br i1 %17, label %.thread17, label %18
+define void @pr_difftime(%struct.__sFILE* nocapture %out, double %dt) #4 {
+  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %out, i64 0, metadata !86, metadata !221), !dbg !260
+  tail call void @llvm.dbg.value(metadata double %dt, i64 0, metadata !87, metadata !221), !dbg !261
+  %1 = fdiv double %dt, 8.640000e+04, !dbg !262
+  %2 = fptosi double %1 to i32, !dbg !263
+  tail call void @llvm.dbg.value(metadata i32 %2, i64 0, metadata !88, metadata !221), !dbg !264
+  %3 = mul nsw i32 %2, 86400, !dbg !265
+  %4 = sitofp i32 %3 to double, !dbg !266
+  %5 = fsub double %dt, %4, !dbg !267
+  tail call void @llvm.dbg.value(metadata double %5, i64 0, metadata !87, metadata !221), !dbg !261
+  %6 = fdiv double %5, 3.600000e+03, !dbg !268
+  %7 = fptosi double %6 to i32, !dbg !269
+  tail call void @llvm.dbg.value(metadata i32 %7, i64 0, metadata !89, metadata !221), !dbg !270
+  %8 = mul nsw i32 %7, 3600, !dbg !271
+  %9 = sitofp i32 %8 to double, !dbg !272
+  %10 = fsub double %5, %9, !dbg !273
+  tail call void @llvm.dbg.value(metadata double %10, i64 0, metadata !87, metadata !221), !dbg !261
+  %11 = fdiv double %10, 6.000000e+01, !dbg !274
+  %12 = fptosi double %11 to i32, !dbg !275
+  tail call void @llvm.dbg.value(metadata i32 %12, i64 0, metadata !90, metadata !221), !dbg !276
+  %13 = mul nsw i32 %12, 60, !dbg !277
+  %14 = sitofp i32 %13 to double, !dbg !278
+  %15 = fsub double %10, %14, !dbg !279
+  tail call void @llvm.dbg.value(metadata double %15, i64 0, metadata !87, metadata !221), !dbg !261
+  %16 = fptosi double %15 to i32, !dbg !280
+  tail call void @llvm.dbg.value(metadata i32 %16, i64 0, metadata !91, metadata !221), !dbg !281
+  %17 = icmp sgt i32 %2, 0, !dbg !282
+  br i1 %17, label %.thread17, label %18, !dbg !283
 
 ; <label>:18                                      ; preds = %0
-  %19 = icmp sgt i32 %7, 0
-  br i1 %19, label %.thread, label %22
+  %19 = icmp sgt i32 %7, 0, !dbg !284
+  br i1 %19, label %.thread, label %22, !dbg !285
 
 .thread17:                                        ; preds = %0
-  %20 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %out, i8* getelementptr inbounds ([3 x i8]* @.str, i64 0, i64 0), i32 %2) #8
-  tail call fastcc void @pr_two(%struct.__sFILE* %out, i32 100, i32 %7) #9
-  br label %.thread12
+  %20 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %out, i8* getelementptr inbounds ([3 x i8]* @.str, i64 0, i64 0), i32 %2) #9, !dbg !286
+  tail call fastcc void @pr_two(%struct.__sFILE* %out, i32 100, i32 %7) #10, !dbg !288
+  br label %.thread12, !dbg !292
 
 .thread:                                          ; preds = %18
-  %21 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %out, i8* getelementptr inbounds ([3 x i8]* @.str, i64 0, i64 0), i32 %7) #8
-  br label %.thread12
+  %21 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %out, i8* getelementptr inbounds ([3 x i8]* @.str, i64 0, i64 0), i32 %7) #9, !dbg !295
+  br label %.thread12, !dbg !292
 
 ; <label>:22                                      ; preds = %18
-  %23 = icmp sgt i32 %12, 0
-  br i1 %23, label %24, label %26
+  %23 = icmp sgt i32 %12, 0, !dbg !296
+  br i1 %23, label %24, label %26, !dbg !297
 
 ; <label>:24                                      ; preds = %22
-  br i1 %17, label %.thread12, label %.thread18
+  br i1 %17, label %.thread12, label %.thread18, !dbg !292
 
 .thread12:                                        ; preds = %.thread17, %.thread, %24
-  tail call fastcc void @pr_two(%struct.__sFILE* %out, i32 104, i32 %12) #9
-  br label %27
+  tail call fastcc void @pr_two(%struct.__sFILE* %out, i32 104, i32 %12) #10, !dbg !298
+  br label %27, !dbg !300
 
 .thread18:                                        ; preds = %24
-  %25 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %out, i8* getelementptr inbounds ([3 x i8]* @.str, i64 0, i64 0), i32 %12) #8
-  br label %27
+  %25 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %out, i8* getelementptr inbounds ([3 x i8]* @.str, i64 0, i64 0), i32 %12) #9, !dbg !301
+  br label %27, !dbg !300
 
 ; <label>:26                                      ; preds = %22
-  br i1 %17, label %27, label %28
+  br i1 %17, label %27, label %28, !dbg !300
 
 ; <label>:27                                      ; preds = %.thread18, %.thread12, %26
-  tail call fastcc void @pr_two(%struct.__sFILE* %out, i32 58, i32 %16) #9
-  br label %30
+  tail call fastcc void @pr_two(%struct.__sFILE* %out, i32 58, i32 %16) #10, !dbg !302
+  br label %30, !dbg !302
 
 ; <label>:28                                      ; preds = %26
-  %29 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %out, i8* getelementptr inbounds ([4 x i8]* @.str1, i64 0, i64 0), i32 %16) #8
+  %29 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %out, i8* getelementptr inbounds ([4 x i8]* @.str1, i64 0, i64 0), i32 %16) #9, !dbg !304
   br label %30
 
 ; <label>:30                                      ; preds = %28, %27
-  %fputc = tail call i32 @fputc(i32 10, %struct.__sFILE* %out)
-  ret void
+  %fputc = tail call i32 @fputc(i32 10, %struct.__sFILE* %out), !dbg !305
+  ret void, !dbg !306
 }

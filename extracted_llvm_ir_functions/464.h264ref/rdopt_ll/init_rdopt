@@ -1,38 +1,37 @@
 define void @init_rdopt() #0 {
-entry:
-  store %struct.RD_DATA* null, %struct.RD_DATA** @rdopt, align 8, !tbaa !0
-  %call = tail call i32 @get_mem_DCcoeff(i32**** @cofDC) #8
-  %call1 = tail call i32 @get_mem_ACcoeff(i32***** @cofAC) #8
-  %call2 = tail call i32 @get_mem_ACcoeff(i32***** @cofAC8x8) #8
-  %call3 = tail call i32 @get_mem_ACcoeff(i32***** @cofAC4x4intern) #8
-  %0 = load i32***** @cofAC4x4intern, align 8, !tbaa !0
-  %1 = load i32**** %0, align 8, !tbaa !0
-  %2 = load i32*** %1, align 8, !tbaa !0
-  store i32** %2, i32*** @cofAC4x4, align 8, !tbaa !0
-  %3 = load %struct.InputParameters** @input, align 8, !tbaa !0
-  %AllowTransform8x8 = getelementptr inbounds %struct.InputParameters* %3, i64 0, i32 123
-  %4 = load i32* %AllowTransform8x8, align 4, !tbaa !3
-  %tobool = icmp eq i32 %4, 0
-  br i1 %tobool, label %if.end, label %if.then
+  store %struct.RD_DATA* null, %struct.RD_DATA** @rdopt, align 8, !dbg !1536, !tbaa !1498
+  %1 = tail call i32 @get_mem_DCcoeff(i32**** @cofDC) #8, !dbg !1537
+  %2 = tail call i32 @get_mem_ACcoeff(i32***** @cofAC) #8, !dbg !1538
+  %3 = tail call i32 @get_mem_ACcoeff(i32***** @cofAC8x8) #8, !dbg !1539
+  %4 = tail call i32 @get_mem_ACcoeff(i32***** @cofAC4x4intern) #8, !dbg !1540
+  %5 = load i64*** bitcast (i32***** @cofAC4x4intern to i64***), align 8, !dbg !1541, !tbaa !1498
+  %6 = load i64** %5, align 8, !dbg !1541, !tbaa !1498
+  %7 = load i64* %6, align 8, !dbg !1541, !tbaa !1498
+  store i64 %7, i64* bitcast (i32*** @cofAC4x4 to i64*), align 8, !dbg !1542, !tbaa !1498
+  %8 = load %struct.InputParameters** @input, align 8, !dbg !1543, !tbaa !1498
+  %9 = getelementptr inbounds %struct.InputParameters* %8, i64 0, i32 123, !dbg !1545
+  %10 = load i32* %9, align 4, !dbg !1545, !tbaa !1512
+  %11 = icmp eq i32 %10, 0, !dbg !1543
+  br i1 %11, label %14, label %12, !dbg !1546
 
-if.then:                                          ; preds = %entry
-  %call5 = tail call i32 @get_mem_ACcoeff(i32***** @cofAC_8x8ts) #8
-  br label %if.end
+; <label>:12                                      ; preds = %0
+  %13 = tail call i32 @get_mem_ACcoeff(i32***** @cofAC_8x8ts) #8, !dbg !1547
+  br label %14, !dbg !1549
 
-if.end:                                           ; preds = %entry, %if.then
-  %call6 = tail call %struct.CSobj* (...)* @create_coding_state() #8
-  store %struct.CSobj* %call6, %struct.CSobj** @cs_mb, align 8, !tbaa !0
-  %call7 = tail call %struct.CSobj* (...)* @create_coding_state() #8
-  store %struct.CSobj* %call7, %struct.CSobj** @cs_b8, align 8, !tbaa !0
-  %call8 = tail call %struct.CSobj* (...)* @create_coding_state() #8
-  store %struct.CSobj* %call8, %struct.CSobj** @cs_cm, align 8, !tbaa !0
-  %call9 = tail call %struct.CSobj* (...)* @create_coding_state() #8
-  store %struct.CSobj* %call9, %struct.CSobj** @cs_imb, align 8, !tbaa !0
-  %call10 = tail call %struct.CSobj* (...)* @create_coding_state() #8
-  store %struct.CSobj* %call10, %struct.CSobj** @cs_ib8, align 8, !tbaa !0
-  %call11 = tail call %struct.CSobj* (...)* @create_coding_state() #8
-  store %struct.CSobj* %call11, %struct.CSobj** @cs_ib4, align 8, !tbaa !0
-  %call12 = tail call %struct.CSobj* (...)* @create_coding_state() #8
-  store %struct.CSobj* %call12, %struct.CSobj** @cs_pc, align 8, !tbaa !0
-  ret void
+; <label>:14                                      ; preds = %0, %12
+  %15 = tail call %struct.CSobj* (...)* @create_coding_state() #8, !dbg !1550
+  store %struct.CSobj* %15, %struct.CSobj** @cs_mb, align 8, !dbg !1551, !tbaa !1498
+  %16 = tail call %struct.CSobj* (...)* @create_coding_state() #8, !dbg !1552
+  store %struct.CSobj* %16, %struct.CSobj** @cs_b8, align 8, !dbg !1553, !tbaa !1498
+  %17 = tail call %struct.CSobj* (...)* @create_coding_state() #8, !dbg !1554
+  store %struct.CSobj* %17, %struct.CSobj** @cs_cm, align 8, !dbg !1555, !tbaa !1498
+  %18 = tail call %struct.CSobj* (...)* @create_coding_state() #8, !dbg !1556
+  store %struct.CSobj* %18, %struct.CSobj** @cs_imb, align 8, !dbg !1557, !tbaa !1498
+  %19 = tail call %struct.CSobj* (...)* @create_coding_state() #8, !dbg !1558
+  store %struct.CSobj* %19, %struct.CSobj** @cs_ib8, align 8, !dbg !1559, !tbaa !1498
+  %20 = tail call %struct.CSobj* (...)* @create_coding_state() #8, !dbg !1560
+  store %struct.CSobj* %20, %struct.CSobj** @cs_ib4, align 8, !dbg !1561, !tbaa !1498
+  %21 = tail call %struct.CSobj* (...)* @create_coding_state() #8, !dbg !1562
+  store %struct.CSobj* %21, %struct.CSobj** @cs_pc, align 8, !dbg !1563, !tbaa !1498
+  ret void, !dbg !1564
 }

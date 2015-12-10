@@ -1,0 +1,103 @@
+define internal fastcc void @_ZN3povL13Remove_SymbolEiPcbPPvi(i32 %Index, i8* nocapture readonly %Name, i1 zeroext %is_array_elem, i8** %DataPtr, i32 %ttype) #0 {
+  tail call void @llvm.dbg.value(metadata i32 %Index, i64 0, metadata !1515, metadata !2141), !dbg !5452
+  tail call void @llvm.dbg.value(metadata i8* %Name, i64 0, metadata !1516, metadata !2141), !dbg !5453
+  tail call void @llvm.dbg.value(metadata i1 %is_array_elem, i64 0, metadata !1517, metadata !2141), !dbg !5454
+  tail call void @llvm.dbg.value(metadata i8** %DataPtr, i64 0, metadata !1518, metadata !2141), !dbg !5455
+  tail call void @llvm.dbg.value(metadata i32 %ttype, i64 0, metadata !1519, metadata !2141), !dbg !5456
+  br i1 %is_array_elem, label %1, label %11, !dbg !5457
+
+; <label>:1                                       ; preds = %0
+  %2 = icmp eq i8** %DataPtr, null, !dbg !5458
+  br i1 %2, label %3, label %5, !dbg !5461
+
+; <label>:3                                       ; preds = %1
+  %4 = tail call i32 (i8*, ...)* @_ZN3pov5ErrorEPKcz(i8* getelementptr inbounds ([23 x i8]* @.str581, i64 0, i64 0)) #11, !dbg !5462
+  br label %5, !dbg !5462
+
+; <label>:5                                       ; preds = %3, %1
+  switch i32 %ttype, label %7 [
+    i32 64, label %9
+    i32 77, label %6
+  ], !dbg !5463
+
+; <label>:6                                       ; preds = %5
+  tail call void @llvm.dbg.value(metadata i32 67, i64 0, metadata !1519, metadata !2141), !dbg !5456
+  br label %9, !dbg !5464
+
+; <label>:7                                       ; preds = %5
+  %8 = icmp eq i32 %ttype, 89, !dbg !5467
+  tail call void @llvm.dbg.value(metadata i32 92, i64 0, metadata !1519, metadata !2141), !dbg !5456
+  %.ttype = select i1 %8, i32 92, i32 %ttype, !dbg !5469
+  br label %9, !dbg !5469
+
+; <label>:9                                       ; preds = %7, %5, %6
+  %.0 = phi i32 [ 67, %6 ], [ 10, %5 ], [ %.ttype, %7 ]
+  %10 = load i8** %DataPtr, align 8, !dbg !5470, !tbaa !2174
+  tail call void @_ZN3pov18Destroy_Ident_DataEPvi(i8* %10, i32 %.0) #11, !dbg !5471
+  store i8* null, i8** %DataPtr, align 8, !dbg !5472, !tbaa !2174
+  br label %40, !dbg !5473
+
+; <label>:11                                      ; preds = %0
+  tail call void @llvm.dbg.value(metadata i8* %Name, i64 0, metadata !1509, metadata !2141), !dbg !5474
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !1510, metadata !2141), !dbg !5476
+  %12 = load i8* %Name, align 1, !dbg !5477, !tbaa !2531
+  %13 = icmp eq i8 %12, 0, !dbg !5477
+  br i1 %13, label %_ZN3povL14get_hash_valueEPc.exit, label %.lr.ph.i, !dbg !5478
+
+.lr.ph.i:                                         ; preds = %11, %.lr.ph.i
+  %14 = phi i8 [ %19, %.lr.ph.i ], [ %12, %11 ], !dbg !5479
+  %i.02.i = phi i32 [ %18, %.lr.ph.i ], [ 0, %11 ], !dbg !5479
+  %.01.i = phi i8* [ %16, %.lr.ph.i ], [ %Name, %11 ], !dbg !5479
+  %15 = shl i32 %i.02.i, 1, !dbg !5480
+  %16 = getelementptr inbounds i8* %.01.i, i64 1, !dbg !5482
+  tail call void @llvm.dbg.value(metadata i8* %16, i64 0, metadata !1509, metadata !2141), !dbg !5474
+  %17 = sext i8 %14 to i32, !dbg !5483
+  %18 = xor i32 %15, %17, !dbg !5484
+  tail call void @llvm.dbg.value(metadata i32 %18, i64 0, metadata !1510, metadata !2141), !dbg !5476
+  %19 = load i8* %16, align 1, !dbg !5477, !tbaa !2531
+  %20 = icmp eq i8 %19, 0, !dbg !5477
+  br i1 %20, label %._crit_edge.i, label %.lr.ph.i, !dbg !5478
+
+._crit_edge.i:                                    ; preds = %.lr.ph.i
+  %phitmp.i = urem i32 %18, 257, !dbg !5478
+  %phitmp1 = zext i32 %phitmp.i to i64, !dbg !5478
+  br label %_ZN3povL14get_hash_valueEPc.exit, !dbg !5478
+
+_ZN3povL14get_hash_valueEPc.exit:                 ; preds = %11, %._crit_edge.i
+  %i.0.lcssa.i = phi i64 [ %phitmp1, %._crit_edge.i ], [ 0, %11 ]
+  %21 = sext i32 %Index to i64, !dbg !5485
+  %22 = getelementptr inbounds [100 x %"struct.pov::Sym_Table_Struct"*]* @_ZN3pov6TablesE, i64 0, i64 %21, !dbg !5485
+  %23 = load %"struct.pov::Sym_Table_Struct"** %22, align 8, !dbg !5485, !tbaa !2174
+  %24 = getelementptr inbounds %"struct.pov::Sym_Table_Struct"* %23, i64 0, i32 1, i64 %i.0.lcssa.i, !dbg !5485
+  tail call void @llvm.dbg.value(metadata %"struct.pov::Sym_Table_Entry"** %24, i64 0, metadata !1523, metadata !2141), !dbg !5486
+  br label %25, !dbg !5487
+
+; <label>:25                                      ; preds = %27, %_ZN3povL14get_hash_valueEPc.exit
+  %Entry.0.in = phi %"struct.pov::Sym_Table_Entry"** [ %24, %_ZN3povL14get_hash_valueEPc.exit ], [ %32, %27 ]
+  %Entry.0 = load %"struct.pov::Sym_Table_Entry"** %Entry.0.in, align 8, !dbg !5488
+  %26 = icmp eq %"struct.pov::Sym_Table_Entry"* %Entry.0, null, !dbg !5489
+  br i1 %26, label %38, label %27, !dbg !5487
+
+; <label>:27                                      ; preds = %25
+  %28 = getelementptr inbounds %"struct.pov::Sym_Table_Entry"* %Entry.0, i64 0, i32 1, !dbg !5490
+  %29 = load i8** %28, align 8, !dbg !5490, !tbaa !2249
+  %30 = tail call i32 @strcmp(i8* %Name, i8* %29) #11, !dbg !5493
+  %31 = icmp eq i32 %30, 0, !dbg !5494
+  %32 = getelementptr inbounds %"struct.pov::Sym_Table_Entry"* %Entry.0, i64 0, i32 0, !dbg !5495
+  br i1 %31, label %33, label %25, !dbg !5497
+
+; <label>:33                                      ; preds = %27
+  %34 = bitcast %"struct.pov::Sym_Table_Entry"* %Entry.0 to i64*, !dbg !5495
+  %35 = load i64* %34, align 8, !dbg !5495, !tbaa !5498
+  %36 = bitcast %"struct.pov::Sym_Table_Entry"** %Entry.0.in to i64*, !dbg !5499
+  store i64 %35, i64* %36, align 8, !dbg !5499, !tbaa !2174
+  %37 = tail call %"struct.pov::Sym_Table_Entry"* @_ZN3pov13Destroy_EntryEiPNS_15Sym_Table_EntryE(i32 %Index, %"struct.pov::Sym_Table_Entry"* %Entry.0) #11, !dbg !5500
+  br label %40, !dbg !5501
+
+; <label>:38                                      ; preds = %25
+  %39 = tail call i32 (i8*, ...)* @_ZN3pov5ErrorEPKcz(i8* getelementptr inbounds ([31 x i8]* @.str582, i64 0, i64 0)) #11, !dbg !5502
+  br label %40
+
+; <label>:40                                      ; preds = %33, %38, %9
+  ret void, !dbg !5503
+}

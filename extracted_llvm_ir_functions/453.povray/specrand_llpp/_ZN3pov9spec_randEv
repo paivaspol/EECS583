@@ -1,0 +1,25 @@
+define double @_ZN3pov9spec_randEv() #0 {
+  %1 = load i32* @_ZN3povL5seediE, align 4, !dbg !336, !tbaa !331
+  %2 = sext i32 %1 to i64, !dbg !336
+  %3 = sdiv i64 %2, 127773, !dbg !337
+  %4 = srem i64 %2, 127773, !dbg !338
+  %5 = mul nsw i64 %4, 16807, !dbg !339
+  %6 = mul nsw i64 %3, -2836, !dbg !340
+  %7 = add i64 %5, %6, !dbg !340
+  %8 = trunc i64 %7 to i32, !dbg !341
+  tail call void @llvm.dbg.value(metadata i32 %8, i64 0, metadata !35, metadata !328), !dbg !342
+  %9 = icmp sgt i32 %8, 0, !dbg !343
+  br i1 %9, label %13, label %10, !dbg !345
+
+; <label>:10                                      ; preds = %0
+  %11 = add i64 %7, 2147483647, !dbg !346
+  %12 = trunc i64 %11 to i32, !dbg !348
+  br label %13
+
+; <label>:13                                      ; preds = %0, %10
+  %storemerge = phi i32 [ %12, %10 ], [ %8, %0 ]
+  store i32 %storemerge, i32* @_ZN3povL5seediE, align 4, !dbg !349, !tbaa !331
+  %14 = sitofp i32 %storemerge to double, !dbg !351
+  %15 = fdiv double %14, 0x41DFFFFFFFC00000, !dbg !352
+  ret double %15, !dbg !353
+}

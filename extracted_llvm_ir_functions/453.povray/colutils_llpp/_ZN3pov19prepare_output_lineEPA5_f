@@ -1,0 +1,21 @@
+define void @_ZN3pov19prepare_output_lineEPA5_f([5 x float]* %Line) #2 {
+  tail call void @llvm.dbg.value(metadata [5 x float]* %Line, i64 0, metadata !154, metadata !614), !dbg !848
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !155, metadata !614), !dbg !849
+  %1 = load i32* getelementptr inbounds (%"struct.pov::Frame_Struct"* @_ZN3pov5FrameE, i64 0, i32 2), align 4, !dbg !850, !tbaa !853
+  %2 = icmp slt i32 %1, 0, !dbg !855
+  br i1 %2, label %._crit_edge, label %.lr.ph, !dbg !856
+
+.lr.ph:                                           ; preds = %0, %.lr.ph
+  %indvars.iv = phi i64 [ %indvars.iv.next, %.lr.ph ], [ 0, %0 ]
+  %3 = getelementptr inbounds [5 x float]* %Line, i64 %indvars.iv, i64 0, !dbg !857
+  tail call void @_ZN3pov11Clip_ColourEPfS0_(float* %3, float* %3) #6, !dbg !859
+  tail call void @_ZN3pov13gamma_correctEPf(float* %3) #6, !dbg !860
+  %indvars.iv.next = add nuw i64 %indvars.iv, 1, !dbg !856
+  %4 = load i32* getelementptr inbounds (%"struct.pov::Frame_Struct"* @_ZN3pov5FrameE, i64 0, i32 2), align 4, !dbg !850, !tbaa !853
+  %5 = sext i32 %4 to i64, !dbg !855
+  %6 = icmp slt i64 %indvars.iv, %5, !dbg !855
+  br i1 %6, label %.lr.ph, label %._crit_edge, !dbg !856
+
+._crit_edge:                                      ; preds = %.lr.ph, %0
+  ret void, !dbg !861
+}

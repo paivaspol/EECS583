@@ -1,8 +1,10 @@
 define internal fastcc i32 @ParameterSetSimple(%struct.PARAM* nocapture readonly %param, i8* %value) #1 {
-  %1 = getelementptr inbounds %struct.PARAM* %param, i64 0, i32 0
-  %2 = load %struct.PARAM_PROPS** %1, align 8, !tbaa !2
-  %3 = getelementptr inbounds %struct.PARAM_PROPS* %2, i64 0, i32 5
-  %4 = load i32* %3, align 4, !tbaa !14
+  tail call void @llvm.dbg.value(metadata %struct.PARAM* %param, i64 0, metadata !314, metadata !369), !dbg !710
+  tail call void @llvm.dbg.value(metadata i8* %value, i64 0, metadata !315, metadata !369), !dbg !711
+  %1 = getelementptr inbounds %struct.PARAM* %param, i64 0, i32 0, !dbg !712
+  %2 = load %struct.PARAM_PROPS** %1, align 8, !dbg !712, !tbaa !406
+  %3 = getelementptr inbounds %struct.PARAM_PROPS* %2, i64 0, i32 5, !dbg !713
+  %4 = load i32* %3, align 4, !dbg !713, !tbaa !462
   switch i32 %4, label %226 [
     i32 1, label %5
     i32 2, label %47
@@ -10,388 +12,417 @@ define internal fastcc i32 @ParameterSetSimple(%struct.PARAM* nocapture readonly
     i32 4, label %131
     i32 5, label %167
     i32 6, label %213
-  ]
+  ], !dbg !714
 
 ; <label>:5                                       ; preds = %0
-  %6 = getelementptr inbounds %struct.PARAM_PROPS* %2, i64 0, i32 6
-  %range.03.i = load %struct.RANGE** %6, align 8
-  %7 = icmp eq %struct.RANGE* %range.03.i, null
-  br i1 %7, label %.thread.loopexit.i, label %.lr.ph.i
+  tail call void @llvm.dbg.value(metadata %struct.PARAM* %param, i64 0, metadata !319, metadata !369) #3, !dbg !715
+  tail call void @llvm.dbg.value(metadata i8* %value, i64 0, metadata !320, metadata !369) #3, !dbg !718
+  tail call void @llvm.dbg.value(metadata i32 -1, i64 0, metadata !321, metadata !369) #3, !dbg !719
+  %6 = getelementptr inbounds %struct.PARAM_PROPS* %2, i64 0, i32 6, !dbg !720
+  %range.03.i = load %struct.RANGE** %6, align 8, !dbg !720
+  %7 = icmp eq %struct.RANGE* %range.03.i, null, !dbg !722
+  br i1 %7, label %.thread.loopexit.i, label %.lr.ph.i, !dbg !722
 
 .lr.ph.i:                                         ; preds = %5, %24
-  %range.04.i = phi %struct.RANGE* [ %range.0.i, %24 ], [ %range.03.i, %5 ]
-  %8 = getelementptr inbounds %struct.RANGE* %range.04.i, i64 0, i32 3
-  %9 = load i8** %8, align 8, !tbaa !30
-  %10 = tail call i32 @CCTK_IsThornActive(i8* %9) #8
-  %11 = icmp eq i32 %10, 0
-  br i1 %11, label %12, label %19
+  %range.04.i = phi %struct.RANGE* [ %range.0.i, %24 ], [ %range.03.i, %5 ], !dbg !723
+  %8 = getelementptr inbounds %struct.RANGE* %range.04.i, i64 0, i32 3, !dbg !724
+  %9 = load i8** %8, align 8, !dbg !724, !tbaa !646
+  %10 = tail call i32 @CCTK_IsThornActive(i8* %9) #8, !dbg !728
+  %11 = icmp eq i32 %10, 0, !dbg !728
+  br i1 %11, label %12, label %19, !dbg !729
 
 ; <label>:12                                      ; preds = %.lr.ph.i
-  %13 = load %struct.PARAM_PROPS** %1, align 8, !tbaa !2
-  %14 = getelementptr inbounds %struct.PARAM_PROPS* %13, i64 0, i32 1
-  %15 = load i8** %14, align 8, !tbaa !7
-  %16 = load i8** %8, align 8, !tbaa !30
-  %17 = tail call i32 @CCTK_Equals(i8* %15, i8* %16) #8
-  %18 = icmp eq i32 %17, 0
-  br i1 %18, label %24, label %19
+  %13 = load %struct.PARAM_PROPS** %1, align 8, !dbg !730, !tbaa !406
+  %14 = getelementptr inbounds %struct.PARAM_PROPS* %13, i64 0, i32 1, !dbg !731
+  %15 = load i8** %14, align 8, !dbg !731, !tbaa !418
+  %16 = load i8** %8, align 8, !dbg !732, !tbaa !646
+  %17 = tail call i32 @CCTK_Equals(i8* %15, i8* %16) #8, !dbg !733
+  %18 = icmp eq i32 %17, 0, !dbg !733
+  br i1 %18, label %24, label %19, !dbg !734
 
 ; <label>:19                                      ; preds = %12, %.lr.ph.i
-  %20 = getelementptr inbounds %struct.RANGE* %range.04.i, i64 0, i32 2
-  %21 = load i8** %20, align 8, !tbaa !28
-  %22 = tail call i32 @STR_cmpi(i8* %value, i8* %21) #8
-  %23 = icmp eq i32 %22, 0
-  br i1 %23, label %27, label %24
+  %20 = getelementptr inbounds %struct.RANGE* %range.04.i, i64 0, i32 2, !dbg !735
+  %21 = load i8** %20, align 8, !dbg !735, !tbaa !641
+  %22 = tail call i32 @STR_cmpi(i8* %value, i8* %21) #8, !dbg !735
+  %23 = icmp eq i32 %22, 0, !dbg !735
+  br i1 %23, label %27, label %24, !dbg !738
 
 ; <label>:24                                      ; preds = %19, %12
-  %25 = getelementptr inbounds %struct.RANGE* %range.04.i, i64 0, i32 1
-  %range.0.i = load %struct.RANGE** %25, align 8
-  %26 = icmp eq %struct.RANGE* %range.0.i, null
-  br i1 %26, label %.thread.loopexit.i, label %.lr.ph.i
+  %25 = getelementptr inbounds %struct.RANGE* %range.04.i, i64 0, i32 1, !dbg !739
+  %range.0.i = load %struct.RANGE** %25, align 8, !dbg !720
+  %26 = icmp eq %struct.RANGE* %range.0.i, null, !dbg !722
+  br i1 %26, label %.thread.loopexit.i, label %.lr.ph.i, !dbg !722
 
 ; <label>:27                                      ; preds = %19
-  %28 = getelementptr inbounds %struct.PARAM* %param, i64 0, i32 1
-  %29 = bitcast i8** %28 to i8***
-  %30 = load i8*** %29, align 8, !tbaa !18
-  %31 = tail call i32 @CCTK_SetString(i8** %30, i8* %value) #8
-  %32 = icmp eq i32 %31, -1
-  br i1 %32, label %.thread.i, label %ParameterSetKeyword.exit
+  %28 = getelementptr inbounds %struct.PARAM* %param, i64 0, i32 1, !dbg !740
+  %29 = bitcast i8** %28 to i8***, !dbg !740
+  %30 = load i8*** %29, align 8, !dbg !740, !tbaa !474
+  %31 = tail call i32 @CCTK_SetString(i8** %30, i8* %value) #8, !dbg !742
+  tail call void @llvm.dbg.value(metadata i32 %31, i64 0, metadata !321, metadata !369) #3, !dbg !719
+  %32 = icmp eq i32 %31, -1, !dbg !743
+  br i1 %32, label %.thread.i, label %ParameterSetKeyword.exit, !dbg !745
 
 .thread.loopexit.i:                               ; preds = %24, %5
-  %.pre.i = getelementptr inbounds %struct.PARAM* %param, i64 0, i32 1
-  %.pre6.i = bitcast i8** %.pre.i to i8***
-  br label %.thread.i
+  %.pre.i = getelementptr inbounds %struct.PARAM* %param, i64 0, i32 1, !dbg !746
+  %.pre6.i = bitcast i8** %.pre.i to i8***, !dbg !746
+  br label %.thread.i, !dbg !723
 
 .thread.i:                                        ; preds = %.thread.loopexit.i, %27
-  %.pre-phi7.i = phi i8*** [ %.pre6.i, %.thread.loopexit.i ], [ %29, %27 ]
-  %33 = load %struct.PARAM_PROPS** %1, align 8, !tbaa !2
-  %34 = getelementptr inbounds %struct.PARAM_PROPS* %33, i64 0, i32 1
-  %35 = load i8** %34, align 8, !tbaa !7
-  %36 = getelementptr inbounds %struct.PARAM_PROPS* %33, i64 0, i32 0
-  %37 = load i8** %36, align 8, !tbaa !10
-  %38 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 2, i32 1269, i8* getelementptr inbounds ([79 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([81 x i8]* @.str23, i64 0, i64 0), i8* %35, i8* %37, i8* %value) #8
-  %39 = load i8*** %.pre-phi7.i, align 8, !tbaa !18
-  %40 = load i8** %39, align 8, !tbaa !19
-  %41 = icmp eq i8* %40, null
-  br i1 %41, label %42, label %ParameterSetKeyword.exit
+  %.pre-phi7.i = phi i8*** [ %.pre6.i, %.thread.loopexit.i ], [ %29, %27 ], !dbg !746
+  %33 = load %struct.PARAM_PROPS** %1, align 8, !dbg !749, !tbaa !406
+  %34 = getelementptr inbounds %struct.PARAM_PROPS* %33, i64 0, i32 1, !dbg !750
+  %35 = load i8** %34, align 8, !dbg !750, !tbaa !418
+  %36 = getelementptr inbounds %struct.PARAM_PROPS* %33, i64 0, i32 0, !dbg !751
+  %37 = load i8** %36, align 8, !dbg !751, !tbaa !424
+  %38 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 2, i32 1269, i8* getelementptr inbounds ([79 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([81 x i8]* @.str23, i64 0, i64 0), i8* %35, i8* %37, i8* %value) #8, !dbg !752
+  %39 = load i8*** %.pre-phi7.i, align 8, !dbg !746, !tbaa !474
+  %40 = load i8** %39, align 8, !dbg !753, !tbaa !480
+  %41 = icmp eq i8* %40, null, !dbg !754
+  br i1 %41, label %42, label %ParameterSetKeyword.exit, !dbg !755
 
 ; <label>:42                                      ; preds = %.thread.i
-  %43 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !19
-  %44 = tail call i64 @fwrite(i8* getelementptr inbounds ([64 x i8]* @.str24, i64 0, i64 0), i64 63, i64 1, %struct.__sFILE* %43) #2
-  %45 = load i8*** %.pre-phi7.i, align 8, !tbaa !18
-  %46 = tail call i32 @CCTK_SetString(i8** %45, i8* %value) #8
-  br label %ParameterSetKeyword.exit
+  %43 = load %struct.__sFILE** @__stderrp, align 8, !dbg !756, !tbaa !480
+  %44 = tail call i64 @fwrite(i8* getelementptr inbounds ([64 x i8]* @.str24, i64 0, i64 0), i64 63, i64 1, %struct.__sFILE* %43) #3, !dbg !758
+  %45 = load i8*** %.pre-phi7.i, align 8, !dbg !759, !tbaa !474
+  %46 = tail call i32 @CCTK_SetString(i8** %45, i8* %value) #8, !dbg !760
+  br label %ParameterSetKeyword.exit, !dbg !761
 
 ; <label>:47                                      ; preds = %0
-  %48 = getelementptr inbounds %struct.PARAM_PROPS* %2, i64 0, i32 6
-  %range.03.i1 = load %struct.RANGE** %48, align 8
-  %49 = icmp eq %struct.RANGE* %range.03.i1, null
-  br i1 %49, label %.thread.loopexit.i7, label %.lr.ph.i3
+  tail call void @llvm.dbg.value(metadata %struct.PARAM* %param, i64 0, metadata !327, metadata !369) #3, !dbg !762
+  tail call void @llvm.dbg.value(metadata i8* %value, i64 0, metadata !328, metadata !369) #3, !dbg !764
+  tail call void @llvm.dbg.value(metadata i32 -1, i64 0, metadata !329, metadata !369) #3, !dbg !765
+  %48 = getelementptr inbounds %struct.PARAM_PROPS* %2, i64 0, i32 6, !dbg !766
+  %range.03.i1 = load %struct.RANGE** %48, align 8, !dbg !766
+  %49 = icmp eq %struct.RANGE* %range.03.i1, null, !dbg !768
+  br i1 %49, label %.thread.loopexit.i7, label %.lr.ph.i3, !dbg !768
 
 .lr.ph.i3:                                        ; preds = %47, %66
-  %range.04.i2 = phi %struct.RANGE* [ %range.0.i4, %66 ], [ %range.03.i1, %47 ]
-  %50 = getelementptr inbounds %struct.RANGE* %range.04.i2, i64 0, i32 3
-  %51 = load i8** %50, align 8, !tbaa !30
-  %52 = tail call i32 @CCTK_IsThornActive(i8* %51) #8
-  %53 = icmp eq i32 %52, 0
-  br i1 %53, label %54, label %61
+  %range.04.i2 = phi %struct.RANGE* [ %range.0.i4, %66 ], [ %range.03.i1, %47 ], !dbg !769
+  %50 = getelementptr inbounds %struct.RANGE* %range.04.i2, i64 0, i32 3, !dbg !770
+  %51 = load i8** %50, align 8, !dbg !770, !tbaa !646
+  %52 = tail call i32 @CCTK_IsThornActive(i8* %51) #8, !dbg !774
+  %53 = icmp eq i32 %52, 0, !dbg !774
+  br i1 %53, label %54, label %61, !dbg !775
 
 ; <label>:54                                      ; preds = %.lr.ph.i3
-  %55 = load %struct.PARAM_PROPS** %1, align 8, !tbaa !2
-  %56 = getelementptr inbounds %struct.PARAM_PROPS* %55, i64 0, i32 1
-  %57 = load i8** %56, align 8, !tbaa !7
-  %58 = load i8** %50, align 8, !tbaa !30
-  %59 = tail call i32 @CCTK_Equals(i8* %57, i8* %58) #8
-  %60 = icmp eq i32 %59, 0
-  br i1 %60, label %66, label %61
+  %55 = load %struct.PARAM_PROPS** %1, align 8, !dbg !776, !tbaa !406
+  %56 = getelementptr inbounds %struct.PARAM_PROPS* %55, i64 0, i32 1, !dbg !777
+  %57 = load i8** %56, align 8, !dbg !777, !tbaa !418
+  %58 = load i8** %50, align 8, !dbg !778, !tbaa !646
+  %59 = tail call i32 @CCTK_Equals(i8* %57, i8* %58) #8, !dbg !779
+  %60 = icmp eq i32 %59, 0, !dbg !779
+  br i1 %60, label %66, label %61, !dbg !780
 
 ; <label>:61                                      ; preds = %54, %.lr.ph.i3
-  %62 = getelementptr inbounds %struct.RANGE* %range.04.i2, i64 0, i32 2
-  %63 = load i8** %62, align 8, !tbaa !28
-  %64 = tail call i32 @CCTK_RegexMatch(i8* %value, i8* %63, i32 0, %struct.regmatch_t* null) #8
-  %65 = icmp eq i32 %64, 0
-  br i1 %65, label %66, label %69
+  %62 = getelementptr inbounds %struct.RANGE* %range.04.i2, i64 0, i32 2, !dbg !781
+  %63 = load i8** %62, align 8, !dbg !781, !tbaa !641
+  %64 = tail call i32 @CCTK_RegexMatch(i8* %value, i8* %63, i32 0, %struct.regmatch_t* null) #8, !dbg !784
+  %65 = icmp eq i32 %64, 0, !dbg !784
+  br i1 %65, label %66, label %69, !dbg !785
 
 ; <label>:66                                      ; preds = %61, %54
-  %67 = getelementptr inbounds %struct.RANGE* %range.04.i2, i64 0, i32 1
-  %range.0.i4 = load %struct.RANGE** %67, align 8
-  %68 = icmp eq %struct.RANGE* %range.0.i4, null
-  br i1 %68, label %.thread.loopexit.i7, label %.lr.ph.i3
+  %67 = getelementptr inbounds %struct.RANGE* %range.04.i2, i64 0, i32 1, !dbg !786
+  %range.0.i4 = load %struct.RANGE** %67, align 8, !dbg !766
+  %68 = icmp eq %struct.RANGE* %range.0.i4, null, !dbg !768
+  br i1 %68, label %.thread.loopexit.i7, label %.lr.ph.i3, !dbg !768
 
 ; <label>:69                                      ; preds = %61
-  %70 = getelementptr inbounds %struct.PARAM* %param, i64 0, i32 1
-  %71 = bitcast i8** %70 to i8***
-  %72 = load i8*** %71, align 8, !tbaa !18
-  %73 = tail call i32 @CCTK_SetString(i8** %72, i8* %value) #8
-  %74 = icmp eq i32 %73, -1
-  br i1 %74, label %.thread.i9, label %ParameterSetKeyword.exit
+  %70 = getelementptr inbounds %struct.PARAM* %param, i64 0, i32 1, !dbg !787
+  %71 = bitcast i8** %70 to i8***, !dbg !787
+  %72 = load i8*** %71, align 8, !dbg !787, !tbaa !474
+  %73 = tail call i32 @CCTK_SetString(i8** %72, i8* %value) #8, !dbg !789
+  tail call void @llvm.dbg.value(metadata i32 %73, i64 0, metadata !329, metadata !369) #3, !dbg !765
+  %74 = icmp eq i32 %73, -1, !dbg !790
+  br i1 %74, label %.thread.i9, label %ParameterSetKeyword.exit, !dbg !792
 
 .thread.loopexit.i7:                              ; preds = %66, %47
-  %.pre.i5 = getelementptr inbounds %struct.PARAM* %param, i64 0, i32 1
-  %.pre6.i6 = bitcast i8** %.pre.i5 to i8***
-  br label %.thread.i9
+  %.pre.i5 = getelementptr inbounds %struct.PARAM* %param, i64 0, i32 1, !dbg !793
+  %.pre6.i6 = bitcast i8** %.pre.i5 to i8***, !dbg !793
+  br label %.thread.i9, !dbg !769
 
 .thread.i9:                                       ; preds = %.thread.loopexit.i7, %69
-  %.pre-phi7.i8 = phi i8*** [ %.pre6.i6, %.thread.loopexit.i7 ], [ %71, %69 ]
-  %75 = load %struct.PARAM_PROPS** %1, align 8, !tbaa !2
-  %76 = getelementptr inbounds %struct.PARAM_PROPS* %75, i64 0, i32 1
-  %77 = load i8** %76, align 8, !tbaa !7
-  %78 = getelementptr inbounds %struct.PARAM_PROPS* %75, i64 0, i32 0
-  %79 = load i8** %78, align 8, !tbaa !10
-  %80 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 2, i32 1312, i8* getelementptr inbounds ([79 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([81 x i8]* @.str25, i64 0, i64 0), i8* %77, i8* %79, i8* %value) #8
-  %81 = load i8*** %.pre-phi7.i8, align 8, !tbaa !18
-  %82 = load i8** %81, align 8, !tbaa !19
-  %83 = icmp eq i8* %82, null
-  br i1 %83, label %84, label %ParameterSetKeyword.exit
+  %.pre-phi7.i8 = phi i8*** [ %.pre6.i6, %.thread.loopexit.i7 ], [ %71, %69 ], !dbg !793
+  %75 = load %struct.PARAM_PROPS** %1, align 8, !dbg !796, !tbaa !406
+  %76 = getelementptr inbounds %struct.PARAM_PROPS* %75, i64 0, i32 1, !dbg !797
+  %77 = load i8** %76, align 8, !dbg !797, !tbaa !418
+  %78 = getelementptr inbounds %struct.PARAM_PROPS* %75, i64 0, i32 0, !dbg !798
+  %79 = load i8** %78, align 8, !dbg !798, !tbaa !424
+  %80 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 2, i32 1312, i8* getelementptr inbounds ([79 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([81 x i8]* @.str25, i64 0, i64 0), i8* %77, i8* %79, i8* %value) #8, !dbg !799
+  %81 = load i8*** %.pre-phi7.i8, align 8, !dbg !793, !tbaa !474
+  %82 = load i8** %81, align 8, !dbg !800, !tbaa !480
+  %83 = icmp eq i8* %82, null, !dbg !801
+  br i1 %83, label %84, label %ParameterSetKeyword.exit, !dbg !802
 
 ; <label>:84                                      ; preds = %.thread.i9
-  %85 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !19
-  %86 = tail call i64 @fwrite(i8* getelementptr inbounds ([64 x i8]* @.str24, i64 0, i64 0), i64 63, i64 1, %struct.__sFILE* %85) #2
-  %87 = load i8*** %.pre-phi7.i8, align 8, !tbaa !18
-  %88 = tail call i32 @CCTK_SetString(i8** %87, i8* %value) #8
-  br label %ParameterSetKeyword.exit
+  %85 = load %struct.__sFILE** @__stderrp, align 8, !dbg !803, !tbaa !480
+  %86 = tail call i64 @fwrite(i8* getelementptr inbounds ([64 x i8]* @.str24, i64 0, i64 0), i64 63, i64 1, %struct.__sFILE* %85) #3, !dbg !805
+  %87 = load i8*** %.pre-phi7.i8, align 8, !dbg !806, !tbaa !474
+  %88 = tail call i32 @CCTK_SetString(i8** %87, i8* %value) #8, !dbg !807
+  br label %ParameterSetKeyword.exit, !dbg !808
 
 ; <label>:89                                      ; preds = %0
-  %90 = getelementptr inbounds %struct.PARAM_PROPS* %2, i64 0, i32 6
-  %range.03.i11 = load %struct.RANGE** %90, align 8
-  %91 = icmp eq %struct.RANGE* %range.03.i11, null
-  br i1 %91, label %.thread.loopexit.i17, label %.lr.ph.i13
+  tail call void @llvm.dbg.value(metadata %struct.PARAM* %param, i64 0, metadata !333, metadata !369) #3, !dbg !809
+  tail call void @llvm.dbg.value(metadata i8* %value, i64 0, metadata !334, metadata !369) #3, !dbg !811
+  tail call void @llvm.dbg.value(metadata i32 -1, i64 0, metadata !335, metadata !369) #3, !dbg !812
+  %90 = getelementptr inbounds %struct.PARAM_PROPS* %2, i64 0, i32 6, !dbg !813
+  %range.03.i11 = load %struct.RANGE** %90, align 8, !dbg !813
+  %91 = icmp eq %struct.RANGE* %range.03.i11, null, !dbg !815
+  br i1 %91, label %.thread.loopexit.i17, label %.lr.ph.i13, !dbg !815
 
 .lr.ph.i13:                                       ; preds = %89, %108
-  %range.04.i12 = phi %struct.RANGE* [ %range.0.i14, %108 ], [ %range.03.i11, %89 ]
-  %92 = getelementptr inbounds %struct.RANGE* %range.04.i12, i64 0, i32 3
-  %93 = load i8** %92, align 8, !tbaa !30
-  %94 = tail call i32 @CCTK_IsThornActive(i8* %93) #8
-  %95 = icmp eq i32 %94, 0
-  br i1 %95, label %96, label %103
+  %range.04.i12 = phi %struct.RANGE* [ %range.0.i14, %108 ], [ %range.03.i11, %89 ], !dbg !816
+  %92 = getelementptr inbounds %struct.RANGE* %range.04.i12, i64 0, i32 3, !dbg !817
+  %93 = load i8** %92, align 8, !dbg !817, !tbaa !646
+  %94 = tail call i32 @CCTK_IsThornActive(i8* %93) #8, !dbg !821
+  %95 = icmp eq i32 %94, 0, !dbg !821
+  br i1 %95, label %96, label %103, !dbg !822
 
 ; <label>:96                                      ; preds = %.lr.ph.i13
-  %97 = load %struct.PARAM_PROPS** %1, align 8, !tbaa !2
-  %98 = getelementptr inbounds %struct.PARAM_PROPS* %97, i64 0, i32 1
-  %99 = load i8** %98, align 8, !tbaa !7
-  %100 = load i8** %92, align 8, !tbaa !30
-  %101 = tail call i32 @CCTK_Equals(i8* %99, i8* %100) #8
-  %102 = icmp eq i32 %101, 0
-  br i1 %102, label %108, label %103
+  %97 = load %struct.PARAM_PROPS** %1, align 8, !dbg !823, !tbaa !406
+  %98 = getelementptr inbounds %struct.PARAM_PROPS* %97, i64 0, i32 1, !dbg !824
+  %99 = load i8** %98, align 8, !dbg !824, !tbaa !418
+  %100 = load i8** %92, align 8, !dbg !825, !tbaa !646
+  %101 = tail call i32 @CCTK_Equals(i8* %99, i8* %100) #8, !dbg !826
+  %102 = icmp eq i32 %101, 0, !dbg !826
+  br i1 %102, label %108, label %103, !dbg !827
 
 ; <label>:103                                     ; preds = %96, %.lr.ph.i13
-  %104 = getelementptr inbounds %struct.RANGE* %range.04.i12, i64 0, i32 2
-  %105 = load i8** %104, align 8, !tbaa !28
-  %106 = tail call i32 @CCTK_RegexMatch(i8* %value, i8* %105, i32 0, %struct.regmatch_t* null) #8
-  %107 = icmp eq i32 %106, 0
-  br i1 %107, label %108, label %111
+  %104 = getelementptr inbounds %struct.RANGE* %range.04.i12, i64 0, i32 2, !dbg !828
+  %105 = load i8** %104, align 8, !dbg !828, !tbaa !641
+  %106 = tail call i32 @CCTK_RegexMatch(i8* %value, i8* %105, i32 0, %struct.regmatch_t* null) #8, !dbg !831
+  %107 = icmp eq i32 %106, 0, !dbg !831
+  br i1 %107, label %108, label %111, !dbg !832
 
 ; <label>:108                                     ; preds = %103, %96
-  %109 = getelementptr inbounds %struct.RANGE* %range.04.i12, i64 0, i32 1
-  %range.0.i14 = load %struct.RANGE** %109, align 8
-  %110 = icmp eq %struct.RANGE* %range.0.i14, null
-  br i1 %110, label %.thread.loopexit.i17, label %.lr.ph.i13
+  %109 = getelementptr inbounds %struct.RANGE* %range.04.i12, i64 0, i32 1, !dbg !833
+  %range.0.i14 = load %struct.RANGE** %109, align 8, !dbg !813
+  %110 = icmp eq %struct.RANGE* %range.0.i14, null, !dbg !815
+  br i1 %110, label %.thread.loopexit.i17, label %.lr.ph.i13, !dbg !815
 
 ; <label>:111                                     ; preds = %103
-  %112 = getelementptr inbounds %struct.PARAM* %param, i64 0, i32 1
-  %113 = bitcast i8** %112 to i8***
-  %114 = load i8*** %113, align 8, !tbaa !18
-  %115 = tail call i32 @CCTK_SetString(i8** %114, i8* %value) #8
-  %116 = icmp eq i32 %115, -1
-  br i1 %116, label %.thread.i19, label %ParameterSetKeyword.exit
+  %112 = getelementptr inbounds %struct.PARAM* %param, i64 0, i32 1, !dbg !834
+  %113 = bitcast i8** %112 to i8***, !dbg !834
+  %114 = load i8*** %113, align 8, !dbg !834, !tbaa !474
+  %115 = tail call i32 @CCTK_SetString(i8** %114, i8* %value) #8, !dbg !836
+  tail call void @llvm.dbg.value(metadata i32 %115, i64 0, metadata !335, metadata !369) #3, !dbg !812
+  %116 = icmp eq i32 %115, -1, !dbg !837
+  br i1 %116, label %.thread.i19, label %ParameterSetKeyword.exit, !dbg !839
 
 .thread.loopexit.i17:                             ; preds = %108, %89
-  %.pre.i15 = getelementptr inbounds %struct.PARAM* %param, i64 0, i32 1
-  %.pre6.i16 = bitcast i8** %.pre.i15 to i8***
-  br label %.thread.i19
+  %.pre.i15 = getelementptr inbounds %struct.PARAM* %param, i64 0, i32 1, !dbg !840
+  %.pre6.i16 = bitcast i8** %.pre.i15 to i8***, !dbg !840
+  br label %.thread.i19, !dbg !816
 
 .thread.i19:                                      ; preds = %.thread.loopexit.i17, %111
-  %.pre-phi7.i18 = phi i8*** [ %.pre6.i16, %.thread.loopexit.i17 ], [ %113, %111 ]
-  %117 = load %struct.PARAM_PROPS** %1, align 8, !tbaa !2
-  %118 = getelementptr inbounds %struct.PARAM_PROPS* %117, i64 0, i32 1
-  %119 = load i8** %118, align 8, !tbaa !7
-  %120 = getelementptr inbounds %struct.PARAM_PROPS* %117, i64 0, i32 0
-  %121 = load i8** %120, align 8, !tbaa !10
-  %122 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 2, i32 1355, i8* getelementptr inbounds ([79 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([85 x i8]* @.str26, i64 0, i64 0), i8* %119, i8* %121, i8* %value) #8
-  %123 = load i8*** %.pre-phi7.i18, align 8, !tbaa !18
-  %124 = load i8** %123, align 8, !tbaa !19
-  %125 = icmp eq i8* %124, null
-  br i1 %125, label %126, label %ParameterSetKeyword.exit
+  %.pre-phi7.i18 = phi i8*** [ %.pre6.i16, %.thread.loopexit.i17 ], [ %113, %111 ], !dbg !840
+  %117 = load %struct.PARAM_PROPS** %1, align 8, !dbg !843, !tbaa !406
+  %118 = getelementptr inbounds %struct.PARAM_PROPS* %117, i64 0, i32 1, !dbg !844
+  %119 = load i8** %118, align 8, !dbg !844, !tbaa !418
+  %120 = getelementptr inbounds %struct.PARAM_PROPS* %117, i64 0, i32 0, !dbg !845
+  %121 = load i8** %120, align 8, !dbg !845, !tbaa !424
+  %122 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 2, i32 1355, i8* getelementptr inbounds ([79 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([85 x i8]* @.str26, i64 0, i64 0), i8* %119, i8* %121, i8* %value) #8, !dbg !846
+  %123 = load i8*** %.pre-phi7.i18, align 8, !dbg !840, !tbaa !474
+  %124 = load i8** %123, align 8, !dbg !847, !tbaa !480
+  %125 = icmp eq i8* %124, null, !dbg !848
+  br i1 %125, label %126, label %ParameterSetKeyword.exit, !dbg !849
 
 ; <label>:126                                     ; preds = %.thread.i19
-  %127 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !19
-  %128 = tail call i64 @fwrite(i8* getelementptr inbounds ([64 x i8]* @.str24, i64 0, i64 0), i64 63, i64 1, %struct.__sFILE* %127) #2
-  %129 = load i8*** %.pre-phi7.i18, align 8, !tbaa !18
-  %130 = tail call i32 @CCTK_SetString(i8** %129, i8* %value) #8
-  br label %ParameterSetKeyword.exit
+  %127 = load %struct.__sFILE** @__stderrp, align 8, !dbg !850, !tbaa !480
+  %128 = tail call i64 @fwrite(i8* getelementptr inbounds ([64 x i8]* @.str24, i64 0, i64 0), i64 63, i64 1, %struct.__sFILE* %127) #3, !dbg !852
+  %129 = load i8*** %.pre-phi7.i18, align 8, !dbg !853, !tbaa !474
+  %130 = tail call i32 @CCTK_SetString(i8** %129, i8* %value) #8, !dbg !854
+  br label %ParameterSetKeyword.exit, !dbg !855
 
 ; <label>:131                                     ; preds = %0
-  %132 = tail call i64 @strtol(i8* nocapture %value, i8** null, i32 0) #8
-  %133 = trunc i64 %132 to i32
-  %134 = load %struct.PARAM_PROPS** %1, align 8, !tbaa !2
-  %135 = getelementptr inbounds %struct.PARAM_PROPS* %134, i64 0, i32 6
-  %range.03.i21 = load %struct.RANGE** %135, align 8
-  %136 = icmp eq %struct.RANGE* %range.03.i21, null
-  br i1 %136, label %160, label %.lr.ph.i23
+  tail call void @llvm.dbg.value(metadata %struct.PARAM* %param, i64 0, metadata !339, metadata !369) #3, !dbg !856
+  tail call void @llvm.dbg.value(metadata i8* %value, i64 0, metadata !340, metadata !369) #3, !dbg !858
+  tail call void @llvm.dbg.value(metadata i32 -1, i64 0, metadata !342, metadata !369) #3, !dbg !859
+  %132 = tail call i64 @strtol(i8* nocapture %value, i8** null, i32 0) #8, !dbg !860
+  %133 = trunc i64 %132 to i32, !dbg !860
+  tail call void @llvm.dbg.value(metadata i32 %133, i64 0, metadata !341, metadata !369) #3, !dbg !861
+  %134 = load %struct.PARAM_PROPS** %1, align 8, !dbg !862, !tbaa !406
+  %135 = getelementptr inbounds %struct.PARAM_PROPS* %134, i64 0, i32 6, !dbg !864
+  %range.03.i21 = load %struct.RANGE** %135, align 8, !dbg !864
+  %136 = icmp eq %struct.RANGE* %range.03.i21, null, !dbg !865
+  br i1 %136, label %160, label %.lr.ph.i23, !dbg !865
 
 .lr.ph.i23:                                       ; preds = %131, %153
-  %range.04.i22 = phi %struct.RANGE* [ %range.0.i24, %153 ], [ %range.03.i21, %131 ]
-  %137 = getelementptr inbounds %struct.RANGE* %range.04.i22, i64 0, i32 3
-  %138 = load i8** %137, align 8, !tbaa !30
-  %139 = tail call i32 @CCTK_IsThornActive(i8* %138) #8
-  %140 = icmp eq i32 %139, 0
-  br i1 %140, label %141, label %148
+  %range.04.i22 = phi %struct.RANGE* [ %range.0.i24, %153 ], [ %range.03.i21, %131 ], !dbg !866
+  %137 = getelementptr inbounds %struct.RANGE* %range.04.i22, i64 0, i32 3, !dbg !867
+  %138 = load i8** %137, align 8, !dbg !867, !tbaa !646
+  %139 = tail call i32 @CCTK_IsThornActive(i8* %138) #8, !dbg !871
+  %140 = icmp eq i32 %139, 0, !dbg !871
+  br i1 %140, label %141, label %148, !dbg !872
 
 ; <label>:141                                     ; preds = %.lr.ph.i23
-  %142 = load %struct.PARAM_PROPS** %1, align 8, !tbaa !2
-  %143 = getelementptr inbounds %struct.PARAM_PROPS* %142, i64 0, i32 1
-  %144 = load i8** %143, align 8, !tbaa !7
-  %145 = load i8** %137, align 8, !tbaa !30
-  %146 = tail call i32 @CCTK_Equals(i8* %144, i8* %145) #8
-  %147 = icmp eq i32 %146, 0
-  br i1 %147, label %153, label %148
+  %142 = load %struct.PARAM_PROPS** %1, align 8, !dbg !873, !tbaa !406
+  %143 = getelementptr inbounds %struct.PARAM_PROPS* %142, i64 0, i32 1, !dbg !874
+  %144 = load i8** %143, align 8, !dbg !874, !tbaa !418
+  %145 = load i8** %137, align 8, !dbg !875, !tbaa !646
+  %146 = tail call i32 @CCTK_Equals(i8* %144, i8* %145) #8, !dbg !876
+  %147 = icmp eq i32 %146, 0, !dbg !876
+  br i1 %147, label %153, label %148, !dbg !877
 
 ; <label>:148                                     ; preds = %141, %.lr.ph.i23
-  %149 = getelementptr inbounds %struct.RANGE* %range.04.i22, i64 0, i32 2
-  %150 = load i8** %149, align 8, !tbaa !28
-  %151 = tail call i32 @Util_IntInRange(i32 %133, i8* %150) #8
-  %152 = icmp eq i32 %151, 0
-  br i1 %152, label %153, label %156
+  %149 = getelementptr inbounds %struct.RANGE* %range.04.i22, i64 0, i32 2, !dbg !878
+  %150 = load i8** %149, align 8, !dbg !878, !tbaa !641
+  %151 = tail call i32 @Util_IntInRange(i32 %133, i8* %150) #8, !dbg !881
+  %152 = icmp eq i32 %151, 0, !dbg !881
+  br i1 %152, label %153, label %156, !dbg !882
 
 ; <label>:153                                     ; preds = %148, %141
-  %154 = getelementptr inbounds %struct.RANGE* %range.04.i22, i64 0, i32 1
-  %range.0.i24 = load %struct.RANGE** %154, align 8
-  %155 = icmp eq %struct.RANGE* %range.0.i24, null
-  br i1 %155, label %._crit_edge.i, label %.lr.ph.i23
+  %154 = getelementptr inbounds %struct.RANGE* %range.04.i22, i64 0, i32 1, !dbg !883
+  %range.0.i24 = load %struct.RANGE** %154, align 8, !dbg !864
+  %155 = icmp eq %struct.RANGE* %range.0.i24, null, !dbg !865
+  br i1 %155, label %._crit_edge.i, label %.lr.ph.i23, !dbg !865
 
 ; <label>:156                                     ; preds = %148
-  %157 = getelementptr inbounds %struct.PARAM* %param, i64 0, i32 1
-  %158 = bitcast i8** %157 to i32**
-  %159 = load i32** %158, align 8, !tbaa !18
-  store i32 %133, i32* %159, align 4, !tbaa !35
-  br label %ParameterSetKeyword.exit
+  %157 = getelementptr inbounds %struct.PARAM* %param, i64 0, i32 1, !dbg !884
+  %158 = bitcast i8** %157 to i32**, !dbg !884
+  %159 = load i32** %158, align 8, !dbg !884, !tbaa !474
+  store i32 %133, i32* %159, align 4, !dbg !886, !tbaa !887
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !342, metadata !369) #3, !dbg !859
+  br label %ParameterSetKeyword.exit, !dbg !888
 
 ._crit_edge.i:                                    ; preds = %153
-  %.pre.i25 = load %struct.PARAM_PROPS** %1, align 8, !tbaa !2
-  br label %160
+  %.pre.i25 = load %struct.PARAM_PROPS** %1, align 8, !dbg !889, !tbaa !406
+  br label %160, !dbg !865
 
 ; <label>:160                                     ; preds = %._crit_edge.i, %131
-  %161 = phi %struct.PARAM_PROPS* [ %.pre.i25, %._crit_edge.i ], [ %134, %131 ]
-  %162 = getelementptr inbounds %struct.PARAM_PROPS* %161, i64 0, i32 1
-  %163 = load i8** %162, align 8, !tbaa !7
-  %164 = getelementptr inbounds %struct.PARAM_PROPS* %161, i64 0, i32 0
-  %165 = load i8** %164, align 8, !tbaa !10
-  %166 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 2, i32 1401, i8* getelementptr inbounds ([79 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([83 x i8]* @.str27, i64 0, i64 0), i8* %163, i8* %165, i8* %value) #8
-  br label %ParameterSetKeyword.exit
+  %161 = phi %struct.PARAM_PROPS* [ %.pre.i25, %._crit_edge.i ], [ %134, %131 ], !dbg !866
+  %162 = getelementptr inbounds %struct.PARAM_PROPS* %161, i64 0, i32 1, !dbg !892
+  %163 = load i8** %162, align 8, !dbg !892, !tbaa !418
+  %164 = getelementptr inbounds %struct.PARAM_PROPS* %161, i64 0, i32 0, !dbg !893
+  %165 = load i8** %164, align 8, !dbg !893, !tbaa !424
+  %166 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 2, i32 1401, i8* getelementptr inbounds ([79 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([83 x i8]* @.str27, i64 0, i64 0), i8* %163, i8* %165, i8* %value) #8, !dbg !894
+  br label %ParameterSetKeyword.exit, !dbg !895
 
 ; <label>:167                                     ; preds = %0
-  %168 = tail call i8* @strdup(i8* %value) #8
-  %strlenfirst.i = load i8* %168, align 1
-  %169 = icmp eq i8 %strlenfirst.i, 0
-  br i1 %169, label %.loopexit.i, label %.lr.ph8.i
+  tail call void @llvm.dbg.value(metadata %struct.PARAM* %param, i64 0, metadata !346, metadata !369) #3, !dbg !896
+  tail call void @llvm.dbg.value(metadata i8* %value, i64 0, metadata !347, metadata !369) #3, !dbg !898
+  %168 = tail call i8* @strdup(i8* %value) #8, !dbg !899
+  tail call void @llvm.dbg.value(metadata i8* %168, i64 0, metadata !352, metadata !369) #3, !dbg !900
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !349, metadata !369) #3, !dbg !901
+  %strlenfirst.i = load i8* %168, align 1, !dbg !902
+  %169 = icmp eq i8 %strlenfirst.i, 0, !dbg !905
+  br i1 %169, label %.loopexit.i, label %.lr.ph8.i, !dbg !906
 
 .lr.ph8.i:                                        ; preds = %167, %._crit_edge10.i
-  %170 = phi i8 [ %.pre.i27, %._crit_edge10.i ], [ %strlenfirst.i, %167 ]
-  %171 = phi i64 [ %176, %._crit_edge10.i ], [ 0, %167 ]
-  %p.06.i = phi i32 [ %175, %._crit_edge10.i ], [ 0, %167 ]
+  %170 = phi i8 [ %.pre.i27, %._crit_edge10.i ], [ %strlenfirst.i, %167 ], !dbg !907
+  %171 = phi i64 [ %176, %._crit_edge10.i ], [ 0, %167 ], !dbg !907
+  %p.06.i = phi i32 [ %175, %._crit_edge10.i ], [ 0, %167 ], !dbg !907
   switch i8 %170, label %174 [
     i8 69, label %172
     i8 100, label %172
     i8 68, label %172
-  ]
+  ], !dbg !908
 
 ; <label>:172                                     ; preds = %.lr.ph8.i, %.lr.ph8.i, %.lr.ph8.i
-  %173 = getelementptr inbounds i8* %168, i64 %171
-  store i8 101, i8* %173, align 1, !tbaa !36
-  br label %.loopexit.i
+  %173 = getelementptr inbounds i8* %168, i64 %171, !dbg !911
+  store i8 101, i8* %173, align 1, !dbg !912, !tbaa !914
+  br label %.loopexit.i, !dbg !915
 
 ; <label>:174                                     ; preds = %.lr.ph8.i
-  %175 = add i32 %p.06.i, 1
-  %176 = zext i32 %175 to i64
-  %177 = tail call i64 @strlen(i8* %168) #8
-  %178 = icmp ult i64 %176, %177
-  br i1 %178, label %._crit_edge10.i, label %.loopexit.i
+  %175 = add i32 %p.06.i, 1, !dbg !916
+  tail call void @llvm.dbg.value(metadata i32 %175, i64 0, metadata !349, metadata !369) #3, !dbg !901
+  %176 = zext i32 %175 to i64, !dbg !917
+  %177 = tail call i64 @strlen(i8* %168) #8, !dbg !902
+  %178 = icmp ult i64 %176, %177, !dbg !905
+  br i1 %178, label %._crit_edge10.i, label %.loopexit.i, !dbg !906
 
 ._crit_edge10.i:                                  ; preds = %174
-  %.phi.trans.insert.i = getelementptr inbounds i8* %168, i64 %176
-  %.pre.i27 = load i8* %.phi.trans.insert.i, align 1, !tbaa !36
-  br label %.lr.ph8.i
+  %.phi.trans.insert.i = getelementptr inbounds i8* %168, i64 %176, !dbg !907
+  %.pre.i27 = load i8* %.phi.trans.insert.i, align 1, !dbg !911, !tbaa !914
+  br label %.lr.ph8.i, !dbg !906
 
 .loopexit.i:                                      ; preds = %174, %172, %167
-  %179 = tail call double @atof(i8* %168) #8
-  tail call void @free(i8* %168) #8
-  %180 = load %struct.PARAM_PROPS** %1, align 8, !tbaa !2
-  %181 = getelementptr inbounds %struct.PARAM_PROPS* %180, i64 0, i32 6
-  %range.03.i28 = load %struct.RANGE** %181, align 8
-  %182 = icmp eq %struct.RANGE* %range.03.i28, null
-  br i1 %182, label %206, label %.lr.ph.i30
+  %179 = tail call double @atof(i8* %168) #8, !dbg !918
+  tail call void @llvm.dbg.value(metadata double %179, i64 0, metadata !351, metadata !369) #3, !dbg !919
+  tail call void @free(i8* %168) #8, !dbg !920
+  tail call void @llvm.dbg.value(metadata i32 -1, i64 0, metadata !348, metadata !369) #3, !dbg !921
+  %180 = load %struct.PARAM_PROPS** %1, align 8, !dbg !922, !tbaa !406
+  %181 = getelementptr inbounds %struct.PARAM_PROPS* %180, i64 0, i32 6, !dbg !924
+  %range.03.i28 = load %struct.RANGE** %181, align 8, !dbg !924
+  %182 = icmp eq %struct.RANGE* %range.03.i28, null, !dbg !925
+  br i1 %182, label %206, label %.lr.ph.i30, !dbg !925
 
 .lr.ph.i30:                                       ; preds = %.loopexit.i, %199
-  %range.04.i29 = phi %struct.RANGE* [ %range.0.i31, %199 ], [ %range.03.i28, %.loopexit.i ]
-  %183 = getelementptr inbounds %struct.RANGE* %range.04.i29, i64 0, i32 3
-  %184 = load i8** %183, align 8, !tbaa !30
-  %185 = tail call i32 @CCTK_IsThornActive(i8* %184) #8
-  %186 = icmp eq i32 %185, 0
-  br i1 %186, label %187, label %194
+  %range.04.i29 = phi %struct.RANGE* [ %range.0.i31, %199 ], [ %range.03.i28, %.loopexit.i ], !dbg !907
+  %183 = getelementptr inbounds %struct.RANGE* %range.04.i29, i64 0, i32 3, !dbg !926
+  %184 = load i8** %183, align 8, !dbg !926, !tbaa !646
+  %185 = tail call i32 @CCTK_IsThornActive(i8* %184) #8, !dbg !930
+  %186 = icmp eq i32 %185, 0, !dbg !930
+  br i1 %186, label %187, label %194, !dbg !931
 
 ; <label>:187                                     ; preds = %.lr.ph.i30
-  %188 = load %struct.PARAM_PROPS** %1, align 8, !tbaa !2
-  %189 = getelementptr inbounds %struct.PARAM_PROPS* %188, i64 0, i32 1
-  %190 = load i8** %189, align 8, !tbaa !7
-  %191 = load i8** %183, align 8, !tbaa !30
-  %192 = tail call i32 @CCTK_Equals(i8* %190, i8* %191) #8
-  %193 = icmp eq i32 %192, 0
-  br i1 %193, label %199, label %194
+  %188 = load %struct.PARAM_PROPS** %1, align 8, !dbg !932, !tbaa !406
+  %189 = getelementptr inbounds %struct.PARAM_PROPS* %188, i64 0, i32 1, !dbg !933
+  %190 = load i8** %189, align 8, !dbg !933, !tbaa !418
+  %191 = load i8** %183, align 8, !dbg !934, !tbaa !646
+  %192 = tail call i32 @CCTK_Equals(i8* %190, i8* %191) #8, !dbg !935
+  %193 = icmp eq i32 %192, 0, !dbg !935
+  br i1 %193, label %199, label %194, !dbg !936
 
 ; <label>:194                                     ; preds = %187, %.lr.ph.i30
-  %195 = getelementptr inbounds %struct.RANGE* %range.04.i29, i64 0, i32 2
-  %196 = load i8** %195, align 8, !tbaa !28
-  %197 = tail call i32 @Util_DoubleInRange(double %179, i8* %196) #8
-  %198 = icmp eq i32 %197, 0
-  br i1 %198, label %199, label %202
+  %195 = getelementptr inbounds %struct.RANGE* %range.04.i29, i64 0, i32 2, !dbg !937
+  %196 = load i8** %195, align 8, !dbg !937, !tbaa !641
+  %197 = tail call i32 @Util_DoubleInRange(double %179, i8* %196) #8, !dbg !940
+  %198 = icmp eq i32 %197, 0, !dbg !940
+  br i1 %198, label %199, label %202, !dbg !941
 
 ; <label>:199                                     ; preds = %194, %187
-  %200 = getelementptr inbounds %struct.RANGE* %range.04.i29, i64 0, i32 1
-  %range.0.i31 = load %struct.RANGE** %200, align 8
-  %201 = icmp eq %struct.RANGE* %range.0.i31, null
-  br i1 %201, label %._crit_edge.i32, label %.lr.ph.i30
+  %200 = getelementptr inbounds %struct.RANGE* %range.04.i29, i64 0, i32 1, !dbg !942
+  %range.0.i31 = load %struct.RANGE** %200, align 8, !dbg !924
+  %201 = icmp eq %struct.RANGE* %range.0.i31, null, !dbg !925
+  br i1 %201, label %._crit_edge.i32, label %.lr.ph.i30, !dbg !925
 
 ; <label>:202                                     ; preds = %194
-  %203 = getelementptr inbounds %struct.PARAM* %param, i64 0, i32 1
-  %204 = bitcast i8** %203 to double**
-  %205 = load double** %204, align 8, !tbaa !18
-  store double %179, double* %205, align 8, !tbaa !37
-  br label %ParameterSetKeyword.exit
+  %203 = getelementptr inbounds %struct.PARAM* %param, i64 0, i32 1, !dbg !943
+  %204 = bitcast i8** %203 to double**, !dbg !943
+  %205 = load double** %204, align 8, !dbg !943, !tbaa !474
+  store double %179, double* %205, align 8, !dbg !945, !tbaa !946
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !348, metadata !369) #3, !dbg !921
+  br label %ParameterSetKeyword.exit, !dbg !948
 
 ._crit_edge.i32:                                  ; preds = %199
-  %.pre11.i = load %struct.PARAM_PROPS** %1, align 8, !tbaa !2
-  br label %206
+  %.pre11.i = load %struct.PARAM_PROPS** %1, align 8, !dbg !949, !tbaa !406
+  br label %206, !dbg !925
 
 ; <label>:206                                     ; preds = %._crit_edge.i32, %.loopexit.i
-  %207 = phi %struct.PARAM_PROPS* [ %.pre11.i, %._crit_edge.i32 ], [ %180, %.loopexit.i ]
-  %208 = getelementptr inbounds %struct.PARAM_PROPS* %207, i64 0, i32 1
-  %209 = load i8** %208, align 8, !tbaa !7
-  %210 = getelementptr inbounds %struct.PARAM_PROPS* %207, i64 0, i32 0
-  %211 = load i8** %210, align 8, !tbaa !10
-  %212 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 2, i32 1454, i8* getelementptr inbounds ([79 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([76 x i8]* @.str28, i64 0, i64 0), i8* %209, i8* %211, i8* %value) #8
-  br label %ParameterSetKeyword.exit
+  %207 = phi %struct.PARAM_PROPS* [ %.pre11.i, %._crit_edge.i32 ], [ %180, %.loopexit.i ], !dbg !907
+  %208 = getelementptr inbounds %struct.PARAM_PROPS* %207, i64 0, i32 1, !dbg !952
+  %209 = load i8** %208, align 8, !dbg !952, !tbaa !418
+  %210 = getelementptr inbounds %struct.PARAM_PROPS* %207, i64 0, i32 0, !dbg !953
+  %211 = load i8** %210, align 8, !dbg !953, !tbaa !424
+  %212 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 2, i32 1454, i8* getelementptr inbounds ([79 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([76 x i8]* @.str28, i64 0, i64 0), i8* %209, i8* %211, i8* %value) #8, !dbg !954
+  br label %ParameterSetKeyword.exit, !dbg !955
 
 ; <label>:213                                     ; preds = %0
-  %214 = getelementptr inbounds %struct.PARAM* %param, i64 0, i32 1
-  %215 = bitcast i8** %214 to i32**
-  %216 = load i32** %215, align 8, !tbaa !18
-  %217 = tail call i32 @CCTK_SetBoolean(i32* %216, i8* %value) #8
-  %218 = icmp eq i32 %217, -1
-  br i1 %218, label %219, label %ParameterSetKeyword.exit
+  tail call void @llvm.dbg.value(metadata %struct.PARAM* %param, i64 0, metadata !355, metadata !369) #3, !dbg !956
+  tail call void @llvm.dbg.value(metadata i8* %value, i64 0, metadata !356, metadata !369) #3, !dbg !958
+  %214 = getelementptr inbounds %struct.PARAM* %param, i64 0, i32 1, !dbg !959
+  %215 = bitcast i8** %214 to i32**, !dbg !959
+  %216 = load i32** %215, align 8, !dbg !959, !tbaa !474
+  %217 = tail call i32 @CCTK_SetBoolean(i32* %216, i8* %value) #8, !dbg !960
+  tail call void @llvm.dbg.value(metadata i32 %217, i64 0, metadata !357, metadata !369) #3, !dbg !961
+  %218 = icmp eq i32 %217, -1, !dbg !962
+  br i1 %218, label %219, label %ParameterSetKeyword.exit, !dbg !964
 
 ; <label>:219                                     ; preds = %213
-  %220 = load %struct.PARAM_PROPS** %1, align 8, !tbaa !2
-  %221 = getelementptr inbounds %struct.PARAM_PROPS* %220, i64 0, i32 1
-  %222 = load i8** %221, align 8, !tbaa !7
-  %223 = getelementptr inbounds %struct.PARAM_PROPS* %220, i64 0, i32 0
-  %224 = load i8** %223, align 8, !tbaa !10
-  %225 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 2, i32 1472, i8* getelementptr inbounds ([79 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([74 x i8]* @.str29, i64 0, i64 0), i8* %222, i8* %224, i8* %value) #8
-  br label %ParameterSetKeyword.exit
+  %220 = load %struct.PARAM_PROPS** %1, align 8, !dbg !965, !tbaa !406
+  %221 = getelementptr inbounds %struct.PARAM_PROPS* %220, i64 0, i32 1, !dbg !967
+  %222 = load i8** %221, align 8, !dbg !967, !tbaa !418
+  %223 = getelementptr inbounds %struct.PARAM_PROPS* %220, i64 0, i32 0, !dbg !968
+  %224 = load i8** %223, align 8, !dbg !968, !tbaa !424
+  %225 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 2, i32 1472, i8* getelementptr inbounds ([79 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([74 x i8]* @.str29, i64 0, i64 0), i8* %222, i8* %224, i8* %value) #8, !dbg !969
+  br label %ParameterSetKeyword.exit, !dbg !970
 
 ; <label>:226                                     ; preds = %0
-  %227 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 1216, i8* getelementptr inbounds ([79 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([26 x i8]* @.str22, i64 0, i64 0), i32 %4) #8
-  br label %ParameterSetKeyword.exit
+  %227 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 1216, i8* getelementptr inbounds ([79 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([26 x i8]* @.str22, i64 0, i64 0), i32 %4) #8, !dbg !971
+  tail call void @llvm.dbg.value(metadata i32 -2, i64 0, metadata !316, metadata !369), !dbg !972
+  br label %ParameterSetKeyword.exit, !dbg !973
 
 ParameterSetKeyword.exit:                         ; preds = %219, %213, %206, %202, %160, %156, %126, %.thread.i19, %111, %84, %.thread.i9, %69, %42, %.thread.i, %27, %226
   %retval.0 = phi i32 [ -2, %226 ], [ -1, %.thread.i ], [ -1, %42 ], [ %31, %27 ], [ -1, %.thread.i9 ], [ -1, %84 ], [ %73, %69 ], [ -1, %.thread.i19 ], [ -1, %126 ], [ %115, %111 ], [ -1, %160 ], [ 0, %156 ], [ -1, %206 ], [ 0, %202 ], [ %217, %213 ], [ -1, %219 ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !974
 }

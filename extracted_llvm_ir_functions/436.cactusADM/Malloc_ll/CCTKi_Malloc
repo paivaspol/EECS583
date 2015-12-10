@@ -1,33 +1,37 @@
 define noalias i8* @CCTKi_Malloc(i64 %size, i32 %line, i8* %file) #1 {
-  %1 = add i64 %size, 40
-  %2 = tail call i8* @malloc(i64 %1) #6
-  %3 = icmp eq i8* %2, null
-  br i1 %3, label %4, label %7
+  tail call void @llvm.dbg.value(metadata i64 %size, i64 0, metadata !46, metadata !120), !dbg !121
+  tail call void @llvm.dbg.value(metadata i32 %line, i64 0, metadata !47, metadata !120), !dbg !122
+  tail call void @llvm.dbg.value(metadata i8* %file, i64 0, metadata !48, metadata !120), !dbg !123
+  %1 = add i64 %size, 40, !dbg !124
+  %2 = tail call i8* @malloc(i64 %1) #7, !dbg !125
+  tail call void @llvm.dbg.value(metadata i8* %2, i64 0, metadata !50, metadata !120), !dbg !126
+  %3 = icmp eq i8* %2, null, !dbg !127
+  br i1 %3, label %4, label %7, !dbg !129
 
 ; <label>:4                                       ; preds = %0
-  %5 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !2
-  %6 = tail call i64 @fwrite(i8* getelementptr inbounds ([19 x i8]* @.str, i64 0, i64 0), i64 18, i64 1, %struct.__sFILE* %5)
-  br label %7
+  %5 = load %struct.__sFILE** @__stderrp, align 8, !dbg !130, !tbaa !132
+  %6 = tail call i64 @fwrite(i8* getelementptr inbounds ([19 x i8]* @.str, i64 0, i64 0), i64 18, i64 1, %struct.__sFILE* %5), !dbg !136
+  br label %7, !dbg !137
 
 ; <label>:7                                       ; preds = %0, %4
-  %8 = bitcast i8* %2 to i64*
-  store i64 424242, i64* %8, align 8, !tbaa !6
-  %9 = getelementptr inbounds i8* %2, i64 8
-  %10 = bitcast i8* %9 to i64*
-  store i64 %size, i64* %10, align 8, !tbaa !10
-  %11 = getelementptr inbounds i8* %2, i64 16
-  %12 = bitcast i8* %11 to i64*
-  store i64 %1, i64* %12, align 8, !tbaa !11
-  %13 = getelementptr inbounds i8* %2, i64 24
-  %14 = bitcast i8* %13 to i32*
-  store i32 %line, i32* %14, align 4, !tbaa !12
-  %15 = getelementptr inbounds i8* %2, i64 32
-  %16 = bitcast i8* %15 to i8**
-  store i8* %file, i8** %16, align 8, !tbaa !13
-  %17 = load i64* @totmem, align 8, !tbaa !14
-  store i64 %17, i64* @pastmem, align 8, !tbaa !14
-  %18 = add i64 %17, %size
-  store i64 %18, i64* @totmem, align 8, !tbaa !14
-  %19 = getelementptr inbounds i8* %2, i64 40
-  ret i8* %19
+  %8 = bitcast i8* %2 to i64*, !dbg !138
+  store i64 424242, i64* %8, align 8, !dbg !139, !tbaa !140
+  %9 = getelementptr inbounds i8* %2, i64 8, !dbg !144
+  %10 = bitcast i8* %9 to i64*, !dbg !144
+  store i64 %size, i64* %10, align 8, !dbg !145, !tbaa !146
+  %11 = getelementptr inbounds i8* %2, i64 16, !dbg !147
+  %12 = bitcast i8* %11 to i64*, !dbg !147
+  store i64 %1, i64* %12, align 8, !dbg !148, !tbaa !149
+  %13 = getelementptr inbounds i8* %2, i64 24, !dbg !150
+  %14 = bitcast i8* %13 to i32*, !dbg !150
+  store i32 %line, i32* %14, align 4, !dbg !151, !tbaa !152
+  %15 = getelementptr inbounds i8* %2, i64 32, !dbg !153
+  %16 = bitcast i8* %15 to i8**, !dbg !153
+  store i8* %file, i8** %16, align 8, !dbg !154, !tbaa !155
+  %17 = load i64* @totmem, align 8, !dbg !156, !tbaa !157
+  store i64 %17, i64* @pastmem, align 8, !dbg !158, !tbaa !157
+  %18 = add i64 %17, %size, !dbg !159
+  store i64 %18, i64* @totmem, align 8, !dbg !159, !tbaa !157
+  %19 = getelementptr inbounds i8* %2, i64 40, !dbg !160
+  ret i8* %19, !dbg !161
 }

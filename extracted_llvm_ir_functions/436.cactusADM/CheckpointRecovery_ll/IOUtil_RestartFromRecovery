@@ -1,15 +1,16 @@
 define i32 @IOUtil_RestartFromRecovery(%struct.cGH* %GH) #1 {
-  %1 = tail call i8* @CCTK_GHExtension(%struct.cGH* %GH, i8* getelementptr inbounds ([3 x i8]* @.str9, i64 0, i64 0)) #7
-  %2 = icmp eq i8* %1, null
-  br i1 %2, label %7, label %3
+  tail call void @llvm.dbg.value(metadata %struct.cGH* %GH, i64 0, metadata !524, metadata !598), !dbg !1129
+  %1 = tail call i8* @CCTK_GHExtension(%struct.cGH* %GH, i8* getelementptr inbounds ([3 x i8]* @.str9, i64 0, i64 0)) #7, !dbg !1130
+  %2 = icmp eq i8* %1, null, !dbg !1131
+  br i1 %2, label %7, label %3, !dbg !1131
 
 ; <label>:3                                       ; preds = %0
-  %4 = getelementptr inbounds i8* %1, i64 28
-  %5 = bitcast i8* %4 to i32*
-  %6 = load i32* %5, align 4, !tbaa !19
-  br label %7
+  %4 = getelementptr inbounds i8* %1, i64 28, !dbg !1132
+  %5 = bitcast i8* %4 to i32*, !dbg !1132
+  %6 = load i32* %5, align 4, !dbg !1132, !tbaa !688
+  br label %7, !dbg !1131
 
 ; <label>:7                                       ; preds = %0, %3
-  %8 = phi i32 [ %6, %3 ], [ 0, %0 ]
-  ret i32 %8
+  %8 = phi i32 [ %6, %3 ], [ 0, %0 ], !dbg !1131
+  ret i32 %8, !dbg !1133
 }

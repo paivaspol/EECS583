@@ -1,58 +1,64 @@
-define i32 @SSIGetOffsetByNumber(%struct.ssifile_s* nocapture %sfp, i32 %n, i32* nocapture %ret_fh, %struct.ssioffset_s* nocapture %ret_offset) #0 {
-entry:
+define i32 @SSIGetOffsetByNumber(%struct.ssifile_s* nocapture readonly %sfp, i32 %n, i32* nocapture %ret_fh, %struct.ssioffset_s* nocapture %ret_offset) #0 {
   %fnum = alloca i16, align 2
-  %nprimary = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 3
-  %0 = load i32* %nprimary, align 4, !tbaa !4
-  %cmp = icmp ugt i32 %0, %n
-  br i1 %cmp, label %if.end, label %return
+  tail call void @llvm.dbg.value(metadata %struct.ssifile_s* %sfp, i64 0, metadata !158, metadata !535), !dbg !943
+  tail call void @llvm.dbg.value(metadata i32 %n, i64 0, metadata !159, metadata !535), !dbg !944
+  tail call void @llvm.dbg.value(metadata i32* %ret_fh, i64 0, metadata !160, metadata !535), !dbg !945
+  tail call void @llvm.dbg.value(metadata %struct.ssioffset_s* %ret_offset, i64 0, metadata !161, metadata !535), !dbg !946
+  %1 = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 3, !dbg !947
+  %2 = load i32* %1, align 4, !dbg !947, !tbaa !778
+  %3 = icmp ugt i32 %2, %n, !dbg !949
+  br i1 %3, label %4, label %36, !dbg !950
 
-if.end:                                           ; preds = %entry
-  %poffset = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 12
-  %precsize = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 9
-  %1 = load i32* %precsize, align 4, !tbaa !4
-  %call = call fastcc i32 @indexfile_position(%struct.ssifile_s* %sfp, %struct.ssioffset_s* %poffset, i32 %1, i32 %n) #9
-  %cmp1 = icmp eq i32 %call, 0
-  br i1 %cmp1, label %if.end3, label %return
+; <label>:4                                       ; preds = %0
+  %5 = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 12, !dbg !951
+  %6 = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 9, !dbg !953
+  %7 = load i32* %6, align 4, !dbg !953, !tbaa !776
+  %8 = tail call fastcc i32 @indexfile_position(%struct.ssifile_s* %sfp, %struct.ssioffset_s* %5, i32 %7, i32 %n) #10, !dbg !954
+  %9 = icmp eq i32 %8, 0, !dbg !955
+  br i1 %9, label %10, label %36, !dbg !956
 
-if.end3:                                          ; preds = %if.end
-  %plen = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 6
-  %2 = load i32* %plen, align 4, !tbaa !4
-  %conv = zext i32 %2 to i64
-  %call4 = call noalias i8* @malloc(i64 %conv) #8
-  %cmp5 = icmp eq i8* %call4, null
-  br i1 %cmp5, label %return, label %if.end8
+; <label>:10                                      ; preds = %4
+  %11 = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 6, !dbg !957
+  %12 = load i32* %11, align 4, !dbg !957, !tbaa !773
+  %13 = zext i32 %12 to i64, !dbg !959
+  %14 = tail call i8* @malloc(i64 %13) #9, !dbg !960
+  tail call void @llvm.dbg.value(metadata i8* %14, i64 0, metadata !163, metadata !535), !dbg !961
+  %15 = icmp eq i8* %14, null, !dbg !962
+  br i1 %15, label %36, label %16, !dbg !963
 
-if.end8:                                          ; preds = %if.end3
-  %fp = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 0
-  %3 = load %struct._IO_FILE** %fp, align 8, !tbaa !0
-  %call11 = call i64 @fread(i8* %call4, i64 1, i64 %conv, %struct._IO_FILE* %3) #8
-  %4 = load i32* %plen, align 4, !tbaa !4
-  %conv13 = zext i32 %4 to i64
-  %cmp14 = icmp eq i64 %call11, %conv13
-  br i1 %cmp14, label %if.end17, label %return
+; <label>:16                                      ; preds = %10
+  %17 = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 0, !dbg !964
+  %18 = load %struct.__sFILE** %17, align 8, !dbg !964, !tbaa !547
+  %19 = tail call i64 @fread(i8* %14, i64 1, i64 %13, %struct.__sFILE* %18) #9, !dbg !966
+  %20 = load i32* %11, align 4, !dbg !967, !tbaa !773
+  %21 = zext i32 %20 to i64, !dbg !968
+  %22 = icmp eq i64 %19, %21, !dbg !969
+  br i1 %22, label %23, label %36, !dbg !970
 
-if.end17:                                         ; preds = %if.end8
-  %5 = load %struct._IO_FILE** %fp, align 8, !tbaa !0
-  %call19 = call fastcc i32 @read_i16(%struct._IO_FILE* %5, i16* %fnum) #9
-  %tobool = icmp eq i32 %call19, 0
-  br i1 %tobool, label %return, label %if.end21
+; <label>:23                                      ; preds = %16
+  %24 = load %struct.__sFILE** %17, align 8, !dbg !971, !tbaa !547
+  tail call void @llvm.dbg.value(metadata i16* %fnum, i64 0, metadata !162, metadata !535), !dbg !973
+  %25 = call fastcc i32 @read_i16(%struct.__sFILE* %24, i16* %fnum) #10, !dbg !974
+  %26 = icmp eq i32 %25, 0, !dbg !974
+  br i1 %26, label %36, label %27, !dbg !975
 
-if.end21:                                         ; preds = %if.end17
-  %6 = load %struct._IO_FILE** %fp, align 8, !tbaa !0
-  %smode = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 15
-  %7 = load i8* %smode, align 1, !tbaa !1
-  %call23 = call fastcc i32 @read_offset(%struct._IO_FILE* %6, i8 signext %7, %struct.ssioffset_s* %ret_offset) #9
-  %tobool24 = icmp eq i32 %call23, 0
-  br i1 %tobool24, label %return, label %if.end26
+; <label>:27                                      ; preds = %23
+  %28 = load %struct.__sFILE** %17, align 8, !dbg !976, !tbaa !547
+  %29 = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 15, !dbg !978
+  %30 = load i8* %29, align 1, !dbg !978, !tbaa !596
+  %31 = tail call fastcc i32 @read_offset(%struct.__sFILE* %28, i8 signext %30, %struct.ssioffset_s* %ret_offset) #10, !dbg !979
+  %32 = icmp eq i32 %31, 0, !dbg !979
+  br i1 %32, label %36, label %33, !dbg !980
 
-if.end26:                                         ; preds = %if.end21
-  %8 = load i16* %fnum, align 2, !tbaa !3
-  %conv27 = zext i16 %8 to i32
-  store i32 %conv27, i32* %ret_fh, align 4, !tbaa !4
-  call void @free(i8* %call4) #8
-  br label %return
+; <label>:33                                      ; preds = %27
+  tail call void @llvm.dbg.value(metadata i16* %fnum, i64 0, metadata !162, metadata !535), !dbg !973
+  %34 = load i16* %fnum, align 2, !dbg !981, !tbaa !789
+  %35 = zext i16 %34 to i32, !dbg !981
+  store i32 %35, i32* %ret_fh, align 4, !dbg !982, !tbaa !578
+  tail call void @free(i8* %14) #10, !dbg !983
+  br label %36, !dbg !984
 
-return:                                           ; preds = %if.end21, %if.end17, %if.end8, %if.end3, %if.end, %entry, %if.end26
-  %retval.0 = phi i32 [ 0, %if.end26 ], [ 2, %entry ], [ 8, %if.end ], [ 3, %if.end3 ], [ 1, %if.end8 ], [ 1, %if.end17 ], [ 1, %if.end21 ]
-  ret i32 %retval.0
+; <label>:36                                      ; preds = %27, %23, %16, %10, %4, %0, %33
+  %.0 = phi i32 [ 0, %33 ], [ 2, %0 ], [ 8, %4 ], [ 3, %10 ], [ 1, %16 ], [ 1, %23 ], [ 1, %27 ]
+  ret i32 %.0, !dbg !985
 }

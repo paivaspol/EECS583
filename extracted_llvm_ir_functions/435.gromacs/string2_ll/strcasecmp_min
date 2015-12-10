@@ -1,5 +1,7 @@
 define i32 @strcasecmp_min(i8* nocapture readonly %str1, i8* nocapture readonly %str2) #3 {
-  br label %.critedge.outer
+  tail call void @llvm.dbg.value(metadata i8* %str1, i64 0, metadata !235, metadata !281), !dbg !542
+  tail call void @llvm.dbg.value(metadata i8* %str2, i64 0, metadata !236, metadata !281), !dbg !543
+  br label %.critedge.outer, !dbg !544
 
 .critedge.outer:                                  ; preds = %15, %0
   %.03.ph = phi i8* [ %6, %15 ], [ %str2, %0 ]
@@ -8,44 +10,48 @@ define i32 @strcasecmp_min(i8* nocapture readonly %str1, i8* nocapture readonly 
 
 .critedge:                                        ; preds = %.critedge, %.critedge, %.critedge.outer
   %.02 = phi i8* [ %.02.ph, %.critedge.outer ], [ %1, %.critedge ], [ %1, %.critedge ]
-  %1 = getelementptr inbounds i8* %.02, i64 1
-  %2 = load i8* %.02, align 1, !tbaa !13
-  %3 = sext i8 %2 to i32
-  %4 = tail call i32 @__toupper(i32 %3) #10
-  %sext = shl i32 %4, 24
-  %5 = ashr exact i32 %sext, 24
+  %1 = getelementptr inbounds i8* %.02, i64 1, !dbg !545
+  tail call void @llvm.dbg.value(metadata i8* %1, i64 0, metadata !235, metadata !281), !dbg !542
+  %2 = load i8* %.02, align 1, !dbg !547, !tbaa !309
+  %3 = sext i8 %2 to i32, !dbg !547
+  tail call void @llvm.dbg.value(metadata i32 %3, i64 0, metadata !146, metadata !281) #9, !dbg !548
+  %4 = tail call i32 @__toupper(i32 %3) #10, !dbg !550
+  %sext = shl i32 %4, 24, !dbg !551
+  %5 = ashr exact i32 %sext, 24, !dbg !551
   switch i32 %5, label %.critedge1 [
     i32 45, label %.critedge
     i32 95, label %.critedge
-  ]
+  ], !dbg !552
 
 .critedge1:                                       ; preds = %.critedge1, %.critedge1, %.critedge
   %.1 = phi i8* [ %.03.ph, %.critedge ], [ %6, %.critedge1 ], [ %6, %.critedge1 ]
-  %6 = getelementptr inbounds i8* %.1, i64 1
-  %7 = load i8* %.1, align 1, !tbaa !13
-  %8 = sext i8 %7 to i32
-  %9 = tail call i32 @__toupper(i32 %8) #10
-  %sext4 = shl i32 %9, 24
-  %10 = ashr exact i32 %sext4, 24
+  %6 = getelementptr inbounds i8* %.1, i64 1, !dbg !553
+  tail call void @llvm.dbg.value(metadata i8* %6, i64 0, metadata !236, metadata !281), !dbg !543
+  %7 = load i8* %.1, align 1, !dbg !554, !tbaa !309
+  %8 = sext i8 %7 to i32, !dbg !554
+  tail call void @llvm.dbg.value(metadata i32 %8, i64 0, metadata !146, metadata !281) #9, !dbg !555
+  %9 = tail call i32 @__toupper(i32 %8) #10, !dbg !557
+  %sext4 = shl i32 %9, 24, !dbg !558
+  %10 = ashr exact i32 %sext4, 24, !dbg !558
   switch i32 %10, label %11 [
     i32 45, label %.critedge1
     i32 95, label %.critedge1
-  ]
+  ], !dbg !559
 
 ; <label>:11                                      ; preds = %.critedge1
-  %12 = icmp eq i32 %5, %10
-  br i1 %12, label %15, label %13
+  %12 = icmp eq i32 %5, %10, !dbg !560
+  br i1 %12, label %15, label %13, !dbg !562
 
 ; <label>:13                                      ; preds = %11
-  %14 = sub nsw i32 %5, %10
-  br label %.loopexit
+  %14 = sub nsw i32 %5, %10, !dbg !563
+  br label %.loopexit, !dbg !564
 
 ; <label>:15                                      ; preds = %11
-  %16 = trunc i32 %4 to i8
-  %17 = icmp eq i8 %16, 0
-  br i1 %17, label %.loopexit, label %.critedge.outer
+  %16 = trunc i32 %4 to i8, !dbg !565
+  %17 = icmp eq i8 %16, 0, !dbg !566
+  br i1 %17, label %.loopexit, label %.critedge.outer, !dbg !566
 
 .loopexit:                                        ; preds = %15, %13
   %.0 = phi i32 [ %14, %13 ], [ 0, %15 ]
-  ret i32 %.0
+  ret i32 %.0, !dbg !567
 }
