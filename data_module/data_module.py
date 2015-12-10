@@ -44,8 +44,32 @@ class Data_Module:
         for example in self.test_examples:
             for i in range(len(example.tokens), max_width): 
                 example.tokens.append(0)
-            
-        
+
+    def get_number_train_examples(self):
+        return len(self.training_examples)
+
+    def get_number_test_examples(self):
+        return len(self.test_examples)
+
+
+    def get_bucket_breakdown(self):
+        training_buckets = {}
+        testing_buckets = {}
+        for example in self.training_examples:
+            if example.value in training_buckets:
+                training_buckets[example.value] += 1
+            else:
+                training_buckets[example.value] = 1
+
+        for example in self.test_examples:
+            if example.value in testing_buckets:
+                testing_buckets[example.value] += 1
+            else:
+                testing_buckets[example.value] = 1
+
+        return training_buckets, testing_buckets
+
+
     #return tne next num_examples examples... wrap around if we go over? 
     def get_training_data(self,num_examples):
         tokens_array = []
@@ -86,7 +110,19 @@ class Data_Module:
 def main():
     d = Data_Module()
 
-    for i in range(100):
-        print len(tokens_array),len(results_array)
-        print len(tokens_array[0])
+    print d.get_number_train_examples(), d.get_number_test_examples()
 
+
+    train_buckets, test_buckets = d.get_bucket_breakdown()
+    
+    for value in sorted(train_buckets):
+        print value, train_buckets[value] + test_buckets[value]
+
+    for i in range(5):
+        tokens_array, results_array = d.get_training_data(100)
+        print len(tokens_array),len(results_array)
+
+
+
+
+main()
