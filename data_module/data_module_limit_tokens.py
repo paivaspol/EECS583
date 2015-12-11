@@ -13,7 +13,7 @@ class Example:
         self.value = value
 
 class Data_Module:
-    def __init__(self, val_path="../valgrind_output/", token_path="../tokenized_sources_limited_tokens/", test_percent=0.3, type_of_data="data"):
+    def __init__(self, val_path="../valgrind_output/", token_path="../tokenized_sources_limited_tokens/", test_percent=0.3, type_of_data="data", max_tokens=200):
         self.valgrind_path = val_path
         self.tokenized_path = token_path
         self.test_examples = []
@@ -22,7 +22,8 @@ class Data_Module:
         self.current_test_index = 0
         self.lengths = []
 
-        max_width = 0
+        self.max_tokens = max_tokens
+
         for benchmark in os.listdir(self.valgrind_path):
             if type_of_data in benchmark:
                 with open(self.valgrind_path + benchmark) as in_file:
@@ -35,27 +36,24 @@ class Data_Module:
                         with open(self.tokenized_path + bench_name + "/" + data[0], "r") as in_file:
                             tokens = in_file.read()
 
-                        if len(tokens.split(",")) > max_width:
-                            max_width = len(tokens.split(","))
+                        add = True
+                        if len(tokens.split(",")) > self.max_tokens:
+                            add = False
                         
-                        self.lengths.append(len(tokens.split(",")))
+                        if add:
+                            if random.random() < test_percent:
+                                self.test_examples.append(Example(tokens.split(","),value))
+                            else:
+                                self.training_examples.append(Example(tokens.split(","),value))
 
-                        if random.random() < test_percent:
-                            self.test_examples.append(Example(tokens.split(","),value))
-                        else:
-                            self.training_examples.append(Example(tokens.split(","),value))
-
-        self.max_width = max_width
-
+        print "padding training examples"
         for example in self.training_examples:
-            for i in range(len(example.tokens), max_width):
+            for i in range(len(example.tokens), self.max_tokens):
                 example.tokens.append(0)
+        print "padding test examples"
         for example in self.test_examples:
-            for i in range(len(example.tokens), max_width):
+            for i in range(len(example.tokens), self.max_tokens):
                 example.tokens.append(0)
-
-    def get_lengths(self):
-        return self.lengths
 
     def get_number_train_examples(self):
         return len(self.training_examples)
@@ -64,7 +62,7 @@ class Data_Module:
         return len(self.test_examples)
 
     def get_function_length(self):
-        return self.max_width
+        return self.max_tokens
 
     def get_bucket_breakdown(self):
         training_buckets = {}
@@ -120,28 +118,20 @@ class Data_Module:
     def test_iterator(self, num_examples, num_buckets):
         return self.generic_iterator(self.test_examples, num_examples, num_buckets)
 
-def main():
-    d = Data_Module(token_path="../tokenized_sources_limited_tokens/")
+#def main():
+#    d = Data_Module(token_path="../tokenized_sources_limited_tokens/")
 
-    print d.get_number_train_examples(), d.get_number_test_examples()
+#    print d.get_number_train_examples(), d.get_number_test_examples()
 
-    train_buckets, test_buckets = d.get_bucket_breakdown()
-    for value in sorted(train_buckets):
-        print value, train_buckets[value] + test_buckets[value]
-
-
-    lens = d.get_lengths()
-    num = 0
-    for i in lens:
-        if  i < 200:
-            num += 1
-    print "num",num
-    print "o/w",len(lens) - num
+#    train_buckets, test_buckets = d.get_bucket_breakdown()
+#    for value in sorted(train_buckets):
+#        print value, train_buckets[value] + test_buckets[value]
         
 
-    num_examples = 100
-    num_training_iterations = int(math.ceil(d.get_number_train_examples() / num_examples))
-    for i, (tokens_array, results_array) in enumerate(d.train_iterator(num_examples)):
-        print tokens_array.shape, results_array.shape
+#    num_examples = 100
+#    num_training_iterations = int(math.ceil(d.get_number_train_examples() / num_examples))
+#    for i, (tokens_array, results_array) in enumerate(d.train_iterator(num_examples)):
+#        print tokens_array.shape, results_array.shape
+
 
 

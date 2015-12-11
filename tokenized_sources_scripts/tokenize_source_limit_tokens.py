@@ -4,7 +4,7 @@ import string
 import re
 
 path = "../extracted_llvm_ir_functions/"
-out_path = "../tokenized_sources_limted_tokens"
+out_path = "../tokenized_sources_limited_tokens"
 token_dict = {}
 counts = {}
 next_token = 1
@@ -77,6 +77,7 @@ def tokenize_funct(function):
     token_function = []
     defined = False
     switch = False
+    invoke = False
     switch_text = []
     labels = {}
     preds = {}
@@ -84,7 +85,7 @@ def tokenize_funct(function):
     with open(function, "r") as funct_file:        
         for line in funct_file:
             line = line.strip()
-            if "switch" in line:
+            if "switch " in line and "=" not in line:
                 switch = True
                 switch_text.append(line)
                 continue 
@@ -97,7 +98,7 @@ def tokenize_funct(function):
                 for line in switch_text:
                     if " label " in line:
                         sys.stdout.flush()
-                        label = line.split("label")[-1].strip()
+                        label = line.split(" label ")[-1].strip()
                         remove_trailing_brace = label.split("[")[0]
                         remove_percent = remove_trailing_brace.split("%")[1]
                         sw_labels.append(remove_percent)
@@ -115,15 +116,14 @@ def tokenize_funct(function):
             elif switch:
                 switch_text.append(line)
 
-            elif ":" in line: 
+            elif ":" in line and "::" not in line: 
                 curr_label = line.split(":")[0]
                 labels[curr_label] = 1 #this is a label... add it!  
 
-
-            elif len(line) == 0 or line == "}" or "define" in line or "unreachable" in line: 
+            elif len(line) == 0 or line == "}" or "define " in line or "unreachable" in line: 
                 continue 
 
-            elif "br" in line:
+            elif "br " in line:
                 found = False
                 line_labels = line.split(" label ")
                 br_labels = []
@@ -135,11 +135,14 @@ def tokenize_funct(function):
                 backedge = update_paths(curr_label, br_labels, preds)
 
                 if backedge:
-#                    print "next back_br",curr_label, line
                     token_function.append(get_token("back_br"))
                 else:
-#                    print "forward br",curr_label, line
                     token_function.append(get_token("br"))
+
+            elif "invoke " in line:
+#                token_function.append(get_token("invoke"))
+#                print "found invoke", line
+                invoke = True
 
 
             elif "=" in line: 
@@ -148,14 +151,42 @@ def tokenize_funct(function):
                 if operator == "load":
                     token_function.append(get_token(operator))
                     
-        
+            elif "resume" in line:
+#                token_function.append(get_token("resume"))
+                continue
+            elif "cleanup" in line:
+#                token_function.append(get_token("cleanup"))
+                continue
+            elif "catch" in line:
+#                token_function.append(get_token("catch"))            
+                continue
+            elif "filter" in line:
+#                token_function.append(get_token("filter"))            
+                continue
             elif "ret" in line:
 #                token_function.append(get_token("ret"))
                 continue
 
             elif "store" in line:
                 token_function.append(get_token("store"))
-            
+            elif "label" in line and invoke:
+                #effectively this is a lot like a branch / store (I think...)
+                invoke = False
+                line_words = line.split()
+                line_labels = []
+                for i in range(len(line_words)):
+                    if line_words[i] == "label":
+                        line_labels.append(line_words[i+1])
+
+                backedge = update_paths(curr_label, line_labels, preds)
+                if backedge:
+                    print "next back_to_label",curr_label, line
+                    token_function.append(get_token("back_to_label"))
+                else:
+#                    print "forward br",curr_label, line
+                    token_function.append(get_token("to_label"))
+
+
             #how should we deal with calls? 
             elif "call" in line:
                 token_function.append(get_token("call"))
@@ -179,6 +210,8 @@ def tokenize_function():
             for function in os.listdir(path + "/" + benchmark + "/" + cfiles):
                 funct_tokens = tokenize_funct(path + "/" + benchmark + "/" + cfiles + "/" + function)
                 with open(out_path+"/"+benchmark+"/"+cfiles+"/"+function,"w+") as out_file:
+                    if funct_tokens == None or len(funct_tokens) == 0:
+                        out_file.write("0")
                     out_file.write(funct_tokens)
             
 
