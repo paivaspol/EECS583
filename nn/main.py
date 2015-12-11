@@ -190,13 +190,12 @@ def main(unused_args):
 
   print "Initializing data module..."
   d = dm.Data_Module()
+  print "\tTraining Size: %d" % d.get_number_train_examples()
+  print "\tTest Size: %d" % d.get_number_test_examples()
   print "Done with initializing data module."
 
-  # TODO: we need to somehow whittle this function length down to 100 or so...
-  # config.num_steps = d.get_function_length()
-  # eval_config.num_steps = d.get_function_length()
-  config.num_steps = 100
-  eval_config.num_steps = 100
+  config.num_steps = d.get_function_length()
+  eval_config.num_steps = d.get_function_length()
 
   print "Initializing TensorFlow graph..."
   with tf.Graph().as_default(), tf.Session() as session:
