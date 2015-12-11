@@ -26,7 +26,7 @@ import tensorflow as tf
 from tensorflow.models.rnn import rnn
 from tensorflow.models.rnn import rnn_cell
 
-import data_module as dm
+import data_module_limit_tokens as dm
 
 logging = tf.logging
 
