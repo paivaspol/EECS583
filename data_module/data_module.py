@@ -120,7 +120,7 @@ class Data_Module:
 
 #def main():
 #    d = Data_Module()
-#    print get_function_length()
+#    print d.get_function_length()
 #    print d.get_number_train_examples(), d.get_number_test_examples()
 
 #    train_buckets, test_buckets = d.get_bucket_breakdown()
@@ -128,8 +128,9 @@ class Data_Module:
 #        print value, train_buckets[value] + test_buckets[value]
 
 #    num_examples = 100
-#    num_training_iterations = int(math.ceil(d.get_number_train_examples() / num_examples))
+#    num_training_iterations = int(math.ceil(d.get_number_train_examples() /num_examples))
 #    for i, (tokens_array, results_array) in enumerate(d.train_iterator(num_examples)):
 #        print tokens_array.shape, results_array.shape
+
 
 
