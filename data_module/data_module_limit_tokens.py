@@ -103,11 +103,11 @@ class Data_Module:
             # if reached the end of set, pad with 0s
             if (i == (length - 1)):
                 tokens_matrix = np.array(tokens_array)
-                results_matrix = np.array(results_array)
+                results_matrix = np.array(results_array, dtype=int)
 
                 remaining_len = batch_size - tokens_matrix.shape[0]
                 tokens_matrix = np.vstack((tokens_matrix, np.zeros([remaining_len, tokens_matrix.shape[1]])))
-                results_matrix = np.concatenate((results_matrix, np.zeros(remaining_len)))
+                results_matrix = np.concatenate((results_matrix, np.zeros(remaining_len, dtype=int)))
                 results_matrix = np.eye(num_buckets)[results_matrix]
 
                 yield (tokens_matrix, results_matrix)
@@ -118,20 +118,19 @@ class Data_Module:
     def test_iterator(self, num_examples, num_buckets):
         return self.generic_iterator(self.test_examples, num_examples, num_buckets)
 
-#def main():
-#    d = Data_Module(token_path="../tokenized_sources_limited_tokens/")
+def main():
+    d = Data_Module(token_path="../tokenized_sources_limited_tokens/")
 
-#    print d.get_number_train_examples(), d.get_number_test_examples()
+    print d.get_number_train_examples(), d.get_number_test_examples()
 
-#    train_buckets, test_buckets = d.get_bucket_breakdown()
-#    for value in sorted(train_buckets):
-#        print value, train_buckets[value] + test_buckets[value]
+    train_buckets, test_buckets = d.get_bucket_breakdown()
+    for value in sorted(train_buckets):
+        print value, train_buckets[value] + test_buckets[value]
         
 
-#    num_examples = 100
-#    num_training_iterations = int(math.ceil(d.get_number_train_examples() / num_examples))
-#    for i, (tokens_array, results_array) in enumerate(d.train_iterator(num_examples)):
-#        print tokens_array.shape, results_array.shape
-
+    num_examples = 20
+    num_training_iterations = int(math.ceil(d.get_number_train_examples() / num_examples))
+    for i, (tokens_array, results_array) in enumerate(d.train_iterator(num_examples, 10)):
+        print tokens_array.shape, results_array.shape
 
 
