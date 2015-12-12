@@ -127,7 +127,7 @@ class TrainConfig(object):
   initial_learning_rate = 0.001
   num_steps = 100
   hidden_size = 128
-  max_epoch = 1000
+  max_epoch = 350
   keep_prob = 0.8
   batch_size = 20
   vocab_size = 10000
