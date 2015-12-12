@@ -99,9 +99,8 @@ class Data_Module:
                 yield (np.array(tokens_array), results_matrix)
                 tokens_array = []
                 results_array = []
-
             # if reached the end of set, pad with 0s
-            if (i == (length - 1)):
+            elif (i == (length - 1)):
                 tokens_matrix = np.array(tokens_array)
                 results_matrix = np.array(results_array, dtype=int)
 
@@ -127,8 +126,8 @@ def main():
     for value in sorted(train_buckets):
         print value, train_buckets[value] + test_buckets[value]
         
-    num_examples = 20
-    num_training_iterations = int(math.ceil(d.get_number_train_examples() / num_examples))
-    for i, (tokens_array, results_array) in enumerate(d.train_iterator(num_examples, 10)):
+    num_examples = 10
+    num_test_iterations = int(math.ceil(d.get_number_test_examples() / num_examples))
+    for i, (tokens_array, results_array) in enumerate(d.test_iterator(num_examples, 10)):
         print tokens_array.shape, results_array.shape
-
+main()
