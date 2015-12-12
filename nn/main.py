@@ -26,7 +26,7 @@ import tensorflow as tf
 from tensorflow.models.rnn import rnn
 from tensorflow.models.rnn import rnn_cell
 
-import data_module as dm
+import data_module_limit_tokens as dm
 
 logging = tf.logging
 
@@ -190,23 +190,26 @@ def main(unused_args):
 
   print "Initializing data module..."
   d = dm.Data_Module()
+  print "\tTraining Size: %d" % d.get_number_train_examples()
+  print "\tTest Size: %d" % d.get_number_test_examples()
   print "Done with initializing data module."
+  sys.stdout.flush()
 
-  # TODO: we need to somehow whittle this function length down to 100 or so...
-  # config.num_steps = d.get_function_length()
-  # eval_config.num_steps = d.get_function_length()
-  config.num_steps = 100
-  eval_config.num_steps = 100
+  config.num_steps = d.get_function_length()
+  eval_config.num_steps = d.get_function_length()
 
   print "Initializing TensorFlow graph..."
+  sys.stdout.flush()
   with tf.Graph().as_default(), tf.Session() as session:
     initializer = tf.random_uniform_initializer(-config.init_scale,
                                                 config.init_scale)
     with tf.variable_scope("model", reuse=None, initializer=initializer):
       print "Initializing training predictor..."
+      sys.stdout.flush()
       m = LSTMPredictor(is_training=True, config=config)
     with tf.variable_scope("model", reuse=True, initializer=initializer):
       print "Initializing test predictor..."
+      sys.stdout.flush()
       mtest = LSTMPredictor(is_training=False, config=eval_config)
 
     tf.initialize_all_variables().run()
@@ -214,9 +217,11 @@ def main(unused_args):
     for i in range(config.max_epoch):
       start = time.time()
       print("Epoch: %d Learning rate: %.3f" % (i + 1, session.run(m.lr)))
+      sys.stdout.flush()
       train_accuracy, train_dist, train_xent = run_epoch(session, m, d.get_number_train_examples(), d.train_iterator, m.train_op, verbose=True)
       print("Epoch: %d Train Accuracy: %.3f Train Distance: %.3f Train Cross-Entropy %.3f" % (i + 1, train_accuracy, train_dist, train_xent))
       print("Epoch %d Execution Time: %ds" % (i + 1, time.time() - start))
+      sys.stdout.flush()
 
     test_accuracy, test_dist, test_xent = run_epoch(session, mtest, d.get_number_test_examples(), d.test_iterator, tf.no_op(), save_logits=True)
     print("Test Accuracy: %.3f Test Distance: %.3f Test Cross-Entropy %.3f" % (test_accuracy, test_dist, test_xent))
