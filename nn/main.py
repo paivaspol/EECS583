@@ -127,7 +127,7 @@ class TrainConfig(object):
   initial_learning_rate = 0.001
   num_steps = 100
   hidden_size = 128
-  max_epoch = 2
+  max_epoch = 40
   keep_prob = 0.8
   batch_size = 20
   vocab_size = 10000
@@ -138,8 +138,10 @@ def run_epoch(session, m, data_size, data_iterator, eval_op, verbose=False, save
   total_accuracy = 0
   total_dist = 0
   total_xent = 0
+	
+  final_size = int(math.ceil(data_size / m.batch_size)) * m.batch_size
 
-  all_logits = np.zeros([data_size, m.num_buckets])
+  all_logits = np.zeros([final_size, m.num_buckets])
 
   for step, (x, y) in enumerate(data_iterator(m.batch_size, m.num_buckets)):
     # TODO: remove m.num_steps in x[], just for testing, actually I guess it doesn't matter.
@@ -158,6 +160,7 @@ def run_epoch(session, m, data_size, data_iterator, eval_op, verbose=False, save
     if verbose and (step % 100 == 0):
       print("\tstep: %d, accuracy: %g, distance: %g, xent: %g" %
             (step, acc, dist, xent))
+      sys.stdout.flush()
 
   avg_accuracy = total_accuracy / data_size
   avg_dist = total_dist / data_size

@@ -43,7 +43,7 @@ def parse_file(input_filename, out_filename, sources_path, buckets):
                 found = False
                 if os.path.isdir(sources_path + this_path):
                     for f in os.listdir(sources_path + this_path):
-                        if words[1] in f:                                                    
+                        if words[1] == f:
                             found = True
                             out_file.write(this_path +"/" + f + "\t" + str(find_bucket(buckets, float(words[2]))) + "\n")
                     
@@ -59,6 +59,7 @@ def get_buckets(type_of_file):
     for f in os.listdir(input_path): 
         if type_of_file in f:
             with open(input_path + f, "r") as input_file:
+                print input_path + f
                 for line in input_file:
                     words = line.split()
                     values.append(float(words[-1])) #the last index is a value
