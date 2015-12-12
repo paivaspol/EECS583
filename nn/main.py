@@ -127,7 +127,7 @@ class TrainConfig(object):
   initial_learning_rate = 0.001
   num_steps = 100
   hidden_size = 128
-  max_epoch = 40
+  max_epoch = 1000
   keep_prob = 0.8
   batch_size = 20
   vocab_size = 10000
@@ -157,7 +157,7 @@ def run_epoch(session, m, data_size, data_iterator, eval_op, verbose=False, save
     total_dist += dist * m.batch_size
     total_xent += xent
 
-    if verbose and (step % 100 == 0):
+    if verbose and (step % 10 == 0):
       print("\tstep: %d, accuracy: %g, distance: %g, xent: %g" %
             (step, acc, dist, xent))
       sys.stdout.flush()
