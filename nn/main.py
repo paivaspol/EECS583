@@ -141,17 +141,21 @@ def run_epoch(session, m, data_size, data_iterator, eval_op, verbose=False, save
 	
   final_size = int(math.ceil(data_size / m.batch_size)) * m.batch_size
 
-  all_logits = np.zeros([final_size, m.num_buckets])
+  input_data = np.zeros([final_size, m.num_steps])
+  actual_data = np.zeros([final_size, m.num_buckets])
+  predicted_data = np.zeros([final_size, m.num_buckets])
 
   for step, (x, y) in enumerate(data_iterator(m.batch_size, m.num_buckets)):
-    # TODO: remove m.num_steps in x[], just for testing, actually I guess it doesn't matter.
     acc, dist, xent, logits, _ = session.run([m.accuracy, m.distance, m.cross_entropy, m.logits, eval_op],
-                                 {m.input_data: x[:, 0:m.num_steps],
+                                 {m.input_data: x,
                                   m.targets: y})
 
-    logit_begin_index = step * m.batch_size
-    logit_end_index = (step + 1) * m.batch_size
-    all_logits[logit_begin_index:logit_end_index, :] = logits
+    begin_index = step * m.batch_size
+    end_index = (step + 1) * m.batch_size
+
+    input_data[begin_index:end_index, :] = x
+    actual_data[begin_index:end_index, :] = y
+    predicted_data[begin_index:end_index, :] = logits
 
     total_accuracy += acc * m.batch_size
     total_dist += dist * m.batch_size
@@ -168,23 +172,14 @@ def run_epoch(session, m, data_size, data_iterator, eval_op, verbose=False, save
 
   # if you want to save logits to file
   if save_logits:
-    np.savetxt("data.csv", data[0], delimiter=",")
-    np.savetxt("actual.csv", data[1], delimiter=",")
-    np.savetxt("predicted.csv", all_logits, delimiter=",")
+    np.savetxt("data.csv", input_data, delimiter=",")
+    np.savetxt("actual.csv", actual_data, delimiter=",")
+    np.savetxt("predicted.csv", predicted_data, delimiter=",")
 
   return avg_accuracy, avg_dist, avg_xent
 
 def get_config():
   return TrainConfig()
-
-# def create_random_data(size, vocab_size, num_steps, num_buckets):
-#   input_data = np.random.randint(0, vocab_size, [size, num_steps])
-#
-#   data_sum = np.sum(input_data, 1)
-#   mod = np.mod(data_sum, num_buckets)
-#   labels = np.eye(num_buckets)[mod]
-#
-#   return (input_data, labels)
 
 def main(unused_args):
   config = get_config()
