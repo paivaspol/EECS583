@@ -127,7 +127,7 @@ class TrainConfig(object):
   initial_learning_rate = 0.001
   num_steps = 100
   hidden_size = 128
-  max_epoch = 350
+  max_epoch = 1
   keep_prob = 0.8
   batch_size = 20
   vocab_size = 10000
@@ -189,6 +189,7 @@ def main(unused_args):
   print "Initializing data module..."
   d = dm.Data_Module()
   print "\tTraining Size: %d" % d.get_number_train_examples()
+  print "\tValidation Size: %d" % d.get_number_valid_examples()
   print "\tTest Size: %d" % d.get_number_test_examples()
   print "Done with initializing data module."
   sys.stdout.flush()
@@ -218,8 +219,11 @@ def main(unused_args):
       sys.stdout.flush()
       train_accuracy, train_dist, train_xent = run_epoch(session, m, d.get_number_train_examples(), d.train_iterator, m.train_op, verbose=True)
       print("Epoch: %d Train Accuracy: %.3f Train Distance: %.3f Train Cross-Entropy %.3f" % (i + 1, train_accuracy, train_dist, train_xent))
-      print("Epoch %d Execution Time: %ds" % (i + 1, time.time() - start))
       sys.stdout.flush()
+      valid_accuracy, valid_dist, valid_xent = run_epoch(session, m, d.get_number_valid_examples(), d.valid_iterator, tf.no_op())
+      print("Epoch: %d Validation Accuracy: %.3f Validation Distance: %.3f Validation Cross-Entropy %.3f" % (i + 1, valid_accuracy, valid_dist, valid_xent))
+      sys.stdout.flush()
+      print("Epoch %d Execution Time: %ds" % (i + 1, time.time() - start))
 
     test_accuracy, test_dist, test_xent = run_epoch(session, mtest, d.get_number_test_examples(), d.test_iterator, tf.no_op(), save_logits=True)
     print("Test Accuracy: %.3f Test Distance: %.3f Test Cross-Entropy %.3f" % (test_accuracy, test_dist, test_xent))
