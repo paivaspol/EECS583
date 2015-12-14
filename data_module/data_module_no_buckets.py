@@ -5,13 +5,15 @@ import string
 import random
 import numpy as np
 
+
+
 class Example:
     def __init__(self, tokens,value):
         self.tokens = tokens
         self.value = value
 
 class Data_Module:
-    def __init__(self, val_path="../valgrind_output/", token_path="../tokenized_sources/", test_percent=0.3, type_of_data="data", max_tokens=200):
+    def __init__(self, val_path="../valgrind_output/", token_path="../tokenized_sources_limited_tokens/", test_percent=0.3, type_of_data="data.no.bucket.results", max_tokens=200):
         self.valgrind_path = val_path
         self.tokenized_path = token_path
         self.test_examples = []
@@ -21,7 +23,7 @@ class Data_Module:
         self.lengths = []
 
         self.max_tokens = max_tokens
-        
+
         for benchmark in os.listdir(self.valgrind_path):
             if type_of_data in benchmark:
                 with open(self.valgrind_path + benchmark) as in_file:
@@ -44,12 +46,10 @@ class Data_Module:
                             else:
                                 self.training_examples.append(Example(tokens.split(","),value))
 
-
         print "padding training examples"
         for example in self.training_examples:
             for i in range(len(example.tokens), self.max_tokens):
                 example.tokens.append(0)
-
         print "padding test examples"
         for example in self.test_examples:
             for i in range(len(example.tokens), self.max_tokens):
@@ -63,23 +63,6 @@ class Data_Module:
 
     def get_function_length(self):
         return self.max_tokens
-
-    def get_bucket_breakdown(self):
-        training_buckets = {}
-        testing_buckets = {}
-        for example in self.training_examples:
-            if example.value in training_buckets:
-                training_buckets[example.value] += 1
-            else:
-                training_buckets[example.value] = 1
-
-        for example in self.test_examples:
-            if example.value in testing_buckets:
-                testing_buckets[example.value] += 1
-            else:
-                testing_buckets[example.value] = 1
-
-        return training_buckets, testing_buckets
 
     def generic_iterator(self, all_examples, batch_size, num_buckets):
         length = len(all_examples)
@@ -119,19 +102,15 @@ class Data_Module:
         return self.generic_iterator(self.test_examples, num_examples, num_buckets)
 
 def main():
-    d = Data_Module()
-    print d.get_function_length()
+    d = Data_Module(token_path="../tokenized_sources_limited_tokens/")
+
     print d.get_number_train_examples(), d.get_number_test_examples()
 
-    train_buckets, test_buckets = d.get_bucket_breakdown()
-    for value in sorted(train_buckets):
-        print value, train_buckets[value] + test_buckets[value]
-
 #    num_examples = 100
-#    num_training_iterations = int(math.ceil(d.get_number_train_examples() /num_examples))
+#    num_training_iterations = int(math.ceil(d.get_number_train_examples() / num_examples))
 #    for i, (tokens_array, results_array) in enumerate(d.train_iterator(num_examples)):
 #        print tokens_array.shape, results_array.shape
 
 
-main()
 
+main()
