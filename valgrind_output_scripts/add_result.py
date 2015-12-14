@@ -81,11 +81,7 @@ def parse_file(input_filename, out_filename, might_be_filename, sources_path, bu
                                 out_file.write(this_path +"/" + f + "\t" + str(find_bucket(buckets, float(words[2]))) + "\n")
 
                     if not found:
-                        not_found[words[0] + " : " + words[1]] = 1
-
-                    if not found and source_found and "483" in input_filename:
-                        print words[1], this_path
-                            
+                        not_found[words[0] + " : " + words[1]] = 1                            
 
     return not_found
 
